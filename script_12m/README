@@ -1,0 +1,304 @@
+Atacama Large Millimeter/submillimeter Array (ALMA)
+
+#####
+
+Cycle: 2 (Early science)
+Project code: 2013.1.00308.S
+SB name:  w51_a_06_TE
+PI name: Adam Ginsburg
+Project title: Gas temperature and kinematics as key inputs for star formation theory: Cores and turbulence in the massive protocluster W51
+Configuration: 12m array, uid://A002/X9ee74a/X26f0 - compact configuration, uid://A002/Xa8df68/Xb4b - extended configuration
+Proposed rms: 5.85 mJy/beam in 0.728 MHz at Rep. Freq. 218.352 GHz
+CASA version used for reduction: 4.4.0
+Comments from Reducer:
+
+Data reduction & calibration:
+
+For both EBs there were some interferences in amplitude, either from
+atmospheric lines or badly calibrated Tsys, falling on the frequency range of
+two requested spectral lines, 12CO(2-1) and 13CS(5-4) in SPW 2. 
+Channel ranges in EB X26f0: spw=2:188~278;1569~1884,
+                in EB Xb4b: spw=2:175~270;1684~1926
+These interferences were visible in the phase calibrator. Also the phase
+scatter of the phase calibrator is a litte increased for this frequency range.
+The affected channels were not flagged, and imaged because they belonged to the
+science goal. 
+While the images look quite good, some care with the interpretation of the data
+might be advisory.
+
+Spw 3 was designated for continuum and PN(5-4) and neither could be imaged:
+1) there are locations in the mosaic where there are too many lines to obtain
+confidently the continuum emission, 2) the central frequency of spw 3 was
+changed due to technical reasons causing the PN(5-4) line to be
+outside of the frequency range of spw 3.
+
+Major flagging:
+
+uid://A002/X9ee74a/X26f0:
+antenna DV15 flagged due to high Tsys
+
+uid://A002/Xa8df68/Xb4b:
+antenna DV12 flagged due to low gain
+
+Not flagged, but might be flagged if found necessary:
+
+uid://A002/Xa8df68/Xb4b:
+gains in X and Y polarization slighly offset (distributions are not 
+overlapping)for Antenna DV04, spw=2 and Antenna DV24 spw=1
+Data was not flagged, because X and Y polarizations will be averaged.
+
+Imaging:
+
+* Requested RMS 5.85 mJy in 0.728 MHz bandwidth at rep. frequency 218.352 GHz -->
+
+Reached, verified on cubes of H2CO 3(0,3)-2(0,2) line in spw 0. 
+Cubes of concatenated dataset has an RMS of 4.2 mJy/beam (no cont. subtraction)
+or 3.8 mJy/beam (cont. subtraction).
+EB X4b4 cube had an RMS of 4.8 mJy/beam (cont. subtraction).
+
+* Continuum RMS calculated by OT: 64.92 micro Jy --> 
+
+Not possible to verify, as mosaic contains positions with many emission lines,
+prohibiting extracting confidently only the continuum emission. 
+
+
+* Requested angular resolution 1.0 arcsec, then changed to 0.2 arcsec --> 
+
+Might be reached when weighting, and using only one EB (Xb4b). 
+However for QA2, maps of the concatenated dataset were made.
+The two EB had a different angular resolution:
+- X26f0 has about 0.8 arcsec ang resolution
+- Xb4b has about 0.2 arcsec ang resolution
+When the second EB was to be observed, the SG was adjusted from 1.0 arcsec 
+to 0.2 arcsec.
+
+Imaging was done on the concatenated data of the two EB, reaching an angular
+resolution of 0.55arcsec (beam: 0.51x0.59 arcsec). One map of the high
+resolution EB alone was done of the H2CO 3(0,3)-2(0,2) line in spw 0, which had
+an angular resolution of 0.29 arcsec (beam 0.31x0.27 arcsec) using natural
+weighting and robust=0. Changing the weights might yield a bit higher
+resolution.
+
+* Cleaning mode: Continuum subtraction attempted
+Attemps of continuum subtraction of the spectral lines were made, but some
+remainder of continuum emission is still seen in the line cubes. Also, the
+selection of line-free channels was not trivial. Hence, for each cube, imaging
+was done both with and without continuum subtraction.
+
+* Clean mask
+
+Images were made without a clean mask, because the emission structure is rather
+complex.
+
+
+* Summary of rms and beamsize of the produced images, based on concatenated
+data of the two Execution blocks. RMS in spectral line cubes is the average of
+four line free channels. 
+
+Target: w51
+Spw 0, line  H2CO 3(0,3)-2(0,2), detected
+no continuum subtraction: 4.2 mJy/beam, beamsize 0.59x0.51 arcsec
+continuum subtraction: 3.8 mJy/beam, beamsize 0.59x0.51 arcsec
+
+Spw 1, line C18O(2-1), detected
+no continuum subtraction: 3.7 mJy/beam, beamsize 0.68x0.53 arcsec
+continuum subtraction: 3.1 mJy/beam, beamsize 0.68x0.53 arcsec
+
+Spw 2, line 12CO(2-1), detected
+no continuum subtraction: 5.0 mJy/beam, beamsize 0.59x0.51 arcsec
+continuum subtraction:  4.5 mJy/beam, beamsize 0.59x0.51 arcsec
+Spw 2, 13CS(5-4), detected
+no continuum subtraction: 4.5 mJy/beam, beamsize 0.59x0.51 arcsec
+continuum subtraction:  3.8 mJy/beam, beamsize 0.59x0.51 arcsec
+
+Spw 3 was designated for continuum and PN(5-4) and neither could be imaged:
+1) there are locations in the mosaic where there are too many lines to obtain
+confidently the continuum emission, 
+2) the central frequency of spw 3 was changed for technical reasons causing the
+PN(5-4) line to be outside of the frequency range of spw 3.
+
+#####
+
+This file describes the content of the tar file you have received. The
+full data structure is inserted below.
+
+At this stage, we are releasing data after completion of one SB (excuted
+multiple times if required), so you will find only one member_ouss_id
+directory.  This directory contains this README file and the following
+directories:calibration, script, qa2, log, product.
+
+- 'calibration' contains the files needed for calibration starting from
+the initial ms to the fully calibrated data. 
+- 'script' contains the reduction scripts used to process the initial ms
+to calibrated data, but also to obtain concatenated data (if more than
+one execution) and imaging products.  There are usually several scripts
+dealing with different parts of the processing.
+In case the calibration was done by the automated pipeline, you will
+also see the Pipeline Processing Request File (PPR).
+The most important script for you is the "scriptForPI.py". See the
+section "How to obtain a calibrated MeasurementSet (MS) for your data?"
+further below. 
+- 'product' contains the fits files of the selected image products. 
+These will not include all images of scientific value, but will indicate
+the quality of the calibration and images.
+- 'qa' contains the qa2 reports that show plots and text information
+needed to assess the quality of the processing.  The resultant image
+rms, compared with that proposed, is given. In case the calibration was 
+done by the automated pipeline, you will find the pipeline Weblog here.
+- 'log' contains the CASA log files. 
+
+For more information see also the "ALMA QA2 Data Products" document
+which is available for download from the ALMA Science Portal at 
+http://almascience.org/documents-and-tools/cycle-2/alma-qa2-products-v2.1 
+and the ALMA Knowledgebase article on the QA2 pass/fail criteria at
+https://help.almascience.org/index.php?/XX/Knowledgebase/Article/View/285 
+(where the XX is to be replaced by ea, eu, or na depending on your location).
+
+#####
+
+Primary beam correction
+
+The images included in this delivery are corrected for the primary beam (PB),
+i.e. the dependence of the instruments sensitivity on direction within the FOV.
+
+For each image, two files are being delivered:
+  a) the  PB-corrected image (file name ending in ".pbcor.fits")
+  b) the image of the PB which was used in the correction (ending in ".flux.fits")
+The image noise was measured in the uncorrected image.
+The corrected image (a) was then obtained by dividing the uncorrected image by
+the PB image (b).
+The uncorrected image can be recovered using the CASA task impbcor in mode "m":
+impbcor(imagename='image.pbcor.fits', pbimage='image.flux.fits', mode='m', 
+        outfile='image.recovered')
+
+
+#####
+
+How to obtain a calibrated MeasurementSet (MS) for your data?
+
+In case you want to re-reduce your data yourself, you will need to
+obtain the raw data in ASDM format from the request handler or
+other server where it is staged for you (see your notification 
+email).
+
+If you downloaded and untarred all available files for this delivery
+as described in the notification email, then you will already see
+(in addition to the directories shown in the tree listing above)
+a directory "raw" containing your raw data in subdirectories
+named "uid*.asdm.sdm" and no further action is necessary.
+
+If you do not have a raw directory, yet, you will need to download
+and untar the tar balls of the raw data belonging to this delivery
+and make sure they are put into the "raw" directory in your
+"member_ouss_..." directory.
+
+Once the raw data is in place, cd into directory "script", start
+ 
+   casapy --pipeline
+
+and type
+
+   execfile('scriptForPI.py')
+
+(If you have not installed the CASA version with the ALMA pipeline
+included, the "--pipeline" switch is not available.
+Check in the "script" directory of your delivery package to see
+if it contains a file named "PPR*.xml".
+If there is no such file, you will be able to run the calibration
+without the pipeline. Otherwise, you will have to install
+the CASA version with pipeline.)
+
+For more information on the execution of the pipeline please refer to
+the ALMA Pipeline Quickstart Guide available at
+http://almascience.org/documents-and-tools/cycle-2/alma-pipeline-quickstart-guide
+
+Running the scriptForPI will execute the entire calibration procedure 
+and result in an MS or a set of MSs ready for imaging. 
+
+In case the data was processed using the automated pipeline,
+scriptForPI.py will produce the calibrated MS(s) by running the
+"casa_piperestorescript" which applies the packaged calibration
+and flagging tables (rather then regenerating them).
+
+The calibrated MS(s) can then be processed with "scriptForImaging.py".
+
+The "scriptForImaging.py" may partially be interactive (for masking)
+and should be executed by copy and paste.
+
+The scriptForPI offers a "SPACESAVING" option to limit the disk space 
+usage during and after its execution. In order to make use of this, 
+the Python global variable SPACESAVING needs to be set before starting 
+the script, e.g. using
+
+  SPACESAVING = N
+  execfile('scriptForPI.py')
+
+where N is an integer from 0 to 3 with the following meaning:
+SPACESAVING = 0 same as not set (all intermediate MSs are kept)
+            = 1 do not keep intermediate MSs named *.ms.split
+            = 2 do not keep intermediate MSs named *.ms and *.ms.split
+            = 3 do not keep intermediate MSs named *.ms, *.ms.split,
+                and *.ms.split.cal (if possible)
+
+With SPACESAVING=0, the required additional diskspace is up to 14 times 
+as large as the delivered data (products and rawdata) while with 
+SPACESAVING=3 (maximum savings), it is up to 6 times as large. 
+The script will estimate the required disk space and will not execute 
+if there is not sufficient free space available.
+
+#####
+
+
+
+2013.1.00308.S
+`-- science_goal.uid___A001_X196_X91
+    `-- group.uid___A001_X196_X92
+        `-- member.uid___A001_X196_X93
+            |-- README
+            |-- calibration
+            |   |-- uid___A002_X9ee74a_X26f0.calibration.plots
+            |   |-- uid___A002_X9ee74a_X26f0.calibration.tgz
+            |   |-- uid___A002_X9ee74a_X26f0.ms.wvrgcal
+            |   |-- uid___A002_Xa8df68_Xb4b.calibration.plots
+            |   |-- uid___A002_Xa8df68_Xb4b.calibration.tgz
+            |   `-- uid___A002_Xa8df68_Xb4b.ms.wvrgcal
+            |-- log
+            |   |-- analysis.log.tgz
+            |   |-- calibrated.log.tgz
+            |   |-- uid___A002_X9ee74a_X26f0.log.tgz
+            |   `-- uid___A002_Xa8df68_Xb4b.log.tgz
+            |-- product
+            |   |-- w51_12CO_21_contsub.flux.fits
+            |   |-- w51_12CO_21_contsub.image.pbcor.fits
+            |   |-- w51_12CO_21_nocontsub.flux.fits
+            |   |-- w51_12CO_21_nocontsub.image.pbcor.fits
+            |   |-- w51_13CS_54_contsub.flux.fits
+            |   |-- w51_13CS_54_contsub.image.pbcor.fits
+            |   |-- w51_13CS_54_nocontsub.flux.fits
+            |   |-- w51_13CS_54_nocontsub.image.pbcor.fits
+            |   |-- w51_C18O_21_contsub.flux.fits
+            |   |-- w51_C18O_21_contsub.image.pbcor.fits
+            |   |-- w51_C18O_21_nocontsub.flux.fits
+            |   |-- w51_C18O_21_nocontsub.image.pbcor.fits
+            |   |-- w51_H2CO_303_202_contsub.flux.fits
+            |   |-- w51_H2CO_303_202_contsub.image.pbcor.fits
+            |   |-- w51_H2CO_303_202_nocontsub.flux.fits
+            |   |-- w51_H2CO_303_202_nocontsub.image.pbcor.fits
+            |   |-- w51_Xb4b_H2CO_303_202_contsub.flux.fits
+            |   `-- w51_Xb4b_H2CO_303_202_contsub.image.pbcor.fits
+            |-- qa
+            |   |-- uid___A002_X9ee74a_X26f0__qa2_part1.png
+            |   |-- uid___A002_X9ee74a_X26f0__qa2_part2.png
+            |   |-- uid___A002_X9ee74a_X26f0__qa2_part3.png
+            |   |-- uid___A002_X9ee74a_X26f0__textfile.txt
+            |   |-- uid___A002_Xa8df68_Xb4b__qa2_part1.png
+            |   |-- uid___A002_Xa8df68_Xb4b__qa2_part2.png
+            |   |-- uid___A002_Xa8df68_Xb4b__qa2_part3.png
+            |   `-- uid___A002_Xa8df68_Xb4b__textfile.txt
+            `-- script
+                |-- scriptForImaging.py
+                |-- scriptForPI.py
+                |-- uid___A002_X9ee74a_X26f0.ms.scriptForCalibration.py
+                `-- uid___A002_Xa8df68_Xb4b.ms.scriptForCalibration.py
+
+10 directories, 39 files

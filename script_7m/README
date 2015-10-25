@@ -1,0 +1,217 @@
+Atacama Large Millimeter/submillimeter Array (ALMA)
+
+#####
+
+Cycle: 2 (Early science)
+Project code: 2013.1.00308.S
+SB name: w51_a_06_7M
+PI name: Adam Ginsburg
+Project title: Gas temperature and kinematics as key inputs for star formation theory
+Configuration: 7m
+Proposed rms: 
+CASA version used for reduction: 4.3.1
+Comments from Reducer:
+
+Phase drifts for antenna CM07, especially in the last two EBs. The user 
+can try to solve this with self-calibration.
+
+Otherwise, data look fine. Continuum subtraction has been done
+per spectral window, but the user should check the results as
+it is quite difficult to define the line-free channels.
+
+Cubes are made for H2CO, C18O, and CO(2-1).
+
+
+#####
+
+This file describes the content of the tar file you have received. The
+full data structure is inserted below.
+
+At this stage, we are releasing data after completion of one SB (excuted
+multiple times if required), so you will find only one member_ouss_id
+directory.  This directory contains this README file and the following
+directories:calibration, script, qa2, log, product.
+
+- 'calibration' contains the files needed for calibration starting from
+the initial ms to the fully calibrated data. 
+- 'script' contains the reduction scripts used to process the initial ms
+to calibrated data, but also to obtain concatenated data (if more than
+one execution) and imaging products.  There are usually several scripts
+dealing with different parts of the processing.
+In case the calibration was done by the automated pipeline, you will
+also see the Pipeline Processing Request File (PPR).
+The most important script for you is the "scriptForPI.py". See the
+section "How to obtain a calibrated MeasurementSet (MS) for your data?"
+further below. 
+- 'product' contains the fits files of the selected image products. 
+These will not include all images of scientific value, but will indicate
+the quality of the calibration and images.
+- 'qa' contains the qa2 reports that show plots and text information
+needed to assess the quality of the processing.  The resultant image
+rms, compared with that proposed, is given. In case the calibration was 
+done by the automated pipeline, you will find the pipeline Weblog here.
+- 'log' contains the CASA log files. 
+
+For more information see also the "ALMA QA2 Data Products" document
+which is available for download from the ALMA Science Portal at 
+http://almascience.org/documents-and-tools/cycle-2/alma-qa2-products-v2.1 
+and the ALMA Knowledgebase article on the QA2 pass/fail criteria at
+https://help.almascience.org/index.php?/XX/Knowledgebase/Article/View/285 
+(where the XX is to be replaced by ea, eu, or na depending on your location).
+
+#####
+
+Primary beam correction
+
+The images included in this delivery are corrected for the primary beam (PB),
+i.e. the dependence of the instruments sensitivity on direction within the FOV.
+
+For each image, two files are being delivered:
+  a) the  PB-corrected image (file name ending in ".pbcor.fits")
+  b) the image of the PB which was used in the correction (ending in ".flux.fits")
+The image noise was measured in the uncorrected image.
+The corrected image (a) was then obtained by dividing the uncorrected image by
+the PB image (b).
+The uncorrected image can be recovered using the CASA task impbcor in mode "m":
+impbcor(imagename='image.pbcor.fits', pbimage='image.flux.fits', mode='m', 
+        outfile='image.recovered')
+
+
+#####
+
+How to obtain a calibrated MeasurementSet (MS) for your data?
+
+In case you want to re-reduce your data yourself, you will need to
+obtain the raw data in ASDM format from the request handler or
+other server where it is staged for you (see your notification 
+email).
+
+If you downloaded and untarred all available files for this delivery
+as described in the notification email, then you will already see
+(in addition to the directories shown in the tree listing above)
+a directory "raw" containing your raw data in subdirectories
+named "uid*.asdm.sdm" and no further action is necessary.
+
+If you do not have a raw directory, yet, you will need to download
+and untar the tar balls of the raw data belonging to this delivery
+and make sure they are put into the "raw" directory in your
+"member_ouss_..." directory.
+
+Once the raw data is in place, cd into directory "script", start
+ 
+   casapy --pipeline
+
+and type
+
+   execfile('scriptForPI.py')
+
+(If you have not installed the CASA version with the ALMA pipeline
+included, the "--pipeline" switch is not available.
+Check in the "script" directory of your delivery package to see
+if it contains a file named "PPR*.xml".
+If there is no such file, you will be able to run the calibration
+without the pipeline. Otherwise, you will have to install
+the CASA version with pipeline.)
+
+For more information on the execution of the pipeline please refer to
+the ALMA Pipeline Quickstart Guide available at
+http://almascience.org/documents-and-tools/cycle-2/alma-pipeline-quickstart-guide
+
+Running the scriptForPI will execute the entire calibration procedure 
+and result in an MS or a set of MSs ready for imaging. 
+
+In case the data was processed using the automated pipeline,
+scriptForPI.py will produce the calibrated MS(s) by running the
+"casa_piperestorescript" which applies the packaged calibration
+and flagging tables (rather then regenerating them).
+
+The calibrated MS(s) can then be processed with "scriptForImaging.py".
+
+The "scriptForImaging.py" may partially be interactive (for masking)
+and should be executed by copy and paste.
+
+The scriptForPI offers a "SPACESAVING" option to limit the disk space 
+usage during and after its execution. In order to make use of this, 
+the Python global variable SPACESAVING needs to be set before starting 
+the script, e.g. using
+
+  SPACESAVING = N
+  execfile('scriptForPI.py')
+
+where N is an integer from 0 to 3 with the following meaning:
+SPACESAVING = 0 same as not set (all intermediate MSs are kept)
+            = 1 do not keep intermediate MSs named *.ms.split
+            = 2 do not keep intermediate MSs named *.ms and *.ms.split
+            = 3 do not keep intermediate MSs named *.ms, *.ms.split,
+                and *.ms.split.cal (if possible)
+
+With SPACESAVING=0, the required additional diskspace is up to 14 times 
+as large as the delivered data (products and rawdata) while with 
+SPACESAVING=3 (maximum savings), it is up to 6 times as large. 
+The script will estimate the required disk space and will not execute 
+if there is not sufficient free space available.
+
+#####
+
+
+
+2013.1.00308.S
+`-- science_goal.uid___A001_X196_X91
+    `-- group.uid___A001_X196_X92
+        `-- member.uid___A001_X196_X95
+            |-- README
+            |-- calibration
+            |   |-- uid___A002_X9f852b_X134a.calibration.plots
+            |   |-- uid___A002_X9f852b_X134a.calibration.tgz
+            |   |-- uid___A002_X9ff365_X2a83.calibration.plots
+            |   |-- uid___A002_X9ff365_X2a83.calibration.tgz
+            |   |-- uid___A002_Xa1e1bf_X290.calibration.plots
+            |   |-- uid___A002_Xa1e1bf_X290.calibration.tgz
+            |   |-- uid___A002_Xa1e1bf_X6f1.calibration.plots
+            |   `-- uid___A002_Xa1e1bf_X6f1.calibration.tgz
+            |-- log
+            |   |-- calibrated.log.tgz
+            |   |-- uid___A002_X9f852b_X134a.log.tgz
+            |   |-- uid___A002_X9ff365_X2a83.log.tgz
+            |   |-- uid___A002_Xa1e1bf_X290.log.tgz
+            |   `-- uid___A002_Xa1e1bf_X6f1.log.tgz
+            |-- product
+            |   |-- w51-C18O.flux.fits
+            |   |-- w51-C18O.image.pbcor.fits
+            |   |-- w51-C18O.mask
+            |   |-- w51-CO.flux.fits
+            |   |-- w51-CO.image.pbcor.fits
+            |   |-- w51-CO.mask
+            |   |-- w51-H2CO.flux.fits
+            |   |-- w51-H2CO.image.pbcor.fits
+            |   |-- w51-H2CO.mask
+            |   |-- w51-cont.flux.fits
+            |   |-- w51-cont.image.pbcor.fits
+            |   `-- w51-cont.mask
+            |-- qa
+            |   |-- uid___A002_X9f852b_X134a__qa2_part1.png
+            |   |-- uid___A002_X9f852b_X134a__qa2_part2.png
+            |   |-- uid___A002_X9f852b_X134a__qa2_part3.png
+            |   |-- uid___A002_X9f852b_X134a__textfile.txt
+            |   |-- uid___A002_X9ff365_X2a83__qa2_part1.png
+            |   |-- uid___A002_X9ff365_X2a83__qa2_part2.png
+            |   |-- uid___A002_X9ff365_X2a83__qa2_part3.png
+            |   |-- uid___A002_X9ff365_X2a83__textfile.txt
+            |   |-- uid___A002_Xa1e1bf_X290__qa2_part1.png
+            |   |-- uid___A002_Xa1e1bf_X290__qa2_part2.png
+            |   |-- uid___A002_Xa1e1bf_X290__qa2_part3.png
+            |   |-- uid___A002_Xa1e1bf_X290__textfile.txt
+            |   |-- uid___A002_Xa1e1bf_X6f1__qa2_part1.png
+            |   |-- uid___A002_Xa1e1bf_X6f1__qa2_part2.png
+            |   |-- uid___A002_Xa1e1bf_X6f1__qa2_part3.png
+            |   `-- uid___A002_Xa1e1bf_X6f1__textfile.txt
+            `-- script
+                |-- scriptForFluxCalibration.py
+                |-- scriptForImaging.py
+                |-- scriptForPI.py
+                |-- uid___A002_X9f852b_X134a.ms.scriptForCalibration.py
+                |-- uid___A002_X9ff365_X2a83.ms.scriptForCalibration.py
+                |-- uid___A002_Xa1e1bf_X290.ms.scriptForCalibration.py
+                `-- uid___A002_Xa1e1bf_X6f1.ms.scriptForCalibration.py
+
+16 directories, 41 files
