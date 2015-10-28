@@ -24,7 +24,8 @@ spws = {0: '0,4',
 nchans_total = {0: 3840, 1: 3840, 2: 3840, 3: 3840}
 ncubes_per_window = 20
 finalvis='w51_concat.ms.split.cal'
-linevis = finalvis+'.contsub'
+# don't know how to contsub yet
+linevis = finalvis#+'.contsub'
 
 for spwnum in '3210':
     print "# running clean on all lines in spw{0}".format(spwnum)

@@ -93,6 +93,26 @@ msnames=['uid___A002_X9ee74a_X26f0.ms.split.cal','uid___A002_Xa8df68_Xb4b.ms.spl
 os.system('rm -rf w51_concat.ms.split.cal')
 concat(vis=msnames, concatvis='w51_concat.ms.split.cal', freqtol='',copypointing=False)
 
+# try continuum in a full spw, ignoring line contamination:
+
+os.system("rm -rf w51_Xb4b_H2CO_303_202_contsub.*")
+clean(vis = 'w51_concat.ms.split.cal',
+  imagename = "w51_cont_spw3",
+  field = "w51",
+  spw = '3,7', 
+  mode = 'mfs',
+  outframe = 'LSRK',
+  interpolation = 'linear',
+  imagermode='mosaic',
+  interactive = False,
+  niter = 5000,
+  threshold = '0.0mJy',
+  imsize = [960,960],
+  cell = '0.15',
+  weighting = 'briggs',
+  pbcor=False,
+  robust = 0.0)
+
 # Imaging parameters:
  
 # Wavelength ~ 0.137 mm
