@@ -10,8 +10,6 @@ if not os.path.exists('w51_pointing32.split.cal'):
 
 field='w51'
 phasecenter=''
-cell='.10arcsec' # cell size for imaging.
-imsize = [256,256] # size of image in pixels.
 
 # imaging control
 # ----------------
@@ -29,15 +27,88 @@ spws = {0: '0,4',
         2: '2,6',
         3: '3,7',
        }
-nchans_total = {0: 3840, 1: 3840, 2: 3840, 3: 3840}
+nchans_total = {ii: 3840 for ii in range(8)}
 ncubes_per_window = 20
 finalvis='w51_pointing32.split.cal'
 # don't know how to contsub yet
 linevis = finalvis#+'.contsub'
 
-for spwnum in '0123':
+cell={x:'.07' for x in (0,1,2,3)}
+cell.update({x:'0.05arcsec' for x in (4,5,6,7)}) # cell size for imaging.
+imsize = [256,256] # size of image in pixels.
+imsize={x:[512,512] for x in (0,1,2,3)}
+imsize.update({x:[512,512] for x in (4,5,6,7)})
+
+freqs = {0: 218604.028,
+         1: 220296.833,
+         2: 230435.532,
+         3: 233040.032,}
+deltafreq = {0:-0.122070,
+             1:-0.488281,
+             2: 0.488281,
+             3: 0.488281,
+            }
+
+for spwnum in '1230':
     print "# running clean on all lines in spw{0}".format(spwnum)
-    spw = spws[int(spwnum)]
+    spw = spws[int(spwnum)] # this tries to merge incompatible channels
+    #spw = int(spwnum)
+    nchans_total_thiscube = nchans_total[int(spwnum)]
+    nchans_per_cube = nchans_total_thiscube/ncubes_per_window
+    inputvis = linevis
+    for ii in range(ncubes_per_window):
+        start = nchans_per_cube*ii
+        end = nchans_per_cube*(ii+1)
+        output = 'piece_of_w51pointing32_cube_bothSB.spw{0}.channels{1}to{2}'.format(spwnum, start, end)
+        #---------------------------------------------------
+        # LINE IMAGING (MOSAIC MODE)
+        if not os.path.exists(output+".image"):
+            stfrq = freqs[int(spwnum)] + start*deltafreq[int(spwnum)]
+            endfrq = freqs[int(spwnum)] + end*deltafreq[int(spwnum)]
+            print("Imaging {0} with freqs {1} MHz-{2} MHz,"
+                  " {3} channels, df={4}MHz".format(output, stfrq, endfrq,
+                                                    nchans_per_cube,
+                                                    deltafreq[int(spwnum)]))
+            os.system('rm -rf ' + output + '*')
+            clean(vis = inputvis,
+                  imagename = output,
+                  field = field,
+                  spw = str(spw),
+                  imagermode = 'csclean',
+                  mode = 'frequency',
+                  width = "{0}MHz".format(deltafreq[int(spwnum)]),
+                  start = "{0}MHz".format(stfrq),
+                  nchan = nchans_per_cube,
+                  chaniter = True,
+                  veltype = 'radio',
+                  outframe = 'LSRK',
+                  interactive = F,
+                  niter = niter,
+                  imsize = imsize[int(spwnum)],
+                  cell = cell[int(spwnum)],
+                  psfmode='clark',
+                  weighting = weighting,
+                  phasecenter = phasecenter,
+                  robust = robust,
+                  threshold = threshold,
+                  pbcor = F,
+                  usescratch= F)
+
+          
+        if not (os.path.exists(output+".image.pbcor.fits") or os.path.exists(output+".image.fits")):
+            myimagebase = output
+            if os.path.exists(output+".flux"):
+                impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True)
+                exportfits(imagename=myimagebase+'.image.pbcor', fitsimage=myimagebase+'.image.pbcor.fits', overwrite=True,dropdeg=True)
+                exportfits(imagename=myimagebase+'.flux', fitsimage=myimagebase+'.flux.fits', overwrite=True,dropdeg=True)
+            else:
+                exportfits(imagename=myimagebase+'.image', fitsimage=myimagebase+'.image.fits', overwrite=True,dropdeg=True)
+
+
+for spwnum in '12356704':
+    print "# running clean on all lines in spw{0}".format(spwnum)
+    #spw = spws[int(spwnum)] # this tries to merge incompatible channels
+    spw = int(spwnum)
     nchans_total_thiscube = nchans_total[int(spwnum)]
     nchans_per_cube = nchans_total_thiscube/ncubes_per_window
     inputvis = linevis
@@ -53,7 +124,7 @@ for spwnum in '0123':
             clean(vis = inputvis,
                   imagename = output,
                   field = field,
-                  spw = spw,
+                  spw = str(spw),
                   imagermode = 'csclean',
                   mode = 'channel',
                   width = 1,
@@ -64,21 +135,22 @@ for spwnum in '0123':
                   outframe = 'LSRK',
                   interactive = F,
                   niter = niter,
-                  imsize = imsize,
-                  cell = cell,
+                  imsize = imsize[spw],
+                  cell = cell[spw],
                   psfmode='clark',
                   weighting = weighting,
                   phasecenter = phasecenter,
                   robust = robust,
                   threshold = threshold,
-                  pbcor = T,
+                  pbcor = F,
                   usescratch= F)
 
           
-        if not os.path.exists(output+".image.pbcor"):
+        if not (os.path.exists(output+".image.pbcor.fits") or os.path.exists(output+".image.fits")):
             myimagebase = output
-            impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True)
-            exportfits(imagename=myimagebase+'.image.pbcor', fitsimage=myimagebase+'.image.pbcor.fits', overwrite=True)
-            exportfits(imagename=myimagebase+'.flux', fitsimage=myimagebase+'.flux.fits', overwrite=True)
-
-
+            if os.path.exists(output+".flux"):
+                impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True)
+                exportfits(imagename=myimagebase+'.image.pbcor', fitsimage=myimagebase+'.image.pbcor.fits', overwrite=True,dropdeg=True)
+                exportfits(imagename=myimagebase+'.flux', fitsimage=myimagebase+'.flux.fits', overwrite=True,dropdeg=True)
+            else:
+                exportfits(imagename=myimagebase+'.image', fitsimage=myimagebase+'.image.fits', overwrite=True,dropdeg=True)

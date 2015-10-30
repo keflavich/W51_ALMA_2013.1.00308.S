@@ -95,20 +95,20 @@ concat(vis=msnames, concatvis='w51_concat.ms.split.cal', freqtol='',copypointing
 
 # try continuum in a full spw, ignoring line contamination:
 
-os.system("rm -rf w51_Xb4b_H2CO_303_202_contsub.*")
+os.system("rm -rf w51_cont_spw3_hires.*")
 clean(vis = 'w51_concat.ms.split.cal',
-  imagename = "w51_cont_spw3",
+  imagename = "w51_cont_spw3_hires",
   field = "w51",
-  spw = '3,7', 
+  spw = '3,7',
   mode = 'mfs',
   outframe = 'LSRK',
   interpolation = 'linear',
   imagermode='mosaic',
   interactive = False,
-  niter = 5000,
-  threshold = '0.0mJy',
-  imsize = [960,960],
-  cell = '0.15',
+  niter = 10000,
+  threshold = '20.0mJy', # got to 11 mJy, but it showed really bad instabilities.  15 was still too deep
+  imsize = [2560,2560],
+  cell = '0.052arcsec',
   weighting = 'briggs',
   pbcor=False,
   robust = 0.0)
