@@ -1,7 +1,7 @@
 import os
 
 os.system('rm -rf test_mfs.*')
-clean(vis = 'w51_test_small.ms',
+clean(vis = ['w51_test_small_spw3.ms','w51_test_small_spw7.ms'],
   imagename = "test_mfs",
   field = "",
   spw = '',
@@ -21,7 +21,7 @@ clean(vis = 'w51_test_small.ms',
 exportfits('test_mfs.image', 'test_mfs.image.fits')
 
 os.system('rm -rf test_frequency.*')
-clean(vis = 'w51_test_small.ms',
+clean(vis = ['w51_test_small_spw3.ms','w51_test_small_spw7.ms'],
   imagename = "test_frequency",
   field = "",
   spw = '',
