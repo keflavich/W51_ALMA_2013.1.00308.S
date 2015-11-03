@@ -433,6 +433,11 @@ impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myim
 exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
 exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
 
+myimagebase= 'w51_H2CO_321_220_contsub'
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
+exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
+exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
+
 #----------spw1
 
 myimagebase= 'w51_C18O_21_nocontsub'
