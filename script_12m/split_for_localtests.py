@@ -14,6 +14,7 @@ cvel(vis='w51_concat.ms.split.cal',
      start='233540.000MHz',
      width='0.5MHz',
      outframe='bary',
+     phasecenter='J2000 19h23m43.905 +14d30m28.08',
      )
 cvel(vis='w51_concat.ms.split.cal',
      outputvis='w51_test_small_spw3.ms',
@@ -24,4 +25,5 @@ cvel(vis='w51_concat.ms.split.cal',
      start='233540.000MHz',
      width='0.5MHz',
      outframe='bary',
+     phasecenter='J2000 19h23m43.905 +14d30m28.08',
      )
