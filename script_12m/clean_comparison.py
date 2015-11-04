@@ -1,7 +1,13 @@
 import os
 
+concat(vis=['w51_test_small_spw3.ms','w51_test_small_spw7.ms'],
+       concatvis='w51_test_small.ms')
+flagdata(vis='w51_test_small.ms',
+         mode='manual', timerange='2015/08/27/01:53:32.3~2015/08/27/01:53:56.5',
+         antenna='DV08&DV09')
+
 os.system('rm -rf test_mfs.*')
-clean(vis = ['w51_test_small_spw3.ms','w51_test_small_spw7.ms'],
+clean(vis = 'w51_test_small.ms',
   imagename = "test_mfs",
       multiscale=[0,3,6,12],
   field = "",
@@ -17,14 +23,15 @@ clean(vis = ['w51_test_small_spw3.ms','w51_test_small_spw7.ms'],
   cell = '0.052arcsec',
   phasecenter='J2000 19h23m43.905 +14d30m28.08',
   weighting = 'briggs',
+      usescratch=True,
   pbcor=False,
-  robust = 1.0)
+  robust = 0.0)
 exportfits('test_mfs.image', 'test_mfs.image.fits', dropdeg=True, overwrite=True)
 
 os.system('rm -rf test_frequency.*')
-clean(vis = ['w51_test_small_spw3.ms','w51_test_small_spw7.ms'],
+clean(vis = 'w51_test_small.ms',
   imagename = "test_frequency",
-      multiscale=[0,3,6,12],
+  #    multiscale=[0,3,6,12],
   field = "",
   spw = '',
   mode = 'channel',
@@ -39,6 +46,7 @@ clean(vis = ['w51_test_small_spw3.ms','w51_test_small_spw7.ms'],
   weighting = 'briggs',
   phasecenter='J2000 19h23m43.905 +14d30m28.08',
   pbcor=False,
+      usescratch=True,
   robust = 1.0)
 exportfits('test_frequency.image', 'test_frequency.image.fits', dropdeg=True, overwrite=True)
 
