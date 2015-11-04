@@ -34,7 +34,7 @@ split(vis="w51_test_small.ms", outputvis="w51_test_small_selfcal.ms",
 
 os.system('rm -rf test_selfcal_channel.*')
 clean(vis='w51_test_small_selfcal.ms', imagename="test_selfcal_channel",
-      multiscale=[0,3,6,12], field="", spw='', mode='channel', outframe='LSRK',
+      field="", spw='', mode='channel', outframe='LSRK',
       interpolation='linear', imagermode='mosaic', interactive=False,
       niter=1000, threshold='250.0mJy', imsize=[512,512], cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
@@ -61,7 +61,7 @@ split(vis="w51_test_small_selfcal.ms", outputvis="w51_test_small_selfcal_2.ms",
 
 os.system('rm -rf test_selfcal_2_channel.*')
 clean(vis='w51_test_small_selfcal_2.ms', imagename="test_selfcal_2_channel",
-      multiscale=[0,3,6,12], field="", spw='', mode='channel', outframe='LSRK',
+      field="", spw='', mode='channel', outframe='LSRK',
       interpolation='linear', imagermode='mosaic', interactive=False,
       niter=1000, threshold='250.0mJy', imsize=[512,512], cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
@@ -76,3 +76,9 @@ gaincal(vis="w51_test_small_selfcal_2.ms", caltable="phase_3.cal", field="",
 #        iteration="antenna", plotrange=[0,0,-30,30], markersize=5,
 #        fontsize=10.0,)
 
+from astropy.io import fits
+print("Stats:")
+print("dirty:    peak={1:0.5f} sigma={0:0.5f}".format(fits.getdata('test_channel_dirty.image.fits')[:200,:200].std(),     fits.getdata('test_channel_dirty.image.fits')[:200,:200].max()))
+print("clean:    peak={1:0.5f} sigma={0:0.5f}".format(fits.getdata('test_channel.image.fits')[:200,:200].std(),           fits.getdata('test_channel.image.fits')[:200,:200].max()))
+print("selfcal:  peak={1:0.5f} sigma={0:0.5f}".format(fits.getdata('test_selfcal_channel.image.fits')[:200,:200].std(),   fits.getdata('test_selfcal_channel.image.fits')[:200,:200].max()))
+print("selfcal2: peak={1:0.5f} sigma={0:0.5f}".format(fits.getdata('test_selfcal_2_channel.image.fits')[:200,:200].std(), fits.getdata('test_selfcal_2_channel.image.fits')[:200,:200].max()))
