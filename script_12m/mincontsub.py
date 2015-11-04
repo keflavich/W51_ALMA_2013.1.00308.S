@@ -15,14 +15,25 @@ for suffix in ('image','model','flux','psf','residual'):
     os.system('rm -rf test_frequency.{0}'.format(suffix))
 
 import spectral_cube
-cube = SpectralCube.read('test_frequency.image.fits')
+cube = spectral_cube.SpectralCube.read('test_frequency.image.fits')
 cont = cube.min(axis=0)
-cont.hdu.write('test_continuum_min.fits')
+cont.meta['beam'] = cube.beam
+hdu = cont.hdu
+hdu.header['CRPIX3'] = 1
+hdu.header['CRVAL3'] = cube.header['CRVAL3']
+hdu.header['CDELT3'] = cube.header['CDELT3']
+hdu.header['CTYPE3'] = 'FREQ'
+hdu.header['CRPIX4'] = 1
+hdu.header['CRVAL4'] = 1
+hdu.header['CDELT4'] = 1
+hdu.header['CTYPE4'] = 'STOKES'
+hdu.writeto('test_continuum_min.fits', clobber=True)
 importfits('test_continuum_min.fits', 'test_continuum_min.image', overwrite=True)
 
 os.system('rm -rf w51_test_small_imcont.ms')
 split('w51_test_small.ms', 'w51_test_small_imcont.ms', datacolumn='data')
-ft(vis='w51_test_small_imcont.ms', model='test_continuum_min.image', usescratch=True, nterms=0)
+raise ValueError("ft does not work.")
+ft(vis='w51_test_small_imcont.ms', model='test_continuum_min.image', usescratch=True, nterms=1)
 uvsub('w51_test_small_imcont.ms')
 
 os.system('rm -rf test_frequency_mincontsub.*')
