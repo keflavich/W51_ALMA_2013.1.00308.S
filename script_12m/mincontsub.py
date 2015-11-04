@@ -16,10 +16,12 @@ for suffix in ('image','model','flux','psf','residual'):
 
 import spectral_cube
 cube = spectral_cube.SpectralCube.read('test_frequency.image.fits')
-cont = cube.min(axis=0)
+cont = cube[1:-1,:,:].min(axis=0)
 scube = cube - cont
-hdu = cube.hdu
+hdu = scube.hdu
 hdu.data = hdu.data.reshape((1,) + hdu.data.shape)
+hdu.header['CRVAL1'] = cube.wcs.wcs.crval[0]
+hdu.header['CRVAL2'] = cube.wcs.wcs.crval[1]
 hdu.header['CRPIX4'] = 1
 hdu.header['CRVAL4'] = 1
 hdu.header['CDELT4'] = 1
