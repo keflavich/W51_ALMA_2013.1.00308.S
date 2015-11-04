@@ -16,7 +16,7 @@ clean(vis='w51_test_small.ms', imagename="test_mfs", field="", spw='',
 exportfits('test_mfs.image', 'test_mfs.image.fits', dropdeg=True, overwrite=True)
 
 gaincal(vis='w51_test_small.ms', caltable="phase.cal", field="", solint="30s",
-        calmode="p", refant="", gaintype="G", uvrange='0~400')
+        calmode="p", refant="", gaintype="G")
 #plotcal(caltable="phase.cal", xaxis="time", yaxis="phase", subplot=331,
 #        iteration="antenna", plotrange=[0,0,-30,30], markersize=5,
 #        fontsize=10.0,)
@@ -41,7 +41,7 @@ exportfits('test_selfcal_mfs.image', 'test_selfcal_mfs.image.fits', dropdeg=True
 
 os.system("rm -rf phase_2.cal")
 gaincal(vis="w51_test_small_selfcal.ms", caltable="phase_2.cal", field="",
-        solint="30s", calmode="p", refant="", gaintype="G", uvrange='0~400')
+        solint="30s", calmode="p", refant="", gaintype="G")
 #plotcal(caltable="phase_2.cal", xaxis="time", yaxis="phase", subplot=331,
 #        iteration="antenna", plotrange=[0,0,-30,30], markersize=5,
 #        fontsize=10.0,)
@@ -67,14 +67,14 @@ exportfits('test_selfcal_2_mfs.image', 'test_selfcal_2_mfs.image.fits', dropdeg=
 
 os.system("rm -rf phase_3.cal")
 gaincal(vis="w51_test_small_selfcal_2.ms", caltable="phase_3.cal", field="",
-        solint="30s", calmode="p", refant="", gaintype="G", uvrange='0~400')
+        solint="30s", calmode="p", refant="", gaintype="G")
 #plotcal(caltable="phase_3.cal", xaxis="time", yaxis="phase", subplot=331,
 #        iteration="antenna", plotrange=[0,0,-30,30], markersize=5,
 #        fontsize=10.0,)
 
 from astropy.io import fits
-print("Stats:")
-print("dirty:    peak={1:0.5f} sigma={0:0.5f}".format(fits.getdata('test_mfs_dirty.image.fits')[:200,:200].std(),     fits.getdata('test_mfs_dirty.image.fits')[:200,:200].max()))
-print("clean:    peak={1:0.5f} sigma={0:0.5f}".format(fits.getdata('test_mfs.image.fits')[:200,:200].std(),           fits.getdata('test_mfs.image.fits')[:200,:200].max()))
-print("selfcal:  peak={1:0.5f} sigma={0:0.5f}".format(fits.getdata('test_selfcal_mfs.image.fits')[:200,:200].std(),   fits.getdata('test_selfcal_mfs.image.fits')[:200,:200].max()))
-print("selfcal2: peak={1:0.5f} sigma={0:0.5f}".format(fits.getdata('test_selfcal_2_mfs.image.fits')[:200,:200].std(), fits.getdata('test_selfcal_2_mfs.image.fits')[:200,:200].max()))
+print("Stats (mfs):")
+print("dirty:    peak={1:0.5f} sigma={0:0.5f}".format(fits.getdata('test_mfs_dirty.image.fits')[:200,:200].std(),     fits.getdata('test_mfs_dirty.image.fits').max()))
+print("clean:    peak={1:0.5f} sigma={0:0.5f}".format(fits.getdata('test_mfs.image.fits')[:200,:200].std(),           fits.getdata('test_mfs.image.fits').max()))
+print("selfcal:  peak={1:0.5f} sigma={0:0.5f}".format(fits.getdata('test_selfcal_mfs.image.fits')[:200,:200].std(),   fits.getdata('test_selfcal_mfs.image.fits').max()))
+print("selfcal2: peak={1:0.5f} sigma={0:0.5f}".format(fits.getdata('test_selfcal_2_mfs.image.fits')[:200,:200].std(), fits.getdata('test_selfcal_2_mfs.image.fits').max()))
