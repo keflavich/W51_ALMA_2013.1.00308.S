@@ -74,7 +74,7 @@ gaincal(vis="w51_test_small_selfcal_2.ms", caltable="phase_3.cal", field="",
 
 from astropy.io import fits
 print("Stats:")
-print("dirty:    peak={1:0.5f} sigma={0:0.5f}".format(fits.getdata('test_channel_dirty.image.fits')[:200,:200].std(),     fits.getdata('test_channel_dirty.image.fits')[:200,:200].max()))
-print("clean:    peak={1:0.5f} sigma={0:0.5f}".format(fits.getdata('test_channel.image.fits')[:200,:200].std(),           fits.getdata('test_channel.image.fits')[:200,:200].max()))
-print("selfcal:  peak={1:0.5f} sigma={0:0.5f}".format(fits.getdata('test_selfcal_channel.image.fits')[:200,:200].std(),   fits.getdata('test_selfcal_channel.image.fits')[:200,:200].max()))
-print("selfcal2: peak={1:0.5f} sigma={0:0.5f}".format(fits.getdata('test_selfcal_2_channel.image.fits')[:200,:200].std(), fits.getdata('test_selfcal_2_channel.image.fits')[:200,:200].max()))
+print("dirty:    peak={1:0.5f} sigma={0:0.5f}".format(fits.getdata('test_mfs_dirty.image.fits')[:200,:200].std(),     fits.getdata('test_mfs_dirty.image.fits')[:200,:200].max()))
+print("clean:    peak={1:0.5f} sigma={0:0.5f}".format(fits.getdata('test_mfs.image.fits')[:200,:200].std(),           fits.getdata('test_mfs.image.fits')[:200,:200].max()))
+print("selfcal:  peak={1:0.5f} sigma={0:0.5f}".format(fits.getdata('test_selfcal_mfs.image.fits')[:200,:200].std(),   fits.getdata('test_selfcal_mfs.image.fits')[:200,:200].max()))
+print("selfcal2: peak={1:0.5f} sigma={0:0.5f}".format(fits.getdata('test_selfcal_2_mfs.image.fits')[:200,:200].std(), fits.getdata('test_selfcal_2_mfs.image.fits')[:200,:200].max()))
