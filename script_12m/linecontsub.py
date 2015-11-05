@@ -22,12 +22,14 @@ from astropy import units as u
 cube = spectral_cube.SpectralCube.read('test_frequency.image.fits').with_spectral_unit(u.Hz)
 cont = cube.min(axis=0)
 contsub = cube-cont
+# temporary hack for issue #251
+contsub._data = contsub._data.value
 contsub = contsub.with_mask(contsub>15*u.mJy)
 ppbeam = np.abs((cube.beam.sr / (cube.wcs.pixel_scale_matrix[0,0]*cube.wcs.pixel_scale_matrix[1,1]*u.deg**2)).decompose())
 hdu = contsub.hdu
 # this scaling may be necessary if setjy is used
 # I found that the cube version was about 70x too low, maybe worse...
-hdu.data *= ppbeam # because apparently CASA divides by this?
+#hdu.data *= ppbeam # because apparently CASA divides by this?
 hdu.writeto('test_contsub_cube.fits', clobber=True)
 header = contsub.header
 importfits('test_contsub_cube.fits', 'test_contsub_cube.image',
