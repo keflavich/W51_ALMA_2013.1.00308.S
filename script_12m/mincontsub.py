@@ -12,7 +12,7 @@ if not os.path.exists('test_frequency.image.fits'):
           pbcor=False, usescratch=True, robust=1.0)
     exportfits('test_frequency.image', 'test_frequency.image.fits', dropdeg=True, overwrite=True)
     exportfits('test_frequency.model', 'test_frequency.model.fits', dropdeg=True, overwrite=True)
-    for suffix in ('image','model','flux','psf','residual'):
+    for suffix in ('model','flux','psf','residual'):
         os.system('rm -rf test_frequency.{0}'.format(suffix))
 
 import numpy as np
@@ -29,10 +29,23 @@ header = cont.header
 importfits('test_continuum_min.fits', 'test_continuum_min.image',
            overwrite=True, defaultaxes=T,
            defaultaxesvalues=[header['CRVAL1'], header['CRVAL2'],
-                              header['RESTFRQ'], 'I'])
+                              cube.header['CRVAL3'], 'I'])
 
 os.system('rm -rf w51_test_small_imcont.ms')
 split('w51_test_small.ms', 'w51_test_small_imcont.ms', datacolumn='data')
+
+# # try using clean to populate the model column
+# os.system('rm -rf test_frequency_mincontsub_dirty.*')
+# clean(vis='w51_test_small_imcont.ms', imagename="test_frequency_mincontsub_dirty",
+#       modelimage='test_continuum_min.image',
+#       field="", spw='', mode='channel', outframe='LSRK',
+#       interpolation='linear', imagermode='mosaic', interactive=False,
+#       niter=0, threshold='50.0mJy',
+#       pbcor=False, usescratch=True)
+# exportfits('test_frequency_mincontsub_dirty.image', 'test_frequency_mincontsub_dirty.image.fits', dropdeg=True, overwrite=True)
+# exportfits('test_frequency_mincontsub_dirty.model', 'test_frequency_mincontsub_dirty.model.fits', dropdeg=True, overwrite=True)
+# for suffix in ('image','model','flux','psf','residual'):
+#     os.system('rm -rf test_frequency_mincontsub_dirty.{0}'.format(suffix))
 
 im.open('w51_test_small_imcont.ms')
 from astropy import coordinates

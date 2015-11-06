@@ -201,30 +201,8 @@ uvcontsub(vis='w51_concat.ms.split.cal',
          want_cont=False) 
 
 os.system("rm -rf w51_concat.ms.split.cal.spw0.contsub")
-os.system("mvw51_concat.ms.split.cal.contsub w51_concat.ms.split.cal.spw0.contsub")
+os.system("mv w51_concat.ms.split.cal.contsub w51_concat.ms.split.cal.spw0.contsub")
 linesub='w51_concat.ms.split.cal.spw0.contsub' #result of uvcontsub contains only the selected uvdata by the task
-
-os.system("rm -rf w51_H2CO_321_220_contsub.*")
-clean(vis= linesub,
- imagename = "w51_H2CO_321_220_contsub",
- field = "w51",
- spw = '0,1', 
- mode = 'velocity',
- nchan = 70,
- start = '20km/s', 
- width = '1.0km/s',
- restfreq = '218.76007GHz',
- outframe = 'LSRK',
- interpolation = 'linear', 
- imagermode='mosaic',
- interactive = False,
- niter = 5000,
- threshold = '1.5mJy', #req threshold 5.85 mJy, 38 antennas, 66min tos, pwv auto,1arcsec res, 0.728 MHz BW gives 1.5mJy!   
- imsize = [960,960],
- cell = '0.15arcsec',
- weighting = 'natural',
- pbcor=False,
- robust = 0.0)
 
 
 os.system("rm -rf w51_H2CO_303_202_contsub.*")
@@ -283,8 +261,31 @@ uvcontsub(vis='w51_concat.ms.split.cal',
          want_cont=False) 
 
 os.system("rm -rf w51_concat.ms.split.cal.spw1.contsub")
-os.system("mvw51_concat.ms.split.cal.contsub w51_concat.ms.split.cal.spw1.contsub")
+os.system("mv w51_concat.ms.split.cal.contsub w51_concat.ms.split.cal.spw1.contsub")
 linesub='w51_concat.ms.split.cal.spw1.contsub'
+
+os.system("rm -rf w51_H2CO_321_220_contsub.*")
+clean(vis= linesub,
+ imagename = "w51_H2CO_321_220_contsub",
+ field = "w51",
+ spw = '0,1', 
+ mode = 'velocity',
+ nchan = 70,
+ start = '20km/s', 
+ width = '1.0km/s',
+ restfreq = '218.76007GHz',
+ outframe = 'LSRK',
+ interpolation = 'linear', 
+ imagermode='mosaic',
+ interactive = False,
+ niter = 5000,
+ threshold = '1.5mJy', #req threshold 5.85 mJy, 38 antennas, 66min tos, pwv auto,1arcsec res, 0.728 MHz BW gives 1.5mJy!   
+ imsize = [960,960],
+ cell = '0.15arcsec',
+ weighting = 'natural',
+ pbcor=False,
+ robust = 0.0)
+
 
 os.system("rm -rf w51_C18O_21_contsub.*")
 clean(vis= linesub,
@@ -365,7 +366,7 @@ uvcontsub(vis='w51_concat.ms.split.cal',
          want_cont=False)
 
 os.system("rm -rf w51_concat.ms.split.cal.spw2.contsub")
-os.system("mvw51_concat.ms.split.cal.contsub w51_concat.ms.split.cal.spw2.contsub")
+os.system("mv w51_concat.ms.split.cal.contsub w51_concat.ms.split.cal.spw2.contsub")
 linesub='w51_concat.ms.split.cal.spw2.contsub'
 
 os.system("rm -rf w51_12CO_21_contsub.*")
@@ -387,6 +388,28 @@ clean(vis= linesub,
  imsize = [960,960],
  cell = '0.15arcsec',
  weighting = 'natural',
+ pbcor=False,
+ robust = 0.0)
+
+os.system("rm -rf w51_12CO_21_contsub_hires.*")
+clean(vis= linesub,
+ imagename = "w51_12CO_21_contsub_hires",
+ field = "w51",
+ spw = '0,1', 
+ mode = 'velocity',
+ nchan = 250,
+ start = '-150km/s', 
+ width = '1.265km/s',
+ restfreq = '230.538GHz',
+ outframe = 'LSRK',
+ interpolation = 'linear', 
+ imagermode='mosaic',
+ interactive = False,
+ niter = 5000,
+ threshold = '1.3mJy',    
+ imsize = [2560,2560],
+ cell = '0.052',
+ weighting = 'briggs',
  pbcor=False,
  robust = 0.0)
 
