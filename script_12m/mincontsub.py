@@ -77,5 +77,42 @@ clean(vis='w51_test_small_imcont.ms', imagename="test_frequency_mincontsub",
       pbcor=False, usescratch=True, robust=1.0)
 exportfits('test_frequency_mincontsub.image', 'test_frequency_mincontsub.image.fits', dropdeg=True, overwrite=True)
 exportfits('test_frequency_mincontsub.model', 'test_frequency_mincontsub.model.fits', dropdeg=True, overwrite=True)
-for suffix in ('image','model','flux','psf','residual'):
+for suffix in ('flux','psf','residual'):
     os.system('rm -rf test_frequency_mincontsub.{0}'.format(suffix))
+
+# THE ABOVE SEEMS TO HAVE WORKED!
+# OK, cool.  Now, to copy *this* model into the original...
+# We're calling this imcont-linecont, which is to be read "imcont-then-linecont"
+# in principle, this should be a nice continuum-only cube....
+
+os.system('rm -rf w51_test_small_imcont-linecont.ms')
+split('w51_test_small.ms', 'w51_test_small_imcont-linecont.ms', datacolumn='data')
+
+im.open('w51_test_small_imcont-linecont.ms')
+im.ft(model='test_frequency_mincontsub.model')
+im.close()
+uvsub('w51_test_small_imcont-linecont.ms')
+
+os.system('rm -rf test_frequency_mincontsub-linecontsub.*')
+clean(vis='w51_test_small_imcont-linecont.ms', imagename="test_frequency_mincontsub-linecontsub",
+      field="", spw='', mode='channel', outframe='LSRK',
+      interpolation='linear', imagermode='mosaic', interactive=False,
+      niter=10000, threshold='50.0mJy', imsize=[512,512], cell='0.052arcsec',
+      weighting='briggs', phasecenter='J2000 19h23m43.905 +14d30m28.08',
+      pbcor=False, usescratch=True, robust=1.0)
+exportfits('test_frequency_mincontsub-linecontsub.image', 'test_frequency_mincontsub-linecontsub.image.fits', dropdeg=True, overwrite=True)
+exportfits('test_frequency_mincontsub-linecontsub.model', 'test_frequency_mincontsub-linecontsub.model.fits', dropdeg=True, overwrite=True)
+for suffix in ('flux','psf','residual'):
+    os.system('rm -rf test_frequency_mincontsub-linecontsub.{0}'.format(suffix))
+
+os.system('rm -rf test_mfs_mincontsub-linecontsub.*')
+clean(vis='w51_test_small_imcont-linecont.ms', imagename="test_mfs_mincontsub-linecontsub",
+      field="", spw='', mode='mfs', outframe='LSRK',
+      interpolation='linear', imagermode='mosaic', interactive=False,
+      niter=10000, threshold='50.0mJy', imsize=[512,512], cell='0.052arcsec',
+      weighting='briggs', phasecenter='J2000 19h23m43.905 +14d30m28.08',
+      pbcor=False, usescratch=True, robust=1.0)
+exportfits('test_mfs_mincontsub-linecontsub.image', 'test_mfs_mincontsub-linecontsub.image.fits', dropdeg=True, overwrite=True)
+exportfits('test_mfs_mincontsub-linecontsub.model', 'test_mfs_mincontsub-linecontsub.model.fits', dropdeg=True, overwrite=True)
+for suffix in ('flux','psf','residual'):
+    os.system('rm -rf test_mfs_mincontsub-linecontsub.{0}'.format(suffix))

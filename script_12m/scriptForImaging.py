@@ -435,6 +435,28 @@ clean(vis= linesub,
  pbcor=False,
  robust = 0.0)
 
+os.system("rm -rf w51_h41alpha_contsub.*")
+clean(vis= linesub,
+ imagename = "w51_h41alpha_contsub",
+ field = "w51",
+ spw = '0,1', 
+ mode = 'velocity',
+ nchan = 250,
+ start = '-150km/s', 
+ width = '1.265km/s',
+ restfreq = '231.90093GHz',
+ outframe = 'LSRK',
+ interpolation = 'linear', 
+ imagermode='mosaic',
+ interactive = False,
+ niter = 5000,
+ threshold = '1.3mJy',    
+ imsize = [960,960],
+ cell = '0.15arcsec',
+ weighting = 'natural',
+ pbcor=False,
+ robust = 0.0)
+
 
 ##SPW 3
 #Continuumspectral window - there are too many lines to define the continuum.
@@ -487,6 +509,11 @@ impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myim
 exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
 exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
 
+myimagebase= 'w51_12CO_21_contsub_hires'
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
+exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
+exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
+
 
 myimagebase= 'w51_13CS_54_nocontsub'
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
@@ -495,6 +522,11 @@ exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # e
 
 
 myimagebase= 'w51_13CS_54_contsub'
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
+exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
+exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
+
+myimagebase= 'w51_h41alpha_contsub'
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
 exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
 exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
