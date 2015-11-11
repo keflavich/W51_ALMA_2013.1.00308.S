@@ -1,3 +1,5 @@
+import numpy as np
+
 field='4~40' # science field(s). For a mosaic, select all mosaic fields. DO
              # NOT LEAVE BLANK ('') OR YOU WILL TRIGGER A BUG IN CLEAN THAT
              # WILL PUT THE WRONG COORDINATE SYSTEM ON YOUR FINAL IMAGE.
@@ -41,7 +43,7 @@ linevis = finalvis#+'.contsub'
 
 
 for spwnum in '3210':
-    swpnum = int(spwnum)
+    spwnum = int(spwnum)
     spw = spws[spwnum]
 
     print "# running cvel on all lines in spw{0}".format(spwnum)
@@ -50,8 +52,9 @@ for spwnum in '3210':
          passall=False, field=field, spw=spw, selectdata=True, timerange='',
          array='', antenna='', scan='', mode='frequency',
          nchan=nchans_total[spwnum], start='{0}MHz'.format(frange[spwnum][0]),
-         width=fstep[spwnum], interpolation='linear', phasecenter='',
-         restfreq='', outframe='', veltype='radio', hanning=False,)
+         width='{0}kHz'.format(fstep[spwnum]), interpolation='linear',
+         phasecenter='', restfreq='', outframe='', veltype='radio',
+         hanning=False,)
 
     print "# running clean on all lines in spw{0}".format(spwnum)
     nchans_total_thiscube = nchans_total[spwnum]
