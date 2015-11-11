@@ -34,9 +34,9 @@ flagdata(vis=finalvis7m,mode='manual',
          spw=linechannels7m,flagbackup=False)
 
 split(vis=finalvis7m,
-      spw='3,7',
+      spw='3',
       outputvis=contvis7m,
-      width=[192,192],
+      width=[192],
       datacolumn='data')
 
 
@@ -44,6 +44,8 @@ flagmanager(vis=finalvis7m,mode='restore',
             versionname='before_cont_flags')
 
 
+mergevis = 'continuum_7m12m.ms'
+concat(vis=[contvis7m,contvis12m], concatvis=mergevis)
 
 
 contimagename = 'w51_spw3_continuum_7m12m'
@@ -51,7 +53,7 @@ contimagename = 'w51_spw3_continuum_7m12m'
 for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage']:
     rmtables(contimagename+ext)
 
-clean(vis=[contvis7m,contvis12m],
+clean(vis=mergevis,
       imagename=contimagename,
       field='w51',
       phasecenter='',
@@ -75,7 +77,7 @@ contimagename = 'w51_spw3_continuum_r0'
 for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage']:
     rmtables(contimagename+ext)
 
-clean(vis=[contvis7m,contvis12m],
+clean(vis=mergevis,
       imagename=contimagename,
       field='w51',
       phasecenter='',
@@ -98,7 +100,7 @@ contimagename = 'w51_spw3_continuum_r0_dirty'
 for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage']:
     rmtables(contimagename+ext)
 
-clean(vis=[contvis7m,contvis12m],
+clean(vis=mergevis,
       imagename=contimagename,
       field='w51',
       phasecenter='',
@@ -121,7 +123,7 @@ contimagename = 'w51_spw3_continuum_r0_mulstiscale'
 for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage']:
     rmtables(contimagename+ext)
 
-clean(vis=[contvis7m,contvis12m],
+clean(vis=mergevis,
       imagename=contimagename,
       field='w51',
       multiscale=[0,3,6,9,12,15,18],
