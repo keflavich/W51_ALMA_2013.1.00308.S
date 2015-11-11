@@ -47,7 +47,7 @@ for spwnum in '3210':
     print "# running cvel on all lines in spw{0}".format(spwnum)
     cvel(vis='w51_concat.ms.split.cal',
          outputvis='w51_concat.spw{0}.cvel'.format(spwnum),
-         passall=False, field=field spw=spw, selectdata=True, timerange='',
+         passall=False, field=field, spw=spw, selectdata=True, timerange='',
          array='', antenna='', scan='', mode='frequency',
          nchan=nchans_total[spwnum], start='{0}MHz'.format(frange[spwnum][0]),
          width=fstep[spwnum], interpolation='linear', phasecenter='',
