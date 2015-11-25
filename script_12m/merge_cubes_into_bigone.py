@@ -9,9 +9,33 @@ import re
 import os
 from astropy.utils.console import ProgressBar
 
-nchans_total = {ii: 3840 for ii in range(8)}
+frange = {0: [218136., 218575.],
+          1: [218422., 220268.],
+          2: [230436., 232310.],
+          3: [233041., 234915.],
+         }
+fstep = {0:130., # kHz
+         1:500., # kHz
+         2:500., # kHz
+         3:500., # kHz
+        }
+nchans_total = {ii: int(np.abs(np.diff(frange[ii])/fstep[ii]*1000)[0])
+                for ii in frange}
 
-def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32'):
+def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
+                  overwrite_existing=False):
+    """
+    Parameters
+    ----------
+    spw : str
+        String template for the input/output name
+    spwnum : int
+        The spectral window number
+    fntemplate : str
+        Filename template (goes into the glob)
+    overwrite_existing : bool
+        Overwrite data in the output cube?
+    """
     spw = spw.format(spwnum)
 
     # First set up an empty file
@@ -61,7 +85,7 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32'):
         log.info("{0} {1}".format(getinds(fn), fn))
         ind0,ind1 = getinds(fn)
         plane = hdul[0].data[ind0]
-        if np.all(plane == 0):
+        if np.all(plane == 0) or overwrite_existing:
             log.info("Replacing indices {0} {1}".format(getinds(fn), fn))
             hdul[0].data[ind0:ind1,:,:] = fits.getdata(fn)
             hdul.flush()

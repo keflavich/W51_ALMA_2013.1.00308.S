@@ -227,6 +227,30 @@ clean(vis= linesub,
  pbcor=False,
  robust = 0.0)
 
+linesub='w51_concat.ms.split.cal.spw0.contsub' #result of uvcontsub contains only the selected uvdata by the task
+os.system("rm -rf w51_H2CO_303_202_contsub_vresolved.*")
+clean(vis= linesub,
+ imagename = "w51_H2CO_303_202_contsub_vresolved",
+ field = "w51",
+ spw = '0,1', 
+ mode = 'velocity',
+ nchan = 350,
+ start = '20km/s', 
+ width = '0.2km/s',
+ restfreq = '218.222GHz',
+ outframe = 'LSRK',
+ interpolation = 'linear', 
+ imagermode='mosaic',
+ interactive = False,
+ niter = 5000,
+ threshold = '3.4mJy',
+ imsize = [960,960],
+ cell = '0.15arcsec',
+ weighting = 'natural',
+ pbcor=False,
+ robust = 0.0)
+
+
 #C18O(2-1)- Rest 219.560 GHz - SPW 1
 
 os.system("rm -rf w51_C18O_21_nocontsub.*")
