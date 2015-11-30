@@ -72,7 +72,7 @@ clean(vis=mergevis,
 exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
 
 
-contimagename = 'w51_spw3_continuum_r0'
+contimagename = 'w51_spw3_continuum_7m12m_r0'
 
 for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage']:
     rmtables(contimagename+ext)
@@ -95,7 +95,7 @@ clean(vis=mergevis,
       )
 exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
 
-contimagename = 'w51_spw3_continuum_r0_dirty'
+contimagename = 'w51_spw3_continuum_7m12m_r0_dirty'
 
 for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage']:
     rmtables(contimagename+ext)
@@ -118,7 +118,7 @@ clean(vis=mergevis,
       )
 exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
 
-contimagename = 'w51_spw3_continuum_r0_mulstiscale'
+contimagename = 'w51_spw3_continuum_7m12m_r0_mulstiscale'
 
 for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage']:
     rmtables(contimagename+ext)
