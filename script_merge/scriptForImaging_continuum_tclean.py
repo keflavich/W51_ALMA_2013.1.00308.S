@@ -169,3 +169,28 @@ clean(vis=mergevis,
       savemodel='none',
       )
 exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
+
+
+contimagename = 'w51_spw3_continuum_7m12m_noflag_uniform_tclean'
+
+for ext in extensions:
+    rmtables(contimagename+ext)
+
+clean(vis=mergevis,
+      imagename=contimagename,
+      field='w51',
+      phasecenter='',
+      specmode='mfs',
+      deconvolver='clark',
+      imsize = [2560,2560],
+      cell= '0.052arcsec',
+      weighting = 'briggs',
+      robust = -2.0,
+      niter = 50000,
+      threshold = '20.0mJy',
+      interactive = False,
+      gridder = 'mosaic',
+      savemodel='none',
+      )
+exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
+
