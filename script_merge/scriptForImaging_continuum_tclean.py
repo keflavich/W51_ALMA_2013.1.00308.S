@@ -27,25 +27,26 @@ def clean(vis, imagename, **kwargs):
 Attempt to image the continuum with NO flagging
 """
 
-finalvis12m='calibrated_12m.ms'
-contvis12m='w51_spw3_continuum_12m.split'
-split(vis=finalvis12m,
-      spw='3,7',
-      outputvis=contvis12m,
-      width=[192,192],
-      datacolumn='data')
-
-finalvis7m='calibrated_7m.ms'
-contvis7m='w51_spw3_continuum_7m.split'
-split(vis=finalvis7m,
-      spw='3',
-      outputvis=contvis7m,
-      width=[192],
-      datacolumn='data')
-
-
 mergevis = 'continuum_7m12m_noflag.ms'
-concat(vis=[contvis7m,contvis12m], concatvis=mergevis)
+if not os.path.exists(mergevis):
+    finalvis12m='calibrated_12m.ms'
+    contvis12m='w51_spw3_continuum_12m.split'
+    split(vis=finalvis12m,
+          spw='3,7',
+          outputvis=contvis12m,
+          width=[192,192],
+          datacolumn='data')
+
+    finalvis7m='calibrated_7m.ms'
+    contvis7m='w51_spw3_continuum_7m.split'
+    split(vis=finalvis7m,
+          spw='3',
+          outputvis=contvis7m,
+          width=[192],
+          datacolumn='data')
+
+
+    concat(vis=[contvis7m,contvis12m], concatvis=mergevis)
 
 extensions = ['.flux', '.image', '.mask', '.model', '.pbcor', '.psf',
               '.residual', '.flux.pbcoverage', '.sumwt', '.weight', '.pb',
@@ -133,6 +134,30 @@ clean(vis=mergevis,
       phasecenter='',
       specmode='mfs',
       deconvolver='multiscale',
+      imsize = [2560,2560],
+      cell= '0.052arcsec',
+      weighting = 'briggs',
+      robust = 0.0,
+      niter = 10000,
+      threshold = '10.0mJy',
+      interactive = False,
+      gridder = 'mosaic',
+      savemodel='none',
+      )
+exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
+
+contimagename = 'w51_spw3_continuum_7m12m_noflag_r0_MEM_tclean'
+
+for ext in extensions:
+    rmtables(contimagename+ext)
+
+clean(vis=mergevis,
+      imagename=contimagename,
+      field='w51',
+      scales=[0,3,6,9,12,15,18],
+      phasecenter='',
+      specmode='mfs',
+      deconvolver='mem',
       imsize = [2560,2560],
       cell= '0.052arcsec',
       weighting = 'briggs',

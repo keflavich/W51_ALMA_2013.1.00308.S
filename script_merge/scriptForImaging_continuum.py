@@ -2,25 +2,26 @@
 Attempt to image the continuum with NO flagging
 """
 
-finalvis12m='calibrated_12m.ms'
-contvis12m='w51_spw3_continuum_12m.split'
-split(vis=finalvis12m,
-      spw='3,7',
-      outputvis=contvis12m,
-      width=[192,192],
-      datacolumn='data')
-
-finalvis7m='calibrated_7m.ms'
-contvis7m='w51_spw3_continuum_7m.split'
-split(vis=finalvis7m,
-      spw='3',
-      outputvis=contvis7m,
-      width=[192],
-      datacolumn='data')
-
-
 mergevis = 'continuum_7m12m_noflag.ms'
-concat(vis=[contvis7m,contvis12m], concatvis=mergevis)
+if not os.path.exists(mergevis):
+    finalvis12m='calibrated_12m.ms'
+    contvis12m='w51_spw3_continuum_12m.split'
+    split(vis=finalvis12m,
+          spw='3,7',
+          outputvis=contvis12m,
+          width=[192,192],
+          datacolumn='data')
+
+    finalvis7m='calibrated_7m.ms'
+    contvis7m='w51_spw3_continuum_7m.split'
+    split(vis=finalvis7m,
+          spw='3',
+          outputvis=contvis7m,
+          width=[192],
+          datacolumn='data')
+
+
+    concat(vis=[contvis7m,contvis12m], concatvis=mergevis)
 
 
 contimagename = 'w51_spw3_continuum_7m12m_noflag'
