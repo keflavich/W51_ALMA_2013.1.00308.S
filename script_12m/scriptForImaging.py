@@ -139,7 +139,7 @@ uvcontsub(vis='uid___A002_Xa8df68_Xb4b.ms.split.cal',
          want_cont=False) 
 
 os.system("rm -rf uid___A002_Xa8df68_Xb4b.ms.split.cal.spw0.contsub")
-os.system("mvuid___A002_Xa8df68_Xb4b.ms.split.cal.contsub uid___A002_Xa8df68_Xb4b.ms.split.cal.spw0.contsub")
+os.system("mv uid___A002_Xa8df68_Xb4b.ms.split.cal.contsub uid___A002_Xa8df68_Xb4b.ms.split.cal.spw0.contsub")
 linesub='uid___A002_Xa8df68_Xb4b.ms.split.cal.spw0.contsub' #result of uvcontsub contains only the selected uvdata by the task
 
 os.system("rm -rf w51_Xb4b_H2CO_303_202_contsub.*")
@@ -498,6 +498,11 @@ exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # e
 
 
 myimagebase= 'w51_H2CO_303_202_contsub'
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
+exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
+exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
+
+myimagebase= 'w51_H2CO_303_202_contsub_vresolved'
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
 exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
 exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
