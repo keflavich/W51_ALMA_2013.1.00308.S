@@ -11,59 +11,62 @@ import pylab as pl
 from astropy import log
 #log.setLevel(10)
 
-sp = pyspeckit.Spectrum('w51pointing32peak_spw3_lines.fits')
-sp.plotter(figure=pl.figure(1))
-sp.baseline.includemask &= (sp.data < 2) & (sp.data > 1)
-sp.baseline.highlight_fitregion()
-sp.baseline(order=1, subtract=False, reset=False, highlight_fitregion=False, reset_selection=False, selectregion=False)
-sp.baseline(order=1, subtract=True, reset=False, highlight_fitregion=False, reset_selection=False, selectregion=False)
+for spw in range(4):
 
-pl.figure(2)
-pl.clf()
-pl.hist(sp.data[~sp.data.mask], bins=np.linspace(-1,1))
+    sp = pyspeckit.Spectrum('w51pointing32peak_spw{0}_lines.fits'.format(spw))
+    sp.plotter(figure=pl.figure(1))
+    sp.baseline.includemask &= (sp.data < 2) & (sp.data > 1)
+    sp.baseline.highlight_fitregion()
+    sp.baseline(order=1, subtract=False, reset=False, highlight_fitregion=False, reset_selection=False, selectregion=False)
+    sp.baseline(order=1, subtract=True, reset=False, highlight_fitregion=False, reset_selection=False, selectregion=False)
 
-continua = (np.abs(sp.data)<0.2)
-print("N_continua: {0} = {1}%".format(continua.sum(), float(continua.sum())/continua.size*100))
-labels, nlabels = (scipy.ndimage.measurements.label(continua))
-# Llabels = line labels
-Llabels, nLlabels = (scipy.ndimage.measurements.label(~continua))
-bands = ''
-fbands = ''
-linebands = ''
-xarr = sp.xarr.as_unit(u.GHz)
-for ii in range(1, nlabels+1):
-    #x = np.where(labels == ii)
-    # select the stuff we want to flag out
-    x = np.where(Llabels == ii)
-    if len(x[0]) > 5:
-        #print "{0}: {1}-{2}".format(ii,x[0][0], x[0][-1])
-        bands = bands + ",3:{0}~{1}".format(x[0][0], x[0][-1])
-        fbands = fbands + ",3:{0}~{1}GHz".format(xarr[x[0][0]].value, xarr[x[0][-1]].value)
-        #sp.data.mask[x[0][0]:x[0][-1]] = True
-        #spn.data.mask[x[0][0]:x[0][-1]] = True
-bands = bands[1:]
-fbands = fbands[1:]
+    pl.figure(2)
+    pl.clf()
+    pl.hist(sp.data[~sp.data.mask], bins=np.linspace(-1,1))
 
-toplot = sp.data.copy()
-toplot[~continua] = np.nan
-sp.plotter.axis.plot(sp.xarr.value, toplot, color='r', alpha=0.5, linewidth=2, zorder=100)
-toplotn = sp.data.copy()
-toplotn[~continua] = np.nan
-sp.plotter.axis.plot(sp.xarr.value, toplotn, color='r', alpha=0.5, linewidth=2, zorder=100)
-pl.draw()
-pl.show()
-pl.draw()
-pl.show()
-sp.plotter.savefig("w51_spw3_contfind.png")
+    continua = (np.abs(sp.data)<0.2)
+    print("N_continua: {0} = {1}%".format(continua.sum(), float(continua.sum())/continua.size*100))
+    labels, nlabels = (scipy.ndimage.measurements.label(continua))
+    # Llabels = line labels
+    Llabels, nLlabels = (scipy.ndimage.measurements.label(~continua))
+    bands = ''
+    fbands = ''
+    linebands = ''
+    xarr = sp.xarr.as_unit(u.GHz)
+    for ii in range(1, nlabels+1):
+        #x = np.where(labels == ii)
+        # select the stuff we want to flag out
+        x = np.where(Llabels == ii)
+        if len(x[0]) > 5:
+            #print "{0}: {1}-{2}".format(ii,x[0][0], x[0][-1])
+            bands = bands + ",{spw}:{0}~{1}".format(x[0][0], x[0][-1], spw=spw)
+            fbands = fbands + ",{spw}:{0}~{1}GHz".format(xarr[x[0][0]].value, xarr[x[0][-1]].value, spw=spw)
+            #sp.data.mask[x[0][0]:x[0][-1]] = True
+            #spn.data.mask[x[0][0]:x[0][-1]] = True
+    bands = bands[1:]
+    fbands = fbands[1:]
+
+    toplot = sp.data.copy()
+    toplot[~continua] = np.nan
+    sp.plotter.axis.plot(sp.xarr.value, toplot, color='r', alpha=0.5, linewidth=2, zorder=100)
+    toplotn = sp.data.copy()
+    toplotn[~continua] = np.nan
+    sp.plotter.axis.plot(sp.xarr.value, toplotn, color='r', alpha=0.5, linewidth=2, zorder=100)
+    pl.draw()
+    pl.show()
+    pl.draw()
+    pl.show()
+    sp.plotter.savefig("w51_spw{0}_contfind.png".format(spw))
 
 
-# then CASA:
-# These are the bands that should be flagged out
-print(bands +
-      ',' + bands.replace("3:","7:"))
-print()
-print(fbands +
-      ',' + fbands.replace("3:","7:"))
+    # then CASA:
+    # These are the bands that should be flagged out
+    print("Line bands to flag out:")
+    print(bands +
+          ',' + bands.replace("{0}:".format(spw),"{0}:".format(spw+4)))
+    print()
+    print(fbands +
+          ',' + fbands.replace("{0}:".format(spw),"{0}:".format(spw+4)))
 
 """
 # for just m

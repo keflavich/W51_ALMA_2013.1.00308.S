@@ -173,7 +173,7 @@ exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pb
 exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
 
 
-fitspw='0:174~203;875~982;1371~1402;2414~2590;2992~3127'
+fitspw='0:100~550;650~750;1100~1400;1700~1800;2750~2900;3300~3400;3520~3700'
 uvcontsub(vis='w51_concat_7m12m.spw1.merge',
          field='',
          spw='', # spw to do continuum subtraction on
@@ -299,7 +299,7 @@ exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pb
 exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
 
 
-fitspw='0:255~409;528~676;2313~2584;3356~3482'
+fitspw='0:0~100;260~410;500~650;725~800;1300~1450;1900~2000;2350~2420;2510~2570;3200~3230;2580~3620'
 uvcontsub(vis='w51_concat_7m12m.spw2.merge',
          field='',
          spw='', # spw to do continuum subtraction on
