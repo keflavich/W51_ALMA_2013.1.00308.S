@@ -1,19 +1,6 @@
 import numpy as np
-from calibrated_configuration import field, phasecenter, cell, imsize, weighting, robust, threshold, spws_12m, spws_7m
+from calibrated_configuration import field, phasecenter, cell, imsize, weighting, robust, threshold, spws_12m, spws_7m, nchans_total, frange, fstep
 
-nchans_total = {0: 3840, 1: 3840, 2: 3840, 3: 3840}
-frange = {0: [218136., 218575.],
-          1: [218422., 220268.],
-          2: [230436., 232310.],
-          3: [233041., 234915.],
-         }
-fstep = {0:130., # kHz
-         1:500., # kHz
-         2:500., # kHz
-         3:500., # kHz
-        }
-nchans_total = {ii: int(np.abs(np.diff(frange[ii])/fstep[ii]*1000.)[0])
-                for ii in frange}
 
 ncubes_per_window = 20
 

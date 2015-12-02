@@ -1,5 +1,5 @@
 import numpy as np
-from calibrated_configuration import field, phasecenter, cell, imsize, weighting, robust, threshold, spws_12m, spws_7m, finalvis12m, finalvis7m
+from calibrated_configuration import field, phasecenter, cell, imsize, weighting, robust, threshold, spws_12m, spws_7m, finalvis12m, finalvis7m, nchans_total, frange, fstep
 
 for spwnum in '1320':
     spwnum = int(spwnum)
