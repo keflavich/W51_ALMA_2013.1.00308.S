@@ -173,7 +173,7 @@ exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pb
 exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
 
 
-fitspw='0:100~550;650~750;1100~1400;1700~1800;2750~2900;3300~3400;3520~3700'
+fitspw='0:100~550;650~750;1100~1400;1700~1800;2750~2900;3300~3400;3520~3691'
 uvcontsub(vis='w51_concat_7m12m.spw1.merge',
          field='',
          spw='', # spw to do continuum subtraction on
@@ -235,6 +235,33 @@ clean(vis= linesub,
  robust = 0.0)
 
 myimagebase= 'w51_C18O_21_merge7m12m_contsub'
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
+exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
+exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
+
+os.system("rm -rf w51_SO_65-54_merge7m12m_contsub.*")
+clean(vis= linesub,
+ imagename = "w51_SO_65-54_merge7m12m_contsub",
+ field = "w51",
+ spw = '', 
+ mode = 'velocity',
+ nchan = 105,
+ start = '0km/s', 
+ width = '1.335km/s',
+ restfreq = '219.94944GHz',
+ outframe = 'LSRK',
+ interpolation = 'linear', 
+ imagermode='mosaic',
+ interactive = False,
+ niter = 5000,
+ threshold = '1.3mJy',    
+ imsize = [2560,2560],
+ cell = '0.052arcsec',
+ weighting = 'uniform',
+ pbcor=False,
+ robust = 0.0)
+
+myimagebase= 'w51_SO_65-54_merge7m12m_contsub'
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
 exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
 exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
