@@ -23,7 +23,7 @@ uvcontsub(vis='w51_concat_7m12m.spw0.merge',
          fitspw=fitspw, # select spws to fit continuum. exclude regions with strong lines.
          solint='int',
          fitorder=1,
-         want_cont=False) 
+         want_cont=True) 
 
 linesub='w51_concat_7m12m.spw0.merge.contsub' #result of uvcontsub contains only the selected uvdata by the task
 
@@ -180,7 +180,7 @@ uvcontsub(vis='w51_concat_7m12m.spw1.merge',
          fitspw=fitspw, # select spws to fit continuum. exclude regions with strong lines.
          solint='int',
          fitorder=1,
-         want_cont=False) 
+         want_cont=True) 
 
 linesub='w51_concat_7m12m.spw1.merge.contsub'
 
@@ -333,7 +333,7 @@ uvcontsub(vis='w51_concat_7m12m.spw2.merge',
          fitspw=fitspw, # select spws to fit continuum. exclude regions with strong lines.
          solint='int',
          fitorder=1,
-         want_cont=False)
+         want_cont=True)
 
 linesub='w51_concat_7m12m.spw2.merge.contsub'
 
