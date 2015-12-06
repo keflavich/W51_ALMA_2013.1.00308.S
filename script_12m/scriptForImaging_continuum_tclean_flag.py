@@ -2,7 +2,7 @@ phasecenter = "J2000 19:23:41.585 +14:30:41.00"
 # position angle: 44.5 deg
 def clean(vis, imagename, **kwargs):
     tclean(vis = vis,
-           spw='3,7',
+           spw='',
            imagename = imagename,
            phasecenter=phasecenter,
            **kwargs)

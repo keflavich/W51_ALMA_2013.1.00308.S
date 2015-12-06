@@ -35,8 +35,9 @@ for spwnum in '3210':
     nchans_per_cube = nchans_total_thiscube/ncubes_per_window
     inputvis = linevis
     os.system("rm -rf w51_cont_spw{0}_hires.*".format(spwnum))
+    imagename = "w51_cont_spw{0}_hires".format(spwnum)
     clean(vis = 'w51_concat.ms.split.cal',
-          imagename = "w51_cont_spw{0}_hires".format(spwnum),
+          imagename = imagename,
           field = "w51",
           spw = spw,
           mode = 'mfs',
@@ -53,8 +54,8 @@ for spwnum in '3210':
           robust = 0.0)
 
           
-    if not os.path.exists(output+".image.pbcor"):
-        myimagebase = output
+    if not os.path.exists(imagename+".image.pbcor"):
+        myimagebase = imagename
         impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True)
         exportfits(imagename=myimagebase+'.image.pbcor', fitsimage=myimagebase+'.image.pbcor.fits', overwrite=True)
         exportfits(imagename=myimagebase+'.flux', fitsimage=myimagebase+'.flux.fits', overwrite=True)

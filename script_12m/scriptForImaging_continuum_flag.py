@@ -15,6 +15,7 @@ flagdata(vis=finalvis,mode='manual',
 
 split(vis=finalvis,
       spw='3,7',
+      field='w51',
       outputvis=contvis,
       width=[192,192],
       datacolumn='data')
