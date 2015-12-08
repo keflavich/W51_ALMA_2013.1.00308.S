@@ -7,9 +7,12 @@ assert split(vis='w51_spw3_continuum_flagged.split',
       spw='',
       datacolumn='data',
      )
+print("Done splitting")
 
 solint = 'int'
-threshold = '100.0mJy'
+threshold = '20.0mJy'
+multiscale = [0,5,15,45]
+#multiscale = []
 
 clearcal(vis='w51_test_small.ms')
 os.system('rm -rf test_mfs_dirty.*')
@@ -21,16 +24,18 @@ clean(vis='w51_test_small.ms', imagename="test_mfs_dirty", field="", spw='',
       weighting='briggs', usescratch=True, pbcor=False, robust=-2.0)
 exportfits('test_mfs_dirty.image', 'test_mfs_dirty.image.fits', dropdeg=True, overwrite=True)
 exportfits('test_mfs_dirty.model', 'test_mfs_dirty.model.fits', dropdeg=True, overwrite=True)
+
 os.system('rm -rf test_mfs.*')
 clean(vis='w51_test_small.ms', imagename="test_mfs", field="", spw='',
       mode='mfs', outframe='LSRK', interpolation='linear', imagermode='mosaic',
+      multiscale=multiscale,
       interactive=False, niter=10000, threshold=threshold, imsize=[512,512],
       cell='0.06arcsec', phasecenter='J2000 19h23m43.905 +14d30m28.08',
       weighting='briggs', usescratch=True, pbcor=False, robust=-2.0)
 exportfits('test_mfs.image', 'test_mfs.image.fits', dropdeg=True, overwrite=True)
 exportfits('test_mfs.model', 'test_mfs.model.fits', dropdeg=True, overwrite=True)
 
-gaincal(vis='w51_test_small.ms', caltable="phase.cal", field="", solint=solint,
+gaincal(vis='w51_test_small.ms', caltable="phase.cal", field="", solint='inf',
         calmode="p", refant="", gaintype="G")
 #plotcal(caltable="phase.cal", xaxis="time", yaxis="phase", subplot=331,
 #        iteration="antenna", plotrange=[0,0,-30,30], markersize=5,
@@ -48,6 +53,7 @@ split(vis="w51_test_small.ms", outputvis="w51_test_small_selfcal.ms",
 os.system('rm -rf test_selfcal_mfs.*')
 clean(vis='w51_test_small_selfcal.ms', imagename="test_selfcal_mfs",
       field="", spw='', mode='mfs', outframe='LSRK',
+      multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
       niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
@@ -75,6 +81,7 @@ split(vis="w51_test_small_selfcal.ms", outputvis="w51_test_small_selfcal_2.ms",
 os.system('rm -rf test_selfcal_2_mfs.*')
 clean(vis='w51_test_small_selfcal_2.ms', imagename="test_selfcal_2_mfs",
       field="", spw='', mode='mfs', outframe='LSRK',
+      multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
       niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
@@ -89,34 +96,7 @@ gaincal(vis="w51_test_small_selfcal_2.ms", caltable="phase_3.cal", field="",
 #        iteration="antenna", plotrange=[0,0,-30,30], markersize=5,
 #        fontsize=10.0,)
 
-import numpy as np
-from astropy.io import fits
-print("Stats (mfs):")
-slc = slice(80,200), slice(80,200)
-sigma, peak = (fits.getdata('test_mfs_dirty.image.fits')[slc].std(),     np.nanmax(fits.getdata('test_mfs_dirty.image.fits')))
-print("dirty:    peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
-sigma, peak = (fits.getdata('test_mfs.image.fits')[slc].std(),           np.nanmax(fits.getdata('test_mfs.image.fits')))
-print("clean:    peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
-sigma, peak = (fits.getdata('test_selfcal_mfs.image.fits')[slc].std(),   np.nanmax(fits.getdata('test_selfcal_mfs.image.fits')))
-print("selfcal:  peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
-sigma, peak = (fits.getdata('test_selfcal_2_mfs.image.fits')[slc].std(), np.nanmax(fits.getdata('test_selfcal_2_mfs.image.fits')))
-print("selfcal2: peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
 
-ft(vis='w51_test_small.ms',
-   model='test_selfcal_2_mfs.model',
-   usescratch=True, nterms=1)
-
-uvsub(vis='w51_test_small.ms')
-
-os.system('rm -rf test_brightsub_singlefield_mfs.*')
-clean(vis='w51_test_small.ms', imagename="test_brightsub_singlefield_mfs",
-      field="", spw='', mode='mfs', outframe='LSRK',
-      interpolation='linear', imagermode='mosaic', interactive=False,
-      niter=10000, threshold='1.0mJy', imsize=[512,512], cell='0.06arcsec',
-      phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
-      usescratch=True, pbcor=False, robust=-2.0)
-exportfits('test_brightsub_singlefield_mfs.image', 'test_brightsub_singlefield_mfs.image.fits', dropdeg=True, overwrite=True)
-exportfits('test_brightsub_singlefield_mfs.model', 'test_brightsub_singlefield_mfs.model.fits', dropdeg=True, overwrite=True)
 
 
 os.system('rm -rf w51_test_small_multifield.ms')
@@ -129,21 +109,50 @@ assert split(vis='w51_spw3_continuum_flagged.split',
       datacolumn='data',
      )
 
-#im.open('w51_test_small_multifield.ms')
-#im.ft(model='w51_test_small_selfcal_2.model')
-#im.close()
-ft(vis='w51_test_small_multifield.ms',
-   model='test_selfcal_2_mfs.model',
-   usescratch=True, nterms=1)
 
-uvsub(vis='w51_test_small_multifield.ms')
-
-os.system('rm -rf test_brightsub_mfs.*')
-clean(vis='w51_test_small_multifield.ms', imagename="test_brightsub_mfs",
+os.system('rm -rf test_multifield_mfs.*')
+clean(vis='w51_test_small_multifield.ms', imagename="test_multifield_mfs",
       field="", spw='', mode='mfs', outframe='LSRK',
+      multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
-      niter=10000, threshold='1.0mJy', imsize=[512,512], cell='0.06arcsec',
+      niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
       usescratch=True, pbcor=False, robust=-2.0)
-exportfits('test_brightsub_mfs.image', 'test_brightsub_mfs.image.fits', dropdeg=True, overwrite=True)
-exportfits('test_brightsub_mfs.model', 'test_brightsub_mfs.model.fits', dropdeg=True, overwrite=True)
+exportfits('test_multifield_mfs.image', 'test_multifield_mfs.image.fits', dropdeg=True, overwrite=True)
+exportfits('test_multifield_mfs.model', 'test_multifield_mfs.model.fits', dropdeg=True, overwrite=True)
+
+
+flagmanager(vis='w51_test_small_multifield.ms', mode='save', versionname='backup')
+applycal(vis="w51_test_small_multifield.ms", field="",
+         gaintable=["phase.cal","phase_2.cal"], interp="linear")
+flagmanager(vis='w51_test_small_multifield.ms', mode='restore', versionname='backup')
+
+
+
+os.system('rm -rf test_multifield_selfcal_mfs.*')
+clean(vis='w51_test_small_multifield.ms', imagename="test_multifield_selfcal_mfs",
+      field="", spw='', mode='mfs', outframe='LSRK',
+      multiscale=multiscale,
+      interpolation='linear', imagermode='mosaic', interactive=False,
+      niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
+      usescratch=True, pbcor=False, robust=-2.0)
+exportfits('test_multifield_selfcal_mfs.image', 'test_multifield_selfcal_mfs.image.fits', dropdeg=True, overwrite=True)
+exportfits('test_multifield_selfcal_mfs.model', 'test_multifield_selfcal_mfs.model.fits', dropdeg=True, overwrite=True)
+
+import numpy as np
+from astropy.io import fits
+print("Stats (mfs):")
+slc = slice(80,200), slice(80,200)
+sigma, peak = (fits.getdata('test_mfs_dirty.image.fits')[slc].std(),     np.nanmax(fits.getdata('test_mfs_dirty.image.fits')))
+print("dirty:    peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
+sigma, peak = (fits.getdata('test_mfs.image.fits')[slc].std(),           np.nanmax(fits.getdata('test_mfs.image.fits')))
+print("clean:    peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
+sigma, peak = (fits.getdata('test_selfcal_mfs.image.fits')[slc].std(),   np.nanmax(fits.getdata('test_selfcal_mfs.image.fits')))
+print("selfcal:  peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
+sigma, peak = (fits.getdata('test_selfcal_2_mfs.image.fits')[slc].std(), np.nanmax(fits.getdata('test_selfcal_2_mfs.image.fits')))
+print("selfcal2: peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
+sigma, peak = (fits.getdata('test_multifield_mfs.image.fits')[slc].std(), np.nanmax(fits.getdata('test_multifield_mfs.image.fits')))
+print("multifield peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
+sigma, peak = (fits.getdata('test_multifield_selfcal_mfs.image.fits')[slc].std(), np.nanmax(fits.getdata('test_multifield_selfcal_mfs.image.fits')))
+print("multifield_selfcal peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
