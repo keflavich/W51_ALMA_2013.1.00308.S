@@ -24,6 +24,13 @@ split(vis=finalvis,
 flagmanager(vis=finalvis,mode='restore',
             versionname='before_cont_flags')
 
+split(vis=finalvis,
+      spw='3,7',
+      field='w51',
+      outputvis='w51_sp3_continuum_noflag.split',
+      width=[192,192],
+      datacolumn='data')
+
 
 contimagename = 'w51_spw3_continuum'
 

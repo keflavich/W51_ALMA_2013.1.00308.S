@@ -182,7 +182,7 @@ exportfits('test_multifield_mfs.residual', 'test_multifield_mfs.residual.fits', 
 
 flagmanager(vis='w51_test_small_multifield.ms', mode='save', versionname='backup')
 applycal(vis="w51_test_small_multifield.ms", field="",
-         gaintable=["phase.cal","phase_2.cal","phase_3.cal"], interp="linear")
+         gaintable=["phase.cal","phase_2.cal","phase_3.cal","ampphase.cal"], interp="linear")
 flagmanager(vis='w51_test_small_multifield.ms', mode='restore', versionname='backup')
 
 
