@@ -101,3 +101,49 @@ sigma, peak = (fits.getdata('test_selfcal_mfs.image.fits')[slc].std(),   np.nanm
 print("selfcal:  peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
 sigma, peak = (fits.getdata('test_selfcal_2_mfs.image.fits')[slc].std(), np.nanmax(fits.getdata('test_selfcal_2_mfs.image.fits')))
 print("selfcal2: peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
+
+ft(vis='w51_test_small.ms',
+   model='test_selfcal_2_mfs.model',
+   usescratch=True, nterms=1)
+
+uvsub(vis='w51_test_small.ms')
+
+os.system('rm -rf test_brightsub_singlefield_mfs.*')
+clean(vis='w51_test_small.ms', imagename="test_brightsub_singlefield_mfs",
+      field="", spw='', mode='mfs', outframe='LSRK',
+      interpolation='linear', imagermode='mosaic', interactive=False,
+      niter=10000, threshold='1.0mJy', imsize=[512,512], cell='0.06arcsec',
+      phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
+      usescratch=True, pbcor=False, robust=-2.0)
+exportfits('test_brightsub_singlefield_mfs.image', 'test_brightsub_singlefield_mfs.image.fits', dropdeg=True, overwrite=True)
+exportfits('test_brightsub_singlefield_mfs.model', 'test_brightsub_singlefield_mfs.model.fits', dropdeg=True, overwrite=True)
+
+
+os.system('rm -rf w51_test_small_multifield.ms')
+os.system('rm -rf w51_test_small_multifield.ms.flagversions')
+assert split(vis='w51_spw3_continuum_flagged.split',
+      outputvis='w51_test_small_multifield.ms',
+      field=','.join([str(x-4) for x in (31,32,33,39,40,24,25)]),
+      #field='28', # 32-4
+      spw='',
+      datacolumn='data',
+     )
+
+#im.open('w51_test_small_multifield.ms')
+#im.ft(model='w51_test_small_selfcal_2.model')
+#im.close()
+ft(vis='w51_test_small_multifield.ms',
+   model='test_selfcal_2_mfs.model',
+   usescratch=True, nterms=1)
+
+uvsub(vis='w51_test_small_multifield.ms')
+
+os.system('rm -rf test_brightsub_mfs.*')
+clean(vis='w51_test_small_multifield.ms', imagename="test_brightsub_mfs",
+      field="", spw='', mode='mfs', outframe='LSRK',
+      interpolation='linear', imagermode='mosaic', interactive=False,
+      niter=10000, threshold='1.0mJy', imsize=[512,512], cell='0.06arcsec',
+      phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
+      usescratch=True, pbcor=False, robust=-2.0)
+exportfits('test_brightsub_mfs.image', 'test_brightsub_mfs.image.fits', dropdeg=True, overwrite=True)
+exportfits('test_brightsub_mfs.model', 'test_brightsub_mfs.model.fits', dropdeg=True, overwrite=True)
