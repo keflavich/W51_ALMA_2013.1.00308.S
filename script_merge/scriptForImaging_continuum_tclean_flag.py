@@ -1,4 +1,5 @@
 phasecenter = "J2000 19:23:41.585 +14:30:41.00"
+phasecenter = ""
 # position angle: 44.5 deg
 def clean(vis, imagename, **kwargs):
     tclean(vis = vis,
@@ -48,7 +49,7 @@ clean(vis=mergevis,
       field='w51',
       specmode='mfs',
       deconvolver='clark',
-      imsize = [960,960],
+      imsize = [1280,1280],
       cell= '0.15arcsec',
       weighting = 'natural',
       robust = 2.0,
@@ -71,7 +72,7 @@ clean(vis=mergevis,
       field='w51',
       specmode='mfs',
       deconvolver='clark',
-      imsize = [2560,2560],
+      imsize = [3072,3072],
       cell= '0.052arcsec',
       weighting = 'briggs',
       robust = 0.0,
@@ -93,7 +94,7 @@ clean(vis=mergevis,
       field='w51',
       specmode='mfs',
       deconvolver='clark',
-      imsize = [2560,2560],
+      imsize = [3072,3072],
       cell= '0.052arcsec',
       weighting = 'briggs',
       robust = 0.0,
@@ -116,7 +117,7 @@ clean(vis=mergevis,
       scales=[0,3,6,9,12,15,18],
       specmode='mfs',
       deconvolver='multiscale',
-      imsize = [2560,2560],
+      imsize = [3072,3072],
       cell= '0.052arcsec',
       weighting = 'briggs',
       robust = 0.0,
@@ -128,28 +129,28 @@ clean(vis=mergevis,
       )
 exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
 
-contimagename = 'w51_spw3_continuum_7m12m_flagged_r0_MEM_tclean'
-
-for ext in extensions:
-    rmtables(contimagename+ext)
-
-clean(vis=mergevis,
-      imagename=contimagename,
-      field='w51',
-      scales=[0,3,6,9,12,15,18],
-      specmode='mfs',
-      deconvolver='mem',
-      imsize = [2560,2560],
-      cell= '0.052arcsec',
-      weighting = 'briggs',
-      robust = 0.0,
-      niter = 10000,
-      threshold = '10.0mJy',
-      interactive = False,
-      gridder = 'mosaic',
-      savemodel='none',
-      )
-exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
+#contimagename = 'w51_spw3_continuum_7m12m_flagged_r0_MEM_tclean'
+#
+#for ext in extensions:
+#    rmtables(contimagename+ext)
+#
+#clean(vis=mergevis,
+#      imagename=contimagename,
+#      field='w51',
+#      scales=[0,3,6,9,12,15,18],
+#      specmode='mfs',
+#      deconvolver='mem',
+#      imsize = [3072,3072],
+#      cell= '0.052arcsec',
+#      weighting = 'briggs',
+#      robust = 0.0,
+#      niter = 10000,
+#      threshold = '10.0mJy',
+#      interactive = False,
+#      gridder = 'mosaic',
+#      savemodel='none',
+#      )
+#exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
 
 
 contimagename = 'w51_spw3_continuum_7m12m_flagged_uniform_tclean'
@@ -162,7 +163,7 @@ clean(vis=mergevis,
       field='w51',
       specmode='mfs',
       deconvolver='clark',
-      imsize = [2560,2560],
+      imsize = [3072,3072],
       cell= '0.052arcsec',
       weighting = 'briggs',
       robust = -2.0,
