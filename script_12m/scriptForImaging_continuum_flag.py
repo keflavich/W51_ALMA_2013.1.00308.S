@@ -103,7 +103,7 @@ for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux
 clean(vis=contvis,
       imagename=contimagename,
       field='w51',
-      multiscale=[0,3,6,9,12,15,18],
+      multiscale=[0,5,15,45],
       phasecenter='',
       mode='mfs',
       psfmode='clark',

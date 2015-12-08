@@ -113,7 +113,7 @@ for ext in extensions:
 clean(vis=mergevis,
       imagename=contimagename,
       field='w51',
-      scales=[0,3,6,9,12,15,18],
+      scales=[0,5,15,45],
       spw='3,7',
       specmode='mfs',
       deconvolver='multiscale',
