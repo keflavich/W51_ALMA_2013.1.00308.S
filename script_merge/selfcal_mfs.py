@@ -4,14 +4,14 @@ assert split(vis='continuum_7m12m_noflag.ms',
       outputvis='w51_merge_test_small.ms',
       #field=','.join([str(x-4) for x in (31,32,33,39,40,24,25)]),
       #field='28', # 32-4
-      field='32',
+      field='32,56',
       spw='',
       datacolumn='data',
      )
 print("Done splitting")
 
 solint = 'int'
-threshold = '20.0mJy'
+threshold = '30.0mJy'
 multiscale = [0,5,15,45,135,405]
 #multiscale = []
 
@@ -162,7 +162,7 @@ os.system('rm -rf w51_merge_test_small_multifield.ms.flagversions')
 assert split(vis='continuum_7m12m_noflag.ms',
       outputvis='w51_merge_test_small_multifield.ms',
       #field=','.join([str(x-4) for x in (31,32,33,39,40,24,25)]),
-      field="31,32,33,39,40,24,25",
+      field="31,32,33,39,40,24,25,56,51,52",
       #field='28', # 32-4
       spw='',
       datacolumn='data',
