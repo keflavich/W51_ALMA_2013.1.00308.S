@@ -27,7 +27,7 @@ flagmanager(vis=finalvis,mode='restore',
 split(vis=finalvis,
       spw='3,7',
       field='w51',
-      outputvis='w51_sp3_continuum_noflag.split',
+      outputvis='w51_spw3_continuum_noflag.split',
       width=[192,192],
       datacolumn='data')
 

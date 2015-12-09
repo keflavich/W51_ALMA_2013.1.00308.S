@@ -2,12 +2,14 @@
 imexts = ['.flux', '.image', '.mask', '.model', '.pbcor', '.psf', '.residual',
           '.flux.pbcoverage']
 
-for field in [(x-4) for x in (31,32,33,39,40,24,25)]:
+fieldoffset = -4
+
+for field in (31,32,33,39,40,24,25):
 
     myimagebase = "adjacent_field_test_{0}_mosaic".format(field)
     clean(vis='w51_spw3_continuum_flagged.split',
           imagename=myimagebase,
-          field=str(field), spw='', mode='mfs', outframe='LSRK',
+          field=str(field+fieldoffset), spw='', mode='mfs', outframe='LSRK',
           interpolation='linear', imagermode='mosaic',
           interactive=False, niter=10000, threshold='50mJy', imsize=[512,512],
           cell='0.06arcsec',
@@ -16,6 +18,8 @@ for field in [(x-4) for x in (31,32,33,39,40,24,25)]:
     impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
             outfile=myimagebase+'.image.pbcor', overwrite=True)
 
+    exportfits(myimagebase+".model", myimagebase+".model.fits", dropdeg=True,
+               overwrite=True)
     exportfits(myimagebase+".image", myimagebase+".image.fits", dropdeg=True,
                overwrite=True)
     exportfits(myimagebase+".image.pbcor",
@@ -29,7 +33,7 @@ for field in [(x-4) for x in (31,32,33,39,40,24,25)]:
     myimagebase = "adjacent_field_test_{0}_csclean".format(field)
     clean(vis='w51_spw3_continuum_flagged.split',
           imagename=myimagebase,
-          field=str(field), spw='', mode='mfs', outframe='LSRK',
+          field=str(field+fieldoffset), spw='', mode='mfs', outframe='LSRK',
           interpolation='linear', imagermode='csclean',
           interactive=False, niter=10000, threshold='50mJy', imsize=[512,512],
           cell='0.06arcsec',
@@ -38,6 +42,8 @@ for field in [(x-4) for x in (31,32,33,39,40,24,25)]:
     impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
             outfile=myimagebase+'.image.pbcor', overwrite=True)
 
+    exportfits(myimagebase+".model", myimagebase+".model.fits", dropdeg=True,
+               overwrite=True)
     exportfits(myimagebase+".image", myimagebase+".image.fits", dropdeg=True,
                overwrite=True)
     exportfits(myimagebase+".image.pbcor",
