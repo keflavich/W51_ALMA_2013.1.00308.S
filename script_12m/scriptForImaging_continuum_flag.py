@@ -128,3 +128,27 @@ clean(vis=contvis,
       usescratch=False,
       )
 exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
+
+contimagename = 'w51_spw3_continuum_uniform_multiscale'
+
+for ext in extnames:
+    rmtables(contimagename+ext)
+
+clean(vis=contvis,
+      imagename=contimagename,
+      field='w51',
+      multiscale=[0,4,12,36],
+      phasecenter='',
+      mode='mfs',
+      psfmode='clark',
+      imsize = [3072,3072],
+      cell= '0.050arcsec',
+      weighting = 'uniform',
+      robust = 2.0,
+      niter = 50000,
+      threshold = '10.0mJy',
+      interactive = False,
+      imagermode = 'mosaic',
+      usescratch=False,
+      )
+exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)

@@ -129,3 +129,27 @@ for spwnum in '3210':
           )
     exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
 
+    contimagename = 'w51_spw{0}_continuum_noflag_uniform_multiscale'.format(spwnum)
+
+    for ext in extnames:
+        rmtables(contimagename+ext)
+
+    clean(vis=mergevis,
+          imagename=contimagename,
+          field='w51',
+          multiscale=[0,4,12,36],
+          phasecenter='',
+          mode='mfs',
+          psfmode='clark',
+          imsize = [3072,3072],
+          cell= '0.050arcsec',
+          weighting = 'uniform',
+          robust = 2.0,
+          niter = 50000,
+          threshold = '10.0mJy',
+          interactive = False,
+          imagermode = 'mosaic',
+          usescratch=False,
+          spw=spw,
+          )
+    exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
