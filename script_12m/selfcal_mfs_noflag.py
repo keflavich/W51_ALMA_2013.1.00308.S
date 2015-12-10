@@ -273,6 +273,22 @@ exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=
 exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
+myimagebase = "test_noflag_multifield_selfcal_mfs_deeper_r0"
+os.system('rm -rf {0}.*'.format(myimagebase))
+clean(vis='w51_test_small_noflag_multifield.ms', imagename=myimagebase,
+      field="", spw='', mode='mfs', outframe='LSRK',
+      multiscale=multiscale,
+      interpolation='linear', imagermode='mosaic', interactive=False,
+      niter=50000, threshold='1mJy', imsize=imsize, cell='0.06arcsec',
+      phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
+      usescratch=True, pbcor=True, robust=0.0)
+exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+
 
 import numpy as np
 from astropy.io import fits
