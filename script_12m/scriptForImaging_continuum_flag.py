@@ -105,7 +105,7 @@ clean(vis=contvis,
       )
 exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
 
-contimagename = 'w51_spw3_continuum_r0_mulstiscale'
+contimagename = 'w51_spw3_continuum_r0_multiscale'
 
 for ext in extnames:
     rmtables(contimagename+ext)

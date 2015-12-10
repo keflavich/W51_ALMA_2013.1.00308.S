@@ -105,7 +105,7 @@ clean(vis=mergevis,
       )
 exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
 
-contimagename = 'w51_spw3_continuum_noflag_r0_mulstiscale_tclean'
+contimagename = 'w51_spw3_continuum_noflag_r0_multiscale_tclean'
 
 for ext in extensions:
     rmtables(contimagename+ext)
