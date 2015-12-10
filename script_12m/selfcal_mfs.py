@@ -13,6 +13,7 @@ assert split(vis='w51_spw3_continuum_flagged.split',
 
 print("Done splitting")
 
+imsize = [768,768]
 solint = 'int'
 threshold = '20.0mJy'
 multiscale = [0,5,15,45]
@@ -24,7 +25,7 @@ myimagebase = "test_mfs_dirty"
 os.system('rm -rf {0}.*'.format(myimagebase))
 clean(vis='w51_test_small.ms', imagename=myimagebase, field="", spw='',
       mode='mfs', outframe='LSRK', interpolation='linear', imagermode='mosaic',
-      interactive=False, niter=0, threshold=threshold, imsize=[512,512],
+      interactive=False, niter=0, threshold=threshold, imsize=imsize,
       cell='0.06arcsec', phasecenter='J2000 19h23m43.905 +14d30m28.08',
       weighting='briggs', usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -39,7 +40,7 @@ os.system('rm -rf {0}.*'.format(myimagebase))
 clean(vis='w51_test_small.ms', imagename=myimagebase, field="", spw='',
       mode='mfs', outframe='LSRK', interpolation='linear', imagermode='mosaic',
       multiscale=multiscale,
-      interactive=False, niter=10000, threshold=threshold, imsize=[512,512],
+      interactive=False, niter=10000, threshold=threshold, imsize=imsize,
       cell='0.06arcsec', phasecenter='J2000 19h23m43.905 +14d30m28.08',
       weighting='briggs', usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -72,7 +73,7 @@ clean(vis='w51_test_small_selfcal.ms', imagename=myimagebase,
       field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
-      niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      niter=10000, threshold=threshold, imsize=imsize, cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
       usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -105,7 +106,7 @@ clean(vis='w51_test_small_selfcal_2.ms', imagename=myimagebase,
       field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
-      niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      niter=10000, threshold=threshold, imsize=imsize, cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
       usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -137,7 +138,7 @@ clean(vis='w51_test_small_selfcal_3.ms', imagename=myimagebase,
       field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
-      niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      niter=10000, threshold=threshold, imsize=imsize, cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
       usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -174,7 +175,7 @@ clean(vis='w51_test_small_selfcal_4.ms', imagename=myimagebase,
       field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
-      niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      niter=10000, threshold=threshold, imsize=imsize, cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
       usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -211,7 +212,7 @@ clean(vis='w51_test_small_multifield.ms', imagename=myimagebase,
       field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
-      niter=0, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      niter=0, threshold=threshold, imsize=imsize, cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
       usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -228,7 +229,7 @@ clean(vis='w51_test_small_multifield.ms', imagename=myimagebase,
       field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
-      niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      niter=10000, threshold=threshold, imsize=imsize, cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
       usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -252,7 +253,7 @@ clean(vis='w51_test_small_multifield.ms', imagename=myimagebase,
       field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
-      niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      niter=10000, threshold=threshold, imsize=imsize, cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
       usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -266,6 +267,7 @@ import numpy as np
 from astropy.io import fits
 print("Stats (mfs):")
 slc = slice(80,200), slice(80,200)
+slc = slice(208,328), slice(208,328)
 sigma, peak = (fits.getdata('test_mfs_dirty.image.fits')[slc].std(),     np.nanmax(fits.getdata('test_mfs_dirty.image.fits')))
 print("dirty:             peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
 sigma, peak = (fits.getdata('test_mfs.image.pbcor.fits')[slc].std(),           np.nanmax(fits.getdata('test_mfs.image.pbcor.fits')))
