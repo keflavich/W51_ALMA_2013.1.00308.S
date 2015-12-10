@@ -33,9 +33,11 @@ split(vis=finalvis,
       datacolumn='data')
 
 
+extnames = ['.flux', '.image', '.mask', '.model', '.pbcor', '.psf',
+            '.residual', '.flux.pbcoverage']
 contimagename = 'w51_spw3_continuum'
 
-for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage']:
+for ext in extnames:
     rmtables(contimagename+ext)
 
 clean(vis=contvis,
@@ -59,7 +61,7 @@ exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, ov
 
 contimagename = 'w51_spw3_continuum_r0'
 
-for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage']:
+for ext in extnames:
     rmtables(contimagename+ext)
 
 clean(vis=contvis,
@@ -82,7 +84,7 @@ exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, ov
 
 contimagename = 'w51_spw3_continuum_r0_dirty'
 
-for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage']:
+for ext in extnames:
     rmtables(contimagename+ext)
 
 clean(vis=contvis,
@@ -105,7 +107,7 @@ exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, ov
 
 contimagename = 'w51_spw3_continuum_r0_mulstiscale'
 
-for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage']:
+for ext in extnames:
     rmtables(contimagename+ext)
 
 clean(vis=contvis,
