@@ -13,19 +13,23 @@ from astropy import log
 
 for spw in range(4):
 
-    sp = pyspeckit.Spectrum('w51pointing32peak_spw{0}_lines.fits'.format(spw))
+    sp = pyspeckit.Spectrum('e8mm_spw{0}_mean.fits'.format(spw))
     sp.plotter(figure=pl.figure(1))
-    sp.baseline.includemask &= (sp.data < 2) & (sp.data > 1)
+    sp.baseline.includemask &= (sp.data > 0.25) & (sp.data < 0.35)
     sp.baseline.highlight_fitregion()
-    sp.baseline(order=1, subtract=False, reset=False, highlight_fitregion=False, reset_selection=False, selectregion=False)
-    sp.baseline(order=1, subtract=True, reset=False, highlight_fitregion=False, reset_selection=False, selectregion=False)
+    sp.baseline(order=1, subtract=False, reset=False,
+                highlight_fitregion=False, reset_selection=False,
+                selectregion=False)
+    sp.baseline(order=1, subtract=True, reset=False, highlight_fitregion=False,
+                reset_selection=False, selectregion=False)
 
     pl.figure(2)
     pl.clf()
     pl.hist(sp.data[~sp.data.mask], bins=np.linspace(-1,1))
 
-    continua = (np.abs(sp.data)<0.2)
-    print("N_continua: {0} = {1}%".format(continua.sum(), float(continua.sum())/continua.size*100))
+    continua = (np.abs(sp.data)<0.05)
+    print("N_continua: {0} = {1}%".format(continua.sum(),
+                                          float(continua.sum())/continua.size*100))
     labels, nlabels = (scipy.ndimage.measurements.label(continua))
     # Llabels = line labels
     Llabels, nLlabels = (scipy.ndimage.measurements.label(~continua))

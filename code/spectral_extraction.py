@@ -10,10 +10,13 @@ for spw in (0,1,2,3):
     print(cube)
 
     for reg in region_list:
+        if 'text' not in reg.attr[1]:
+            continue
         name = reg.attr[1]['text']
         if name:
             print("Extracting {0} from {1}".format(name, spw))
             SL = pyregion.ShapeList([reg])
             sc = cube.subcube_from_ds9region(SL)
             spec = sc.mean(axis=(1,2))
-            spec.hdu.writeto("spectra/{0}_mean.fits".format(name))
+            spec.hdu.writeto("spectra/{0}_spw{1}_mean.fits".format(name, spw),
+                             clobber=True)
