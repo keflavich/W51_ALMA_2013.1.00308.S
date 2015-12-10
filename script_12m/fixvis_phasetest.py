@@ -8,7 +8,7 @@ fixvis(vis='w51_spw3_continuum_flagged.split',
 plotms(vis='w51_spw3_continuum_fixvis.ms', gridrows=4, gridcols=4, xaxis='time',
        yaxis='phase', timerange='2015/04/20~2015/04/28', avgchannel='1000',
        iteraxis='baseline', coloraxis='field', uvrange='75~10000', field='20,21,27,28,29,35,36',
-       avgtime='30s', plotfile="phase_vs_time_per_field_noselfcal.png")
+       avgtime='30s', plotfile="phase_vs_time_per_field_noselfcal.png", overwrite=True)
 
 fixvis(vis='w51_test_small_multifield.ms',
        outputvis='w51_test_small_multifield_fixvis.ms',
@@ -19,4 +19,4 @@ fixvis(vis='w51_test_small_multifield.ms',
 plotms(vis='w51_test_small_multifield_fixvis.ms', gridrows=4, gridcols=4, xaxis='time',
        yaxis='phase', timerange='2015/04/20~2015/04/28', avgchannel='1000',
        iteraxis='baseline', coloraxis='field', uvrange='75~10000', field='',
-       avgtime='30s', plotfile="phase_vs_time_per_field_selfcal.png")
+       avgtime='30s', plotfile="phase_vs_time_per_field_selfcal.png", overwrite=True)

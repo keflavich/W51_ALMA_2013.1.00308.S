@@ -119,6 +119,13 @@ clean(vis=mergevis,
       )
 exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
 
+dirtyimage = 'w51_spw3_continuum_7m12m_r0_dirty.image'
+ia.open(dirtyimage)
+ia.calcmask(mask=dirtyimage+" > 0.05", name='dirty_mask_50mJy')
+ia.close()
+makemask(mode='copy', inpimage=dirtyimage,
+         inpmask=dirtyimage+":dirty_mask_50mJy", output='dirty_50mJy.mask')
+
 contimagename = 'w51_spw3_continuum_7m12m_r0_mulstiscale'
 
 for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage']:
@@ -127,18 +134,20 @@ for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux
 clean(vis=mergevis,
       imagename=contimagename,
       field='w51',
-      multiscale=[0,3,6,9,12,15,18],
-      phasecenter='',
+      multiscale=[0,5,15,45,135],
+      phasecenter='4',
       mode='mfs',
       psfmode='clark',
       imsize = [2560,2560],
       cell= '0.052arcsec',
       weighting = 'briggs',
       robust = 0.0,
-      niter = 10000,
-      threshold = '10.0mJy',
+      niter = 50000,
+      threshold = '20.0mJy',
       interactive = False,
       imagermode = 'mosaic',
       usescratch=False,
+      pbcor=True,
+      mask='dirty_50mJy.mask',
       )
 exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
