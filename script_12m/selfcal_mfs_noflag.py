@@ -1,3 +1,6 @@
+import time
+t0 = time.time()
+
 os.system('rm -rf w51_test_small_noflag.ms')
 os.system('rm -rf w51_test_small_noflag.ms.flagversions')
 assert split(vis='w51_spw3_continuum_noflag.split',
@@ -7,8 +10,10 @@ assert split(vis='w51_spw3_continuum_noflag.split',
       spw='',
       datacolumn='data',
      )
+
 print("Done splitting")
 
+imsize = [768,768]
 solint = 'int'
 threshold = '20.0mJy'
 multiscale = [0,5,15,45]
@@ -20,7 +25,7 @@ myimagebase = "test_noflag_mfs_dirty"
 os.system('rm -rf {0}.*'.format(myimagebase))
 clean(vis='w51_test_small_noflag.ms', imagename=myimagebase, field="", spw='',
       mode='mfs', outframe='LSRK', interpolation='linear', imagermode='mosaic',
-      interactive=False, niter=0, threshold=threshold, imsize=[512,512],
+      interactive=False, niter=0, threshold=threshold, imsize=imsize,
       cell='0.06arcsec', phasecenter='J2000 19h23m43.905 +14d30m28.08',
       weighting='briggs', usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -35,7 +40,7 @@ os.system('rm -rf {0}.*'.format(myimagebase))
 clean(vis='w51_test_small_noflag.ms', imagename=myimagebase, field="", spw='',
       mode='mfs', outframe='LSRK', interpolation='linear', imagermode='mosaic',
       multiscale=multiscale,
-      interactive=False, niter=10000, threshold=threshold, imsize=[512,512],
+      interactive=False, niter=10000, threshold=threshold, imsize=imsize,
       cell='0.06arcsec', phasecenter='J2000 19h23m43.905 +14d30m28.08',
       weighting='briggs', usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -53,7 +58,7 @@ gaincal(vis='w51_test_small_noflag.ms', caltable="phase.cal", field="", solint='
 
 flagmanager(vis='w51_test_small_noflag.ms', mode='save', versionname='backup')
 applycal(vis="w51_test_small_noflag.ms", field="", gaintable=["phase.cal"],
-         interp="linear")
+         interp="linear", applymode='calonly')
 flagmanager(vis='w51_test_small_noflag.ms', mode='restore', versionname='backup')
 os.system('rm -rf w51_test_small_noflag_selfcal.ms')
 os.system('rm -rf w51_test_small_noflag_selfcal.ms.flagversions')
@@ -66,7 +71,7 @@ clean(vis='w51_test_small_noflag_selfcal.ms', imagename=myimagebase,
       field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
-      niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      niter=10000, threshold=threshold, imsize=imsize, cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
       usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -86,7 +91,7 @@ gaincal(vis="w51_test_small_noflag_selfcal.ms", caltable="phase_2.cal", field=""
 
 flagmanager(vis='w51_test_small_noflag_selfcal.ms', mode='save', versionname='backup')
 applycal(vis="w51_test_small_noflag_selfcal.ms", field="", gaintable=["phase_2.cal"],
-         interp="linear")
+         interp="linear", applymode='calonly')
 flagmanager(vis='w51_test_small_noflag_selfcal.ms', mode='restore', versionname='backup')
 os.system('rm -rf w51_test_small_noflag_selfcal_2.ms')
 os.system('rm -rf w51_test_small_noflag_selfcal_2.ms.flagversions')
@@ -99,7 +104,7 @@ clean(vis='w51_test_small_noflag_selfcal_2.ms', imagename=myimagebase,
       field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
-      niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      niter=10000, threshold=threshold, imsize=imsize, cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
       usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -117,8 +122,8 @@ gaincal(vis="w51_test_small_noflag_selfcal_2.ms", caltable="phase_3.cal", field=
 #        fontsize=10.0,)
 
 flagmanager(vis='w51_test_small_noflag_selfcal_2.ms', mode='save', versionname='backup')
-applycal(vis="w51_test_small_noflag_selfcal_2.ms", field="", gaintable=["phase_2.cal"],
-         interp="linear")
+applycal(vis="w51_test_small_noflag_selfcal_2.ms", field="", gaintable=["phase_3.cal"],
+         interp="linear", applymode='calonly')
 flagmanager(vis='w51_test_small_noflag_selfcal_2.ms', mode='restore', versionname='backup')
 os.system('rm -rf w51_test_small_noflag_selfcal_3.ms')
 os.system('rm -rf w51_test_small_noflag_selfcal_3.ms.flagversions')
@@ -131,7 +136,7 @@ clean(vis='w51_test_small_noflag_selfcal_3.ms', imagename=myimagebase,
       field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
-      niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      niter=10000, threshold=threshold, imsize=imsize, cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
       usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -154,8 +159,8 @@ gaincal(vis="w51_test_small_noflag_selfcal_3.ms", caltable="ampphase.cal", field
         solint=solint, solnorm=True, calmode="ap", refant="", gaintype="G")
 
 flagmanager(vis='w51_test_small_noflag_selfcal_3.ms', mode='save', versionname='backup')
-applycal(vis="w51_test_small_noflag_selfcal_3.ms", field="", gaintable=["phase_3.cal"],
-         interp="linear")
+applycal(vis="w51_test_small_noflag_selfcal_3.ms", field="", gaintable=["phase_4.cal","ampphase.cal"],
+         interp="linear", applymode='calonly')
 flagmanager(vis='w51_test_small_noflag_selfcal_3.ms', mode='restore', versionname='backup')
 os.system('rm -rf w51_test_small_noflag_selfcal_4.ms')
 os.system('rm -rf w51_test_small_noflag_selfcal_4.ms.flagversions')
@@ -168,7 +173,7 @@ clean(vis='w51_test_small_noflag_selfcal_4.ms', imagename=myimagebase,
       field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
-      niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      niter=10000, threshold=threshold, imsize=imsize, cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
       usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -190,13 +195,19 @@ assert split(vis='w51_spw3_continuum_flagged.split',
       datacolumn='data',
      )
 
+ft(vis="w51_test_small_noflag_multifield.ms", model="test_noflag_selfcal_4ampphase_mfs.model",)
+rmtables("phase_multifield.cal")
+gaincal(vis="w51_test_small_multifield.ms", caltable="phase_multifield.cal",
+        field="", solint='inf', solnorm=True, calmode="p", refant="",
+        gaintype="G")
+
 myimagebase = "test_noflag_multifield_mfs_dirty"
 os.system('rm -rf {0}.*'.format(myimagebase))
 clean(vis='w51_test_small_noflag_multifield.ms', imagename=myimagebase,
       field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
-      niter=0, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      niter=0, threshold=threshold, imsize=imsize, cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
       usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -212,7 +223,7 @@ clean(vis='w51_test_small_noflag_multifield.ms', imagename=myimagebase,
       field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
-      niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      niter=10000, threshold=threshold, imsize=imsize, cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
       usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -223,10 +234,9 @@ exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwr
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 
-flagmanager(vis='w51_test_small_noflag_multifield.ms', mode='save', versionname='backup')
 applycal(vis="w51_test_small_noflag_multifield.ms", field="",
-         gaintable=["phase.cal","phase_2.cal","phase_3.cal","ampphase.cal"], interp="linear")
-flagmanager(vis='w51_test_small_noflag_multifield.ms', mode='restore', versionname='backup')
+         gaintable=["phase_multifield.cal"],
+         interp="linear", applymode='calonly')
 
 
 
@@ -236,7 +246,7 @@ clean(vis='w51_test_small_noflag_multifield.ms', imagename=myimagebase,
       field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
-      niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      niter=10000, threshold=threshold, imsize=imsize, cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
       usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -250,6 +260,7 @@ import numpy as np
 from astropy.io import fits
 print("Stats (mfs):")
 slc = slice(80,200), slice(80,200)
+slc = slice(208,328), slice(208,328)
 sigma, peak = (fits.getdata('test_noflag_mfs_dirty.image.fits')[slc].std(),     np.nanmax(fits.getdata('test_noflag_mfs_dirty.image.fits')))
 print("dirty:             peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
 sigma, peak = (fits.getdata('test_noflag_mfs.image.pbcor.fits')[slc].std(),           np.nanmax(fits.getdata('test_noflag_mfs.image.pbcor.fits')))

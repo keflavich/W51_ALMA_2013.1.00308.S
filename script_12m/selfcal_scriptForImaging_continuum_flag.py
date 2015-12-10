@@ -1,7 +1,7 @@
 import time
 t0 = time.time()
 
-phasecenter = "J2000 19:23:41.629000 +14:30:42.38000"
+phasecenter = "J2000 19:23:41.629000 +14.30.42.38000"
 
 contvis='w51_spw3_continuum_flagged.split'
 vis0 = 'w51_contvis_selfcal_0.ms'
@@ -18,7 +18,8 @@ assert split(vis=contvis,
 
 print("Done splitting")
 
-imsize = [1280,1280]
+imsize = [3072,3072]
+cell = '0.05arcsec'
 solint = 'int'
 threshold = '50.0mJy'
 multiscale = [0,5,15,45]
@@ -31,7 +32,7 @@ os.system('rm -rf {0}.*'.format(myimagebase))
 clean(vis=vis0, imagename=myimagebase, field="", spw='',
       mode='mfs', outframe='LSRK', interpolation='linear', imagermode='mosaic',
       interactive=False, niter=0, threshold=threshold, imsize=imsize,
-      cell='0.06arcsec', phasecenter=phasecenter,
+      cell=cell, phasecenter=phasecenter,
       minpb=0.4,
       weighting='briggs', usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -48,7 +49,7 @@ clean(vis=vis0, imagename=myimagebase, field="", spw='',
       multiscale=multiscale,
       interactive=False, niter=10000, threshold=threshold, imsize=imsize,
       minpb=0.4,
-      cell='0.06arcsec', phasecenter=phasecenter,
+      cell=cell, phasecenter=phasecenter,
       weighting='briggs', usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
@@ -81,7 +82,7 @@ clean(vis=vis1, imagename=myimagebase,
       field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
-      niter=10000, threshold=threshold, imsize=imsize, cell='0.06arcsec',
+      niter=10000, threshold=threshold, imsize=imsize, cell=cell,
       phasecenter=phasecenter, weighting='briggs',
       minpb=0.4,
       usescratch=True, pbcor=True, robust=-2.0)
@@ -116,7 +117,7 @@ clean(vis=vis2, imagename=myimagebase,
       field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
-      niter=10000, threshold=threshold, imsize=imsize, cell='0.06arcsec',
+      niter=10000, threshold=threshold, imsize=imsize, cell=cell,
       minpb=0.4,
       phasecenter=phasecenter, weighting='briggs',
       usescratch=True, pbcor=True, robust=-2.0)
@@ -151,7 +152,7 @@ clean(vis=vis3, imagename=myimagebase,
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
       minpb=0.4,
-      niter=10000, threshold=threshold, imsize=imsize, cell='0.06arcsec',
+      niter=10000, threshold=threshold, imsize=imsize, cell=cell,
       phasecenter=phasecenter, weighting='briggs',
       usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -190,7 +191,7 @@ clean(vis=vis4, imagename=myimagebase,
       multiscale=multiscale,
       minpb=0.4,
       interpolation='linear', imagermode='mosaic', interactive=False,
-      niter=10000, threshold=threshold, imsize=imsize, cell='0.06arcsec',
+      niter=10000, threshold=threshold, imsize=imsize, cell=cell,
       phasecenter=phasecenter, weighting='briggs',
       usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)

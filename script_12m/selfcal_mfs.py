@@ -60,7 +60,7 @@ gaincal(vis='w51_test_small.ms', caltable="phase.cal", field="", solint='inf',
 
 flagmanager(vis='w51_test_small.ms', mode='save', versionname='backup')
 applycal(vis="w51_test_small.ms", field="", gaintable=["phase.cal"],
-         interp="linear")
+         interp="linear", applymode='calonly')
 flagmanager(vis='w51_test_small.ms', mode='restore', versionname='backup')
 os.system('rm -rf w51_test_small_selfcal.ms')
 os.system('rm -rf w51_test_small_selfcal.ms.flagversions')
@@ -93,7 +93,7 @@ gaincal(vis="w51_test_small_selfcal.ms", caltable="phase_2.cal", field="",
 
 flagmanager(vis='w51_test_small_selfcal.ms', mode='save', versionname='backup')
 applycal(vis="w51_test_small_selfcal.ms", field="", gaintable=["phase_2.cal"],
-         interp="linear")
+         interp="linear", applymode='calonly')
 flagmanager(vis='w51_test_small_selfcal.ms', mode='restore', versionname='backup')
 os.system('rm -rf w51_test_small_selfcal_2.ms')
 os.system('rm -rf w51_test_small_selfcal_2.ms.flagversions')
@@ -124,8 +124,8 @@ gaincal(vis="w51_test_small_selfcal_2.ms", caltable="phase_3.cal", field="",
 #        fontsize=10.0,)
 
 flagmanager(vis='w51_test_small_selfcal_2.ms', mode='save', versionname='backup')
-applycal(vis="w51_test_small_selfcal_2.ms", field="", gaintable=["phase_2.cal"],
-         interp="linear")
+applycal(vis="w51_test_small_selfcal_2.ms", field="", gaintable=["phase_3.cal"],
+         interp="linear", applymode='calonly')
 flagmanager(vis='w51_test_small_selfcal_2.ms', mode='restore', versionname='backup')
 os.system('rm -rf w51_test_small_selfcal_3.ms')
 os.system('rm -rf w51_test_small_selfcal_3.ms.flagversions')
@@ -161,8 +161,8 @@ gaincal(vis="w51_test_small_selfcal_3.ms", caltable="ampphase.cal", field="",
         solint=solint, solnorm=True, calmode="ap", refant="", gaintype="G")
 
 flagmanager(vis='w51_test_small_selfcal_3.ms', mode='save', versionname='backup')
-applycal(vis="w51_test_small_selfcal_3.ms", field="", gaintable=["phase_3.cal"],
-         interp="linear")
+applycal(vis="w51_test_small_selfcal_3.ms", field="", gaintable=["phase_4.cal", "ampphase.cal"],
+         interp="linear", applymode='calonly')
 flagmanager(vis='w51_test_small_selfcal_3.ms', mode='restore', versionname='backup')
 os.system('rm -rf w51_test_small_selfcal_4.ms')
 os.system('rm -rf w51_test_small_selfcal_4.ms.flagversions')
@@ -240,10 +240,9 @@ exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwr
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 
-flagmanager(vis='w51_test_small_multifield.ms', mode='save', versionname='backup')
 applycal(vis="w51_test_small_multifield.ms", field="",
-         gaintable=["phase_multifield.cal"], interp="linear")
-flagmanager(vis='w51_test_small_multifield.ms', mode='restore', versionname='backup')
+         gaintable=["phase_multifield.cal"],
+         interp="linear", applymode='calonly')
 
 
 
