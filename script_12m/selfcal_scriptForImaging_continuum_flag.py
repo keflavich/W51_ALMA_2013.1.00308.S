@@ -206,9 +206,11 @@ exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwr
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 # since ampphase fails by flagging out good data, try deeper here...
-myimagebase = "selfcal_spw3_selfcal_3_mfs_ddeper"
+# No, something else has caused problems.  Screw it, try ampphase.
+# oooooh, vis3.corrected = vis4.data, and clean automatically selected corrected... sigh
+myimagebase = "selfcal_spw3_selfcal_4ampphase_mfs_deeper"
 os.system('rm -rf {0}.*'.format(myimagebase))
-clean(vis=vis3, imagename=myimagebase,
+clean(vis=vis4, imagename=myimagebase,
       field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
@@ -223,6 +225,23 @@ exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=
 exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
+# using vis2.corrected = vis3.data
+myimagebase = "selfcal_spw3_selfcal_3_mfs_deeper"
+os.system('rm -rf {0}.*'.format(myimagebase))
+clean(vis=vis2, imagename=myimagebase,
+      field="", spw='', mode='mfs', outframe='LSRK',
+      multiscale=multiscale,
+      interpolation='linear', imagermode='mosaic', interactive=False,
+      minpb=0.4,
+      niter=50000, threshold='5mJy', imsize=imsize, cell=cell,
+      phasecenter=phasecenter, weighting='briggs',
+      usescratch=True, pbcor=True, robust=-2.0)
+exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 
 import numpy as np
