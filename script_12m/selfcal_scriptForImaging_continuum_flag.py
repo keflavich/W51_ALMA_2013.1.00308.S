@@ -59,7 +59,7 @@ exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, 
 
 rmtables('phase.cal')
 gaincal(vis=vis0, caltable="phase.cal", field="", solint='inf',
-        calmode="p", refant="", gaintype="G")
+        calmode="p", refant="", gaintype="G", minsnr=5)
 
 #plotcal(caltable="phase.cal", xaxis="time", yaxis="phase", subplot=331,
 #        iteration="antenna", plotrange=[0,0,-30,30], markersize=5,
@@ -67,7 +67,7 @@ gaincal(vis=vis0, caltable="phase.cal", field="", solint='inf',
 
 flagmanager(vis=vis0, mode='save', versionname='backup')
 applycal(vis=vis0, field="", gaintable=["phase.cal"],
-         interp="linear")
+         interp="linear", applymode='calonly')
 flagmanager(vis=vis0, mode='restore', versionname='backup')
 vis1 = 'w51_contvis_selfcal_1.ms'
 os.system('rm -rf {0}'.format(vis1))
@@ -94,7 +94,7 @@ exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, 
 
 rmtables('phase_2.cal')
 gaincal(vis=vis1, caltable="phase_2.cal", field="",
-        solint=solint, calmode="p", refant="", gaintype="G")
+        solint=solint, calmode="p", refant="", gaintype="G", minsnr=5)
 #plotcal(caltable="phase_2.cal", xaxis="time", yaxis="phase", subplot=331,
 #        iteration="antenna", plotrange=[0,0,-30,30], markersize=5,
 #        fontsize=10.0,)
@@ -102,7 +102,7 @@ gaincal(vis=vis1, caltable="phase_2.cal", field="",
 
 flagmanager(vis=vis1, mode='save', versionname='backup')
 applycal(vis=vis1, field="", gaintable=["phase_2.cal"],
-         interp="linear")
+         interp="linear", applymode='calonly')
 flagmanager(vis=vis1, mode='restore', versionname='backup')
 vis2 = 'w51_contvis_selfcal_2.ms'
 os.system('rm -rf {0}'.format(vis2))
@@ -129,14 +129,14 @@ exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, 
 
 rmtables("phase_3.cal")
 gaincal(vis=vis2, caltable="phase_3.cal", field="",
-        solint=solint, calmode="p", refant="", gaintype="G")
+        solint=solint, calmode="p", refant="", gaintype="G", minsnr=5)
 #plotcal(caltable="phase_3.cal", xaxis="time", yaxis="phase", subplot=331,
 #        iteration="antenna", plotrange=[0,0,-30,30], markersize=5,
 #        fontsize=10.0,)
 
 flagmanager(vis=vis2, mode='save', versionname='backup')
-applycal(vis=vis2, field="", gaintable=["phase_2.cal"],
-         interp="linear")
+applycal(vis=vis2, field="", gaintable=["phase_3.cal"],
+         interp="linear", applymode='calonly')
 flagmanager(vis=vis2, mode='restore', versionname='backup')
 vis3 = 'w51_contvis_selfcal_3.ms'
 os.system('rm -rf {0}'.format(vis3))
@@ -163,7 +163,7 @@ exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, 
 
 rmtables("phase_4.cal")
 gaincal(vis=vis3, caltable="phase_4.cal", field="",
-        solint=solint, calmode="p", refant="", gaintype="G")
+        solint=solint, calmode="p", refant="", gaintype="G", minsnr=5)
 #plotcal(caltable="phase_4.cal", xaxis="time", yaxis="phase", subplot=331,
 #        iteration="antenna", plotrange=[0,0,-30,30], markersize=5,
 #        fontsize=10.0,)
@@ -171,11 +171,11 @@ gaincal(vis=vis3, caltable="phase_4.cal", field="",
 
 rmtables("ampphase.cal")
 gaincal(vis=vis3, caltable="ampphase.cal", field="",
-        solint=solint, solnorm=True, calmode="ap", refant="", gaintype="G")
+        solint=solint, solnorm=True, calmode="ap", refant="", gaintype="G", minsnr=5)
 
 flagmanager(vis=vis3, mode='save', versionname='backup')
-applycal(vis=vis3, field="", gaintable=["phase_3.cal"],
-         interp="linear")
+applycal(vis=vis3, field="", gaintable=["phase_4.cal", 'ampphase.cal'],
+         interp="linear", applymode='calonly')
 flagmanager(vis=vis3, mode='restore', versionname='backup')
 vis4 = 'w51_contvis_selfcal_4.ms'
 os.system('rm -rf {0}'.format(vis4))
