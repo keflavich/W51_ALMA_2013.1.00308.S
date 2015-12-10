@@ -80,7 +80,7 @@ exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, ov
 
 contimagename = 'w51_spw3_continuum_7m12m_r0'
 
-for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage']:
+for ext in extnames:
     rmtables(contimagename+ext)
 
 clean(vis=mergevis,
@@ -103,7 +103,7 @@ exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, ov
 
 contimagename = 'w51_spw3_continuum_7m12m_r0_dirty'
 
-for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage']:
+for ext in extnames:
     rmtables(contimagename+ext)
 
 clean(vis=mergevis,
@@ -124,6 +124,7 @@ clean(vis=mergevis,
       )
 exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
 
+
 dirtyimage = 'w51_spw3_continuum_7m12m_r0_dirty.image'
 ia.open(dirtyimage)
 ia.calcmask(mask=dirtyimage+" > 0.05", name='dirty_mask_50mJy')
@@ -131,9 +132,37 @@ ia.close()
 makemask(mode='copy', inpimage=dirtyimage,
          inpmask=dirtyimage+":dirty_mask_50mJy", output='dirty_50mJy.mask')
 
-contimagename = 'w51_spw3_continuum_7m12m_r0_mulstiscale'
 
-for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage']:
+contimagename = 'w51_spw3_continuum_7m12m_r0_multiscale_minpb'
+
+for ext in extnames:
+    rmtables(contimagename+ext)
+
+clean(vis=mergevis,
+      imagename=contimagename,
+      field='w51',
+      multiscale=[0,5,15,45,135],
+      phasecenter='4',
+      mode='mfs',
+      psfmode='clark',
+      imsize = [2560,2560],
+      cell= '0.052arcsec',
+      weighting = 'briggs',
+      robust = 0.0,
+      niter = 50000,
+      threshold = '20.0mJy',
+      interactive = False,
+      imagermode = 'mosaic',
+      usescratch=False,
+      pbcor=True,
+      #mask='dirty_50mJy.mask',
+      mask=0.5, # minpb
+      )
+exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
+
+contimagename = 'w51_spw3_continuum_7m12m_r0_multiscale_mask50mJy'
+
+for ext in extnames:
     rmtables(contimagename+ext)
 
 clean(vis=mergevis,
