@@ -18,7 +18,7 @@ assert split(vis=contvis,
 
 print("Done splitting")
 summary_init = flagdata(vis=vis0, mode='summary')
-print("{0} flagged points in vis0 initially".format(summary_init['total']))
+print("{flagged}/{total} of flagged points in vis0".format(**summary_init))
 
 imsize = [3072,3072]
 cell = '0.05arcsec'
@@ -73,7 +73,7 @@ applycal(vis=vis0, field="", gaintable=["phase.cal"],
          interp="linear", applymode='calonly')
 flagmanager(vis=vis0, mode='restore', versionname='backup')
 summary0 = flagdata(vis=vis0, mode='summary')
-print("{0} flagged points in vis0".format(summary0['total']))
+print("{flagged}/{total} flagged points in vis0".format(**summary0))
 vis1 = 'w51_contvis_selfcal_1.ms'
 os.system('rm -rf {0}'.format(vis1))
 os.system('rm -rf {0}.flagversions'.format(vis1))
@@ -110,7 +110,7 @@ applycal(vis=vis1, field="", gaintable=["phase_2.cal"],
          interp="linear", applymode='calonly')
 flagmanager(vis=vis1, mode='restore', versionname='backup')
 summary1 = flagdata(vis=vis1, mode='summary')
-print("{0} flagged points in vis1".format(summary1['total']))
+print("{flagged}/{total} flagged points in vis1".format(**summary1))
 vis2 = 'w51_contvis_selfcal_2.ms'
 os.system('rm -rf {0}'.format(vis2))
 os.system('rm -rf {0}.flagversions'.format(vis2))
@@ -146,7 +146,7 @@ applycal(vis=vis2, field="", gaintable=["phase_3.cal"],
          interp="linear", applymode='calonly')
 flagmanager(vis=vis2, mode='restore', versionname='backup')
 summary2 = flagdata(vis=vis2, mode='summary')
-print("{0} flagged points in vis2".format(summary2['total']))
+print("{flagged}/{total} flagged points in vis2".format(**summary2))
 vis3 = 'w51_contvis_selfcal_3.ms'
 os.system('rm -rf {0}'.format(vis3))
 os.system('rm -rf {0}.flagversions'.format(vis3))
@@ -178,16 +178,23 @@ rmtables("ampphase.cal")
 gaincal(vis=vis3, caltable="ampphase.cal", field="", solint=solint,
         solnorm=True, calmode="ap", refant="", gaintype="G", minsnr=5)
 
+flagmanager(vis=vis3, mode='save', versionname='backup')
 applycal(vis=vis3, field="", gaintable=["phase_4.cal", 'ampphase.cal'],
          interp="linear", applymode='calonly')
 summary3 = flagdata(vis=vis3, mode='summary')
-print("{0} flagged points in vis3".format(summary3['total']))
+print("{flagged}/{total} flagged points in vis3 afer applycal".format(**summary3))
+flagmanager(vis=vis3, mode='restore', versionname='backup')
+summary3 = flagdata(vis=vis3, mode='summary')
+print("{flagged}/{total} flagged points in vis3 after restoration".format(**summary3))
 vis4 = 'w51_contvis_selfcal_4.ms'
 os.system('rm -rf {0}'.format(vis4))
 os.system('rm -rf {0}.flagversions'.format(vis4))
 split(vis=vis3, outputvis=vis4,
       datacolumn="corrected")
+summary4 = flagdata(vis=vis4, mode='summary')
+print("{flagged}/{total} flagged points in vis4 after restoration".format(**summary4))
 
+# WHY IS THIS EMPTY?!
 myimagebase = "selfcal_spw3_selfcal_4ampphase_mfs"
 os.system('rm -rf {0}.*'.format(myimagebase))
 clean(vis=vis4, imagename=myimagebase,

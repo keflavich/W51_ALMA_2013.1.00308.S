@@ -1,3 +1,13 @@
+"""
+This appears broken:
+2015-12-10 16:59:17     WARN    flagmanager:::: Version name 'before_cont_flags' already exist. Will rename it to before_cont_flags.old.1449766757
+# of flagged points before continuum flagging: 20091340800.0
+# of flagged points after continuum flagging: 20091340800.0
+....10....20....30....40....50....60....70....80....90....100%
+# of flagged points after restoration: 20091340800.0
+....10....20....30....40....50....60....70....80....90....100%
+2015-12-10 17:29:53     WARN    flagmanager:::: Version name 'before_cont_flags' already exist. Will rename it to before_cont_flags.old.1449768593
+"""
 
 spws_12m = {0: '0,4',
             1: '1,5',
@@ -16,11 +26,11 @@ for spw in range(4):
                 versionname='before_cont_flags')
 
     summary = flagdata(vis=finalvis, mode='summary')
-    print("# of flagged points before continuum flagging: {0}".format(summary['total']))
+    print("# of flagged points before continuum flagging: {flagged}/{total}".format(**summary))
     flagdata(vis=finalvis,mode='manual',
              spw=linechannels,flagbackup=False)
     summary = flagdata(vis=finalvis, mode='summary')
-    print("# of flagged points after continuum flagging: {0}".format(summary['total']))
+    print("# of flagged points before continuum flagging: {flagged}/{total}".format(**summary))
 
     split(vis=finalvis,
           spw=spws_12m[spw],
@@ -34,7 +44,7 @@ for spw in range(4):
                 versionname='before_cont_flags')
 
     summary = flagdata(vis=finalvis, mode='summary')
-    print("# of flagged points after restoration: {0}".format(summary['total']))
+    print("# of flagged points before continuum flagging: {flagged}/{total}".format(**summary))
 
     split(vis=finalvis,
           spw=spws_12m[spw],
