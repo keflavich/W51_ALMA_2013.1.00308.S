@@ -3,6 +3,9 @@ t0 = time.time()
 
 phasecenter = "J2000 19:23:41.629000 +14.30.42.38000"
 
+fields_to_selfcal = (31,32,33,39,40,24,25,20,13,21,27)
+fields_after_split = [f-4 for f in fields_to_selfcal]
+
 contvis='w51_spw3_continuum_flagged.split'
 vis0 = 'w51_contvis_selfcal_0.ms'
 
@@ -61,7 +64,7 @@ exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwr
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 rmtables('phase.cal')
-gaincal(vis=vis0, caltable="phase.cal", field="", solint='inf',
+gaincal(vis=vis0, caltable="phase.cal", field=",".join(fields_after_split), solint='inf',
         calmode="p", refant="", gaintype="G", minsnr=5)
 
 #plotcal(caltable="phase.cal", xaxis="time", yaxis="phase", subplot=331,
@@ -98,7 +101,7 @@ exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwr
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 rmtables('phase_2.cal')
-gaincal(vis=vis1, caltable="phase_2.cal", field="",
+gaincal(vis=vis1, caltable="phase_2.cal", field=",".join(fields_after_split),
         solint=solint, calmode="p", refant="", gaintype="G", minsnr=5)
 #plotcal(caltable="phase_2.cal", xaxis="time", yaxis="phase", subplot=331,
 #        iteration="antenna", plotrange=[0,0,-30,30], markersize=5,
@@ -135,7 +138,7 @@ exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwr
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 rmtables("phase_3.cal")
-gaincal(vis=vis2, caltable="phase_3.cal", field="",
+gaincal(vis=vis2, caltable="phase_3.cal", field=",".join(fields_after_split),
         solint=solint, calmode="p", refant="", gaintype="G", minsnr=5)
 #plotcal(caltable="phase_3.cal", xaxis="time", yaxis="phase", subplot=331,
 #        iteration="antenna", plotrange=[0,0,-30,30], markersize=5,
@@ -171,11 +174,11 @@ exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwr
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 rmtables("phase_4.cal")
-gaincal(vis=vis3, caltable="phase_4.cal", field="", solint=solint, calmode="p",
+gaincal(vis=vis3, caltable="phase_4.cal", field=",".join(fields_after_split), solint=solint, calmode="p",
         refant="", gaintype="G", minsnr=5)
 
 rmtables("ampphase.cal")
-gaincal(vis=vis3, caltable="ampphase.cal", field="", solint=solint,
+gaincal(vis=vis3, caltable="ampphase.cal", field=",".join(fields_after_split), solint=solint,
         solnorm=True, calmode="ap", refant="", gaintype="G", minsnr=5)
 
 flagmanager(vis=vis3, mode='save', versionname='backup')
@@ -268,3 +271,47 @@ print("selfcal3:          peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigm
 sigma, peak = (fits.getdata('selfcal_spw3_selfcal_4ampphase_mfs.image.pbcor.fits')[slc].std(), np.nanmax(fits.getdata('selfcal_spw3_selfcal_4ampphase_mfs.image.pbcor.fits')))
 print("selfcal4 ampphase: peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
 print("Completed in {0}s".format(time.time()-t0))
+
+
+# Extras to try to reproduce bug:
+phasecenter = "J2000 19:23:41.629000 +14.30.42.38000"
+imsize = [3072,3072]
+cell = '0.05arcsec'
+solint = 'int'
+threshold = '50.0mJy'
+multiscale = [0,5,15,45]
+vis4 = 'w51_contvis_selfcal_4.ms'
+myimagebase = "selfcal_spw3_selfcal_4ampphase_mfs_dirty"
+os.system('rm -rf {0}.*'.format(myimagebase))
+clean(vis=vis4, imagename=myimagebase,
+      field="28", spw='', mode='mfs', outframe='LSRK',
+      multiscale=multiscale,
+      interpolation='linear', imagermode='mosaic', interactive=False,
+      minpb=0.4,
+      niter=0, threshold='5mJy', imsize=imsize, cell=cell,
+      phasecenter=phasecenter, weighting='briggs',
+      usescratch=True, pbcor=True, robust=-2.0)
+exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+
+
+myimagebase = "selfcal_spw3_selfcal_4ampphase_mfs_dirty_field32"
+os.system('rm -rf {0}.*'.format(myimagebase))
+clean(vis=vis4, imagename=myimagebase,
+      field="28", spw='', mode='mfs', outframe='LSRK',
+      multiscale=multiscale,
+      interpolation='linear', imagermode='mosaic', interactive=False,
+      minpb=0.4,
+      niter=0, threshold='5mJy', imsize=imsize, cell=cell,
+      phasecenter="", weighting='briggs',
+      usescratch=True, pbcor=True, robust=-2.0)
+exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
