@@ -24,6 +24,14 @@ if not os.path.exists(mergevis):
     concat(vis=[contvis7m,contvis12m], concatvis=mergevis)
 
 
+imsize_lo = [1280,1280]
+cell_lo = '0.15arcsec'
+multiscale_lo = [0, 3, 9, 27, 81]
+
+imsize_hi = [3072,3072]
+cell_hi = '0.052arcsec'
+multiscale_hi = [0, 5, 15, 45, 135]
+
 contimagename = 'w51_spw3_continuum_7m12m_noflag'
 
 for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage']:
@@ -35,12 +43,12 @@ clean(vis=mergevis,
       phasecenter='',
       mode='mfs',
       psfmode='clark',
-      imsize = [960,960],
-      cell= '0.15arcsec',
+      imsize = imsize_lo,
+      cell= cell_lo,
       weighting = 'natural',
       robust = 2.0,
-      niter = 10000,
-      threshold = '1.0mJy',
+      niter = 50000,
+      threshold = '20.0mJy',
       interactive = False,
       imagermode = 'mosaic',
       usescratch=False,
@@ -59,12 +67,12 @@ clean(vis=mergevis,
       phasecenter='',
       mode='mfs',
       psfmode='clark',
-      imsize = [2560,2560],
-      cell= '0.052arcsec',
+      imsize = imsize_hi,
+      cell= cell_hi,
       weighting = 'briggs',
       robust = 0.0,
-      niter = 10000,
-      threshold = '1.0mJy',
+      niter = 50000,
+      threshold = '2.0mJy',
       interactive = False,
       imagermode = 'mosaic',
       usescratch=False,
@@ -82,8 +90,8 @@ clean(vis=mergevis,
       phasecenter='',
       mode='mfs',
       psfmode='clark',
-      imsize = [2560,2560],
-      cell= '0.052arcsec',
+      imsize = imsize_hi,
+      cell= cell_hi,
       weighting = 'briggs',
       robust = 0.0,
       niter = 0,
@@ -94,7 +102,7 @@ clean(vis=mergevis,
       )
 exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
 
-contimagename = 'w51_spw3_continuum_7m12m_noflag_r0_mulstiscale'
+contimagename = 'w51_spw3_continuum_7m12m_noflag_r0_multiscale'
 
 for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage']:
     rmtables(contimagename+ext)
@@ -102,16 +110,16 @@ for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux
 clean(vis=mergevis,
       imagename=contimagename,
       field='w51',
-      multiscale=[0,3,6,9,12,15,18],
+      multiscale=multiscale_hi,
       phasecenter='',
       mode='mfs',
       psfmode='clark',
-      imsize = [2560,2560],
-      cell= '0.052arcsec',
+      imsize = imsize_hi,
+      cell= cell_hi,
       weighting = 'briggs',
       robust = 0.0,
-      niter = 10000,
-      threshold = '10.0mJy',
+      niter = 50000,
+      threshold = '20.0mJy',
       interactive = False,
       imagermode = 'mosaic',
       usescratch=False,

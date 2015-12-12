@@ -14,6 +14,7 @@ for spwnum in '1320':
             cvelvis12m = 'w51_concat.spw{0}.cvel'.format(ss)
             cvelvises.append(cvelvis12m)
             if not os.path.exists(cvelvis12m):
+                print("cveling {0}".format(cvelvis12m))
                 cvel(vis=finalvis12m,
                      outputvis=cvelvis12m,
                      passall=False, field=field, spw=str(ss), selectdata=True,
@@ -23,12 +24,15 @@ for spwnum in '1320':
                      width='{0}kHz'.format(fstep[spwnum]), interpolation='linear',
                      phasecenter='', restfreq='', outframe='LSRK', veltype='radio',
                      hanning=False,)
+            else:
+                print("skipping {0}".format(cvelvis12m))
         spw = spws_7m[spwnum]
         for ss in spw.split(","):
             ss = int(ss)
             cvelvis7m = 'w51_concat_7m.spw{0}.cvel'.format(ss)
             cvelvises.append(cvelvis7m)
             if not os.path.exists(cvelvis7m):
+                print("cveling {0}".format(cvelvis7m))
                 cvel(vis=finalvis7m,
                      outputvis=cvelvis7m,
                      passall=False, field=field, spw=str(ss), selectdata=True,
@@ -38,6 +42,8 @@ for spwnum in '1320':
                      width='{0}kHz'.format(fstep[spwnum]), interpolation='linear',
                      phasecenter='', restfreq='', outframe='LSRK', veltype='radio',
                      hanning=False,)
+            else:
+                print("skipping {0}".format(cvelvis7m))
         concat(vis=cvelvises,
                concatvis=concatvis,)
     else:

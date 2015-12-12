@@ -73,7 +73,8 @@ im.close()
 #      field='', standard='manual')
 #
 # ft claims there is no frequency overlap between the image and the data
-#ft(vis='w51_test_small_linecubesub.ms', model='test_continuum_min.image', usescratch=True, nterms=1)
+#ft(vis='w51_test_small_linecubesub.ms', model='test_continuum_min.image',
+#usescratch=True, nterms=1)
 
 uvsub('w51_test_small_linecubesub.ms')
 
