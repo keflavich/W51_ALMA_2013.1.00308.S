@@ -61,7 +61,7 @@ hdu2.writeto(paths.dpath('moments/temperature_LTE_321to303_mom0.fits'), clobber=
 fig2 = pl.figure(2)
 pl.clf()
 FF = aplpy.FITSFigure(hdu2, figure=fig2)
-FF.show_colorscale(cmap=cm, vmin=0, vmax=200, stretch='log', vmid=-50)
+FF.show_colorscale(cmap=cm, vmin=10, vmax=200, stretch='log', vmid=-50)
 FF.show_colorbar()
 FF.save(paths.fpath('H2CO_321_to_303_LTEtemperaturemap.png'))
 FF.show_contour(paths.dpath('evla/W51Ku_BDarray_continuum_2048_both_uniform.hires.clean.image.fits'),
