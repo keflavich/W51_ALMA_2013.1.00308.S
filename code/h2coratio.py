@@ -2,6 +2,7 @@ import numpy as np
 from spectral_cube import SpectralCube
 from astropy import units as u
 import paths
+from constants import distance
 
 p303 = paths.dpath('w51_H2CO_303_202_contsub.image.pbcor.fits')
 p321 = paths.dpath('w51_H2CO_321_220_contsub.image.pbcor.fits')
@@ -63,7 +64,17 @@ pl.clf()
 FF = aplpy.FITSFigure(hdu2, figure=fig2)
 FF.show_colorscale(cmap=cm, vmin=10, vmax=200, stretch='log', vmid=-50)
 FF.show_colorbar()
+FF.colorbar.set_axis_label_text("Temperature [K]")
+FF.add_scalebar((1*u.pc/distance).to(u.deg, u.dimensionless_angles()).value,)
+FF.scalebar.set_label('1 pc')
 FF.save(paths.fpath('H2CO_321_to_303_LTEtemperaturemap.png'))
 FF.show_contour(paths.dpath('evla/W51Ku_BDarray_continuum_2048_both_uniform.hires.clean.image.fits'),
-                colors=['k'], levels=[0.001])
+                colors=['k'], levels=[0.001], layer='black_contours')
 FF.save(paths.fpath('H2CO_321_to_303_LTEtemperaturemap_withCMcontours.png'))
+FF.hide_layer('black_contours')
+FF.show_contour(paths.dpath('evla/W51Ku_BDarray_continuum_2048_both_uniform.hires.clean.image.fits'),
+                colors=['w'], levels=[0.001], layer='white_contours')
+FF.save(paths.fpath('H2CO_321_to_303_LTEtemperaturemap_withwhiteCMcontours.png'))
+FF.hide_layer('white_contours')
+FF.show_regions(paths.rpath('cores.reg'), layer='cores')
+FF.save(paths.fpath('H2CO_321_to_303_LTEtemperaturemap_withcores.png'))

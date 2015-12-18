@@ -216,6 +216,7 @@ exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pb
 exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
 
 
+linesub='w51_concat_7m12m.spw1.merge.contsub'
 os.system("rm -rf w51_C18O_21_merge7m12m_contsub.*")
 clean(vis= linesub,
  imagename = "w51_C18O_21_merge7m12m_contsub",
@@ -231,12 +232,12 @@ clean(vis= linesub,
  imagermode='mosaic',
  interactive = False,
  niter = 10000,
- threshold = '10mJy',    
+ threshold = '50mJy',    
  imsize = [1280,1280],
  cell = '0.15arcsec',
  weighting = 'natural',
  multiscale = [0,3,9,27,81,243],
-      minpb=0.3,
+      minpb=0.4,
  pbcor=False,
  robust = 0.0)
 
