@@ -216,6 +216,25 @@ exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=
 exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
+
+myimagebase = "selfcal_spw3_selfcal_4ampphase_mfs_tclean"
+os.system('rm -rf {0}.*'.format(myimagebase))
+tclean(vis=vis4, imagename=myimagebase, field="", spw="", specmode='mfs',
+       deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
+       scales=multiscale, pblimit=0.4, interpolation='linear',
+       interactive=False, niter=10000,
+       threshold=threshold, imsize=imsize, cell=cell, phasecenter=phasecenter,
+       weighting='briggs', savemodel='modelcolumn', robust=-2.0)
+exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+
+
+
+
 # since ampphase fails by flagging out good data, try deeper here...
 # No, something else has caused problems.  Screw it, try ampphase.
 # oooooh, vis3.corrected = vis4.data, and clean automatically selected corrected... sigh
