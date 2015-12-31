@@ -1,2 +1,5 @@
-.cal
-.log
+*.cal
+*.log
+ipython_log*py
+*.last
+.DS_Store
