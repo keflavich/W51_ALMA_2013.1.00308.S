@@ -4,7 +4,7 @@ from astropy import log
 import paths
 import pyregion
 from astropy.io import fits
-from astropy.table import Table
+from astropy.table import Table,Column
 import masscalc
 
 regions = pyregion.open(paths.rpath('cores.reg'))
@@ -38,9 +38,11 @@ for reg in regions:
 
 # invert the table to make it parseable by astropy...
 # (this shouldn't be necessary....)
-results_inv = {}
-columns = {}
+results_inv = {'name':{}}
+columns = {'name':[]}
 for k,v in results.items():
+    results_inv['name'][k] = k
+    columns['name'].append(k)
     for kk,vv in v.items():
         if kk in results_inv:
             results_inv[kk][k] = vv
@@ -50,8 +52,12 @@ for k,v in results.items():
             columns[kk] = [vv]
 
 for c in columns:
-    columns[c] = columns[c] * units[c]
+    if c in units:
+        columns[c] = columns[c] * units[c]
 
-tbl = Table(columns)
+tbl = Table([Column(data=columns[k],
+                    name=k)
+             for k in ['name','peak','sum','npix','peak_mass','peak_col']])
 
+tbl.sort('peak_mass')
 tbl.write(paths.tpath("continuum_photometry.ipac"), format='ascii.ipac')
