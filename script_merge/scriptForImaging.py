@@ -41,16 +41,15 @@ clean(vis= linesub,
  interpolation = 'linear',
  imagermode='mosaic',
  interactive = False,
- niter = 5000,
- threshold = '1.8mJy', #req rms 5.85 mJy, 38 antennas, 33.8min tos, pwv 2 (for EB Xb4b),0.2 arcsec res, 0.728 MHz BW gives 1.8mJy!
- imsize = [3072,3072], # make it much bigger to avoid edge effects
+ niter = 15000,
+ # go to >5-sigma, especially for uniform...
+ threshold = '10mJy', #req rms 5.85 mJy, 38 antennas, 33.8min tos, pwv 2 (for EB Xb4b),0.2 arcsec res, 0.728 MHz BW gives 1.8mJy!
+ imsize = [3840,3840], # make it much bigger to avoid edge effects
  cell = '0.052arcsec',  #synth beam expected to be 0.2 arcsec, so 0.2/3= 0.06 arcsec cell
  weighting = 'uniform',
  pbcor=False,
  robust = 0.0)
 
-
-#----------testhigh resolution
 
 myimagebase= 'w51_merge7m12m_H2CO_303_202_contsub_uniform'
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
@@ -90,6 +89,7 @@ exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # e
 os.system("rm -rf w51_H2CO_303_202_merge7m12m_contsub.*")
 clean(vis= linesub,
  imagename = "w51_H2CO_303_202_merge7m12m_contsub",
+ multiscale = [0,3,9,27,81,243],
  field = "w51",
  spw = '',
  mode = 'velocity',
@@ -143,6 +143,67 @@ myimagebase= 'w51_H2CO_303_202_merge7m12m_contsub_vresolved'
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
 exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
 exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
+
+
+myimagebase= 'w51_H2CO_322_221_merge7m12m_contsub'
+os.system("rm -rf {0}.*".format(myimagebase))
+clean(vis= linesub,
+ imagename = myimagebase,
+ multiscale = [0,3,9,27,81,243],
+ field = "w51",
+ spw = '',
+ mode = 'velocity',
+ nchan = 70,
+ start = '20km/s',
+ width = '1.0km/s',
+ restfreq = '218.47563GHz',
+ outframe = 'LSRK',
+ interpolation = 'linear',
+ imagermode='mosaic',
+ interactive = False,
+ niter = 5000,
+ threshold = '1.5mJy', #req threshold 5.85 mJy, 38 antennas, 66min tos, pwv auto,1arcsec res, 0.728 MHz BW gives 1.5mJy!
+ imsize = [1280,1280],
+ cell = '0.15arcsec',
+ weighting = 'natural',
+ pbcor=False,
+ robust = 2.0)
+
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
+exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
+exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
+
+
+
+myimagebase= 'w51_H2CO_322_221_merge7m12m_contsub_uniform'
+os.system("rm -rf {0}.*".format(myimagebase))
+clean(vis= linesub,
+ imagename = myimagebase,
+ multiscale = [0,3,9,27,81,243], # multiscale has not yet been tuned to appropriate beam size
+ field = "w51",
+ spw = '',
+ mode = 'velocity',
+ nchan = 70,
+ start = '20km/s',
+ width = '1.0km/s',
+ restfreq = '218.47563GHz',
+ outframe = 'LSRK',
+ interpolation = 'linear',
+ imagermode='mosaic',
+ interactive = False,
+ niter = 15000,
+ threshold = '10mJy', # higher noise with uniform... but I want 5-sig here
+ imsize = [3840,3840],
+ cell = '0.052arcsec',
+ weighting = 'uniform',
+ pbcor=False,
+ robust = -2.0)
+
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
+exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
+exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
+
+
 
 
 #C18O(2-1)- Rest 219.560 GHz - SPW 1
@@ -246,6 +307,7 @@ impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myim
 exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
 exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
 
+linesub='w51_concat_7m12m.spw1.merge.contsub'
 os.system("rm -rf w51_SO_65-54_merge7m12m_contsub.*")
 clean(vis= linesub,
  imagename = "w51_SO_65-54_merge7m12m_contsub",
@@ -260,9 +322,9 @@ clean(vis= linesub,
  interpolation = 'linear',
  imagermode='mosaic',
  interactive = False,
- niter = 5000,
- threshold = '1.3mJy',
- imsize = [3072,3072],
+ niter = 10000,
+ threshold = '35mJy',
+ imsize = [3840,3840],
  cell = '0.052arcsec',
  weighting = 'uniform',
  pbcor=False,
@@ -386,9 +448,9 @@ clean(vis= linesub,
  interpolation = 'linear',
  imagermode='mosaic',
  interactive = False,
- niter = 5000,
- threshold = '1.3mJy',
- imsize = [3072,3072],
+ niter = 10000,
+ threshold = '35mJy', # rms ~7mJy
+ imsize = [3840,3840],
  cell = '0.052',
  weighting = 'briggs',
  pbcor=False,
