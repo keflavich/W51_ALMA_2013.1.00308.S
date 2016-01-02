@@ -47,14 +47,49 @@ clean(vis= linesub,
  imsize = [3840,3840], # make it much bigger to avoid edge effects
  cell = '0.052arcsec',  #synth beam expected to be 0.2 arcsec, so 0.2/3= 0.06 arcsec cell
  weighting = 'uniform',
+ minpb=0.4,
  pbcor=False,
- robust = 0.0)
+ robust=-2.0)
 
 
 myimagebase= 'w51_merge7m12m_H2CO_303_202_contsub_uniform'
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
 exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
 exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
+
+
+
+
+os.system("rm -rf w51_merge7m12m_H2CO_303_202_contsub_briggs0.*")
+clean(vis= linesub,
+ imagename = "w51_merge7m12m_H2CO_303_202_contsub_briggs0",
+ field = "w51",
+ spw = '',
+ mode = 'velocity',
+ nchan = 70,
+ start = '20km/s',
+ width = '1.0km/s',
+ restfreq = '218.222GHz',
+ outframe = 'LSRK',
+ interpolation = 'linear',
+ imagermode='mosaic',
+ interactive = False,
+ niter = 15000,
+ # go to >5-sigma, especially for uniform...
+ threshold = '10mJy', #req rms 5.85 mJy, 38 antennas, 33.8min tos, pwv 2 (for EB Xb4b),0.2 arcsec res, 0.728 MHz BW gives 1.8mJy!
+ imsize = [3840,3840], # make it much bigger to avoid edge effects
+ cell = '0.052arcsec',  #synth beam expected to be 0.2 arcsec, so 0.2/3= 0.06 arcsec cell
+ weighting = 'briggs',
+ minpb=0.4,
+ pbcor=False,
+ robust=0.0)
+
+
+myimagebase= 'w51_merge7m12m_H2CO_303_202_contsub_briggs0'
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
+exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
+exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
+
 
 #H2CO(3(0,3)-2(0,2) - concatenated datasets
 
@@ -77,8 +112,9 @@ clean(vis= 'w51_concat_7m12m.spw0.merge',
  imsize = [1280,1280],
  cell = '0.15arcsec',
  weighting = 'natural',
+ minpb=0.4,
  pbcor=False,
- robust = 0.0)
+ robust=2.0)
 
 
 myimagebase= 'w51_H2CO_303_202_merge7m12m_nocontsub'
@@ -106,8 +142,9 @@ clean(vis= linesub,
  imsize = [1280,1280],
  cell = '0.15arcsec',
  weighting = 'natural',
+ minpb=0.4,
  pbcor=False,
- robust = 0.0)
+ robust=2.0)
 
 myimagebase= 'w51_H2CO_303_202_merge7m12m_contsub'
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
@@ -134,9 +171,9 @@ clean(vis= linesub,
  imsize = [1280,1280],
  cell = '0.15arcsec',
  weighting = 'natural',
-      minpb=0.3,
+ minpb=0.4,
  pbcor=False,
- robust = 0.0)
+ robust=2.0)
 
 
 myimagebase= 'w51_H2CO_303_202_merge7m12m_contsub_vresolved'
@@ -166,8 +203,9 @@ clean(vis= linesub,
  imsize = [1280,1280],
  cell = '0.15arcsec',
  weighting = 'natural',
+ minpb=0.4,
  pbcor=False,
- robust = 2.0)
+ robust=2.0)
 
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
 exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
@@ -175,7 +213,7 @@ exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # e
 
 
 
-myimagebase= 'w51_H2CO_322_221_merge7m12m_contsub_uniform'
+myimagebase= 'w51_H2CO_322_221_merge7m12m_contsub_briggs0'
 os.system("rm -rf {0}.*".format(myimagebase))
 clean(vis= linesub,
  imagename = myimagebase,
@@ -195,9 +233,10 @@ clean(vis= linesub,
  threshold = '10mJy', # higher noise with uniform... but I want 5-sig here
  imsize = [3840,3840],
  cell = '0.052arcsec',
- weighting = 'uniform',
+ weighting = 'briggs',
+ minpb=0.4,
  pbcor=False,
- robust = -2.0)
+ robust=0.0)
 
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
 exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
@@ -228,9 +267,9 @@ clean(vis= 'w51_concat_7m12m.spw1.merge',
  imsize = [1280,1280],
  cell = '0.15arcsec',
  weighting = 'natural',
-      minpb=0.3,
+ minpb=0.4,
  pbcor=False,
- robust = 0.0)
+ robust=2.0)
 
 myimagebase= 'w51_C18O_21_merge7m12m_nocontsub'
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
@@ -268,8 +307,9 @@ clean(vis= linesub,
  imsize = [1280,1280],
  cell = '0.15arcsec',
  weighting = 'natural',
+ minpb=0.4,
  pbcor=False,
- robust = 0.0)
+ robust=2.0)
 
 myimagebase= 'w51_H2CO_321_220_merge7m12m_contsub'
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
@@ -298,9 +338,9 @@ clean(vis= linesub,
  cell = '0.15arcsec',
  weighting = 'natural',
  multiscale = [0,3,9,27,81,243],
-      minpb=0.4,
+ minpb=0.4,
  pbcor=False,
- robust = 0.0)
+ robust=2.0)
 
 myimagebase= 'w51_C18O_21_merge7m12m_contsub'
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
@@ -308,9 +348,9 @@ exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pb
 exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
 
 linesub='w51_concat_7m12m.spw1.merge.contsub'
-os.system("rm -rf w51_SO_65-54_merge7m12m_contsub.*")
+os.system("rm -rf w51_SO_65-54_merge7m12m_contsub_hires.*")
 clean(vis= linesub,
- imagename = "w51_SO_65-54_merge7m12m_contsub",
+ imagename = "w51_SO_65-54_merge7m12m_contsub_hires",
  field = "w51",
  spw = '',
  mode = 'velocity',
@@ -326,9 +366,10 @@ clean(vis= linesub,
  threshold = '35mJy',
  imsize = [3840,3840],
  cell = '0.052arcsec',
- weighting = 'uniform',
+ weighting = 'briggs',
+ minpb=0.4,
  pbcor=False,
- robust = 0.0)
+ robust=0.0)
 
 myimagebase= 'w51_SO_65-54_merge7m12m_contsub'
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
@@ -358,8 +399,9 @@ clean(vis= 'w51_concat_7m12m.spw2.merge',
  imsize = [1280,1280],
  cell = '0.15arcsec',
  weighting = 'natural',
+ minpb=0.4,
  pbcor=False,
- robust = 0.0)
+ robust=2.0)
 
 myimagebase= 'w51_12CO_21_merge7m12m_nocontsub'
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
@@ -386,8 +428,9 @@ clean(vis= 'w51_concat_7m12m.spw2.merge',
  imsize = [1280,1280],
  cell = '0.15arcsec',
  weighting = 'natural',
+ minpb=0.4,
  pbcor=False,
- robust = 0.0)
+ robust=2.0)
 
 myimagebase= 'w51_13CS_54_merge7m12m_nocontsub'
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
@@ -425,8 +468,9 @@ clean(vis= linesub,
  imsize = [1280,1280],
  cell = '0.15arcsec',
  weighting = 'natural',
+ minpb=0.4,
  pbcor=False,
- robust = 0.0)
+ robust=2.0)
 
 myimagebase= 'w51_12CO_21_merge7m12m_contsub'
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
@@ -453,6 +497,7 @@ clean(vis= linesub,
  imsize = [3840,3840],
  cell = '0.052',
  weighting = 'briggs',
+ minpb=0.4,
  pbcor=False,
  robust = 0.0)
 
@@ -480,8 +525,9 @@ clean(vis= linesub,
  imsize = [1280,1280],
  cell = '0.15arcsec',
  weighting = 'natural',
+ minpb=0.4,
  pbcor=False,
- robust = 0.0)
+ robust=2.0)
 
 
 myimagebase= 'w51_13CS_54_merge7m12m_contsub'
@@ -508,8 +554,9 @@ clean(vis= linesub,
  imsize = [1280,1280],
  cell = '0.15arcsec',
  weighting = 'natural',
+ minpb=0.4,
  pbcor=False,
- robust = 0.0)
+ robust=2.0)
 
 
 
