@@ -16,7 +16,7 @@ print("Done splitting")
 
 solint = 'int'
 threshold = '50.0mJy'
-multiscale = [0,5,15,45,135,405]
+multiscale = [0,5,15,45,135]
 #multiscale = []
 
 clearcal(vis='w51_merge_test_small.ms')

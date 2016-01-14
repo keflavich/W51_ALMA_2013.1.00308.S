@@ -236,10 +236,10 @@ exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, 
 myimagebase = "selfcal_spw3_selfcal_4ampphase_mfs_tclean_deeper"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis4, imagename=myimagebase, field="", spw="", specmode='mfs',
-       deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
-       scales=multiscale, pblimit=0.4, interpolation='linear',
+       deconvolver='clark', gridder='mosaic', outframe='LSRK',
+       pblimit=0.4, interpolation='linear',
        interactive=False, niter=100000,
-       threshold=threshold, imsize=imsize, cell=cell, phasecenter=phasecenter,
+       threshold='15mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
        weighting='briggs', savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb',

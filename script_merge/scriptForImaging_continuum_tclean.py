@@ -195,3 +195,90 @@ clean(vis=mergevis,
       )
 exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
 
+
+
+
+contimagename = 'w51_spw3_continuum_7m12m_noflag_r0_multiscale_iterative_tclean'
+
+for ext in extensions:
+    rmtables(contimagename+ext)
+
+tclean(vis=mergevis,
+      imagename=contimagename,
+      field='w51',
+      phasecenter='',
+      specmode='mfs',
+      deconvolver='clark',
+      imsize = [3072,3072],
+      cell= '0.052arcsec',
+      weighting = 'briggs',
+      robust = 0.0,
+      niter = 10000,
+      threshold = '10.0mJy',
+      interactive = False,
+      gridder = 'mosaic',
+      savemodel='none',
+       mask='auto-pb',
+      )
+exportfits(contimagename+".image", contimagename+".firstiter1s.image.fits", dropdeg=True, overwrite=True)
+exportfits(contimagename+".model", contimagename+".firstiter1s.model.fits", dropdeg=True, overwrite=True)
+tclean(vis=mergevis,
+      imagename=contimagename,
+      field='w51',
+      scales=[0,5,15,45],
+      phasecenter='',
+      specmode='mfs',
+      deconvolver='multiscale',
+      imsize = [3072,3072],
+      cell= '0.052arcsec',
+      weighting = 'briggs',
+      robust = 0.0,
+      niter = 10000,
+      threshold = '20.0mJy',
+      interactive = False,
+      gridder = 'mosaic',
+      savemodel='none',
+       mask='auto-pb',
+      )
+exportfits(contimagename+".image", contimagename+".firstiterMS.image.fits", dropdeg=True, overwrite=True)
+exportfits(contimagename+".model", contimagename+".firstiterMS.model.fits", dropdeg=True, overwrite=True)
+tclean(vis=mergevis,
+      imagename=contimagename,
+      field='w51',
+      phasecenter='',
+      specmode='mfs',
+      deconvolver='clark',
+      imsize = [3072,3072],
+      cell= '0.052arcsec',
+      weighting = 'briggs',
+      robust = 0.0,
+      niter = 10000,
+      threshold = '1.0mJy',
+      interactive = False,
+      gridder = 'mosaic',
+      savemodel='none',
+       mask='auto-pb',
+      )
+exportfits(contimagename+".image", contimagename+".final1s.image.fits", dropdeg=True, overwrite=True)
+exportfits(contimagename+".model", contimagename+".final1s.model.fits", dropdeg=True, overwrite=True)
+tclean(vis=mergevis,
+      imagename=contimagename,
+      field='w51',
+      scales=[0,5,15,45],
+      phasecenter='',
+      specmode='mfs',
+      deconvolver='multiscale',
+      imsize = [3072,3072],
+      cell= '0.052arcsec',
+      weighting = 'briggs',
+      robust = 0.0,
+      niter = 10000,
+      threshold = '2.0mJy',
+      interactive = False,
+      gridder = 'mosaic',
+      savemodel='none',
+       mask='auto-pb',
+      )
+exportfits(contimagename+".image", contimagename+".finalMS.image.fits", dropdeg=True, overwrite=True)
+exportfits(contimagename+".model", contimagename+".finalMS.model.fits", dropdeg=True, overwrite=True)
+
