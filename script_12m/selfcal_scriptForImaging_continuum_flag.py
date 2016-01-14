@@ -29,7 +29,8 @@ cell = '0.05arcsec'
 solint = 'int'
 threshold = '50.0mJy'
 multiscale = [0,5,15,45]
-#multiscale = []
+# multiscale clean... does not work.
+multiscale = []
 
 clearcal(vis=vis0)
 #flagmanager(vis=vis0, versionname='flagdata_1', mode='restore')
@@ -64,8 +65,8 @@ exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=
 exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
-rmtables('phase.cal')
-gaincal(vis=vis0, caltable="phase.cal", field=field, solint='inf',
+rmtables('selfcal_spw3_phase.cal')
+gaincal(vis=vis0, caltable="selfcal_spw3_phase.cal", field=field, solint='inf',
         calmode="p", refant="", gaintype="G", minsnr=5)
 
 #plotcal(caltable="phase.cal", xaxis="time", yaxis="phase", subplot=331,
@@ -73,8 +74,8 @@ gaincal(vis=vis0, caltable="phase.cal", field=field, solint='inf',
 #        fontsize=10.0,)
 
 flagmanager(vis=vis0, mode='save', versionname='backup')
-applycal(vis=vis0, field="", gaintable=["phase.cal"],
-         interp="linear", applymode='calonly')
+applycal(vis=vis0, field="", gaintable=["selfcal_spw3_phase.cal"],
+         interp="linear", applymode='calonly', calwt=False)
 flagmanager(vis=vis0, mode='restore', versionname='backup')
 summary0 = flagdata(vis=vis0, mode='summary')
 print("{flagged}/{total} flagged points in vis0".format(**summary0))
@@ -101,8 +102,8 @@ exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=
 exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
-rmtables('phase_2.cal')
-gaincal(vis=vis1, caltable="phase_2.cal", field=field,
+rmtables('selfcal_spw3_phase_2.cal')
+gaincal(vis=vis1, caltable="selfcal_spw3_phase_2.cal", field=field,
         solint=solint, calmode="p", refant="", gaintype="G", minsnr=5)
 #plotcal(caltable="phase_2.cal", xaxis="time", yaxis="phase", subplot=331,
 #        iteration="antenna", plotrange=[0,0,-30,30], markersize=5,
@@ -110,8 +111,8 @@ gaincal(vis=vis1, caltable="phase_2.cal", field=field,
 
 
 flagmanager(vis=vis1, mode='save', versionname='backup')
-applycal(vis=vis1, field="", gaintable=["phase_2.cal"],
-         interp="linear", applymode='calonly')
+applycal(vis=vis1, field="", gaintable=["selfcal_spw3_phase_2.cal"],
+         interp="linear", applymode='calonly', calwt=False)
 flagmanager(vis=vis1, mode='restore', versionname='backup')
 summary1 = flagdata(vis=vis1, mode='summary')
 print("{flagged}/{total} flagged points in vis1".format(**summary1))
@@ -138,16 +139,16 @@ exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=
 exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
-rmtables("phase_3.cal")
-gaincal(vis=vis2, caltable="phase_3.cal", field=field,
+rmtables("selfcal_spw3_phase_3.cal")
+gaincal(vis=vis2, caltable="selfcal_spw3_phase_3.cal", field=field,
         solint=solint, calmode="p", refant="", gaintype="G", minsnr=5)
 #plotcal(caltable="phase_3.cal", xaxis="time", yaxis="phase", subplot=331,
 #        iteration="antenna", plotrange=[0,0,-30,30], markersize=5,
 #        fontsize=10.0,)
 
 flagmanager(vis=vis2, mode='save', versionname='backup')
-applycal(vis=vis2, field="", gaintable=["phase_3.cal"],
-         interp="linear", applymode='calonly')
+applycal(vis=vis2, field="", gaintable=["selfcal_spw3_phase_3.cal"],
+         interp="linear", applymode='calonly', calwt=False)
 flagmanager(vis=vis2, mode='restore', versionname='backup')
 summary2 = flagdata(vis=vis2, mode='summary')
 print("{flagged}/{total} flagged points in vis2".format(**summary2))
@@ -174,17 +175,17 @@ exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=
 exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
-rmtables("phase_4.cal")
-gaincal(vis=vis3, caltable="phase_4.cal", field=field, solint=solint, calmode="p",
+rmtables("selfcal_spw3_phase_4.cal")
+gaincal(vis=vis3, caltable="selfcal_spw3_phase_4.cal", field=field, solint=solint, calmode="p",
         refant="", gaintype="G", minsnr=5)
 
-rmtables("ampphase.cal")
-gaincal(vis=vis3, caltable="ampphase.cal", field=field, solint=solint,
+rmtables("selfcal_spw3_ampphase.cal")
+gaincal(vis=vis3, caltable="selfcal_spw3_ampphase.cal", field=field, solint=solint,
         solnorm=True, calmode="ap", refant="", gaintype="G", minsnr=5)
 
 flagmanager(vis=vis3, mode='save', versionname='backup')
-applycal(vis=vis3, field="", gaintable=["phase_4.cal", 'ampphase.cal'],
-         interp="linear", applymode='calonly')
+applycal(vis=vis3, field="", gaintable=["selfcal_spw3_phase_4.cal", 'selfcal_spw3_ampphase.cal'],
+         interp="linear", applymode='calonly', calwt=False)
 summary3 = flagdata(vis=vis3, mode='summary')
 print("{flagged}/{total} flagged points in vis3 afer applycal".format(**summary3))
 flagmanager(vis=vis3, mode='restore', versionname='backup')
@@ -226,12 +227,26 @@ tclean(vis=vis4, imagename=myimagebase, field="", spw="", specmode='mfs',
        threshold=threshold, imsize=imsize, cell=cell, phasecenter=phasecenter,
        weighting='briggs', savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
-impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
+impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb',
         outfile=myimagebase+'.image.pbcor', overwrite=True)
 exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
+myimagebase = "selfcal_spw3_selfcal_4ampphase_mfs_tclean_deeper"
+os.system('rm -rf {0}.*'.format(myimagebase))
+tclean(vis=vis4, imagename=myimagebase, field="", spw="", specmode='mfs',
+       deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
+       scales=multiscale, pblimit=0.4, interpolation='linear',
+       interactive=False, niter=100000,
+       threshold=threshold, imsize=imsize, cell=cell, phasecenter=phasecenter,
+       weighting='briggs', savemodel='modelcolumn', robust=-2.0)
+exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 
 
@@ -291,6 +306,17 @@ print("selfcal3:          peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigm
 sigma, peak = (fits.getdata('selfcal_spw3_selfcal_4ampphase_mfs.image.pbcor.fits')[slc].std(), np.nanmax(fits.getdata('selfcal_spw3_selfcal_4ampphase_mfs.image.pbcor.fits')))
 print("selfcal4 ampphase: peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
 print("Completed in {0}s".format(time.time()-t0))
+
+"""
+Stats (mfs):
+dirty:             peak=0.57990 sigma=0.00056 s/n=1031.64363
+clean:             peak=0.62937 sigma=0.00059 s/n=1060.74211
+selfcal:           peak=0.64963 sigma=0.00059 s/n=1104.06681
+selfcal2:          peak=0.65766 sigma=0.00059 s/n=1115.24844
+selfcal3:          peak=0.66613 sigma=0.00059 s/n=1129.29259
+selfcal4 ampphase: peak=0.70497 sigma=0.00063 s/n=1126.32878
+Completed in 2088.65619898s
+"""
 
 
 # Extras to try to reproduce bug:

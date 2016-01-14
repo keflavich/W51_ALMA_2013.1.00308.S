@@ -1,13 +1,17 @@
 os.system('rm -rf w51_merge_test_small.ms')
 os.system('rm -rf w51_merge_test_small.ms.flagversions')
-assert split(vis='continuum_7m12m_noflag.ms',
-      outputvis='w51_merge_test_small.ms',
+# can use either of:
+# 355M    continuum_7m12m.ms
+# 371M    continuum_7m12m_noflag.ms
+assert split(vis='continuum_7m12m.ms',
+             outputvis='w51_merge_test_small.ms',
       #field=','.join([str(x-4) for x in (31,32,33,39,40,24,25)]),
       #field='28', # 32-4
-      field='32,56',
-      spw='',
-      datacolumn='data',
-     )
+      #field='27,35,36,28,55,52,56', # 32 I know, but 56...? must be 7m!
+             field='31,32,33,39,40,24,25,51,52,55,56',
+             spw='', # I guess we're using all spws?
+             datacolumn='data',
+            )
 print("Done splitting")
 
 solint = 'int'
@@ -24,13 +28,21 @@ clean(vis='w51_merge_test_small.ms', imagename="test_mfs_dirty", field="", spw='
       cell='0.06arcsec', phasecenter='J2000 19h23m43.905 +14d30m28.08',
       weighting='briggs', usescratch=True, pbcor=False, robust=-2.0)
 exportfits('test_mfs_dirty.image', 'test_mfs_dirty.image.fits', dropdeg=True, overwrite=True)
-exportfits('test_mfs_dirty.image.pbcor', 'test_mfs_dirty.image.pbcor.fits', dropdeg=True, overwrite=True)
+#exportfits('test_mfs_dirty.image.pbcor', 'test_mfs_dirty.image.pbcor.fits', dropdeg=True, overwrite=True)
 exportfits('test_mfs_dirty.model', 'test_mfs_dirty.model.fits', dropdeg=True, overwrite=True)
 exportfits('test_mfs_dirty.residual', 'test_mfs_dirty.residual.fits', dropdeg=True, overwrite=True)
-sigma, peak = (fits.getdata('test_mfs_dirty.image.pbcor.fits')[slc].std(),     np.nanmax(fits.getdata('test_mfs_dirty.image.pbcor.fits')))
+slc = slice(80,200), slice(80,200)
+from astropy.io import fits
+import numpy as np
+sigma, peak = (fits.getdata('test_mfs_dirty.image.fits')[slc].std(),     np.nanmax(fits.getdata('test_mfs_dirty.image.fits')))
 print("dirty:             peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
 
 os.system('rm -rf test_mfs.*')
+clean(vis='w51_merge_test_small.ms', imagename="test_mfs", field="", spw='',
+      mode='mfs', outframe='LSRK', interpolation='linear', imagermode='mosaic',
+      interactive=False, niter=10000, threshold=threshold, imsize=[512,512],
+      cell='0.06arcsec', phasecenter='J2000 19h23m43.905 +14d30m28.08',
+      weighting='briggs', usescratch=True, pbcor=False, robust=-2.0)
 clean(vis='w51_merge_test_small.ms', imagename="test_mfs", field="", spw='',
       mode='mfs', outframe='LSRK', interpolation='linear', imagermode='mosaic',
       multiscale=multiscale,
@@ -38,11 +50,12 @@ clean(vis='w51_merge_test_small.ms', imagename="test_mfs", field="", spw='',
       cell='0.06arcsec', phasecenter='J2000 19h23m43.905 +14d30m28.08',
       weighting='briggs', usescratch=True, pbcor=False, robust=-2.0)
 exportfits('test_mfs.image', 'test_mfs.image.fits', dropdeg=True, overwrite=True)
-exportfits('test_mfs.image.pbcor', 'test_mfs.image.pbcor.fits', dropdeg=True, overwrite=True)
+#exportfits('test_mfs.image.pbcor', 'test_mfs.image.pbcor.fits', dropdeg=True, overwrite=True)
 exportfits('test_mfs.model', 'test_mfs.model.fits', dropdeg=True, overwrite=True)
 exportfits('test_mfs.residual', 'test_mfs.residual.fits', dropdeg=True, overwrite=True)
 
-gaincal(vis='w51_merge_test_small.ms', caltable="phase.cal", field="", solint='inf',
+os.system('rm -rf phase.cal')
+gaincal(vis='w51_merge_test_small.ms', caltable="phase.cal", field="", solint=solint,
         calmode="p", refant="", gaintype="G")
 #plotcal(caltable="phase.cal", xaxis="time", yaxis="phase", subplot=331,
 #        iteration="antenna", plotrange=[0,0,-30,30], markersize=5,
@@ -50,7 +63,7 @@ gaincal(vis='w51_merge_test_small.ms', caltable="phase.cal", field="", solint='i
 
 flagmanager(vis='w51_merge_test_small.ms', mode='save', versionname='backup')
 applycal(vis="w51_merge_test_small.ms", field="", gaintable=["phase.cal"],
-         interp="linear")
+         interp="linear", applymode='calonly', calwt=False)
 flagmanager(vis='w51_merge_test_small.ms', mode='restore', versionname='backup')
 os.system('rm -rf w51_merge_test_small_selfcal.ms')
 os.system('rm -rf w51_merge_test_small_selfcal.ms.flagversions')
@@ -60,13 +73,19 @@ split(vis="w51_merge_test_small.ms", outputvis="w51_merge_test_small_selfcal.ms"
 os.system('rm -rf test_selfcal_mfs.*')
 clean(vis='w51_merge_test_small_selfcal.ms', imagename="test_selfcal_mfs",
       field="", spw='', mode='mfs', outframe='LSRK',
+      interpolation='linear', imagermode='mosaic', interactive=False,
+      niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
+      usescratch=True, pbcor=False, robust=-2.0)
+clean(vis='w51_merge_test_small_selfcal.ms', imagename="test_selfcal_mfs",
+      field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
       niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
       usescratch=True, pbcor=False, robust=-2.0)
 exportfits('test_selfcal_mfs.image', 'test_selfcal_mfs.image.fits', dropdeg=True, overwrite=True)
-exportfits('test_selfcal_mfs.image.pbcor', 'test_selfcal_mfs.image.pbcor.fits', dropdeg=True, overwrite=True)
+#exportfits('test_selfcal_mfs.image.pbcor', 'test_selfcal_mfs.image.pbcor.fits', dropdeg=True, overwrite=True)
 exportfits('test_selfcal_mfs.model', 'test_selfcal_mfs.model.fits', dropdeg=True, overwrite=True)
 exportfits('test_selfcal_mfs.residual', 'test_selfcal_mfs.residual.fits', dropdeg=True, overwrite=True)
 
@@ -80,7 +99,7 @@ gaincal(vis="w51_merge_test_small_selfcal.ms", caltable="phase_2.cal", field="",
 
 flagmanager(vis='w51_merge_test_small_selfcal.ms', mode='save', versionname='backup')
 applycal(vis="w51_merge_test_small_selfcal.ms", field="", gaintable=["phase_2.cal"],
-         interp="linear")
+         interp="linear", applymode='calonly', calwt=False)
 flagmanager(vis='w51_merge_test_small_selfcal.ms', mode='restore', versionname='backup')
 os.system('rm -rf w51_merge_test_small_selfcal_2.ms')
 os.system('rm -rf w51_merge_test_small_selfcal_2.ms.flagversions')
@@ -90,26 +109,32 @@ split(vis="w51_merge_test_small_selfcal.ms", outputvis="w51_merge_test_small_sel
 os.system('rm -rf test_selfcal_2_mfs.*')
 clean(vis='w51_merge_test_small_selfcal_2.ms', imagename="test_selfcal_2_mfs",
       field="", spw='', mode='mfs', outframe='LSRK',
+      interpolation='linear', imagermode='mosaic', interactive=False,
+      niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
+      usescratch=True, pbcor=False, robust=-2.0)
+clean(vis='w51_merge_test_small_selfcal_2.ms', imagename="test_selfcal_2_mfs",
+      field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
       niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
       usescratch=True, pbcor=False, robust=-2.0)
 exportfits('test_selfcal_2_mfs.image', 'test_selfcal_2_mfs.image.fits', dropdeg=True, overwrite=True)
-exportfits('test_selfcal_2_mfs.image.pbcor', 'test_selfcal_2_mfs.image.pbcor.fits', dropdeg=True, overwrite=True)
+#exportfits('test_selfcal_2_mfs.image.pbcor', 'test_selfcal_2_mfs.image.pbcor.fits', dropdeg=True, overwrite=True)
 exportfits('test_selfcal_2_mfs.model', 'test_selfcal_2_mfs.model.fits', dropdeg=True, overwrite=True)
 exportfits('test_selfcal_2_mfs.residual', 'test_selfcal_2_mfs.residual.fits', dropdeg=True, overwrite=True)
 
 os.system("rm -rf phase_3.cal")
 gaincal(vis="w51_merge_test_small_selfcal_2.ms", caltable="phase_3.cal", field="",
-        solint=solint, calmode="p", refant="", gaintype="G")
+               solint=solint, calmode="p", refant="", gaintype="G")
 #plotcal(caltable="phase_3.cal", xaxis="time", yaxis="phase", subplot=331,
 #        iteration="antenna", plotrange=[0,0,-30,30], markersize=5,
 #        fontsize=10.0,)
 
 flagmanager(vis='w51_merge_test_small_selfcal_2.ms', mode='save', versionname='backup')
-applycal(vis="w51_merge_test_small_selfcal_2.ms", field="", gaintable=["phase_2.cal"],
-         interp="linear")
+applycal(vis="w51_merge_test_small_selfcal_2.ms", field="", gaintable=["phase_3.cal"],
+         interp="linear", applymode='calonly', calwt=False)
 flagmanager(vis='w51_merge_test_small_selfcal_2.ms', mode='restore', versionname='backup')
 os.system('rm -rf w51_merge_test_small_selfcal_3.ms')
 os.system('rm -rf w51_merge_test_small_selfcal_3.ms.flagversions')
@@ -119,13 +144,19 @@ split(vis="w51_merge_test_small_selfcal_2.ms", outputvis="w51_merge_test_small_s
 os.system('rm -rf test_selfcal_3_mfs.*')
 clean(vis='w51_merge_test_small_selfcal_3.ms', imagename="test_selfcal_3_mfs",
       field="", spw='', mode='mfs', outframe='LSRK',
+      interpolation='linear', imagermode='mosaic', interactive=False,
+      niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
+      usescratch=True, pbcor=False, robust=-2.0)
+clean(vis='w51_merge_test_small_selfcal_3.ms', imagename="test_selfcal_3_mfs",
+      field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
       niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
       usescratch=True, pbcor=False, robust=-2.0)
 exportfits('test_selfcal_3_mfs.image', 'test_selfcal_3_mfs.image.fits', dropdeg=True, overwrite=True)
-exportfits('test_selfcal_3_mfs.image.pbcor', 'test_selfcal_3_mfs.image.pbcor.fits', dropdeg=True, overwrite=True)
+#exportfits('test_selfcal_3_mfs.image.pbcor', 'test_selfcal_3_mfs.image.pbcor.fits', dropdeg=True, overwrite=True)
 exportfits('test_selfcal_3_mfs.model', 'test_selfcal_3_mfs.model.fits', dropdeg=True, overwrite=True)
 exportfits('test_selfcal_3_mfs.residual', 'test_selfcal_3_mfs.residual.fits', dropdeg=True, overwrite=True)
 
@@ -139,19 +170,58 @@ gaincal(vis="w51_merge_test_small_selfcal_3.ms", caltable="phase_4.cal", field="
 
 os.system("rm -rf ampphase.cal")
 gaincal(vis="w51_merge_test_small_selfcal_3.ms", caltable="ampphase.cal", field="",
-        solint=solint, solnorm=True, calmode="ap", refant="", gaintype="G")
+        solint='inf', solnorm=True, calmode="ap", refant="", gaintype="G")
 
 flagmanager(vis='w51_merge_test_small_selfcal_3.ms', mode='save', versionname='backup')
-applycal(vis="w51_merge_test_small_selfcal_3.ms", field="", gaintable=["phase_3.cal"],
-         interp="linear")
+applycal(vis="w51_merge_test_small_selfcal_3.ms", field="", gaintable=["phase_4.cal"],
+         interp="linear", applymode='calonly', calwt=False)
 flagmanager(vis='w51_merge_test_small_selfcal_3.ms', mode='restore', versionname='backup')
 os.system('rm -rf w51_merge_test_small_selfcal_4.ms')
 os.system('rm -rf w51_merge_test_small_selfcal_4.ms.flagversions')
-split(vis="w51_merge_test_small_selfcal_3.ms", outputvis="w51_merge_test_small_selfcal_4.ms",
-      datacolumn="corrected")
+split(vis="w51_merge_test_small_selfcal_3.ms",
+      outputvis="w51_merge_test_small_selfcal_4.ms", datacolumn="corrected")
+
 
 os.system('rm -rf test_selfcal_4_mfs.*')
-clean(vis='w51_merge_test_small_selfcal_4.ms', imagename="test_selfcal_4ampphase_mfs",
+clean(vis='w51_merge_test_small_selfcal_4.ms', imagename="test_selfcal_4_mfs",
+      field="", spw='', mode='mfs', outframe='LSRK',
+      interpolation='linear', imagermode='mosaic', interactive=False,
+      niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
+      usescratch=True, pbcor=False, robust=-2.0)
+clean(vis='w51_merge_test_small_selfcal_4.ms', imagename="test_selfcal_4_mfs",
+      field="", spw='', mode='mfs', outframe='LSRK',
+      multiscale=multiscale,
+      interpolation='linear', imagermode='mosaic', interactive=False,
+      niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
+      usescratch=True, pbcor=False, robust=-2.0)
+exportfits('test_selfcal_4_mfs.image', 'test_selfcal_4_mfs.image.fits', dropdeg=True, overwrite=True)
+#exportfits('test_selfcal_4_mfs.image.pbcor', 'test_selfcal_4_mfs.image.pbcor.fits', dropdeg=True, overwrite=True)
+exportfits('test_selfcal_4_mfs.model', 'test_selfcal_4_mfs.model.fits', dropdeg=True, overwrite=True)
+exportfits('test_selfcal_4_mfs.residual', 'test_selfcal_4_mfs.residual.fits', dropdeg=True, overwrite=True)
+
+os.system('rm -rf w51_merge_test_small_selfcal_4ampphase.ms')
+os.system('rm -rf w51_merge_test_small_selfcal_4ampphase.ms.flagversions')
+split(vis="w51_merge_test_small_selfcal_4.ms",
+      outputvis="w51_merge_test_small_selfcal_4ampphase.ms",
+      datacolumn="data")
+flagmanager(vis='w51_merge_test_small_selfcal_4ampphase.ms', mode='save', versionname='backup')
+applycal(vis="w51_merge_test_small_selfcal_4ampphase.ms", field="",
+         gaintable=["ampphase.cal"],
+         interp="linear", applymode='calonly', calwt=False)
+flagmanager(vis='w51_merge_test_small_selfcal_4ampphase.ms', mode='restore', versionname='backup')
+
+os.system('rm -rf test_selfcal_4ampphase_mfs.*')
+clean(vis='w51_merge_test_small_selfcal_4ampphase.ms',
+      imagename="test_selfcal_4ampphase_mfs",
+      field="", spw='', mode='mfs', outframe='LSRK',
+      interpolation='linear', imagermode='mosaic', interactive=False,
+      niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
+      usescratch=True, pbcor=False, robust=-2.0)
+clean(vis='w51_merge_test_small_selfcal_4ampphase.ms',
+      imagename="test_selfcal_4ampphase_mfs",
       field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
@@ -159,7 +229,7 @@ clean(vis='w51_merge_test_small_selfcal_4.ms', imagename="test_selfcal_4ampphase
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
       usescratch=True, pbcor=False, robust=-2.0)
 exportfits('test_selfcal_4ampphase_mfs.image', 'test_selfcal_4ampphase_mfs.image.fits', dropdeg=True, overwrite=True)
-exportfits('test_selfcal_4ampphase_mfs.image.pbcor', 'test_selfcal_4ampphase_mfs.image.pbcor.fits', dropdeg=True, overwrite=True)
+#exportfits('test_selfcal_4ampphase_mfs.image.pbcor', 'test_selfcal_4ampphase_mfs.image.pbcor.fits', dropdeg=True, overwrite=True)
 exportfits('test_selfcal_4ampphase_mfs.model', 'test_selfcal_4ampphase_mfs.model.fits', dropdeg=True, overwrite=True)
 exportfits('test_selfcal_4ampphase_mfs.residual', 'test_selfcal_4ampphase_mfs.residual.fits', dropdeg=True, overwrite=True)
 
@@ -170,7 +240,7 @@ os.system('rm -rf w51_merge_test_small_multifield.ms.flagversions')
 assert split(vis='continuum_7m12m_noflag.ms',
       outputvis='w51_merge_test_small_multifield.ms',
       #field=','.join([str(x-4) for x in (31,32,33,39,40,24,25)]),
-      field="31,32,33,39,40,24,25,56,51,52",
+      field="31,32,33,39,40,24,25,55,56,51,52",
       #field='28', # 32-4
       spw='',
       datacolumn='data',
@@ -180,25 +250,38 @@ assert split(vis='continuum_7m12m_noflag.ms',
 os.system('rm -rf test_multifield_mfs.*')
 clean(vis='w51_merge_test_small_multifield.ms', imagename="test_multifield_mfs",
       field="", spw='', mode='mfs', outframe='LSRK',
+      interpolation='linear', imagermode='mosaic', interactive=False,
+      niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
+      usescratch=True, pbcor=False, robust=-2.0)
+clean(vis='w51_merge_test_small_multifield.ms', imagename="test_multifield_mfs",
+      field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
       interpolation='linear', imagermode='mosaic', interactive=False,
       niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
       usescratch=True, pbcor=False, robust=-2.0)
 exportfits('test_multifield_mfs.image', 'test_multifield_mfs.image.fits', dropdeg=True, overwrite=True)
-exportfits('test_multifield_mfs.image.pbcor', 'test_multifield_mfs.image.pbcor.fits', dropdeg=True, overwrite=True)
+#exportfits('test_multifield_mfs.image.pbcor', 'test_multifield_mfs.image.pbcor.fits', dropdeg=True, overwrite=True)
 exportfits('test_multifield_mfs.model', 'test_multifield_mfs.model.fits', dropdeg=True, overwrite=True)
 exportfits('test_multifield_mfs.residual', 'test_multifield_mfs.residual.fits', dropdeg=True, overwrite=True)
 
 
 flagmanager(vis='w51_merge_test_small_multifield.ms', mode='save', versionname='backup')
 applycal(vis="w51_merge_test_small_multifield.ms", field="",
-         gaintable=["phase.cal","phase_2.cal","phase_3.cal","ampphase.cal"], interp="linear")
+         gaintable=["phase.cal","phase_2.cal","phase_3.cal","ampphase.cal"],
+         interp="linear", applymode='calonly', calwt=False)
 flagmanager(vis='w51_merge_test_small_multifield.ms', mode='restore', versionname='backup')
 
 
 
 os.system('rm -rf test_multifield_selfcal_mfs.*')
+clean(vis='w51_merge_test_small_multifield.ms', imagename="test_multifield_selfcal_mfs",
+      field="", spw='', mode='mfs', outframe='LSRK',
+      interpolation='linear', imagermode='mosaic', interactive=False,
+      niter=10000, threshold=threshold, imsize=[512,512], cell='0.06arcsec',
+      phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
+      usescratch=True, pbcor=False, robust=-2.0)
 clean(vis='w51_merge_test_small_multifield.ms', imagename="test_multifield_selfcal_mfs",
       field="", spw='', mode='mfs', outframe='LSRK',
       multiscale=multiscale,
@@ -207,7 +290,7 @@ clean(vis='w51_merge_test_small_multifield.ms', imagename="test_multifield_selfc
       phasecenter='J2000 19h23m43.905 +14d30m28.08', weighting='briggs',
       usescratch=True, pbcor=False, robust=-2.0)
 exportfits('test_multifield_selfcal_mfs.image', 'test_multifield_selfcal_mfs.image.fits', dropdeg=True, overwrite=True)
-exportfits('test_multifield_selfcal_mfs.image.pbcor', 'test_multifield_selfcal_mfs.image.pbcor.fits', dropdeg=True, overwrite=True)
+#exportfits('test_multifield_selfcal_mfs.image.pbcor', 'test_multifield_selfcal_mfs.image.pbcor.fits', dropdeg=True, overwrite=True)
 exportfits('test_multifield_selfcal_mfs.model', 'test_multifield_selfcal_mfs.model.fits', dropdeg=True, overwrite=True)
 exportfits('test_multifield_selfcal_mfs.residual', 'test_multifield_selfcal_mfs.residual.fits', dropdeg=True, overwrite=True)
 
@@ -215,19 +298,19 @@ import numpy as np
 from astropy.io import fits
 print("Stats (mfs):")
 slc = slice(80,200), slice(80,200)
-sigma, peak = (fits.getdata('test_mfs_dirty.image.pbcor.fits')[slc].std(),     np.nanmax(fits.getdata('test_mfs_dirty.image.pbcor.fits')))
+sigma, peak = (fits.getdata('test_mfs_dirty.image.fits')[slc].std(),     np.nanmax(fits.getdata('test_mfs_dirty.image.fits')))
 print("dirty:             peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
-sigma, peak = (fits.getdata('test_mfs.image.pbcor.fits')[slc].std(),           np.nanmax(fits.getdata('test_mfs.image.pbcor.fits')))
+sigma, peak = (fits.getdata('test_mfs.image.fits')[slc].std(),           np.nanmax(fits.getdata('test_mfs.image.fits')))
 print("clean:             peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
-sigma, peak = (fits.getdata('test_selfcal_mfs.image.pbcor.fits')[slc].std(),   np.nanmax(fits.getdata('test_selfcal_mfs.image.pbcor.fits')))
+sigma, peak = (fits.getdata('test_selfcal_mfs.image.fits')[slc].std(),   np.nanmax(fits.getdata('test_selfcal_mfs.image.fits')))
 print("selfcal:           peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
-sigma, peak = (fits.getdata('test_selfcal_2_mfs.image.pbcor.fits')[slc].std(), np.nanmax(fits.getdata('test_selfcal_2_mfs.image.pbcor.fits')))
+sigma, peak = (fits.getdata('test_selfcal_2_mfs.image.fits')[slc].std(), np.nanmax(fits.getdata('test_selfcal_2_mfs.image.fits')))
 print("selfcal2:          peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
-sigma, peak = (fits.getdata('test_selfcal_3_mfs.image.pbcor.fits')[slc].std(), np.nanmax(fits.getdata('test_selfcal_3_mfs.image.pbcor.fits')))
+sigma, peak = (fits.getdata('test_selfcal_3_mfs.image.fits')[slc].std(), np.nanmax(fits.getdata('test_selfcal_3_mfs.image.fits')))
 print("selfcal3:          peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
-sigma, peak = (fits.getdata('test_selfcal_4ampphase_mfs.image.pbcor.fits')[slc].std(), np.nanmax(fits.getdata('test_selfcal_4ampphase_mfs.image.pbcor.fits')))
+sigma, peak = (fits.getdata('test_selfcal_4ampphase_mfs.image.fits')[slc].std(), np.nanmax(fits.getdata('test_selfcal_4ampphase_mfs.image.fits')))
 print("selfcal4 ampphase: peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
-sigma, peak = (fits.getdata('test_multifield_mfs.image.pbcor.fits')[slc].std(), np.nanmax(fits.getdata('test_multifield_mfs.image.pbcor.fits')))
+sigma, peak = (fits.getdata('test_multifield_mfs.image.fits')[slc].std(), np.nanmax(fits.getdata('test_multifield_mfs.image.fits')))
 print("multifield:        peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
-sigma, peak = (fits.getdata('test_multifield_selfcal_mfs.image.pbcor.fits')[slc].std(), np.nanmax(fits.getdata('test_multifield_selfcal_mfs.image.pbcor.fits')))
+sigma, peak = (fits.getdata('test_multifield_selfcal_mfs.image.fits')[slc].std(), np.nanmax(fits.getdata('test_multifield_selfcal_mfs.image.fits')))
 print("multifield_selfcal peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))

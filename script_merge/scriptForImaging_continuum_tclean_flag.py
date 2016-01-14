@@ -5,6 +5,7 @@ def clean(vis, imagename, **kwargs):
     tclean(vis = vis,
            imagename = imagename,
            phasecenter=phasecenter,
+           mask='auto-pb', # masks at minpb=0.2.  0.4 or 0.5 are desired, but very difficult to configure
            **kwargs)
  #         field = '',
  #         spw = '', # there should be only one

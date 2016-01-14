@@ -1,3 +1,9 @@
+"""
+Important note: whenever using cvel, make sure the resolution changes by no
+more than 2x, otherwise linear interpolation will result in loss of signal:
+
+    https://help.almascience.org/index.php?/Knowledgebase/Article/View/172/5/why-are-data-binned-averaged-by-task-cvel-so-noisy
+"""
 import numpy as np
 from calibrated_configuration import field, phasecenter, cell, imsize, weighting, robust, threshold, spws_12m, spws_7m, finalvis12m, finalvis7m, nchans_total, frange, fstep
 
