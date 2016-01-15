@@ -91,7 +91,7 @@ tclean(vis=vis4, imagename=myimagebase, field="", spw="", specmode='mfs',
        deconvolver='hogbom', gridder='mosaic', outframe='LSRK',
        pblimit=0.4, interpolation='linear',
        interactive=False, niter=100000,
-       threshold='10mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
+       threshold='1mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
        weighting='briggs', savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb',

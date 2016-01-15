@@ -294,17 +294,17 @@ import numpy as np
 from astropy.io import fits
 print("Stats (mfs):")
 slc = slice(1007,1434), slice(1644,1900)
-sigma, peak = (fits.getdata('selfcal_spw3_dirty.image.fits')[slc].std(),     np.nanmax(fits.getdata('selfcal_spw3_dirty.image.fits')))
+sigma, peak = (fits.getdata('merge_selfcal_spw3_dirty.image.fits')[slc].std(),     np.nanmax(fits.getdata('merge_selfcal_spw3_dirty.image.fits')))
 print("dirty:             peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
-sigma, peak = (fits.getdata('selfcal_spw3_mfs.image.pbcor.fits')[slc].std(),           np.nanmax(fits.getdata('selfcal_spw3_mfs.image.pbcor.fits')))
+sigma, peak = (fits.getdata('merge_selfcal_spw3_mfs.image.pbcor.fits')[slc].std(),           np.nanmax(fits.getdata('merge_selfcal_spw3_mfs.image.pbcor.fits')))
 print("clean:             peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
-sigma, peak = (fits.getdata('selfcal_spw3_selfcal_mfs.image.pbcor.fits')[slc].std(),   np.nanmax(fits.getdata('selfcal_spw3_selfcal_mfs.image.pbcor.fits')))
+sigma, peak = (fits.getdata('merge_selfcal_spw3_mfs.image.pbcor.fits')[slc].std(),   np.nanmax(fits.getdata('merge_selfcal_spw3_mfs.image.pbcor.fits')))
 print("selfcal:           peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
-sigma, peak = (fits.getdata('selfcal_spw3_selfcal_2_mfs.image.pbcor.fits')[slc].std(), np.nanmax(fits.getdata('selfcal_spw3_selfcal_2_mfs.image.pbcor.fits')))
+sigma, peak = (fits.getdata('merge_selfcal_spw3_selfcal_2_mfs.image.pbcor.fits')[slc].std(), np.nanmax(fits.getdata('merge_selfcal_spw3_selfcal_2_mfs.image.pbcor.fits')))
 print("selfcal2:          peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
-sigma, peak = (fits.getdata('selfcal_spw3_selfcal_3_mfs.image.pbcor.fits')[slc].std(), np.nanmax(fits.getdata('selfcal_spw3_selfcal_3_mfs.image.pbcor.fits')))
+sigma, peak = (fits.getdata('merge_selfcal_spw3_selfcal_3_mfs.image.pbcor.fits')[slc].std(), np.nanmax(fits.getdata('merge_selfcal_spw3_selfcal_3_mfs.image.pbcor.fits')))
 print("selfcal3:          peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
-sigma, peak = (fits.getdata('selfcal_spw3_selfcal_4ampphase_mfs.image.pbcor.fits')[slc].std(), np.nanmax(fits.getdata('selfcal_spw3_selfcal_4ampphase_mfs.image.pbcor.fits')))
+sigma, peak = (fits.getdata('merge_selfcal_spw3_selfcal_4ampphase_mfs.image.pbcor.fits')[slc].std(), np.nanmax(fits.getdata('merge_selfcal_spw3_selfcal_4ampphase_mfs.image.pbcor.fits')))
 print("selfcal4 ampphase: peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
 print("Completed in {0}s".format(time.time()-t0))
 
@@ -318,47 +318,3 @@ selfcal3:          peak=0.66613 sigma=0.00059 s/n=1129.29259
 selfcal4 ampphase: peak=0.70497 sigma=0.00063 s/n=1126.32878
 Completed in 2088.65619898s
 """
-
-
-# Extras to try to reproduce bug:
-phasecenter = "J2000 19:23:41.629000 +14.30.42.38000"
-imsize = [3072,3072]
-cell = '0.05arcsec'
-solint = 'int'
-threshold = '50.0mJy'
-multiscale = [0,5,15,45]
-vis4 = 'w51_continuum_7m12m_contvis_selfcal_4.ms'
-myimagebase = "merge_selfcal_spw3_selfcal_4ampphase_mfs_dirty"
-os.system('rm -rf {0}.*'.format(myimagebase))
-clean(vis=vis4, imagename=myimagebase,
-      field="", spw='', mode='mfs', outframe='LSRK',
-      multiscale=multiscale,
-      interpolation='linear', imagermode='mosaic', interactive=False,
-      minpb=0.4,
-      niter=0, threshold='5mJy', imsize=imsize, cell=cell,
-      phasecenter=phasecenter, weighting='briggs',
-      usescratch=True, pbcor=True, robust=-2.0)
-exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
-impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
-        outfile=myimagebase+'.image.pbcor', overwrite=True)
-exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
-exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
-exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
-
-
-myimagebase = "merge_selfcal_spw3_selfcal_4ampphase_mfs_dirty_field32"
-os.system('rm -rf {0}.*'.format(myimagebase))
-clean(vis=vis4, imagename=myimagebase,
-      field="28", spw='', mode='mfs', outframe='LSRK',
-      multiscale=multiscale,
-      interpolation='linear', imagermode='mosaic', interactive=False,
-      minpb=0.4,
-      niter=0, threshold='5mJy', imsize=imsize, cell=cell,
-      phasecenter="", weighting='briggs',
-      usescratch=True, pbcor=True, robust=-2.0)
-exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
-impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
-        outfile=myimagebase+'.image.pbcor', overwrite=True)
-exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
-exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
-exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
