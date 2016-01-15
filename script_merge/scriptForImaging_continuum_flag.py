@@ -1,5 +1,6 @@
 """
-Attempt to image the continuum by flagging out lines, splitting, then doing imaging things...
+Attempt to image the continuum by flagging out lines, splitting, then doing
+imaging things...
 """
 
 mergevis = 'continuum_7m12m.ms'
@@ -133,6 +134,7 @@ makemask(mode='copy', inpimage=dirtyimage,
          inpmask=dirtyimage+":dirty_mask_50mJy", output='dirty_50mJy.mask')
 
 
+# looks pretty good.  This is the best one I've seen yet.
 contimagename = 'w51_spw3_continuum_7m12m_r0_multiscale_minpb'
 
 for ext in extnames:
@@ -178,6 +180,33 @@ clean(vis=mergevis,
       robust = 0.0,
       niter = 50000,
       threshold = '20.0mJy',
+      interactive = False,
+      imagermode = 'mosaic',
+      usescratch=False,
+      pbcor=True,
+      mask='dirty_50mJy.mask',
+      )
+exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
+
+
+# results in gridded artifacts
+contimagename = 'w51_spw3_continuum_7m12m_r0_monoscale_mask50mJy'
+
+for ext in extnames:
+    rmtables(contimagename+ext)
+
+clean(vis=mergevis,
+      imagename=contimagename,
+      field='w51',
+      phasecenter='4',
+      mode='mfs',
+      psfmode='clark',
+      imsize = [2560,2560],
+      cell= '0.052arcsec',
+      weighting = 'briggs',
+      robust = 0.0,
+      niter = 50000,
+      threshold = '1.0mJy',
       interactive = False,
       imagermode = 'mosaic',
       usescratch=False,
