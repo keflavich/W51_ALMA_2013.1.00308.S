@@ -46,10 +46,12 @@ residualimage = myimagebase+".residual"
 ia.open(residualimage)
 ia.calcmask(mask=residualimage+" > 0.02", name='clean_mask_20mJy')
 ia.close()
+os.system('rm -rf clean_20mJy.mask')
 makemask(mode='copy', inpimage=residualimage,
          inpmask=residualimage+":clean_mask_20mJy", output='clean_20mJy.mask')
 exportfits('clean_20mJy.mask', 'clean_20mJy.mask.fits', dropdeg=True, overwrite=True)
 
+iter0 = myimagebase
 myimagebase = "selfcal_spw3_selfcal_4ampphase_mfs_tclean_10mJy_mask_iter1"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis4, imagename=myimagebase, field="", spw="", specmode='mfs',
@@ -57,7 +59,8 @@ tclean(vis=vis4, imagename=myimagebase, field="", spw="", specmode='mfs',
        pblimit=0.4, interpolation='linear',
        interactive=False, niter=100000,
        threshold='10mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
-       mask='dirty_20mJy.mask',
+       mask='clean_20mJy.mask',
+       startmodel=iter0+".image",
        weighting='briggs', savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb',
@@ -70,11 +73,13 @@ residualimage = myimagebase+".residual"
 ia.open(residualimage)
 ia.calcmask(mask=residualimage+" > 0.01", name='clean_mask_10mJy')
 ia.close()
+os.system('rm -rf clean_10mJy.mask')
 makemask(mode='copy', inpimage=residualimage,
          inpmask=residualimage+":clean_mask_10mJy", output='clean_10mJy.mask')
 exportfits('clean_10mJy.mask', 'clean_10mJy.mask.fits', dropdeg=True, overwrite=True)
 
 
+iter1 = myimagebase
 myimagebase = "selfcal_spw3_selfcal_4ampphase_mfs_tclean_1mJy_mask_iter2"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis4, imagename=myimagebase, field="", spw="", specmode='mfs',
@@ -82,7 +87,8 @@ tclean(vis=vis4, imagename=myimagebase, field="", spw="", specmode='mfs',
        pblimit=0.4, interpolation='linear',
        interactive=False, niter=100000,
        threshold='1mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
-       mask='dirty_10mJy.mask',
+       mask='clean_10mJy.mask',
+       startmodel=iter1+".image",
        weighting='briggs', savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb',
