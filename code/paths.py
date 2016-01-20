@@ -14,6 +14,7 @@ analysispath = os.path.join(root, 'analysis/')
 plotcodepath = os.path.join(root, 'plot_codes/')
 observingpath = os.path.join(root, 'observing/')
 tablepath = os.path.join(root, 'tables/')
+vlapath = os.path.join(os.path.expanduser('~/work/w51/paper_w51_evla/'))
 
 def fpath(x, figurepath=figurepath):
     return os.path.join(figurepath, x)
@@ -42,3 +43,5 @@ def tpath(x, tablepath=tablepath):
 def texpath(x, texpath=texpath):
     return os.path.join(texpath, x)
 
+def vpath(x, vlapath=vlapath):
+    return os.path.join(vlapath, x)

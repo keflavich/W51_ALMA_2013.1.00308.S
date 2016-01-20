@@ -1,4 +1,6 @@
 from astropy import units as u
+import pylab as pl
+from spectral_cube import SpectralCube
 import aplpy
 import os
 import paths
@@ -34,7 +36,6 @@ rgb_im = aplpy.make_rgb_image(data=rgb_cube_naco_fits,
                               output=rgb_cube_naco_png, stretch_g='arcsinh',
                               embed_avm_tags=True)
 
-import pylab as pl
 fig1 = pl.figure(1)
 fig1.clf()
 F = aplpy.FITSFigure(rgb_cube_naco_png, figure=fig1)
@@ -50,5 +51,50 @@ F.show_contour('../../alma/FITS/w51_spw3_continuum.image.fits', levels=[0.15,
                                                                         0.45,
                                                                         0.60,
                                                                         0.75],
-               colors=['w']*4)
+               colors=['w']*4, layer='alma_cont_lores')
 F.save(paths.fpath("NACO_green_outflows_aplpy_CONTours.png"))
+
+F.hide_layer('alma_cont_lores')
+F.show_contour('../../alma/FITS/12m/selfcal_spw3_selfcal_4ampphase_mfs_tclean_deeper_10mJy.image.pbcor.fits',
+               levels=[0.04,
+                       #0.05,
+                       0.06,
+                       #0.08,
+                       0.10,
+                       #0.15,
+                       0.20,
+                       #0.30,
+                       0.40,], colors=['w']*12,
+               layer='alma_cont_hires')
+F.save(paths.fpath("NACO_green_outflows_aplpy_CONTours_hires.png"))
+
+
+h77a = SpectralCube.read(paths.vpath('data/W51north_H77_Outflow_cutout.fits'))
+h77a_outflow = h77a.spectral_slab(-16*u.km/u.s, -60*u.km/u.s).sum(axis=0)
+h77a_green = paths.dpath('W51_H77a_LacyJetOutflow_Sum.fits')
+h77a_outflow.hdu.writeto(h77a_green)
+
+rgb_cube_h77a_fits = 'outflow_co_redblue_h77a_green.fits'
+if not os.path.exists(rgb_cube_h77a_fits):
+    aplpy.make_rgb_cube([red_fits, h77a_green, blue_fits], rgb_cube_h77a_fits)
+
+rgb_cube_h77a_png = rgb_cube_h77a_fits[:-5]+"_asinhgreen.png"
+rgb_im = aplpy.make_rgb_image(data=rgb_cube_h77a_fits,
+                              output=rgb_cube_h77a_png,
+                              vmin_g=0.003,
+                              vmax_g=0.03,
+                              vmax_r=4.0,
+                              vmin_r=0.00,
+                              vmax_b=2.0,
+                              vmin_b=0.00,
+                              embed_avm_tags=True)
+
+fig2 = pl.figure(2)
+fig2.clf()
+F = aplpy.FITSFigure(rgb_cube_h77a_png, figure=fig2)
+F.show_rgb(rgb_cube_h77a_png)
+F.recenter(290.91665, 14.518691, radius=0.005)
+F.add_scalebar((0.1*u.pc / (5400*u.pc)).to(u.deg,u.dimensionless_angles()))
+F.scalebar.set_label('0.1 pc')
+F.scalebar.set_color('w')
+F.save(paths.fpath("H77a_green_outflows_aplpy.png"))

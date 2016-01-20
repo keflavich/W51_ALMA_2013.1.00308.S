@@ -442,14 +442,15 @@ clean(vis= linesub,
  pbcor=False,
  robust = 0.0)
 
-os.system("rm -rf w51_12CO_21_contsub_hires.*")
+linesub='w51_concat.ms.split.cal.spw2.contsub'
+os.system("rm -rf w51_12CO_21_contsub_natural.*")
 clean(vis= linesub,
- imagename = "w51_12CO_21_contsub_hires",
+ imagename = "w51_12CO_21_contsub_natural",
  field = "w51",
  spw = '0,1', 
  mode = 'velocity',
  nchan = 250,
- start = '-150km/s', 
+ start = '-120km/s', 
  width = '1.265km/s',
  restfreq = '230.538GHz',
  outframe = 'LSRK',
@@ -458,11 +459,66 @@ clean(vis= linesub,
  interactive = False,
  niter = 5000,
  threshold = '1.3mJy',    
+ imsize = [960,960],
+ minpb=0.4,
+ cell = '0.15arcsec',
+ weighting = 'natural',
+ pbcor=False)
+
+linesub='w51_concat.ms.split.cal.spw2.contsub'
+os.system("rm -rf w51_12CO_21_contsub_hires.*")
+clean(vis= linesub,
+ imagename = "w51_12CO_21_contsub_hires",
+ field = "w51",
+ spw = '0,1', 
+ mode = 'velocity',
+ nchan = 250,
+ start = '-120km/s', 
+ width = '1.265km/s',
+ restfreq = '230.538GHz',
+ outframe = 'LSRK',
+ interpolation = 'linear', 
+ imagermode='mosaic',
+ interactive = False,
+ niter = 5000,
+ threshold = '20mJy',    
+ minpb=0.4,
  imsize = [2560,2560],
  cell = '0.052',
  weighting = 'briggs',
  pbcor=False,
  robust = 0.0)
+
+linesub='w51_concat.ms.split.cal.spw2.contsub'
+os.system("rm -rf w51_12CO_21_contsub_uniform.*")
+clean(vis= linesub,
+ imagename = "w51_12CO_21_contsub_uniform",
+ field = "w51",
+ spw = '0,1', 
+ mode = 'velocity',
+ nchan = 250,
+ start = '-120km/s', 
+ width = '1.265km/s',
+ restfreq = '230.538GHz',
+ outframe = 'LSRK',
+ interpolation = 'linear', 
+ imagermode='mosaic',
+ interactive = False,
+ niter = 5000,
+ threshold = '25mJy',    
+ minpb=0.4,
+ imsize = [2560,2560],
+ cell = '0.052',
+ weighting = 'uniform',
+ pbcor=False)
+
+for suffix in ('hires','uniform','natural'):
+    myimagebase= 'w51_12CO_21_contsub_{0}'.format(suffix)
+    print("Exportfitsing {0}".format(myimagebase))
+    impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
+    exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
+    exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
+
 
 os.system("rm -rf w51_13CS_54_contsub.*")
 clean(vis= linesub,
@@ -561,11 +617,6 @@ exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # e
 
 
 myimagebase= 'w51_12CO_21_contsub'
-impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
-exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
-exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
-
-myimagebase= 'w51_12CO_21_contsub_hires'
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
 exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
 exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image

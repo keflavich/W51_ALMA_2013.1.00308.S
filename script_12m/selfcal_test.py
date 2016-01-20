@@ -5,6 +5,14 @@
 #                 spw='',
 #                 datacolumn='data',
 #                )
+# split(vis='w51_concat.ms.split.cal',
+#             outputvis='w51_test_small.ms',
+#             field='31,32,33,39,40,24,25',
+#             spw='',
+#             width=192,
+#             datacolumn='data',
+#            )
+#
 
 assert os.path.exists('w51_test_small.ms')
 
@@ -25,15 +33,15 @@ clean(vis='w51_test_small.ms', imagename="test_mfs", field="", spw='',
       weighting='briggs', usescratch=True, pbcor=False, robust=-2.0)
 exportfits('test_mfs.image', 'test_mfs.image.fits', dropdeg=True, overwrite=True)
 
-gaincal(vis='w51_test_small.ms', caltable="phase.cal", field="", solint="30s",
-        calmode="p", refant="", gaintype="G")
+gaincal(vis='w51_test_small.ms', caltable="phase.cal", field="", solint="inf",
+        calmode="p", refant="", gaintype="G", minsnr=5)
 #plotcal(caltable="phase.cal", xaxis="time", yaxis="phase", subplot=331,
 #        iteration="antenna", plotrange=[0,0,-30,30], markersize=5,
 #        fontsize=10.0,)
 
 flagmanager(vis='w51_test_small.ms', mode='save', versionname='backup')
 applycal(vis="w51_test_small.ms", field="", gaintable=["phase.cal"],
-         interp="linear", applymode='calonly')
+         interp="linear", applymode='calonly', calwt=False)
 flagmanager(vis='w51_test_small.ms', mode='restore', versionname='backup')
 os.system('rm -rf w51_test_small_selfcal.ms')
 os.system('rm -rf w51_test_small_selfcal.ms.flagversions')
@@ -59,7 +67,7 @@ gaincal(vis="w51_test_small_selfcal.ms", caltable="phase_2.cal", field="",
 
 flagmanager(vis='w51_test_small_selfcal.ms', mode='save', versionname='backup')
 applycal(vis="w51_test_small_selfcal.ms", field="", gaintable=["phase_2.cal"],
-         interp="linear", applymode='calonly')
+         interp="linear", applymode='calonly', calwt=False)
 flagmanager(vis='w51_test_small_selfcal.ms', mode='restore', versionname='backup')
 os.system('rm -rf w51_test_small_selfcal_2.ms')
 os.system('rm -rf w51_test_small_selfcal_2.ms.flagversions')
@@ -86,7 +94,7 @@ flagmanager(vis='w51_test_small_selfcal_2.ms', mode='save',
             versionname='backup')
 applycal(vis="w51_test_small_selfcal_2.ms", field="",
          gaintable=["phase_3.cal"],
-         interp="linear", applymode='calonly')
+         interp="linear", applymode='calonly', calwt=False)
 flagmanager(vis='w51_test_small_selfcal.ms', mode='restore',
             versionname='backup')
 os.system('rm -rf w51_test_small_selfcal_3.ms')
