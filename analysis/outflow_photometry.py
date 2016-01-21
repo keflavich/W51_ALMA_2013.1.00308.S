@@ -1,3 +1,4 @@
+import string
 import numpy as np
 from astropy import units as u
 from astropy import log
@@ -14,11 +15,10 @@ regions = pyregion.open(paths.rpath('outflow_ellipses.reg'))
 
 cofile = SpectralCube.read(paths.dpath('w51_12CO_21_contsub_hires.image.pbcor.fits'))
 cube = cofile.with_spectral_unit(u.km/u.s)
-cube = cube.to(u.K, equivalencies=u.brightness_temperature(cube.beam.sr,
-                                                           cube.wcs.wcs.restfrq*u.Hz))
 pixsize = wcs.utils.proj_plane_pixel_area(cube.wcs.celestial)**0.5*u.deg
 pixsize_phys = (pixsize * constants.distance).to(u.pc, u.dimensionless_angles())
 dv = cube.spectral_axis.diff()[0]
+tb_equiv = u.brightness_temperature(cube.beam.sr, cube.wcs.wcs.restfrq*u.Hz)
 
 results = {}
 units = {'peak':u.K,
@@ -26,31 +26,51 @@ units = {'peak':u.K,
          'integ':u.K*u.km/u.s,
          'npix':u.dimensionless_unscaled,
          'peak_mass':u.M_sun,
-         'peak_col':u.cm**-2}
+         'peak_col':u.cm**-2,
+         'mean_col':u.cm**-2,
+         'total_mass':u.M_sun,
+         'pixsize':u.deg,
+         'pixsize_phys':u.pc,
+         'v1': u.km/u.s,
+         'v2': u.km/u.s,
+        }
+
+suffixes = string.ascii_letters
 
 for reg in regions:
     if 'text' not in reg.attr[1]:
         continue
 
     shreg = pyregion.ShapeList([reg])
-    name,v1,v2 = reg.attr[1]['text'].split()
+    name_,v1,v2 = reg.attr[1]['text'].split()
+    v1 = float(v1)*u.km/u.s
+    v2 = float(v2)*u.km/u.s
+
+    ii = 0
+    name = name_+'_a'
+    while name in results:
+        ii = ii+1
+        name = name_+"_"+suffixes[ii]
+
     log.info(name)
 
-    scube = cube.spectral_slab(v1*u.km/u.s,
-                               v2*u.km/u.s)
+    scube = cube.spectral_slab(v1, v2)
     scube = scube.subcube_from_ds9region(shreg)
+    scube = scube.to(u.K, equivalencies=tb_equiv)
 
-    results[name] = {'peak': scube.max()*u.K,
-                     'mean': scube.mean()*u.K,
-                     'integ': scube.moment0(axis=0).mean(),
-                     'npix': scube[0,:,:].mask.include().sum(),
+    results[name] = {'peak': scube.max(),
+                     'mean': scube.mean(),
+                     'integ': np.nanmean(scube.moment0(axis=0).value)*u.K*u.km/u.s,
+                     'npix': scube.mask.include(view=(0, slice(None), slice(None))).sum(),
                      'pixsize': pixsize,
                      'pixsize_phys': pixsize_phys,
+                     'v1': v1,
+                     'v2': v2,
                     }
-    results[name]['peak_col'] = masscalc.co21_conversion_factor()*results[name]['peak']*dv
+    results[name]['peak_col'] = masscalc.co21_conversion_factor(results[name]['peak'])*results[name]['peak']*dv/masscalc.co_abund
     results[name]['peak_mass'] = (results[name]['peak_col'] * pixsize_phys**2 *
                                   constants.mh2).to(u.M_sun)
-    results[name]['mean_col'] = results[name]['integ'] * masscalc.co21_conversion_factor()
+    results[name]['mean_col'] = results[name]['integ'] * masscalc.co21_conversion_factor(results[name]['peak'])/masscalc.co_abund
     results[name]['total_mass'] = (results[name]['mean_col'] * pixsize_phys**2 *
                                    constants.mh2).to(u.M_sun)
 
@@ -71,7 +91,12 @@ for k,v in results.items():
 
 for c in columns:
     if c in units:
-        columns[c] = columns[c] * units[c]
+        if hasattr(columns[c], 'value'):
+            pass
+        elif hasattr(columns[c][0], 'value'):
+            columns[c] = np.array([x.value for x in columns[c]]) * units[c]
+        else:
+            columns[c] = np.array(columns[c])
 
 tbl = Table([Column(data=columns[k],
                     name=k)
