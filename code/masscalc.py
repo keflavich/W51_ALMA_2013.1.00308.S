@@ -7,3 +7,7 @@ def mass_conversion_factor(TK=20, d=distance.to(u.kpc).value):
 
 def col_conversion_factor(TK=20):
     return 2.19e22 * (np.exp(13.01/TK - 1))
+
+def co21_conversion_factor():
+    # eqn 6 of Ginsburg 2009
+    return 3.27e18 * u.cm**-2 / (u.K*u.km/u.s)

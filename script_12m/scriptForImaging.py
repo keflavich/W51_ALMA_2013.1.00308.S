@@ -489,35 +489,47 @@ clean(vis= linesub,
  pbcor=False,
  robust = 0.0)
 
-linesub='w51_concat.ms.split.cal.spw2.contsub'
-os.system("rm -rf w51_12CO_21_contsub_uniform.*")
-clean(vis= linesub,
- imagename = "w51_12CO_21_contsub_uniform",
- field = "w51",
- spw = '0,1', 
- mode = 'velocity',
- nchan = 250,
- start = '-120km/s', 
- width = '1.265km/s',
- restfreq = '230.538GHz',
- outframe = 'LSRK',
- interpolation = 'linear', 
- imagermode='mosaic',
- interactive = False,
- niter = 5000,
- threshold = '25mJy',    
- minpb=0.4,
- imsize = [2560,2560],
- cell = '0.052',
- weighting = 'uniform',
- pbcor=False)
+# Affected by serious bug
+# linesub='w51_concat.ms.split.cal.spw2.contsub'
+# os.system("rm -rf w51_12CO_21_contsub_uniform.*")
+# clean(vis= linesub,
+#  imagename = "w51_12CO_21_contsub_uniform",
+#  field = "w51",
+#  spw = '0,1', 
+#  mode = 'velocity',
+#  nchan = 250,
+#  start = '-120km/s', 
+#  width = '1.265km/s',
+#  restfreq = '230.538GHz',
+#  outframe = 'LSRK',
+#  interpolation = 'linear', 
+#  imagermode='mosaic',
+#  interactive = False,
+#  niter = 5000,
+#  threshold = '25mJy',    
+#  minpb=0.4,
+#  imsize = [2560,2560],
+#  cell = '0.052',
+#  weighting = 'uniform',
+#  pbcor=False)
 
-for suffix in ('hires','uniform','natural'):
+for suffix in ('hires','natural'):
     myimagebase= 'w51_12CO_21_contsub_{0}'.format(suffix)
     print("Exportfitsing {0}".format(myimagebase))
     impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
     exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
     exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
+
+    try:
+        from spectral_cube import SpectralCube
+        from astropy import units as u
+        fn = myimagebase+".image.pbcor.fits"
+        cube = SpectralCube.read(fn)
+        cube = cube.with_spectral_unit(u.km/u.s, velocity_convention='radio')
+        cube = cube.minimal_subcube()
+        cube.write(fn, overwrite=True)
+    except Exception as ex:
+        print(ex)
 
 
 os.system("rm -rf w51_13CS_54_contsub.*")
