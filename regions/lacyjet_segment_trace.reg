@@ -1,0 +1,4 @@
+# Region file format: DS9 version 4.1
+global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1
+fk5
+# segment(19:23:40.324,+14:31:07.51,19:23:39.964,+14:31:06.69,19:23:39.842,+14:31:05.95,19:23:39.730,+14:31:05.00,19:23:39.665,+14:31:04.59,19:23:39.576,+14:31:04.20,19:23:39.470,+14:31:04.11,19:23:39.343,+14:31:04.05,19:23:39.204,+14:31:04.22,19:23:38.962,+14:31:03.94)
