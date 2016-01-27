@@ -72,6 +72,7 @@ for reg in regions:
                                   constants.mh2).to(u.M_sun)
     results[name]['mean_col'] = results[name]['integ'] * masscalc.co21_conversion_factor(results[name]['peak'])/masscalc.co_abund
     results[name]['total_mass'] = (results[name]['mean_col'] * pixsize_phys**2 *
+                                   results[name]['npix'] *
                                    constants.mh2).to(u.M_sun)
 
 # invert the table to make it parseable by astropy...
@@ -100,7 +101,9 @@ for c in columns:
 
 tbl = Table([Column(data=columns[k],
                     name=k)
-             for k in ['name','peak','mean','integ','npix','peak_mass','peak_col',
+             for k in ['name','peak','mean','integ','npix',
+                       'pixsize','pixsize_phys',
+                       'peak_mass','peak_col',
                        'mean_col', 'total_mass',]])
 
 tbl.sort('total_mass')

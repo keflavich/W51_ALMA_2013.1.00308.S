@@ -1,4 +1,10 @@
 import numpy as np
+raise ValueError("Use tclean instead - tclean doesn't have this problem: http://keflavich.github.io/blog/casa-imaging-of-huge-cube.html")
+
+"""
+Jan 2016 note:
+    piece_of_full_W51_cube.spw3.channels1496to1683 has an extremely bad beam
+"""
 
 field='4~40' # science field(s). For a mosaic, select all mosaic fields. DO
              # NOT LEAVE BLANK ('') OR YOU WILL TRIGGER A BUG IN CLEAN THAT
@@ -15,7 +21,7 @@ imsize = [960,960] # size of image in pixels.
 
 weighting = 'briggs'
 robust=0.5
-threshold = '10.0mJy'
+threshold = '20.0mJy'
 
 spws = {0: '0,4',
         1: '1,5',
@@ -58,7 +64,7 @@ for spwnum in '1320':
                  nchan=nchans_total[spwnum],
                  start='{0}MHz'.format(frange[spwnum][0]),
                  width='{0}kHz'.format(fstep[spwnum]), interpolation='linear',
-                 phasecenter='', restfreq='', outframe='', veltype='radio',
+                 phasecenter='', restfreq='', outframe='LSRK', veltype='radio',
                  hanning=False,)
         concat(vis=cvelvises,
                concatvis=concatvis,)

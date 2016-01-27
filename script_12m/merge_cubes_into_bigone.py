@@ -8,6 +8,7 @@ import glob
 import re
 import os
 from astropy.utils.console import ProgressBar
+from spectral_cube import SpectralCube
 
 frange = {0: [218136., 218575.],
           1: [218422., 220268.],
@@ -21,6 +22,16 @@ fstep = {0:130., # kHz
         }
 nchans_total = {ii: int(np.abs(np.diff(frange[ii])/fstep[ii]*1000)[0])
                 for ii in frange}
+
+
+# Extract the appropriate pixel indices from the file name.
+# A more sophisticated approach is probably better, in which the individual
+# cubes are inspected for their start/end frequencies.
+# But, on the other hand, for this process to make any sense at all, you
+# have to have done the original cube imaging right
+def getinds(fn):
+    inds = re.search('channels([0-9]*)to([0-9]*)', fn).groups()
+    return [int(ii) for ii in inds]
 
 def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
                   overwrite_existing=False):
@@ -38,21 +49,30 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
     """
     spw = spw.format(spwnum)
 
+    big_filename = '{1}_{0}_lines.fits'.format(spw, fntemplate)
+
     # First set up an empty file
-    if not os.path.exists('{1}_{0}_lines.fits'.format(spw, fntemplate)):
+    if not os.path.exists(big_filename):
         header_fn = glob.glob('piece_of_{1}_cube.{0}.channels0to*.image.fits'.format(spw, fntemplate))
         if len(header_fn) != 1:
             raise ValueError("Found too many or too few matches: {0}".format(header_fn))
-        header = fits.getheader(header_fn[0])
+        else:
+            header_fn = header_fn[0]
+        header = fits.getheader(header_fn)
         # Make an arbitrary, small data before prepping the header
         data = np.zeros((100, 100), dtype=np.float32)
         hdu = fits.PrimaryHDU(data=data, header=header)
+        cdelt_sign = np.sign(hdu.header['CDELT3'])
         # Set the appropriate output size (this can be extracted from the LISTOBS)
         header['NAXIS3'] = nchans_total[spwnum]
+        if cdelt_sign == -1:
+            ind0, ind1 = getinds(header_fn)
+            header['CRPIX3'] = nchans_total[spwnum] - ind1 + 1
+
         # Write to disk
-        header.tofile('{1}_{0}_lines.fits'.format(spw, fntemplate))
+        header.tofile(big_filename)
         # Using the 'append' io method, update the *header*
-        with open('{1}_{0}_lines.fits'.format(spw, fntemplate), 'rb+') as fobj:
+        with open(big_filename, 'rb+') as fobj:
              # Seek past the length of the header, plus the length of the
              # data we want to write.
              # The -1 is to account for the final byte that we are about to
@@ -65,27 +85,31 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
                        1)
              fobj.write('\0')
 
+        big_cube = SpectralCube.read(big_filename)
+        header_cube = SpectralCube.read(header_fn)
+        # in both cases, SpectralCube sorts the extrema
+        assert big_cube.spectral_extrema[0] == header_cube.spectral_extrema[0]
+        assert np.all(big_cube.wcs.wcs.cdelt == header_cube.wcs.wcs.cdelt)
+
+
     # Find the appropriate files (this is NOT a good way to do this!  Better to
     # provide a list.  But wildcards are quick & easy...
     files = glob.glob("piece_of_{1}_cube.{0}.chan*fits".format(spw,fntemplate))
     log.info(str(files))
 
-    # Extract the appropriate pixel indices from the file name.
-    # A more sophisticated approach is probably better, in which the individual
-    # cubes are inspected for their start/end frequencies.
-    # But, on the other hand, for this process to make any sense at all, you
-    # have to have done the original cube imaging right
-    def getinds(fn):
-        inds = re.search('channels([0-9]*)to([0-9]*)', fn).groups()
-        return [int(ii) for ii in inds]
-
     # open the file in update mode (it should have the right dims now)
-    hdul = fits.open('{1}_{0}_lines.fits'.format(spw, fntemplate), mode='update')
+    hdul = fits.open(big_filename, mode='update')
     for fn in ProgressBar(files):
         log.info("{0} {1}".format(getinds(fn), fn))
         ind0,ind1 = getinds(fn)
+        if 'cdelt_sign' not in locals():
+            log.warn("cdelt_sign was not defined: overwriting a previously-existing file.  "
+                     "This may not be what you want!!!  Check that the original header is OK.")
+            cdelt_sign = np.sign(fits.getheader(fn)['CDELT3'])
+        if cdelt_sign == -1:
+            ind1, ind0 = nchans_total[spwnum] - ind0 - 1, nchans_total[spwnum] - ind1 - 1
         plane = hdul[0].data[ind0]
         if np.all(plane == 0) or overwrite_existing:
-            log.info("Replacing indices {0} {1}".format(getinds(fn), fn))
+            log.info("Replacing indices {0}->{2} {1}".format(getinds(fn), fn, (ind0,ind1)))
             hdul[0].data[ind0:ind1,:,:] = fits.getdata(fn)
             hdul.flush()

@@ -2,3 +2,6 @@
 global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1
 fk5
 point(19:23:39.181,+14:31:04.32) # point=x color=red text={ALMAmm31}
+point(19:23:40.229,+14:31:07.43) # point=x color=blue text={ALMAmm31}
+point(19:23:39.698,+14:31:28.77) # point=x color=red text={north}
+point(19:23:40.675,+14:30:49.57) # point=x color=blue text={north}
