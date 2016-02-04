@@ -36,6 +36,7 @@ rgb_im = aplpy.make_rgb_image(data=rgb_cube_naco_fits,
                               output=rgb_cube_naco_png, stretch_g='arcsinh',
                               embed_avm_tags=True)
 
+
 fig1 = pl.figure(1)
 fig1.clf()
 F = aplpy.FITSFigure(rgb_cube_naco_png, figure=fig1)
@@ -45,6 +46,7 @@ F.add_scalebar((0.1*u.pc / (5400*u.pc)).to(u.deg,u.dimensionless_angles()))
 F.scalebar.set_label('0.1 pc')
 F.scalebar.set_color('w')
 F.save(paths.fpath("NACO_green_outflows_aplpy.png"))
+F.save(paths.fpath("NACO_green_outflows_aplpy.pdf"))
 
 F.show_contour('../../alma/FITS/w51_spw3_continuum.image.fits', levels=[0.15,
                                                                         0.30,
@@ -53,6 +55,7 @@ F.show_contour('../../alma/FITS/w51_spw3_continuum.image.fits', levels=[0.15,
                                                                         0.75],
                colors=['w']*4, layer='alma_cont_lores')
 F.save(paths.fpath("NACO_green_outflows_aplpy_CONTours.png"))
+F.save(paths.fpath("NACO_green_outflows_aplpy_CONTours.pdf"))
 
 F.hide_layer('alma_cont_lores')
 F.show_contour('../../alma/FITS/12m/selfcal_spw3_selfcal_4ampphase_mfs_tclean_deeper_10mJy.image.pbcor.fits',
@@ -67,12 +70,26 @@ F.show_contour('../../alma/FITS/12m/selfcal_spw3_selfcal_4ampphase_mfs_tclean_de
                        0.40,], colors=['w']*12,
                layer='alma_cont_hires')
 F.save(paths.fpath("NACO_green_outflows_aplpy_CONTours_hires.png"))
+F.save(paths.fpath("NACO_green_outflows_aplpy_CONTours_hires.pdf"))
+
+F.hide_layer('alma_cont_hires')
+
+
+F.show_contour('../../alma/cycle3goddi/W51n.cont.image.pbcor.fits', levels=[0.0015,
+                                                                            0.0030,
+                                                                            0.0045,
+                                                                            0.0060,
+                                                                            0.0075],
+               colors=['w']*4, layer='alma_cont_cycle3hires')
+F.save(paths.fpath("NACO_green_outflows_aplpy_CONTours_cycle3hires.png"))
+F.save(paths.fpath("NACO_green_outflows_aplpy_CONTours_cycle3hires.pdf"))
+
 
 
 h77a = SpectralCube.read(paths.vpath('data/W51north_H77_Outflow_cutout.fits'))
 h77a_outflow = h77a.spectral_slab(-16*u.km/u.s, -60*u.km/u.s).sum(axis=0)
 h77a_green = paths.dpath('W51_H77a_LacyJetOutflow_Sum.fits')
-h77a_outflow.hdu.writeto(h77a_green)
+h77a_outflow.hdu.writeto(h77a_green, clobber=True)
 
 rgb_cube_h77a_fits = 'outflow_co_redblue_h77a_green.fits'
 if not os.path.exists(rgb_cube_h77a_fits):
@@ -98,3 +115,44 @@ F.add_scalebar((0.1*u.pc / (5400*u.pc)).to(u.deg,u.dimensionless_angles()))
 F.scalebar.set_label('0.1 pc')
 F.scalebar.set_color('w')
 F.save(paths.fpath("H77a_green_outflows_aplpy.png"))
+F.save(paths.fpath("H77a_green_outflows_aplpy.pdf"))
+
+
+
+green_fits = '/Users/adam/work/w51/alma/FITS/w51_spw3_continuum.image.fits'
+blue_fits = '/Users/adam/work/w51/alma/FITS/moments/w51_12co2-1_blue0to45_masked.fits'
+red_fits = '/Users/adam/work/w51/alma/FITS/moments/w51_12co2-1_red73to130_masked.fits'
+rgb_cube_fits = 'outflow_co_redblue_1.4mmcont_green.fits'
+
+if not os.path.exists(rgb_cube_fits):
+    # does not return anything
+    aplpy.make_rgb_cube([red_fits, green_fits, blue_fits], rgb_cube_fits)
+
+rgb_cube_png = rgb_cube_fits[:-5]+"_asinhgreen.png"
+rgb_im = aplpy.make_rgb_image(data=rgb_cube_fits, output=rgb_cube_png,
+                              vmax_g=0.6,
+                              vmin_g=-0.005,
+                              vmax_r=3,
+                              vmin_r=-0.05,
+                              vmax_b=3,
+                              vmin_b=-0.05,
+                              stretch_g='arcsinh', embed_avm_tags=True)
+
+
+fig1 = pl.figure(1)
+fig1.clf()
+F = aplpy.FITSFigure(rgb_cube_png, figure=fig1)
+F.show_rgb(rgb_cube_png)
+F.recenter(290.93291, 14.508188, radius=0.003)
+F.add_scalebar((0.1*u.pc / (5400*u.pc)).to(u.deg,u.dimensionless_angles()))
+F.scalebar.set_label('0.1 pc')
+F.scalebar.set_color('w')
+F.save(paths.fpath("ALMAcont_green_outflows_aplpy.png"))
+F.save(paths.fpath("ALMAcont_green_outflows_aplpy.pdf"))
+
+F.show_contour('/Users/adam/work/w51/paper_w51_evla/data/W51Ku_BDarray_continuum_2048_both_uniform.hires.clean.image.fits',
+               levels=[0.005/9., 0.005/3., 0.005, 0.015, 0.045, 0.135],
+               colors=['w']*7, layer='evla_cont_lores')
+F.save(paths.fpath("Alma1.4mmcont_green_outflows_aplpy_CONTours.png"))
+F.save(paths.fpath("Alma1.4mmcont_green_outflows_aplpy_CONTours.pdf"))
+
