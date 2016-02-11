@@ -91,7 +91,10 @@ for reg in regions:
                        masscalc.co_abund * pixsize_phys**2 *
                        results[name]['npix'] * constants.mh2)
     if central_velo is not None:
-        results[name]['momentum'] = u.Quantity((np.abs(scube.spectral_axis - central_velo) * sumspec * dv * channel_to_mass).sum()).to(u.Msun * u.km/u.s)
+        results[name]['momentum'] = u.Quantity((np.abs(scube.spectral_axis -
+                                                       central_velo)
+                                                * sumspec * dv *
+                                                channel_to_mass).sum()).to(u.Msun * u.km/u.s)
     else:
         results[name]['momentum'] = np.nan * u.Msun * u.km/u.s
 
