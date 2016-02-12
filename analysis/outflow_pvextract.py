@@ -98,11 +98,12 @@ for ii, (fn, stretch, vmin, vmax, source) in enumerate(
                   ],
                   color='r')
     FF.recenter(pars['cx'], pars['cv'], width=pars['wx'], height=pars['wv'])
-    try:
-        FF._ax1.set_yticklabels([str(float(L.get_text())/1e3) for L in
-                                 FF._ax1.get_yticklabels()])
-    except ValueError:
-        continue
+
+    # show() is unfortunately required before the text labels are set
+    pl.draw()
+    pl.show()
+    FF._ax1.set_yticklabels([str(float(L.get_text())/1e3) for L in
+                             FF._ax1.get_yticklabels()])
     FF._ax1.set_ylabel("Velocity (km/s)")
     FF._ax1.set_xticklabels([str(float(L.get_text())*3600) for L in
                              FF._ax1.get_xticklabels()])
