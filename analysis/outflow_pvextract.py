@@ -98,10 +98,13 @@ for ii, (fn, stretch, vmin, vmax, source) in enumerate(
                   ],
                   color='r')
     FF.recenter(pars['cx'], pars['cv'], width=pars['wx'], height=pars['wv'])
-    #FF._ax1.set_yticklabels([str(float(L.get_text())/1e3) for L in
-    #                         FF._ax1.get_yticklabels()])
+    try:
+        FF._ax1.set_yticklabels([str(float(L.get_text())/1e3) for L in
+                                 FF._ax1.get_yticklabels()])
+    except ValueError:
+        continue
     FF._ax1.set_ylabel("Velocity (km/s)")
-    #FF._ax1.set_xticklabels([str(float(L.get_text())*3600) for L in
-    #                         FF._ax1.get_xticklabels()])
+    FF._ax1.set_xticklabels([str(float(L.get_text())*3600) for L in
+                             FF._ax1.get_xticklabels()])
     FF._ax1.set_xlabel("Offset (arcsec)")
     FF.save(paths.fpath('outflows_pv/'+outname.format(extension='png')))
