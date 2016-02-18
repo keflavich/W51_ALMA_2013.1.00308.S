@@ -32,24 +32,24 @@ frequencies = {'H2CO303_202': 218.22219*u.GHz,
                #'C18O2-1': 219.56036*u.GHz,
               }
 freq_name_mapping = {v:k for k,v in frequencies.items()}
-yoffset = {'H2CO303_202': 0.4,
-           'H2CO321_220': 0.3,
-           'H2CO322_221': 0.2,
-           'OCS18-17': 0.1,
-           'SO65-54': 0.0,
-           'CH3OH423-514': 0.5,
-           'CH3OH5m42-6m43': 0.6,
-           'OCS19-18': 0.7,
-           '13CS5-4': 0.8,
-           'CH3OCH3_13013-12112': 0.9,
-           'HNCO1028-927': 1.5,
-           'HNCO10110-919': 4.5,
-           'HC3N24-23': 2.0,
-           'HC3Nv7=124-23': 5.0,
-           'NH2CHO11210-1029': 2.5,
-           'NH2CHO1156-1055': 4.0,
-           'CH3OH422-312': 3.0,
-           'CH3OH808-716': 3.5,
+yoffset = {'H2CO303_202': 0,
+           'H2CO321_220': 1,
+           'H2CO322_221': 2,
+           'OCS18-17': 3,
+           'SO65-54': 4,
+           'CH3OH423-514': 5,
+           'CH3OH5m42-6m43': 6,
+           'OCS19-18': 7,
+           '13CS5-4': 8,
+           'CH3OCH3_13013-12112': 9,
+           'HNCO1028-927': 10,
+           'HNCO10110-919': 11,
+           'HC3N24-23': 12,
+           'HC3Nv7=124-23': 13,
+           'NH2CHO11210-1029': 14,
+           'NH2CHO1156-1055': 15,
+           'CH3OH422-312': 16,
+           'CH3OH808-716': 17,
            #'H30alpha': 4.5,
            #'C18O2-1': 3.5,
           }
@@ -66,8 +66,12 @@ for corereg in cores:
     data[name] = {}
 
     fn = "{name}_spw{ii}_mean.fits"
-    spectra = [pyspeckit.Spectrum(paths.spath(fn.format(name=name, ii=ii)))
-               for ii in range(4)]
+    spectra = pyspeckit.Spectra([paths.spath(fn.format(name=name, ii=ii))
+                                 for ii in range(4)])
+    spectra.data[(233.84*u.GHz<spectra.xarr).value & (spectra.xarr>234.036*u.GHz).value] = np.nan
+    spectra.data[(230.00*u.GHz<spectra.xarr).value & (spectra.xarr>230.523*u.GHz).value] = np.nan
+    scaling = np.nanmax(spectra.data) - np.nanpercentile(spectra.data, 20)
+    print("Scaling for {fn} = {scaling}".format(fn=fn.format(name=name, ii=0), scaling=scaling))
 
     fig = pl.figure(1)
     fig.clf()
@@ -113,10 +117,10 @@ for corereg in cores:
                 print("Plotting {0} for {1} from spw {2}".format(linename, name, spwnum))
                 temp = np.array(sp.xarr)
                 sp.xarr.convert_to_unit(u.km/u.s, refX=freq)
-                sp.plotter(figure=fig, clear=False, offset=yoffset[linename],
+                sp.plotter(figure=fig, clear=False, offset=yoffset[linename]*scaling,
                            xmin=0, xmax=120)
-                sp.plotter.axis.set_ylim(-0.1, max(yoffset.values())+0.1)
-                sp.plotter.axis.text(122, yoffset[linename], linename)
+                sp.plotter.axis.set_ylim(-0.1, max(yoffset.values())*scaling+scaling)
+                sp.plotter.axis.text(122, yoffset[linename]*scaling, linename)
                 sp.xarr.convert_to_unit(u.GHz, refX=freq)
                 np.testing.assert_allclose(temp, np.array(sp.xarr))
 
@@ -129,7 +133,7 @@ for corereg in cores:
     else:
         data[name]['mean_velo'] = np.nan*u.km/u.s
 
-    fig.savefig("{name}_overlaid_spectra.png".format(name=name))
+    fig.savefig(paths.fpath("spectral_overlays/{name}_overlaid_spectra.png".format(name=name)))
 
 firstentry = list(data.keys())[0]
 colnames = list(data[firstentry].keys())
