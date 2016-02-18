@@ -1,3 +1,7 @@
+"""
+In spw3, channels 1623~1983 cause huge problems.  There is something wrong with
+the *clean*, not with the calibration.
+"""
 import numpy as np
 
 field='4~40' # science field(s). For a mosaic, select all mosaic fields. DO

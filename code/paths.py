@@ -15,6 +15,7 @@ plotcodepath = os.path.join(root, 'plot_codes/')
 observingpath = os.path.join(root, 'observing/')
 tablepath = os.path.join(root, 'tables/')
 vlapath = os.path.join(os.path.expanduser('~/work/w51/paper_w51_evla/'))
+spectrum_path = os.path.join(root, 'FITS/12m/spectra')
 
 def fpath(x, figurepath=figurepath):
     return os.path.join(figurepath, x)
@@ -45,3 +46,6 @@ def texpath(x, texpath=texpath):
 
 def vpath(x, vlapath=vlapath):
     return os.path.join(vlapath, x)
+
+def spath(x, spectrum_path=spectrum_path):
+    return os.path.join(spectrum_path, x)

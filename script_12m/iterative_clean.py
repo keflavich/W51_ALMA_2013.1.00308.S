@@ -1,3 +1,7 @@
+"""
+Most up-to-date set of tests as of
+Date:   Tue Jan 19 18:16:25 2016 +0100
+"""
 import os
 
 imsize = [3072,3072]

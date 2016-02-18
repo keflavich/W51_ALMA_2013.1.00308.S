@@ -6,16 +6,19 @@ import pyregion
 from astropy.io import fits
 from astropy.table import Table,Column
 import masscalc
+import radio_beam
 
 regions = pyregion.open(paths.rpath('cores.reg'))
 
 contfile = fits.open(paths.dpath('w51_spw3_continuum_r0_mulstiscale.image.fits'))
 data = contfile[0].data
+beam = radio_beam.Beam.from_fits_header(paths.dpath('w51_spw3_continuum_r0_mulstiscale.image.fits'))
 
 results = {}
 units = {'peak':u.Jy/u.beam,
          'sum':u.Jy/u.beam,
          'npix':u.dimensionless_unscaled,
+         'beam_area':u.sr,
          'peak_mass':u.M_sun,
          'peak_col':u.cm**-2}
 
@@ -32,6 +35,7 @@ for reg in regions:
     results[name] = {'peak': data[mask].max(),
                      'sum': data[mask].sum(),
                      'npix': mask.sum(),
+                     'beam_area': beam.sr,
                     }
     results[name]['peak_mass'] = masscalc.mass_conversion_factor()*results[name]['peak']
     results[name]['peak_col'] = masscalc.col_conversion_factor()*results[name]['peak']
@@ -57,7 +61,7 @@ for c in columns:
 
 tbl = Table([Column(data=columns[k],
                     name=k)
-             for k in ['name','peak','sum','npix','peak_mass','peak_col']])
+             for k in ['name','peak','sum','npix','beam_area','peak_mass','peak_col']])
 
 tbl.sort('peak_mass')
 tbl.write(paths.tpath("continuum_photometry.ipac"), format='ascii.ipac')

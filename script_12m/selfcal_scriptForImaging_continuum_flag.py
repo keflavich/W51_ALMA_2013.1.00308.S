@@ -1,3 +1,6 @@
+"""
+run this then iterative_clean to get the "best" image
+"""
 import time
 t0 = time.time()
 

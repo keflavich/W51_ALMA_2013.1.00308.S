@@ -34,7 +34,8 @@ def getinds(fn):
     return [int(ii) for ii in inds]
 
 def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
-                  overwrite_existing=False):
+                  overwrite_existing=False, bmaj_limits=None,
+                  add_beam_info=True):
     """
     Parameters
     ----------
@@ -99,6 +100,16 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
 
     # open the file in update mode (it should have the right dims now)
     hdul = fits.open(big_filename, mode='update')
+
+    if add_beam_info:
+        shape = hdul[0].data.shape[0]
+        if len(hdul) > 1 and isinstance(hdul[1], fits.BinTableHDU):
+            pass
+        else:
+            hdul.append(fits.BinTableHDU(np.recarray(shape,
+                                                     names=['BMAJ','BMIN','BPA','CHAN','POL'],
+                                                     formats=['f4','f4','f4','i4','i4'])))
+
     for fn in ProgressBar(files):
         log.info("{0} {1}".format(getinds(fn), fn))
         ind0,ind1 = getinds(fn)
@@ -111,5 +122,18 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
         plane = hdul[0].data[ind0]
         if np.all(plane == 0) or overwrite_existing:
             log.info("Replacing indices {0}->{2} {1}".format(getinds(fn), fn, (ind0,ind1)))
-            hdul[0].data[ind0:ind1,:,:] = fits.getdata(fn)
+
+            data = fits.getdata(fn)
+
+            if bmaj_limits is not None:
+                beamtable = fits.open(fn)[1]
+                ok_beam = ((beamtable.data['BMAJ'] > bmaj_limits[0]) &
+                           (beamtable.data['BMAJ'] < bmaj_limits[1]))
+                data[~ok_beam] = np.nan
+            if add_beam_info:
+                beamtable = fits.open(fn)[1]
+                hdul[1].data[ind0:ind1] = beamtable.data
+
+
+            hdul[0].data[ind0:ind1,:,:] = data
             hdul.flush()
