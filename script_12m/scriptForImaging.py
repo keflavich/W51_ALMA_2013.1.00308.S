@@ -554,9 +554,9 @@ clean(vis= linesub,
  pbcor=False,
  robust = 0.0)
 
-os.system("rm -rf w51_h41alpha_contsub.*")
+os.system("rm -rf w51_h30alpha_contsub.*")
 clean(vis= linesub,
- imagename = "w51_h41alpha_contsub",
+ imagename = "w51_h30alpha_contsub",
  field = "w51",
  spw = '0,1', 
  mode = 'velocity',
@@ -645,7 +645,7 @@ impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myim
 exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
 exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
 
-myimagebase= 'w51_h41alpha_contsub'
+myimagebase= 'w51_h30alpha_contsub'
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
 exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
 exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
