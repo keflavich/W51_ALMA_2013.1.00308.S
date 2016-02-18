@@ -3,3 +3,6 @@
 ipython_log*py
 *.last
 .DS_Store
+*.pdf
+*.png
+*.fits
