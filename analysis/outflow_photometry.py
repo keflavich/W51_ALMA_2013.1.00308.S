@@ -34,6 +34,7 @@ units = {'peak':u.K,
          'v1': u.km/u.s,
          'v2': u.km/u.s,
          'momentum': u.M_sun*u.km/u.s,
+         'mean_velo': u.km/u.s,
         }
 
 suffixes = string.ascii_letters
@@ -74,6 +75,7 @@ for reg in regions:
                      'mean': scube.mean(),
                      'integ': np.nanmean(scube.moment0(axis=0).value)*u.K*u.km/u.s,
                      'npix': scube.mask.include(view=(0, slice(None), slice(None))).sum(),
+                     'mean_velo': central_velo if central_velo is not None else np.nan*u.km/u.s,
                      'pixsize': pixsize,
                      'pixsize_phys': pixsize_phys,
                      'v1': v1,
@@ -126,7 +128,7 @@ tbl = Table([Column(data=columns[k],
                     name=k)
              for k in ['name', 'SourceID', 'peak', 'mean', 'integ', 'npix',
                        'pixsize', 'pixsize_phys', 'peak_mass', 'peak_col',
-                       'mean_col', 'total_mass', 'momentum']])
+                       'mean_col', 'total_mass', 'momentum', 'mean_velo']])
 
 tbl.sort('total_mass')
 tbl.write(paths.tpath("outflow_co_photometry.ipac"), format='ascii.ipac')

@@ -9,14 +9,6 @@ outflow_tbl = Table.read(paths.tpath("outflow_co_photometry.ipac"), format='asci
 core_velo_tbl = Table.read(paths.tpath("core_velocities.ipac"), format="ascii.ipac")
 core_phot_tbl = Table.read(paths.tpath("continuum_photometry.ipac"), format='ascii.ipac')
 
-newcol = Column([core_phot_tbl['peak_mass'][core_phot_tbl['name'] == name][0]
-                 if any(core_phot_tbl['name'] == name) else np.nan
-                 for name in outflow_tbl['SourceID']],
-                name='CoreMass')
-outflow_tbl.add_column(newcol)
-outflow_tbl.write(paths.tpath('outflows_with_cores.ipac'), format='ascii.ipac')
-
-
 core_phot_tbl.rename_column('name','SourceID')
 cores_merge = table.join(core_velo_tbl, core_phot_tbl,)
 
@@ -70,3 +62,28 @@ cores_merge = cores_merge['SourceID',
                          ]
 
 cores_merge.write(paths.tpath('core_continuum_and_line.ipac'), format='ascii.ipac')
+
+
+### Add columns to the outflow table from the core table ###
+newcol = Column([core_phot_tbl['peak_mass'][core_phot_tbl['SourceID'] == name][0]
+                 if any(core_phot_tbl['SourceID'] == name) else np.nan
+                 for name in outflow_tbl['SourceID']],
+                name='CoreMass')
+outflow_tbl.add_column(newcol)
+
+newcol = Column([cores_merge['T_corrected_mass'][cores_merge['SourceID'] == name][0]
+                 if any(cores_merge['SourceID'] == name) else np.nan
+                 for name in outflow_tbl['SourceID']],
+                name='TCorrectedCoreMass')
+outflow_tbl.add_column(newcol)
+
+#should already be in the file
+# newcol = Column([cores_merge['mean_velo'][cores_merge['SourceID'] == name][0]
+#                  if any(cores_merge['SourceID'] == name) else np.nan
+#                  for name in outflow_tbl['SourceID']],
+#                 name='CoreVelocity')
+# outflow_tbl.add_column(newcol)
+
+outflow_tbl.write(paths.tpath('outflows_with_cores.ipac'), format='ascii.ipac')
+
+

@@ -28,7 +28,7 @@ imsize = [3072,3072]
 cell = '0.05arcsec'
 solint = 'int'
 threshold = '20.0mJy'
-multiscale = [0,5,15,45]
+multiscale = [0,5,15,45,135]
 # multiscale clean... does not work without a mask (but it's not bad with a
 # mask)
 #multiscale = []
@@ -50,13 +50,22 @@ exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=
 exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
+dirtyimage = 'merge_selfcal_spw3_dirty.image'
+ia.open(dirtyimage)
+ia.calcmask(mask=dirtyimage+" > 0.1", name='dirty_mask_100mJy')
+ia.close()
+makemask(mode='copy', inpimage=dirtyimage,
+         inpmask=dirtyimage+":dirty_mask_100mJy", output='dirty_100mJy.mask',
+         overwrite=True)
+
+# rms ~3.7 mJy/beam
 myimagebase = "merge_selfcal_spw3_mfs"
 os.system('rm -rf {0}.*'.format(myimagebase))
 clean(vis=vis0, imagename=myimagebase, field="", spw='',
       mode='mfs', outframe='LSRK', interpolation='linear', imagermode='mosaic',
       multiscale=multiscale,
-      interactive=False, niter=10000, threshold=threshold, imsize=imsize,
-      minpb=0.4,
+      interactive=False, niter=10000, threshold='50mJy', imsize=imsize,
+      minpb=0.5,
       cell=cell, phasecenter=phasecenter,
       weighting='briggs', usescratch=True, pbcor=True, robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -70,9 +79,13 @@ rmtables('selfcal_spw3_phase.cal')
 gaincal(vis=vis0, caltable="selfcal_spw3_phase.cal", field=field, solint='inf',
         calmode="p", refant="", gaintype="G", minsnr=5)
 
-#plotcal(caltable="phase.cal", xaxis="time", yaxis="phase", subplot=331,
-#        iteration="antenna", plotrange=[0,0,-30,30], markersize=5,
-#        fontsize=10.0,)
+image1 = 'merge_selfcal_spw3_mfs.image'
+ia.open(image1)
+ia.calcmask(mask=image1+" > 0.05", name='clean_mask_50mJy')
+ia.close()
+makemask(mode='copy', inpimage=image1,
+         inpmask=cleanimage+":clean_mask_50mJy", output='clean_50mJy.mask',
+         overwrite=True)
 
 flagmanager(vis=vis0, mode='save', versionname='backup')
 applycal(vis=vis0, field="", gaintable=["selfcal_spw3_phase.cal"],
