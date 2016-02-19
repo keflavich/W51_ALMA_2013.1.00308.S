@@ -7,7 +7,7 @@ import pylab as pl
 
 
 plot_kwargs = {'color':'r', 'linestyle':'--'}
-annotation_kwargs = {'color': 'r'}
+annotate_kwargs = {'color': 'r'}
 
 
 spectra_to_species = {'e8mm': [('vinyl_cyanide', 'CH2CHCN', 500),
@@ -51,7 +51,7 @@ for target,species_list in spectra_to_species.items():
                                          cat['Freq-GHz']*u.GHz,
                                          velocity_offset=velo[target],
                                          plot_kwargs=plot_kwargs,
-                                         annotation_kwargs=annotation_kwargs)
+                                         annotate_kwargs=annotate_kwargs)
             spectra[ii].plotter.savefig(paths.fpath('line_id_spectra/{target}_{species_name}_{chemid}_spw{0}.png'.format(ii,
                                                                                                                          target=target,
                                                                                                                          chemid=chemid,
