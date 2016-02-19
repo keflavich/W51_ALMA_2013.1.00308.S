@@ -115,16 +115,16 @@ for ii, (fn, stretch, vmin, vmax, source) in enumerate(
     FF._ax1.set_xlabel("Offset (arcsec)")
     FF.save(paths.fpath('outflows_pv/'+outname.format(extension='png')))
 
-    h2pixels = h2wcs.wcs_world2pix(pars['path']._coords.ra.deg,
-                                   pars['path']._coords.dec.deg, 0)
-    h2velos = [h2velomap[0].data[y,x] for y,x in zip(*h2pixels)
+    h2pixels = pars['path'].sample_points(1.0, h2wcs)
+    h2velos = [h2velomap[0].data[x,y] for y,x in zip(*h2pixels)
                if x>0 and y>0 and x<h2velomap[0].data.shape[1] and y<h2velomap[0].data.shape[0]]
-    h2radec = [pars['path']._coords[ii] for ii,(y,x) in enumerate(zip(*h2pixels))
+    h2radec = [h2wcs.wcs_pix2world(x,y,0) for y,x in zip(*h2pixels)
                if x>0 and y>0 and x<h2velomap[0].data.shape[1] and y<h2velomap[0].data.shape[0]]
-    h2offset = [offset_to_point(c.ra.deg, c.dec.deg, pars['path'])
-                for c in h2radec]
+    h2offset = [offset_to_point(ra,dec, pars['path'])
+                for ra,dec in h2radec]
     #h2widths = h2velowidthmap[h2pixels]
-    FF.show_markers(h2offset, (np.array(h2velos)*1000).tolist(), marker='x')
+    if h2offset:
+        FF.show_markers(h2offset, (np.array(h2velos)*1000).tolist(), marker='x')
 
     outname = '{0}_{1}_with_h2.{{extension}}'.format(fn[:-5], source)
     FF.save(paths.fpath('outflows_pv/'+outname.format(extension='png')))
