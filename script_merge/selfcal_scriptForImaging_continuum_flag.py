@@ -58,16 +58,49 @@ makemask(mode='copy', inpimage=dirtyimage,
          inpmask=dirtyimage+":dirty_mask_100mJy", output='dirty_100mJy.mask',
          overwrite=True)
 
-# rms ~3.7 mJy/beam
-myimagebase = "merge_selfcal_spw3_mfs"
+# progressively testing deeper clean until it diverges
+# 100 iters = ok, no sign of divergence
+# DEBUG
+myimagebase = "DEBUG_merge_selfcal_spw3_mfs"
+# threshold = 50mJy with no other restrictions -> infinite divergence
 os.system('rm -rf {0}.*'.format(myimagebase))
 clean(vis=vis0, imagename=myimagebase, field="", spw='',
       mode='mfs', outframe='LSRK', interpolation='linear', imagermode='mosaic',
       multiscale=multiscale,
-      interactive=False, niter=10000, threshold='50mJy', imsize=imsize,
+      interactive=False, niter=1000, threshold='100mJy', imsize=imsize,
       minpb=0.5,
       cell=cell, phasecenter=phasecenter,
       weighting='briggs', usescratch=True, pbcor=True, robust=-2.0)
+exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+
+# DEBUG
+myimagebase = "DEBUG_merge_selfcal_spw3_mfs_tclean"
+# threshold = 50mJy with no other restrictions -> infinite divergence
+os.system('rm -rf {0}.*'.format(myimagebase))
+tclean(vis=vis0, imagename=myimagebase, field="", spw='',
+       outframe='LSRK', interpolation='linear', gridder='mosaic',
+       scales=multiscale, interactive=False, niter=1000,
+       threshold='100mJy', imsize=imsize, specmode='mfs',
+       pblimit=0.5, cell=cell, phasecenter=phasecenter, weighting='briggs',
+       robust=-2.0)
+exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+
+
+
+# rms ~3.7 mJy/beam
+myimagebase = "merge_selfcal_spw3_mfs"
+# threshold = 50mJy with no other restrictions -> infinite divergence
+os.system('rm -rf {0}.*'.format(myimagebase))
+tclean(vis=vis0, imagename=myimagebase, field="", spw='',
+       outframe='LSRK', interpolation='linear', gridder='mosaic',
+       scales=multiscale, interactive=False, niter=10000,
+       threshold='100mJy', imsize=imsize, specmode='mfs',
+       cell=cell, phasecenter=phasecenter, weighting='briggs', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
         outfile=myimagebase+'.image.pbcor', overwrite=True)
@@ -83,6 +116,7 @@ image1 = 'merge_selfcal_spw3_mfs.image'
 ia.open(image1)
 ia.calcmask(mask=image1+" > 0.05", name='clean_mask_50mJy')
 ia.close()
+cleanimage = myimagebase+".image"
 makemask(mode='copy', inpimage=image1,
          inpmask=cleanimage+":clean_mask_50mJy", output='clean_50mJy.mask',
          overwrite=True)
@@ -101,14 +135,11 @@ split(vis=vis0, outputvis=vis1,
 
 myimagebase="selfcal_spw3_selfcal_mfs"
 os.system('rm -rf {0}.*'.format(myimagebase))
-clean(vis=vis1, imagename=myimagebase,
-      field="", spw='', mode='mfs', outframe='LSRK',
-      multiscale=multiscale,
-      interpolation='linear', imagermode='mosaic', interactive=False,
-      niter=10000, threshold=threshold, imsize=imsize, cell=cell,
-      phasecenter=phasecenter, weighting='briggs',
-      minpb=0.4,
-      usescratch=True, pbcor=True, robust=-2.0)
+tclean(vis=vis1, imagename=myimagebase, field="", spw='',
+       outframe='LSRK', interpolation='linear', gridder='mosaic',
+       scales=multiscale, interactive=False, niter=10000,
+       threshold='100mJy', imsize=imsize, specmode='mfs',
+       cell=cell, phasecenter=phasecenter, weighting='briggs', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
         outfile=myimagebase+'.image.pbcor', overwrite=True)
@@ -138,14 +169,11 @@ split(vis=vis1, outputvis=vis2,
 
 myimagebase = "merge_selfcal_spw3_selfcal_2_mfs"
 os.system('rm -rf {0}.*'.format(myimagebase))
-clean(vis=vis2, imagename=myimagebase,
-      field="", spw='', mode='mfs', outframe='LSRK',
-      multiscale=multiscale,
-      interpolation='linear', imagermode='mosaic', interactive=False,
-      niter=10000, threshold=threshold, imsize=imsize, cell=cell,
-      minpb=0.4,
-      phasecenter=phasecenter, weighting='briggs',
-      usescratch=True, pbcor=True, robust=-2.0)
+tclean(vis=vis2, imagename=myimagebase, field="", spw='',
+       outframe='LSRK', interpolation='linear', gridder='mosaic',
+       scales=multiscale, interactive=False, niter=10000,
+       threshold='100mJy', imsize=imsize, specmode='mfs',
+       cell=cell, phasecenter=phasecenter, weighting='briggs', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
         outfile=myimagebase+'.image.pbcor', overwrite=True)
@@ -174,14 +202,11 @@ split(vis=vis2, outputvis=vis3,
 
 myimagebase = "merge_selfcal_spw3_selfcal_3_mfs"
 os.system('rm -rf {0}.*'.format(myimagebase))
-clean(vis=vis3, imagename=myimagebase,
-      field="", spw='', mode='mfs', outframe='LSRK',
-      multiscale=multiscale,
-      interpolation='linear', imagermode='mosaic', interactive=False,
-      minpb=0.4,
-      niter=10000, threshold=threshold, imsize=imsize, cell=cell,
-      phasecenter=phasecenter, weighting='briggs',
-      usescratch=True, pbcor=True, robust=-2.0)
+tclean(vis=vis3, imagename=myimagebase, field="", spw='',
+       outframe='LSRK', interpolation='linear', gridder='mosaic',
+       scales=multiscale, interactive=False, niter=10000,
+       threshold='100mJy', imsize=imsize, specmode='mfs',
+       cell=cell, phasecenter=phasecenter, weighting='briggs', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
         outfile=myimagebase+'.image.pbcor', overwrite=True)
@@ -213,17 +238,13 @@ split(vis=vis3, outputvis=vis4,
 summary4 = flagdata(vis=vis4, mode='summary')
 print("{flagged}/{total} flagged points in vis4 after restoration".format(**summary4))
 
-# WHY IS THIS EMPTY?!
 myimagebase = "merge_selfcal_spw3_selfcal_4ampphase_mfs"
 os.system('rm -rf {0}.*'.format(myimagebase))
-clean(vis=vis4, imagename=myimagebase,
-      field="", spw='', mode='mfs', outframe='LSRK',
-      multiscale=multiscale,
-      minpb=0.4,
-      interpolation='linear', imagermode='mosaic', interactive=False,
-      niter=10000, threshold=threshold, imsize=imsize, cell=cell,
-      phasecenter=phasecenter, weighting='briggs',
-      usescratch=True, pbcor=True, robust=-2.0)
+tclean(vis=vis4, imagename=myimagebase, field="", spw='',
+       outframe='LSRK', interpolation='linear', gridder='mosaic',
+       scales=multiscale, interactive=False, niter=10000,
+       threshold='100mJy', imsize=imsize, specmode='mfs',
+       cell=cell, phasecenter=phasecenter, weighting='briggs', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
         outfile=myimagebase+'.image.pbcor', overwrite=True)
@@ -264,37 +285,16 @@ exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, 
 
 
 
-# since ampphase fails by flagging out good data, try deeper here...
-# No, something else has caused problems.  Screw it, try ampphase.
-# oooooh, vis3.corrected = vis4.data, and clean automatically selected corrected... sigh
-myimagebase = "merge_selfcal_spw3_selfcal_4ampphase_mfs_deeper"
-os.system('rm -rf {0}.*'.format(myimagebase))
-clean(vis=vis4, imagename=myimagebase,
-      field="", spw='', mode='mfs', outframe='LSRK',
-      multiscale=multiscale,
-      interpolation='linear', imagermode='mosaic', interactive=False,
-      minpb=0.4,
-      niter=50000, threshold='5mJy', imsize=imsize, cell=cell,
-      phasecenter=phasecenter, weighting='briggs',
-      usescratch=True, pbcor=True, robust=-2.0)
-exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
-impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
-        outfile=myimagebase+'.image.pbcor', overwrite=True)
-exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
-exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
-exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 # using vis2.corrected = vis3.data
 myimagebase = "merge_selfcal_spw3_selfcal_3_mfs_deeper"
 os.system('rm -rf {0}.*'.format(myimagebase))
-clean(vis=vis2, imagename=myimagebase,
-      field="", spw='', mode='mfs', outframe='LSRK',
-      multiscale=multiscale,
-      interpolation='linear', imagermode='mosaic', interactive=False,
-      minpb=0.4,
-      niter=50000, threshold='5mJy', imsize=imsize, cell=cell,
-      phasecenter=phasecenter, weighting='briggs',
-      usescratch=True, pbcor=True, robust=-2.0)
+tclean(vis=vis2, imagename=myimagebase, field="", spw="", specmode='mfs',
+       deconvolver='clark', gridder='mosaic', outframe='LSRK',
+       pblimit=0.4, interpolation='linear',
+       interactive=False, niter=50000,
+       threshold='5mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
+       weighting='briggs', savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
         outfile=myimagebase+'.image.pbcor', overwrite=True)
@@ -320,14 +320,3 @@ print("selfcal3:          peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigm
 sigma, peak = (fits.getdata('merge_selfcal_spw3_selfcal_4ampphase_mfs.image.pbcor.fits')[slc].std(), np.nanmax(fits.getdata('merge_selfcal_spw3_selfcal_4ampphase_mfs.image.pbcor.fits')))
 print("selfcal4 ampphase: peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
 print("Completed in {0}s".format(time.time()-t0))
-
-"""
-Stats (mfs):
-dirty:             peak=0.57990 sigma=0.00056 s/n=1031.64363
-clean:             peak=0.62937 sigma=0.00059 s/n=1060.74211
-selfcal:           peak=0.64963 sigma=0.00059 s/n=1104.06681
-selfcal2:          peak=0.65766 sigma=0.00059 s/n=1115.24844
-selfcal3:          peak=0.66613 sigma=0.00059 s/n=1129.29259
-selfcal4 ampphase: peak=0.70497 sigma=0.00063 s/n=1126.32878
-Completed in 2088.65619898s
-"""
