@@ -14,7 +14,7 @@ tclean(vis=vis0, imagename=myimagebase, field="", spw='',
        scales=multiscale, interactive=False, niter=10000,
        threshold='100mJy', imsize=imsize, specmode='mfs',
        pblimit=0.5, cell=cell, phasecenter=phasecenter, weighting='briggs',
-       robust=-2.0, uvtaper='50m',
+       robust=-2.0, uvrange='0~50m',
       )
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 
@@ -41,7 +41,7 @@ tclean(vis=vis0, imagename=myimagebase, field="", spw='',
        scales=multiscale, interactive=False, niter=10000,
        threshold='100mJy', imsize=imsize, specmode='mfs',
        pblimit=0.5, cell=cell, phasecenter=phasecenter, weighting='briggs',
-       robust=-2.0, uvrange='500m~5000m',
+       robust=-2.0, uvrange='500~5000m',
       )
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 
