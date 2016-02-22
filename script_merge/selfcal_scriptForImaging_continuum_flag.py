@@ -100,6 +100,7 @@ tclean(vis=vis0, imagename=myimagebase, field="", spw='',
        outframe='LSRK', interpolation='linear', gridder='mosaic',
        scales=multiscale, interactive=False, niter=10000,
        threshold='100mJy', imsize=imsize, specmode='mfs',
+       mask='dirty_100mJy.mask',
        cell=cell, phasecenter=phasecenter, weighting='briggs', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
@@ -138,7 +139,8 @@ os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis1, imagename=myimagebase, field="", spw='',
        outframe='LSRK', interpolation='linear', gridder='mosaic',
        scales=multiscale, interactive=False, niter=10000,
-       threshold='100mJy', imsize=imsize, specmode='mfs',
+       mask='clean_50mJy.mask',
+       threshold='50mJy', imsize=imsize, specmode='mfs',
        cell=cell, phasecenter=phasecenter, weighting='briggs', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
@@ -172,7 +174,8 @@ os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis2, imagename=myimagebase, field="", spw='',
        outframe='LSRK', interpolation='linear', gridder='mosaic',
        scales=multiscale, interactive=False, niter=10000,
-       threshold='100mJy', imsize=imsize, specmode='mfs',
+       threshold='50mJy', imsize=imsize, specmode='mfs',
+       mask='clean_50mJy.mask',
        cell=cell, phasecenter=phasecenter, weighting='briggs', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
@@ -205,7 +208,8 @@ os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis3, imagename=myimagebase, field="", spw='',
        outframe='LSRK', interpolation='linear', gridder='mosaic',
        scales=multiscale, interactive=False, niter=10000,
-       threshold='100mJy', imsize=imsize, specmode='mfs',
+       threshold='50mJy', imsize=imsize, specmode='mfs',
+       mask='clean_50mJy.mask',
        cell=cell, phasecenter=phasecenter, weighting='briggs', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
@@ -243,7 +247,8 @@ os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis4, imagename=myimagebase, field="", spw='',
        outframe='LSRK', interpolation='linear', gridder='mosaic',
        scales=multiscale, interactive=False, niter=10000,
-       threshold='100mJy', imsize=imsize, specmode='mfs',
+       threshold='50mJy', imsize=imsize, specmode='mfs',
+       mask='clean_50mJy.mask',
        cell=cell, phasecenter=phasecenter, weighting='briggs', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
@@ -259,7 +264,8 @@ tclean(vis=vis4, imagename=myimagebase, field="", spw="", specmode='mfs',
        deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
        scales=multiscale, pblimit=0.4, interpolation='linear',
        interactive=False, niter=10000,
-       threshold=threshold, imsize=imsize, cell=cell, phasecenter=phasecenter,
+       threshold='20mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
+       mask='clean_50mJy.mask',
        weighting='briggs', savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb',
@@ -275,6 +281,7 @@ tclean(vis=vis4, imagename=myimagebase, field="", spw="", specmode='mfs',
        pblimit=0.4, interpolation='linear',
        interactive=False, niter=100000,
        threshold='15mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
+       mask='clean_50mJy.mask',
        weighting='briggs', savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb',
@@ -294,6 +301,7 @@ tclean(vis=vis2, imagename=myimagebase, field="", spw="", specmode='mfs',
        pblimit=0.4, interpolation='linear',
        interactive=False, niter=50000,
        threshold='5mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
+       mask='clean_50mJy.mask',
        weighting='briggs', savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
