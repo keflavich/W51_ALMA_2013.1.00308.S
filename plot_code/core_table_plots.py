@@ -1,6 +1,7 @@
 import numpy as np
 import paths
 from astropy.table import Table, Column
+from astropy import units as u
 import powerlaw
 import pylab as pl
 
@@ -72,14 +73,48 @@ fig2.savefig(paths.fpath('coreplots/tcorr_mass_powerlaw_histogram_fit.png'))
 
 print("Fit parameters: alpha={0}".format(fit.power_law.alpha))
 
+fig2 = pl.figure(2)
+fig2.clf()
+ax3 = fig2.add_subplot(111)
+bmin, bmax = 0.2, 6.0
+bins = np.linspace((bmin),(bmax),15)
+H,L,P = ax3.hist(cores_merge['T_corrected_mass'], bins=bins*0.99, color='k',
+                 facecolor='none', histtype='step', label='M($T_B$)',
+                 linewidth=2, alpha=0.5)
+H,L,P = ax3.hist(cores_merge['peak_mass'], bins=bins*1.01, color='b',
+                 facecolor='none', histtype='step', label='M($20$K)',
+                 linewidth=2, alpha=0.5)
+starless = Table.read('/Users/adam/work/catalogs/enoch_perseus/table1.dat',
+                      format='ascii.cds',
+                      readme='/Users/adam/work/catalogs/enoch_perseus/ReadMe')
+protostellar = Table.read('/Users/adam/work/catalogs/enoch_perseus/table2.dat',
+                          format='ascii.cds',
+                          readme='/Users/adam/work/catalogs/enoch_perseus/ReadMe')
+H,L,P = ax3.hist(starless['TMass'], bins=bins*0.98, color='r', linestyle='dashed',
+                 facecolor='none', histtype='step', label='Perseus Starless')
+H,L,P = ax3.hist(protostellar['TMass'], bins=bins*1.00, color='g', linestyle='dashed',
+                 facecolor='none', histtype='step', label='Perseus Protostellar')
+ax3.set_xlabel("Temperature-corrected mass")
+ax3.set_ylabel("Number of sources")
+pl.legend(loc='best')
+fig2.savefig(paths.fpath('coreplots/mass_histograms.png'))
 
+
+
+
+beam_area = cores_merge['beam_area']
+jy_to_k = (1*u.Jy).to(u.K, u.brightness_temperature(beam_area,
+                                                    220*u.GHz)).mean()
 
 fig3 = pl.figure(3)
 fig3.clf()
 ax4 = fig3.gca()
 ax4.plot(cores_merge['peak'], cores_merge['PeakLineBrightness'], 's')
+ax4.plot([0,0.4], [0, 0.4*jy_to_k.value], 'k--')
 ax4.set_xlabel("Continuum flux density (Jy/beam)")
 ax4.set_ylabel("Peak line brightness (K)")
+ax4.set_xlim([0, 0.4])
+fig3.savefig(paths.fpath('coreplots/peakTB_vs_continuum.png'))
 
 fig4 = pl.figure(4)
 fig4.clf()
@@ -90,6 +125,7 @@ ax5.plot([0,20], [0,20], 'k--')
 ax5.set_ylim(ylims)
 ax5.set_xlabel("Mass at 20K [M$_\\odot$]")
 ax5.set_ylabel("Mass at peak $T_B$ [M$_\\odot$]")
+fig4.savefig(paths.fpath('coreplots/mass20K_vs_massTB.png'))
 
 pl.draw()
 pl.show()
