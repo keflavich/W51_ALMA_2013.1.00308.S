@@ -39,7 +39,21 @@ os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis0, imagename=myimagebase, field="", spw='',
        outframe='LSRK', interpolation='linear', gridder='mosaic',
        scales=multiscale, interactive=False, niter=10000,
-       threshold='100mJy', imsize=imsize, specmode='mfs',
+       threshold='10mJy', imsize=imsize, specmode='mfs',
+       pblimit=0.5, cell=cell, phasecenter=phasecenter, weighting='briggs',
+       robust=-2.0, uvrange='500~5000m',
+      )
+exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+
+
+
+myimagebase = "w51_continuum_7m12m_contvis_taper_gt300m"
+# threshold = 50mJy with no other restrictions -> infinite divergence
+os.system('rm -rf {0}.*'.format(myimagebase))
+tclean(vis=vis0, imagename=myimagebase, field="", spw='',
+       outframe='LSRK', interpolation='linear', gridder='mosaic',
+       scales=multiscale, interactive=False, niter=10000,
+       threshold='10mJy', imsize=imsize, specmode='mfs',
        pblimit=0.5, cell=cell, phasecenter=phasecenter, weighting='briggs',
        robust=-2.0, uvrange='500~5000m',
       )
