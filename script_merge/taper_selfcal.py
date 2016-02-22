@@ -41,6 +41,7 @@ gaincal(vis=vis0, caltable="phase_longbaselines_0.cal", field=field,
 applycal(vis=vis0, field="", gaintable=["phase_longbaselines_0.cal"],
          interp="linear", applymode='calonly', calwt=False)
 
+rmtables(vis1)
 split(vis=vis0, outputvis=vis1,
       datacolumn="corrected")
 
@@ -62,6 +63,7 @@ gaincal(vis=vis1, caltable="phase_longbaselines_1.cal", field=field,
 applycal(vis=vis1, field="", gaintable=["phase_longbaselines_1.cal"],
          interp="linear", applymode='calonly', calwt=False)
 
+rmtables(vis2)
 split(vis=vis1, outputvis=vis2,
       datacolumn="corrected")
 
