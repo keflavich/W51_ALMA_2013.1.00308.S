@@ -81,9 +81,10 @@ bins = np.linspace((bmin),(bmax),15)
 H,L,P = ax3.hist(cores_merge['T_corrected_mass'], bins=bins*0.99, color='k',
                  facecolor='none', histtype='step', label='M($T_B$)',
                  linewidth=2, alpha=0.5)
-H,L,P = ax3.hist(cores_merge['peak_mass'], bins=bins*1.01, color='b',
+H,L,P = ax3.hist(cores_merge['peak_mass'], bins=np.linspace(bmin, 130, 50), color='b',
                  facecolor='none', histtype='step', label='M($20$K)',
                  linewidth=2, alpha=0.5)
+peak_plot = P
 starless = Table.read('/Users/adam/work/catalogs/enoch_perseus/table1.dat',
                       format='ascii.cds',
                       readme='/Users/adam/work/catalogs/enoch_perseus/ReadMe')
@@ -92,12 +93,18 @@ protostellar = Table.read('/Users/adam/work/catalogs/enoch_perseus/table2.dat',
                           readme='/Users/adam/work/catalogs/enoch_perseus/ReadMe')
 H,L,P = ax3.hist(starless['TMass'], bins=bins*0.98, color='r', linestyle='dashed',
                  facecolor='none', histtype='step', label='Perseus Starless')
-H,L,P = ax3.hist(protostellar['TMass'], bins=bins*1.00, color='g', linestyle='dashed',
+H,L,P = ax3.hist(protostellar['TMass'], bins=bins*1.01, color='g', linestyle='dashed',
                  facecolor='none', histtype='step', label='Perseus Protostellar')
-ax3.set_xlabel("Temperature-corrected mass")
+ax3.set_xlabel("Mass")
 ax3.set_ylabel("Number of sources")
 pl.legend(loc='best')
 fig2.savefig(paths.fpath('coreplots/mass_histograms.png'))
+peak_plot[0].set_visible(False)
+H,L,P = ax3.hist(cores_merge['peak_mass'], bins=bins, color='b',
+                 facecolor='none', histtype='step', label='M($20$K)',
+                 linewidth=2, alpha=0.5)
+ax3.set_xlim(0,7)
+fig2.savefig(paths.fpath('coreplots/mass_histograms_low.png'))
 
 
 

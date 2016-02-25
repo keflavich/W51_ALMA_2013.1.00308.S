@@ -31,7 +31,7 @@ tclean(vis='h2co_line_test.ms',
        imsize = [960,960], # make it much bigger to avoid edge effects
        cell = '0.15arcsec',  #synth beam expected to be 0.2 arcsec, so 0.2/3= 0.06 arcsec cell
        weighting = 'briggs',
-       mask='auto-pb',
+       #mask='auto-pb',
        pblimit=0.5,
        )
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr

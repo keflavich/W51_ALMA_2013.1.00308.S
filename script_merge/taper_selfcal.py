@@ -1,4 +1,5 @@
 import os
+execfile('selfcal_heuristics.py')
 
 field=''
 solint='int'
@@ -38,6 +39,7 @@ exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwr
 
 gaincal(vis=vis0, caltable="phase_longbaselines_0.cal", field=field,
         solint=solint, calmode="p", refant="", gaintype="G", minsnr=5)
+#fields = goodenough_field_solutions("phase_longbaselines_0.cal")
 applycal(vis=vis0, field="", gaintable=["phase_longbaselines_0.cal"],
          interp="linear", applymode='calonly', calwt=False)
 
