@@ -2,6 +2,7 @@ import numpy as np
 import paths
 from astropy.table import Table, Column
 from astropy import units as u
+from astropy import coordinates
 import powerlaw
 import pylab as pl
 
@@ -133,6 +134,20 @@ ax5.set_ylim(ylims)
 ax5.set_xlabel("Mass at 20K [M$_\\odot$]")
 ax5.set_ylabel("Mass at peak $T_B$ [M$_\\odot$]")
 fig4.savefig(paths.fpath('coreplots/mass20K_vs_massTB.png'))
+
+fig2 = pl.figure(2)
+fig2.clf()
+ax2 = fig2.gca()
+
+coords = coordinates.SkyCoord(core_phot_tbl['RA'], core_phot_tbl['Dec'],
+                              frame='fk5').galactic
+ax2.plot(coords.l, coords.b, '.')
+ax2.set_xlim(*ax2.get_xlim()[::-1])
+ax2.set_ylabel('Galactic Latitude')
+ax2.set_xlabel('Galactic Longitude')
+ax2.set_aspect(1)
+fig2.savefig(paths.fpath('core_spatial_distribution.png'))
+
 
 pl.draw()
 pl.show()

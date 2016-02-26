@@ -67,7 +67,6 @@ for cleanmode in ('csclean', 'mosaic', 'multiscale', 'mutiscale_csclean'):
           threshold = '1.0mJy',
           interactive = False,
           imagermode = imagermode,
-          savemodel='none',
           )
     for imagetype in ('image', 'model', 'residual'):
         exportfits(imagename+".{0}".format(imagetype),

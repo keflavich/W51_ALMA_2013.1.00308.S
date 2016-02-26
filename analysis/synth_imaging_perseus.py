@@ -28,10 +28,12 @@ ffile[0].header['CRVAL1'] = 290.92402
 ffile[0].header['CRPIX1'] = 1100
 ffile[0].header['CUNIT1'] = 'deg'
 ffile[0].header['CDELT1'] = ffile[0].header['CDELT1'] * distance_scaling
+ffile[0].header['CTYPE1'] = 'RA---TAN'
 ffile[0].header['CRVAL2'] = 14.512736
 ffile[0].header['CRPIX2'] = 1553
 ffile[0].header['CUNIT2'] = 'deg'
 ffile[0].header['CDELT2'] = ffile[0].header['CDELT2'] * distance_scaling
+ffile[0].header['CTYPE2'] = 'DEC--TAN'
 ffile[0].header['CRPIX3'] = 1
 ffile[0].header['CRVAL3'] = 220.0e9
 ffile[0].header['CUNIT3'] = 'Hz'
@@ -65,45 +67,50 @@ print("image CDELT1={0[value]}{0[unit]}, CDELT2={1[value]}{1[unit]}"
                      hdkey='CDELT2'),)
      )
 
-imhead(perseus_casa_image, mode='put', hdkey='CDELT1', hdvalue={'value':hdr['CDELT1'], 'unit':'deg'})
-imhead(perseus_casa_image, mode='put', hdkey='CDELT2', hdvalue={'value':hdr['CDELT2'], 'unit':'deg'})
-imhead(perseus_casa_image, mode='put', hdkey='CRVAL1', hdvalue={'value':hdr['CRVAL1'], 'unit':'deg'})
-imhead(perseus_casa_image, mode='put', hdkey='CRVAL2', hdvalue={'value':hdr['CRVAL2'], 'unit':'deg'})
-imhead(perseus_casa_image, mode='put', hdkey='CRPIX1', hdvalue=hdr['CRPIX1'])
-imhead(perseus_casa_image, mode='put', hdkey='CRPIX2', hdvalue=hdr['CRPIX2'])
-imhead(perseus_casa_image, mode='put', hdkey='CTYPE3', hdvalue='FREQ')
+#imhead(perseus_casa_image, mode='put', hdkey='CDELT1', hdvalue={'value':hdr['CDELT1'], 'unit':'deg'})
+#imhead(perseus_casa_image, mode='put', hdkey='CDELT2', hdvalue={'value':hdr['CDELT2'], 'unit':'deg'})
+#imhead(perseus_casa_image, mode='put', hdkey='CRVAL1', hdvalue={'value':hdr['CRVAL1'], 'unit':'deg'})
+#imhead(perseus_casa_image, mode='put', hdkey='CRVAL2', hdvalue={'value':hdr['CRVAL2'], 'unit':'deg'})
+#imhead(perseus_casa_image, mode='put', hdkey='CRPIX1', hdvalue=hdr['CRPIX1'])
+#imhead(perseus_casa_image, mode='put', hdkey='CRPIX2', hdvalue=hdr['CRPIX2'])
+#imhead(perseus_casa_image, mode='put', hdkey='CTYPE3', hdvalue='FREQ')
+# can convert units and use this
+#imhead(perseus_casa_image, mode='put', hdkey='BUNIT', hdvalue='Jy/beam') #WRONG!!!
+imhead(perseus_casa_image, mode='put', hdkey='BUNIT', hdvalue='Jy/pixel') #WRONG!!!
 exportfits(perseus_casa_image, perseus_casa_image+".fits",
            overwrite=True)
 hdr = fits.getheader(perseus_casa_image+".fits")
 print("CDELT1={0}, CDELT2={1}".format(hdr['CDELT1'], hdr['CDELT2']))
 
-#os.system('rm -rf {0}'.format(perseus_casa_image))
-## try re-importing (this definitely should not fix any outstanding issues)
-#importfits(fitsimage=perseus_rescaled,
-#           imagename=perseus_casa_image,
-#           overwrite=True,
-#           # The beam is OBVIOUSLY AND CORRECTLY in the header.
-#           #beam=["{0}deg".format(18/3600.*distance_scaling),
-#           #      "{0}deg".format(18/3600.*distance_scaling),
-#           #      "0deg"],
-#          )
+os.system('rm -rf {0}'.format(perseus_casa_image))
+# try re-importing (this definitely should not fix any outstanding issues)
+importfits(fitsimage=perseus_rescaled,
+           imagename=perseus_casa_image,
+           overwrite=True,
+           # The beam is OBVIOUSLY AND CORRECTLY in the header.
+           #beam=["{0}deg".format(18/3600.*distance_scaling),
+           #      "{0}deg".format(18/3600.*distance_scaling),
+           #      "0deg"],
+          )
 
+sm.openfromms("w51_contvis_selfcal_0.ms")
 sm.openfromms("continuum_7m12m_noflag.ms")
 sm.setvp()
 success = sm.predict(perseus_casa_image)
 sm.done()
 sm.close()
 
-# im.open("continuum_7m12m_noflag.ms")
-# im.defineimage(nx=cube.shape[1],
-#                cellx='{0}arcsec'.format(header['CDELT2']*3600),
-#                mode='channel',
-#                nchan=cube.shape[0],
-#                phasecenter='J2000 {0} {1}'.format(c.ra.to_string(),
-#                                                   c.dec.to_string())),
-# 
-# im.ft(model=perseus_casa_image)
-# im.close()
+#im.open("continuum_7m12m_noflag.ms")
+#im.defineimage(nx=hdr['NAXIS1'],
+#               cellx='{0}arcsec'.format(hdr['CDELT2']*3600),
+#               mode='mfs'),
+#
+##im.makemodelfromsd(sdimage=perseus_casa_image, modelimage='modelimage_'+perseus_casa_image)
+#im.ft(model=perseus_casa_image)
+#im.close()
+
+#ft(vis='continuum_7m12m_noflag.ms',
+#   model=perseus_casa_image, usescratch=True)
 
 
 #inbright = distance_scaling
