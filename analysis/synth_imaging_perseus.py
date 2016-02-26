@@ -108,9 +108,12 @@ success = sm.predict(perseus_casa_image)
 sm.done()
 sm.close()
 
+# problem:
+# plotms(vis='continuum_7m12m_noflag.ms', xaxis='uvdist', ydatacolumn='model')
+
 os.system('rm -rf perseus_250_model.ms')
 split(vis="continuum_7m12m_noflag.ms", outputvis="perseus_250_model.ms",
-      datacolumn='model')
+      datacolumn='data')
 
 
 os.system('rm -rf perseus_250_model_tclean_dirty*')
@@ -119,38 +122,17 @@ tclean(vis='perseus_250_model.ms',
        field='',
        spw='',
        specmode='mfs',
-       deconvolver='multiscale',
-       imsize = [1024,1024],
-       cell= '0.06arcsec',
+       deconvolver='clark',
+       imsize = [2048,2048],
+       cell= '0.1arcsec',
        weighting = 'uniform',
-       phasecenter='',
-       scales=[0,3,9,27,81],
+       phasecenter='J2000 19h23m43.905 +14d30m28.08',
+       #scales=[0,3,9,27,81],
        robust = -2.0,
-       niter = 1,
+       niter = 5,
        threshold = '1.0mJy',
        interactive = False,
        gridder = 'mosaic',
        savemodel='none',
        )
-exportfits(imagename='perseus_250_model_tclean_dirty.image.image', fitsimage='perseus_250_model_tclean_dirty.image.fits',  dropdeg=True, overwrite=True)
-
-
-#im.open("continuum_7m12m_noflag.ms")
-#im.defineimage(nx=hdr['NAXIS1'],
-#               cellx='{0}arcsec'.format(hdr['CDELT2']*3600),
-#               mode='mfs'),
-#
-##im.makemodelfromsd(sdimage=perseus_casa_image, modelimage='modelimage_'+perseus_casa_image)
-#im.ft(model=perseus_casa_image)
-#im.close()
-
-#ft(vis='continuum_7m12m_noflag.ms',
-#   model=perseus_casa_image, usescratch=True)
-
-
-#inbright = distance_scaling
-#indirection = "J2000 19h23m41.509 +14d30m41.46"
-#incell = "{0}arcsec".format(np.abs(ffile[0].header['CDELT1']*3600) * dperseus/dw51)
-#incenter = '220GHz'
-#inwidth = '2GHz'
-
+exportfits(imagename='perseus_250_model_tclean_dirty.image', fitsimage='perseus_250_model_tclean_dirty.image.fits',  dropdeg=True, overwrite=True)
