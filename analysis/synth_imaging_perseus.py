@@ -13,6 +13,8 @@ dperseus = 140.
 dw51 = 5410.
 distance_scaling = dperseus/dw51
 flux_scaling = (250/1100.)**3.5
+bm = (np.pi*(18./3600*distance_scaling*np.pi/180.)**2)*u.sr
+MJySr_to_JyBm = (1*u.MJy/u.sr).to(u.Jy/bm).value
 
 im_perseus = paths.dpath('perseus04-250.fits.gz')
 perseus_rescaled = paths.dpath('perseus04-250-rescaled.fits')
@@ -45,7 +47,8 @@ ffile[0].header['CUNIT4'] = ''
 ffile[0].header['CDELT4'] = 0
 ffile[0].header['CTYPE4'] = 'STOKES'
 ffile[0].header['RESTFRQ'] = 2.33946806e+11
-ffile[0].data *= flux_scaling
+ffile[0].header['BUNIT'] = 'Jy/beam'
+ffile[0].data *= flux_scaling * MJySr_to_JyBm
 #ffile[0].data = np.expand_dims(ffile[0].data, axis=0)
 ffile.writeto(perseus_rescaled, clobber=True)
 hdr = ffile[0].header
@@ -81,7 +84,7 @@ print("image CDELT1={0[value]}{0[unit]}, CDELT2={1[value]}{1[unit]}"
 #imhead(perseus_casa_image, mode='put', hdkey='CRPIX2', hdvalue=hdr['CRPIX2'])
 #imhead(perseus_casa_image, mode='put', hdkey='CTYPE3', hdvalue='FREQ')
 # can convert units and use this
-#imhead(perseus_casa_image, mode='put', hdkey='BUNIT', hdvalue='Jy/beam') #WRONG!!!
+#imhead(perseus_casa_image, mode='put', hdkey='BUNIT', hdvalue='Jy/beam')
 #imhead(perseus_casa_image, mode='put', hdkey='BUNIT', hdvalue='Jy/pixel') #WRONG!!!
 exportfits(perseus_casa_image, perseus_casa_image+".fits",
            overwrite=True)
@@ -99,6 +102,9 @@ importfits(fitsimage=perseus_rescaled,
                  "{0}deg".format(18/3600.*distance_scaling),
                  "0deg"],
           )
+ia.open(perseus_casa_image)
+print("BUNIT: ",ia.summary()['unit'])
+ia.close()
 
 #sm.openfromms("w51_contvis_selfcal_0.ms")
 sm.openfromms("continuum_7m12m_noflag.ms")
@@ -129,10 +135,32 @@ tclean(vis='perseus_250_model.ms',
        phasecenter='J2000 19h23m43.905 +14d30m28.08',
        #scales=[0,3,9,27,81],
        robust = -2.0,
-       niter = 5,
+       niter = 0,
        threshold = '1.0mJy',
        interactive = False,
        gridder = 'mosaic',
        savemodel='none',
        )
-exportfits(imagename='perseus_250_model_tclean_dirty.image', fitsimage='perseus_250_model_tclean_dirty.image.fits',  dropdeg=True, overwrite=True)
+exportfits(imagename='perseus_250_model_tclean_dirty.residual', fitsimage='perseus_250_model_tclean_dirty.image.fits',  dropdeg=True, overwrite=True)
+
+
+os.system('rm -rf perseus_250_model_tclean_clean*')
+tclean(vis='perseus_250_model.ms',
+       imagename='perseus_250_model_tclean_clean',
+       field='',
+       spw='',
+       specmode='mfs',
+       deconvolver='clark',
+       imsize = [2048,2048],
+       cell= '0.1arcsec',
+       weighting = 'uniform',
+       phasecenter='J2000 19h23m43.905 +14d30m28.08',
+       #scales=[0,3,9,27,81],
+       robust = -2.0,
+       niter = 10000,
+       threshold = '1.0mJy',
+       interactive = False,
+       gridder = 'mosaic',
+       savemodel='none',
+       )
+exportfits(imagename='perseus_250_model_tclean_clean.image', fitsimage='perseus_250_model_tclean_clean.image.fits',  dropdeg=True, overwrite=True)
