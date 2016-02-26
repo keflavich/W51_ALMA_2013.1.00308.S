@@ -35,12 +35,18 @@ ffile[0].header['CUNIT2'] = 'deg'
 ffile[0].header['CDELT2'] = ffile[0].header['CDELT2'] * distance_scaling
 ffile[0].header['CTYPE2'] = 'DEC--TAN'
 ffile[0].header['CRPIX3'] = 1
-ffile[0].header['CRVAL3'] = 220.0e9
+ffile[0].header['CRVAL3'] = 2.33946806e+11
 ffile[0].header['CUNIT3'] = 'Hz'
 ffile[0].header['CDELT3'] = 1e9
-ffile[0].header['RESTFRQ'] = 220.0e9
+ffile[0].header['CTYPE3'] = 'FREQ'
+ffile[0].header['CRPIX4'] = 1
+ffile[0].header['CRVAL4'] = 1
+ffile[0].header['CUNIT4'] = ''
+ffile[0].header['CDELT4'] = 0
+ffile[0].header['CTYPE4'] = 'STOKES'
+ffile[0].header['RESTFRQ'] = 2.33946806e+11
 ffile[0].data *= flux_scaling
-ffile[0].data = np.expand_dims(ffile[0].data, axis=0)
+#ffile[0].data = np.expand_dims(ffile[0].data, axis=0)
 ffile.writeto(perseus_rescaled, clobber=True)
 hdr = ffile[0].header
 
@@ -51,10 +57,10 @@ os.system('rm -rf {0}'.format(perseus_casa_image))
 importfits(fitsimage=perseus_rescaled,
            imagename=perseus_casa_image,
            overwrite=True,
-           defaultaxes=True,
+           defaultaxes=True,#['RA---TAN','DEC--TAN','FREQUENCY','STOKES'],
            defaultaxesvalues=['2.909234541667E+02deg',
                               '1.451177222222E+01deg',
-                              '220GHz','I'],
+                              '233.9468GHz','I'],
            # 18" = 1.22 lambda/D
            beam=["{0}deg".format(18/3600.*distance_scaling),
                  "{0}deg".format(18/3600.*distance_scaling),
@@ -76,7 +82,7 @@ print("image CDELT1={0[value]}{0[unit]}, CDELT2={1[value]}{1[unit]}"
 #imhead(perseus_casa_image, mode='put', hdkey='CTYPE3', hdvalue='FREQ')
 # can convert units and use this
 #imhead(perseus_casa_image, mode='put', hdkey='BUNIT', hdvalue='Jy/beam') #WRONG!!!
-imhead(perseus_casa_image, mode='put', hdkey='BUNIT', hdvalue='Jy/pixel') #WRONG!!!
+#imhead(perseus_casa_image, mode='put', hdkey='BUNIT', hdvalue='Jy/pixel') #WRONG!!!
 exportfits(perseus_casa_image, perseus_casa_image+".fits",
            overwrite=True)
 hdr = fits.getheader(perseus_casa_image+".fits")
@@ -88,17 +94,46 @@ importfits(fitsimage=perseus_rescaled,
            imagename=perseus_casa_image,
            overwrite=True,
            # The beam is OBVIOUSLY AND CORRECTLY in the header.
-           #beam=["{0}deg".format(18/3600.*distance_scaling),
-           #      "{0}deg".format(18/3600.*distance_scaling),
-           #      "0deg"],
+           # but if you leave this out, CASA complains loudly
+           beam=["{0}deg".format(18/3600.*distance_scaling),
+                 "{0}deg".format(18/3600.*distance_scaling),
+                 "0deg"],
           )
 
-sm.openfromms("w51_contvis_selfcal_0.ms")
+#sm.openfromms("w51_contvis_selfcal_0.ms")
 sm.openfromms("continuum_7m12m_noflag.ms")
+#sm.openfromms("w51_test_onechan.ms")
 sm.setvp()
 success = sm.predict(perseus_casa_image)
 sm.done()
 sm.close()
+
+os.system('rm -rf perseus_250_model.ms')
+split(vis="continuum_7m12m_noflag.ms", outputvis="perseus_250_model.ms",
+      datacolumn='model')
+
+
+os.system('rm -rf perseus_250_model_tclean_dirty*')
+tclean(vis='perseus_250_model.ms',
+       imagename='perseus_250_model_tclean_dirty',
+       field='',
+       spw='',
+       specmode='mfs',
+       deconvolver='multiscale',
+       imsize = [1024,1024],
+       cell= '0.06arcsec',
+       weighting = 'uniform',
+       phasecenter='',
+       scales=[0,3,9,27,81],
+       robust = -2.0,
+       niter = 1,
+       threshold = '1.0mJy',
+       interactive = False,
+       gridder = 'mosaic',
+       savemodel='none',
+       )
+exportfits(imagename='perseus_250_model_tclean_dirty.image.image', fitsimage='perseus_250_model_tclean_dirty.image.fits',  dropdeg=True, overwrite=True)
+
 
 #im.open("continuum_7m12m_noflag.ms")
 #im.defineimage(nx=hdr['NAXIS1'],
