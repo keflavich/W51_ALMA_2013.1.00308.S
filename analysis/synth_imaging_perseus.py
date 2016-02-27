@@ -4,6 +4,7 @@ Synthetic imaging / simulated observing of the NGC 1333/Perseus Herschel map at
 sensitivity of W51
 """
 from astropy.io import fits
+from astropy import units as u
 import paths
 import requests
 import os
@@ -13,8 +14,8 @@ dperseus = 140.
 dw51 = 5410.
 distance_scaling = dperseus/dw51
 flux_scaling = (250/1100.)**3.5
-bm = (np.pi*(18./3600*distance_scaling*np.pi/180.)**2)*u.sr
-MJySr_to_JyBm = (1*u.MJy/u.sr).to(u.Jy/bm).value
+in_bm = (2*np.pi*(18./206265./2.35)**2)*u.sr
+MJySr_to_JyBm = (1*u.MJy/u.sr).to(u.Jy/in_bm).value
 
 im_perseus = paths.dpath('perseus04-250.fits.gz')
 perseus_rescaled = paths.dpath('perseus04-250-rescaled.fits')
@@ -157,10 +158,33 @@ tclean(vis='perseus_250_model.ms',
        phasecenter='J2000 19h23m43.905 +14d30m28.08',
        #scales=[0,3,9,27,81],
        robust = -2.0,
-       niter = 10000,
+       niter = 50000,
        threshold = '1.0mJy',
        interactive = False,
        gridder = 'mosaic',
        savemodel='none',
        )
 exportfits(imagename='perseus_250_model_tclean_clean.image', fitsimage='perseus_250_model_tclean_clean.image.fits',  dropdeg=True, overwrite=True)
+exportfits(imagename='perseus_250_model_tclean_clean.model', fitsimage='perseus_250_model_tclean_clean.model.fits',  dropdeg=True, overwrite=True)
+
+os.system('rm -rf perseus_250_model_tclean_msclean*')
+tclean(vis='perseus_250_model.ms',
+       imagename='perseus_250_model_tclean_msclean',
+       field='',
+       spw='',
+       specmode='mfs',
+       deconvolver='multiscale',
+       imsize = [2048,2048],
+       cell= '0.1arcsec',
+       weighting = 'uniform',
+       phasecenter='J2000 19h23m43.905 +14d30m28.08',
+       scales=[0,3,9,27,81],
+       robust = -2.0,
+       niter = 50000,
+       threshold = '1.0mJy',
+       interactive = False,
+       gridder = 'mosaic',
+       savemodel='none',
+       )
+exportfits(imagename='perseus_250_model_tclean_msclean.image', fitsimage='perseus_250_model_tclean_msclean.image.fits',  dropdeg=True, overwrite=True)
+exportfits(imagename='perseus_250_model_tclean_msclean.model', fitsimage='perseus_250_model_tclean_msclean.model.fits',  dropdeg=True, overwrite=True)
