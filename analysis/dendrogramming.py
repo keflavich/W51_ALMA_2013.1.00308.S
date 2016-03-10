@@ -54,7 +54,8 @@ metadata['wcs'] = mywcs
 ppcat = astrodendro.pp_catalog(dend, metadata)
 
 # add a 'noise' column to the catalog
-keys = ['noise','is_leaf','peak_flux','min_flux','mean_flux','peak_mass','peak_col']
+keys = ['noise', 'is_leaf', 'peak_flux', 'min_flux', 'mean_flux', 'peak_mass',
+        'peak_col', 'beam_area']
 columns = {k:[] for k in (keys)}
 for ii, row in enumerate(ProgressBar(ppcat)):
     structure = dend[row['_idx']]
@@ -68,6 +69,7 @@ for ii, row in enumerate(ProgressBar(ppcat)):
     columns['mean_flux'].append(contfile[0].data[dend_inds].mean())
     columns['peak_mass'].append(masscalc.mass_conversion_factor()*peakflux)
     columns['peak_col'].append(masscalc.col_conversion_factor()*peakflux)
+    columns['beam_area'].append(beam.sr.value)
 
 for k in columns:
     if k not in ppcat.keys():

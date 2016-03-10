@@ -44,14 +44,10 @@ tclean(vis=vis0, imagename=myimagebase, field="", spw='',
        interactive=False, niter=0, threshold=threshold, imsize=imsize,
        cell=cell, phasecenter=phasecenter,
        weighting='briggs', savemodel='modelcolumn', robust=-2.0)
-exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
-impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
-        outfile=myimagebase+'.image.pbcor', overwrite=True)
-exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
-dirtyimage = 'merge_selfcal_spw3_dirty.image'
+dirtyimage = 'merge_selfcal_spw3_dirty.residual'
 ia.open(dirtyimage)
 ia.calcmask(mask=dirtyimage+" > 0.1", name='dirty_mask_100mJy')
 ia.close()
@@ -59,39 +55,6 @@ makemask(mode='copy', inpimage=dirtyimage,
          inpmask=dirtyimage+":dirty_mask_100mJy", output='dirty_100mJy.mask',
          overwrite=True)
 exportfits('dirty_100mJy.mask', 'dirty_100mJy.mask.fits', dropdeg=True, overwrite=True)
-
-# progressively testing deeper clean until it diverges
-# 100 iters = ok, no sign of divergence
-# DEBUG
-myimagebase = "DEBUG_merge_selfcal_spw3_mfs"
-# threshold = 50mJy with no other restrictions -> infinite divergence
-os.system('rm -rf {0}.*'.format(myimagebase))
-tclean(vis=vis0, imagename=myimagebase, field="", spw='',
-       specmode='mfs', outframe='LSRK', interpolation='linear', gridder='mosaic',
-      multiscale=multiscale,
-      interactive=False, niter=1000, threshold='100mJy', imsize=imsize,
-      savemodel='modelcolumn',
-      cell=cell, phasecenter=phasecenter,
-      weighting='briggs', robust=-2.0)
-exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
-impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
-        outfile=myimagebase+'.image.pbcor', overwrite=True)
-exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
-exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
-exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
-
-# DEBUG
-myimagebase = "DEBUG_merge_selfcal_spw3_mfs_tclean"
-# threshold = 50mJy with no other restrictions -> infinite divergence
-os.system('rm -rf {0}.*'.format(myimagebase))
-tclean(vis=vis0, imagename=myimagebase, field="", spw='',
-       outframe='LSRK', interpolation='linear', gridder='mosaic',
-       scales=multiscale, interactive=False, niter=1000,
-       threshold='100mJy', imsize=imsize, specmode='mfs',
-       pblimit=0.5, cell=cell, phasecenter=phasecenter, weighting='briggs', savemodel='modelcolumn',
-       robust=-2.0)
-exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
-
 
 
 # rms ~3.7 mJy/beam
@@ -160,7 +123,7 @@ gaincal(vis=vis1, caltable="selfcal_spw3_phase_2.cal", field=field,
 #        iteration="antenna", plotrange=[0,0,-30,30], markersize=5,
 #        fontsize=10.0,)
 assert len(selfcal_heuristics.goodenough_field_solutions("selfcal_spw3_phase_2.cal", minsnr=5, maxphasenoise=np.pi/4., pols=[0])) > 0
-raise("This is where things fall apart")
+print("Goodenough field solns: ",selfcal_heuristics.goodenough_field_solutions("selfcal_spw3_phase_2.cal", minsnr=5, maxphasenoise=np.pi/4., pols=[0]))
 
 
 flagmanager(vis=vis1, mode='save', versionname='backup')
