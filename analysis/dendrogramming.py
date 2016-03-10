@@ -28,32 +28,7 @@ residfile.writeto(paths.dpath('W51_te_continuum_best_noise.fits'), clobber=True)
 
 mywcs = wcs.WCS(contfile[0].header)
 
-dend = astrodendro.Dendrogram.compute(data, min_value=0.010, min_delta=0.001,
-                                      min_npix=10,
-                                      wcs=mywcs)
-
-dend.save_to('dendrograms_min10mJy_diff1mJy.fits')
-
-df = fits.open('dendrograms_min10mJy_diff1mJy.fits')
-df[1].header.update(df[0].header)
-df[2].header.update(df[0].header)
-df.writeto('dendrograms_min10mJy_diff1mJy.fits', clobber=True)
-
-# should do a dendrogram where the min is 1-2 mJy, but we cut all sources
-# with peak < 10 mJy in a region...
-
-dend = astrodendro.Dendrogram.compute(data, min_value=0.008, min_delta=0.001,
-                                      min_npix=10,
-                                      wcs=mywcs)
-
-dend.save_to('dendrograms_min8mJy_diff1mJy.fits')
-
-df = fits.open('dendrograms_min8mJy_diff1mJy.fits')
-df[1].header.update(df[0].header)
-df[2].header.update(df[0].header)
-df.writeto('dendrograms_min8mJy_diff1mJy.fits', clobber=True)
-
-# ~5-sigma and ~2.5-sigma
+# ~5-sigma and ~2-sigma
 dend = astrodendro.Dendrogram.compute(data, min_value=0.001, min_delta=0.0004,
                                       min_npix=10,
                                       wcs=mywcs)
@@ -94,7 +69,7 @@ for k in columns:
     if k not in ppcat.keys():
         ppcat.add_column(Column(name=k, data=columns[k]))
 
-cat_mask = (ppcat['is_leaf'] & (ppcat['peak_flux']>8*ppcat['noise']) &
+cat_mask = (ppcat['is_leaf'] & (ppcat['peak_flux']>7*ppcat['noise']) &
             (ppcat['mean_flux']>5*ppcat['noise']) &
             (ppcat['min_flux']>2*ppcat['noise']))
 pruned_ppcat = ppcat[cat_mask]
