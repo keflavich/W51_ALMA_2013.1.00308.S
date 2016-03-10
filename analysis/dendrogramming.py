@@ -8,6 +8,7 @@ from astropy.table import Column
 import radio_beam
 import astrodendro
 from astropy import wcs
+import masscalc
 
 #contfile = fits.open(paths.dpath('selfcal_spw3_selfcal_4ampphase_mfs_tclean_deeper_10mJy.image.pbcor.fits'))
 #ln selfcal_allspw_selfcal_4ampphase_mfs_tclean_deeper_5mJy.image.pbcor.fits W51_te_continuum_best.fits
@@ -53,7 +54,7 @@ metadata['wcs'] = mywcs
 ppcat = astrodendro.pp_catalog(dend, metadata)
 
 # add a 'noise' column to the catalog
-keys = ['noise','is_leaf','peak_flux','min_flux','mean_flux']
+keys = ['noise','is_leaf','peak_flux','min_flux','mean_flux','peak_mass','peak_col']
 columns = {k:[] for k in (keys)}
 for ii, row in enumerate(ProgressBar(ppcat)):
     structure = dend[row['_idx']]
@@ -61,9 +62,12 @@ for ii, row in enumerate(ProgressBar(ppcat)):
     dend_inds = structure.indices()
     columns['noise'].append(noise[dend_inds].mean())
     columns['is_leaf'].append(structure.is_leaf)
-    columns['peak_flux'].append(contfile[0].data[dend_inds].max())
+    peakflux = contfile[0].data[dend_inds].max()
+    columns['peak_flux'].append(peakflux)
     columns['min_flux'].append(contfile[0].data[dend_inds].min())
     columns['mean_flux'].append(contfile[0].data[dend_inds].mean())
+    columns['peak_mass'].append(masscalc.mass_conversion_factor()*peakflux)
+    columns['peak_col'].append(masscalc.col_conversion_factor()*peakflux)
 
 for k in columns:
     if k not in ppcat.keys():

@@ -39,12 +39,11 @@ clearcal(vis=vis0)
 #flagmanager(vis=vis0, versionname='flagdata_1', mode='restore')
 myimagebase = "merge_selfcal_spw3_dirty"
 os.system('rm -rf {0}.*'.format(myimagebase))
-clean(vis=vis0, imagename=myimagebase, field="", spw='',
-      mode='mfs', outframe='LSRK', interpolation='linear', imagermode='mosaic',
-      interactive=False, niter=0, threshold=threshold, imsize=imsize,
-      cell=cell, phasecenter=phasecenter,
-      minpb=0.5,
-      weighting='briggs', usescratch=True, pbcor=True, robust=-2.0)
+tclean(vis=vis0, imagename=myimagebase, field="", spw='',
+       specmode='mfs', outframe='LSRK', interpolation='linear', gridder='mosaic',
+       interactive=False, niter=0, threshold=threshold, imsize=imsize,
+       cell=cell, phasecenter=phasecenter,
+       weighting='briggs', savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
         outfile=myimagebase+'.image.pbcor', overwrite=True)
@@ -67,13 +66,13 @@ exportfits('dirty_100mJy.mask', 'dirty_100mJy.mask.fits', dropdeg=True, overwrit
 myimagebase = "DEBUG_merge_selfcal_spw3_mfs"
 # threshold = 50mJy with no other restrictions -> infinite divergence
 os.system('rm -rf {0}.*'.format(myimagebase))
-clean(vis=vis0, imagename=myimagebase, field="", spw='',
-      mode='mfs', outframe='LSRK', interpolation='linear', imagermode='mosaic',
+tclean(vis=vis0, imagename=myimagebase, field="", spw='',
+       specmode='mfs', outframe='LSRK', interpolation='linear', gridder='mosaic',
       multiscale=multiscale,
       interactive=False, niter=1000, threshold='100mJy', imsize=imsize,
-      minpb=0.5,
+      savemodel='modelcolumn',
       cell=cell, phasecenter=phasecenter,
-      weighting='briggs', usescratch=True, pbcor=True, robust=-2.0)
+      weighting='briggs', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
         outfile=myimagebase+'.image.pbcor', overwrite=True)
@@ -89,7 +88,7 @@ tclean(vis=vis0, imagename=myimagebase, field="", spw='',
        outframe='LSRK', interpolation='linear', gridder='mosaic',
        scales=multiscale, interactive=False, niter=1000,
        threshold='100mJy', imsize=imsize, specmode='mfs',
-       pblimit=0.5, cell=cell, phasecenter=phasecenter, weighting='briggs',
+       pblimit=0.5, cell=cell, phasecenter=phasecenter, weighting='briggs', savemodel='modelcolumn',
        robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 
@@ -103,7 +102,7 @@ tclean(vis=vis0, imagename=myimagebase, field="", spw='',
        outframe='LSRK', interpolation='linear', gridder='mosaic',
        scales=multiscale, interactive=False, niter=10000,
        threshold='100mJy', imsize=imsize, specmode='mfs',
-       mask='dirty_100mJy.mask',
+       mask='dirty_100mJy.mask', savemodel='modelcolumn',
        cell=cell, phasecenter=phasecenter, weighting='briggs', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
@@ -144,7 +143,8 @@ tclean(vis=vis1, imagename=myimagebase, field="", spw='',
        scales=multiscale, interactive=False, niter=10000,
        mask='clean_50mJy.mask',
        threshold='50mJy', imsize=imsize, specmode='mfs',
-       cell=cell, phasecenter=phasecenter, weighting='briggs', robust=-2.0)
+       cell=cell, phasecenter=phasecenter, weighting='briggs', robust=-2.0,
+       savemodel='modelcolumn')
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
         outfile=myimagebase+'.image.pbcor', overwrite=True)
@@ -154,7 +154,7 @@ exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, 
 
 rmtables('selfcal_spw3_phase_2.cal')
 gaincal(vis=vis1, caltable="selfcal_spw3_phase_2.cal", field=field,
-        solint=solint, calmode="p", refant="", gaintype="G", minsnr=5,
+        solint=solint, calmode="p", refant="DV07", gaintype="G", minsnr=5,
         uvrange='100~5000m')
 #plotcal(caltable="selfcal_spw3_phase_2.cal", xaxis="time", yaxis="phase", subplot=331,
 #        iteration="antenna", plotrange=[0,0,-30,30], markersize=5,
@@ -181,7 +181,7 @@ tclean(vis=vis2, imagename=myimagebase, field="", spw='',
        outframe='LSRK', interpolation='linear', gridder='mosaic',
        scales=multiscale, interactive=False, niter=10000,
        threshold='50mJy', imsize=imsize, specmode='mfs',
-       mask='clean_50mJy.mask',
+       mask='clean_50mJy.mask', savemodel='modelcolumn',
        cell=cell, phasecenter=phasecenter, weighting='briggs', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
@@ -216,7 +216,7 @@ tclean(vis=vis3, imagename=myimagebase, field="", spw='',
        outframe='LSRK', interpolation='linear', gridder='mosaic',
        scales=multiscale, interactive=False, niter=10000,
        threshold='50mJy', imsize=imsize, specmode='mfs',
-       mask='clean_50mJy.mask',
+       mask='clean_50mJy.mask', savemodel='modelcolumn',
        cell=cell, phasecenter=phasecenter, weighting='briggs', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
@@ -257,7 +257,7 @@ tclean(vis=vis4, imagename=myimagebase, field="", spw='',
        outframe='LSRK', interpolation='linear', gridder='mosaic',
        scales=multiscale, interactive=False, niter=10000,
        threshold='50mJy', imsize=imsize, specmode='mfs',
-       mask='clean_50mJy.mask',
+       mask='clean_50mJy.mask', savemodel='modelcolumn',
        cell=cell, phasecenter=phasecenter, weighting='briggs', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux',
