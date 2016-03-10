@@ -1,4 +1,6 @@
 import time
+import selfcal_heuristics
+import numpy as np
 t0 = time.time()
 
 phasecenter = "J2000 19:23:41.629000 +14.30.42.38000"
@@ -57,6 +59,7 @@ ia.close()
 makemask(mode='copy', inpimage=dirtyimage,
          inpmask=dirtyimage+":dirty_mask_100mJy", output='dirty_100mJy.mask',
          overwrite=True)
+exportfits('dirty_100mJy.mask', 'dirty_100mJy.mask.fits', dropdeg=True, overwrite=True)
 
 # progressively testing deeper clean until it diverges
 # 100 iters = ok, no sign of divergence
@@ -111,7 +114,7 @@ exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, 
 
 rmtables('selfcal_spw3_phase.cal')
 gaincal(vis=vis0, caltable="selfcal_spw3_phase.cal", field=field, solint='inf',
-        calmode="p", refant="", gaintype="G", minsnr=5)
+        calmode="p", refant="", gaintype="G", minsnr=5, uvrange='100~5000m')
 
 image1 = 'merge_selfcal_spw3_mfs.image'
 ia.open(image1)
@@ -151,10 +154,13 @@ exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, 
 
 rmtables('selfcal_spw3_phase_2.cal')
 gaincal(vis=vis1, caltable="selfcal_spw3_phase_2.cal", field=field,
-        solint=solint, calmode="p", refant="", gaintype="G", minsnr=5)
-#plotcal(caltable="phase_2.cal", xaxis="time", yaxis="phase", subplot=331,
+        solint=solint, calmode="p", refant="", gaintype="G", minsnr=5,
+        uvrange='100~5000m')
+#plotcal(caltable="selfcal_spw3_phase_2.cal", xaxis="time", yaxis="phase", subplot=331,
 #        iteration="antenna", plotrange=[0,0,-30,30], markersize=5,
 #        fontsize=10.0,)
+assert len(selfcal_heuristics.goodenough_field_solutions("selfcal_spw3_phase_2.cal", minsnr=5, maxphasenoise=np.pi/4., pols=[0])) > 0
+raise("This is where things fall apart")
 
 
 flagmanager(vis=vis1, mode='save', versionname='backup')
@@ -186,7 +192,8 @@ exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, 
 
 rmtables("selfcal_spw3_phase_3.cal")
 gaincal(vis=vis2, caltable="selfcal_spw3_phase_3.cal", field=field,
-        solint=solint, calmode="p", refant="", gaintype="G", minsnr=5)
+        solint=solint, calmode="p", refant="", gaintype="G", minsnr=5,
+        uvrange='100~5000m')
 #plotcal(caltable="phase_3.cal", xaxis="time", yaxis="phase", subplot=331,
 #        iteration="antenna", plotrange=[0,0,-30,30], markersize=5,
 #        fontsize=10.0,)
@@ -219,12 +226,14 @@ exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwr
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 rmtables("selfcal_spw3_phase_4.cal")
-gaincal(vis=vis3, caltable="selfcal_spw3_phase_4.cal", field=field, solint=solint, calmode="p",
-        refant="", gaintype="G", minsnr=5)
+gaincal(vis=vis3, caltable="selfcal_spw3_phase_4.cal", field=field,
+        solint=solint, calmode="p", refant="", gaintype="G", minsnr=5,
+        uvrange='100~5000m')
 
 rmtables("selfcal_spw3_ampphase.cal")
-gaincal(vis=vis3, caltable="selfcal_spw3_ampphase.cal", field=field, solint=solint,
-        solnorm=True, calmode="ap", refant="", gaintype="G", minsnr=5)
+gaincal(vis=vis3, caltable="selfcal_spw3_ampphase.cal", field=field,
+        solint=solint, solnorm=True, calmode="ap", refant="", gaintype="G",
+        minsnr=5, uvrange='100~5000m')
 
 flagmanager(vis=vis3, mode='save', versionname='backup')
 applycal(vis=vis3, field="", gaintable=["selfcal_spw3_phase_4.cal", 'selfcal_spw3_ampphase.cal'],

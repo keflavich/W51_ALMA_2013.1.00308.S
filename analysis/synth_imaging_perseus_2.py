@@ -2,6 +2,9 @@
 Synthetic imaging / simulated observing of the NGC 1333/Perseus Herschel map at
 250um (selected for resolution matching) observed at the distance and
 sensitivity of W51
+
+This time, it is made artificially 10x brighter in a region that looks
+kind of similar to W51
 """
 from astropy.io import fits
 from astropy import units as u
@@ -23,6 +26,7 @@ nu = u.Quantity([freq_herschel, freq_alma])
 flux = dust_emissivity.blackbody.modified_blackbody(nu, temperature=20*u.K, beta=1.5)
 alpha = np.log(flux[0]/flux[1])/np.log(nu[0]/nu[1])
 flux_scaling = (wave_herschel/wave_alma).decompose().value**alpha
+flux_scaling *= 100
 
 # Herschel 250um has ~18" beam
 #in_bm = (2*np.pi*(18.*u.arcsec/206265./2.35)**2)
@@ -33,7 +37,7 @@ out_bm = (2*np.pi*((18.*distance_scaling)*u.arcsec/2.35)**2)
 MJySr_to_JyBm = (1*u.MJy/u.sr).to(u.Jy/out_bm).value
 
 im_perseus = paths.dpath('perseus04-250.fits.gz')
-perseus_rescaled = paths.dpath('perseus04-250-rescaled.fits')
+perseus_rescaled = paths.dpath('perseus04-250-rescaled_2.fits')
 
 if not os.path.exists(im_perseus):
     result = requests.get('http://www.herschel.fr/cea/gouldbelt/en/archives/perseus04/perseus04-250.fits.gz')
@@ -43,12 +47,12 @@ if not os.path.exists(im_perseus):
 # scale data to 1100um
 ffile = fits.open(im_perseus)
 ffile[0].header['CRVAL1'] = 290.92402
-ffile[0].header['CRPIX1'] = 1100
+ffile[0].header['CRPIX1'] = 580
 ffile[0].header['CUNIT1'] = 'deg'
 ffile[0].header['CDELT1'] = ffile[0].header['CDELT1'] * distance_scaling
 ffile[0].header['CTYPE1'] = 'RA---TAN'
 ffile[0].header['CRVAL2'] = 14.512736
-ffile[0].header['CRPIX2'] = 1553
+ffile[0].header['CRPIX2'] = 1442
 ffile[0].header['CUNIT2'] = 'deg'
 ffile[0].header['CDELT2'] = ffile[0].header['CDELT2'] * distance_scaling
 ffile[0].header['CTYPE2'] = 'DEC--TAN'
@@ -69,7 +73,7 @@ ffile[0].data *= flux_scaling * MJySr_to_JyBm
 ffile.writeto(perseus_rescaled, clobber=True)
 hdr = ffile[0].header
 
-perseus_casa_image = 'perseus_250_to_w51.image'
+perseus_casa_image = 'perseus_250_to_w51_2.image'
 # doesn't always work: unreliable = don't use.
 # rmresult = rmtables([perseus_casa_image])
 os.system('rm -rf {0}'.format(perseus_casa_image))
@@ -136,15 +140,17 @@ sm.close()
 # problem:
 # plotms(vis='continuum_7m12m_noflag.ms', xaxis='uvdist', ydatacolumn='model')
 
-os.system('rm -rf perseus_250_model.ms')
-assert split(vis="continuum_7m12m_noflag.ms", outputvis="perseus_250_model.ms",
+base_name = 'perseus_250_2'
+
+os.system('rm -rf {0}_model.ms'.format(base_name))
+assert split(vis="continuum_7m12m_noflag.ms", outputvis="{0}_model.ms".format(base_name),
              datacolumn='data')
 
 phasecenter = 'J2000 19h23m41.580 +14d30m41.37'
 
-os.system('rm -rf perseus_250_model_tclean_dirty*')
-tclean(vis='perseus_250_model.ms',
-       imagename='perseus_250_model_tclean_dirty',
+os.system('rm -rf {0}_model_tclean_dirty*'.format(base_name))
+tclean(vis='{0}_model.ms'.format(base_name),
+       imagename='{0}_model_tclean_dirty'.format(base_name),
        field='',
        spw='',
        specmode='mfs',
@@ -161,9 +167,9 @@ tclean(vis='perseus_250_model.ms',
        gridder = 'mosaic',
        savemodel='none',
        )
-exportfits(imagename='perseus_250_model_tclean_dirty.residual', fitsimage='perseus_250_model_tclean_dirty.image.fits',  dropdeg=True, overwrite=True)
+exportfits(imagename='{0}_model_tclean_dirty.residual'.format(base_name), fitsimage='{0}_model_tclean_dirty.image.fits'.format(base_name),  dropdeg=True, overwrite=True)
 
-# dirtyimage = 'perseus_250_model_tclean_dirty.residual'
+# dirtyimage = '{0}_model_tclean_dirty.residual'.format(base_name)
 # assert ia.open(dirtyimage)
 # assert ia.calcmask(mask=dirtyimage+" > 0.1", name='dirty_mask_100mJy')
 # assert ia.close()
@@ -172,9 +178,9 @@ exportfits(imagename='perseus_250_model_tclean_dirty.residual', fitsimage='perse
 #          overwrite=True)
 # exportfits('dirty_100mJy.mask', 'dirty_100mJy.mask.fits', dropdeg=True, overwrite=True)
 # 
-# os.system('rm -rf perseus_250_model_tclean_clean_masked*')
-# tclean(vis='perseus_250_model.ms',
-#        imagename='perseus_250_model_tclean_clean_masked',
+# os.system('rm -rf {0}_model_tclean_clean_masked*'.format(base_name))
+# tclean(vis='{0}_model.ms'.format(base_name),
+#        imagename='{0}_model_tclean_clean_masked'.format(base_name),
 #        field='',
 #        spw='',
 #        specmode='mfs',
@@ -192,13 +198,13 @@ exportfits(imagename='perseus_250_model_tclean_dirty.residual', fitsimage='perse
 #        savemodel='none',
 #        mask='dirty_100mJy.mask',
 #        )
-# exportfits(imagename='perseus_250_model_tclean_clean.image', fitsimage='perseus_250_model_tclean_clean.image.fits',  dropdeg=True, overwrite=True)
-# exportfits(imagename='perseus_250_model_tclean_clean.model', fitsimage='perseus_250_model_tclean_clean.model.fits',  dropdeg=True, overwrite=True)
+# exportfits(imagename='{0}_model_tclean_clean.image'.format(base_name), fitsimage='{0}_model_tclean_clean.image.fits'.format(base_name),  dropdeg=True, overwrite=True)
+# exportfits(imagename='{0}_model_tclean_clean.model'.format(base_name), fitsimage='{0}_model_tclean_clean.model.fits'.format(base_name),  dropdeg=True, overwrite=True)
 
 
-os.system('rm -rf perseus_250_model_tclean_clean*')
-tclean(vis='perseus_250_model.ms',
-       imagename='perseus_250_model_tclean_clean',
+os.system('rm -rf {0}_model_tclean_clean*'.format(base_name))
+tclean(vis='{0}_model.ms'.format(base_name),
+       imagename='{0}_model_tclean_clean'.format(base_name),
        field='',
        spw='',
        specmode='mfs',
@@ -210,17 +216,17 @@ tclean(vis='perseus_250_model.ms',
        #scales=[0,3,9,27,81],
        robust = -2.0,
        niter = 50000,
-       threshold = '0.5mJy',
+       threshold = '2.0mJy',
        interactive = False,
        gridder = 'mosaic',
        savemodel='none',
        )
-exportfits(imagename='perseus_250_model_tclean_clean.image', fitsimage='perseus_250_model_tclean_clean.image.fits',  dropdeg=True, overwrite=True)
-exportfits(imagename='perseus_250_model_tclean_clean.model', fitsimage='perseus_250_model_tclean_clean.model.fits',  dropdeg=True, overwrite=True)
+exportfits(imagename='{0}_model_tclean_clean.image'.format(base_name), fitsimage='{0}_model_tclean_clean.image.fits'.format(base_name),  dropdeg=True, overwrite=True)
+exportfits(imagename='{0}_model_tclean_clean.model'.format(base_name), fitsimage='{0}_model_tclean_clean.model.fits'.format(base_name),  dropdeg=True, overwrite=True)
 
-os.system('rm -rf perseus_250_model_tclean_msclean*')
-tclean(vis='perseus_250_model.ms',
-       imagename='perseus_250_model_tclean_msclean',
+os.system('rm -rf {0}_model_tclean_msclean*'.format(base_name))
+tclean(vis='{0}_model.ms'.format(base_name),
+       imagename='{0}_model_tclean_msclean'.format(base_name),
        field='',
        spw='',
        specmode='mfs',
@@ -232,10 +238,10 @@ tclean(vis='perseus_250_model.ms',
        scales=[0,3,9,27],
        robust = -2.0,
        niter = 50000,
-       threshold = '0.5mJy',
+       threshold = '2.0mJy',
        interactive = False,
        gridder = 'mosaic',
        savemodel='none',
        )
-exportfits(imagename='perseus_250_model_tclean_msclean.image', fitsimage='perseus_250_model_tclean_msclean.image.fits',  dropdeg=True, overwrite=True)
-exportfits(imagename='perseus_250_model_tclean_msclean.model', fitsimage='perseus_250_model_tclean_msclean.model.fits',  dropdeg=True, overwrite=True)
+exportfits(imagename='{0}_model_tclean_msclean.image'.format(base_name), fitsimage='{0}_model_tclean_msclean.image.fits'.format(base_name),  dropdeg=True, overwrite=True)
+exportfits(imagename='{0}_model_tclean_msclean.model'.format(base_name), fitsimage='{0}_model_tclean_msclean.model.fits'.format(base_name),  dropdeg=True, overwrite=True)
