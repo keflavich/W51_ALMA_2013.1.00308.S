@@ -26,7 +26,8 @@ nu = u.Quantity([freq_herschel, freq_alma])
 flux = dust_emissivity.blackbody.modified_blackbody(nu, temperature=20*u.K, beta=1.5)
 alpha = np.log(flux[0]/flux[1])/np.log(nu[0]/nu[1])
 flux_scaling = (wave_herschel/wave_alma).decompose().value**alpha
-flux_scaling *= 100
+#flux_scaling *= 100 # for the other filament
+flux_scaling *= 50 # for NGC1333
 
 # Herschel 250um has ~18" beam
 #in_bm = (2*np.pi*(18.*u.arcsec/206265./2.35)**2)
@@ -48,11 +49,13 @@ if not os.path.exists(im_perseus):
 ffile = fits.open(im_perseus)
 ffile[0].header['CRVAL1'] = 290.92402
 ffile[0].header['CRPIX1'] = 580
+ffile[0].header['CRPIX1'] = 1100,"NGC1333"
 ffile[0].header['CUNIT1'] = 'deg'
 ffile[0].header['CDELT1'] = ffile[0].header['CDELT1'] * distance_scaling
 ffile[0].header['CTYPE1'] = 'RA---TAN'
 ffile[0].header['CRVAL2'] = 14.512736
 ffile[0].header['CRPIX2'] = 1442
+ffile[0].header['CRPIX2'] = 1553,"NGC1333"
 ffile[0].header['CUNIT2'] = 'deg'
 ffile[0].header['CDELT2'] = ffile[0].header['CDELT2'] * distance_scaling
 ffile[0].header['CTYPE2'] = 'DEC--TAN'
