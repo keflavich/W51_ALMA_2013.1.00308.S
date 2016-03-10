@@ -39,7 +39,7 @@ chunks = [0]
 
 FreqStep = 0.1         # frequency resolution of the data (channel width) [in MHz]
 Inter_Flag = True      # T/F for interferometric/single dish observations
-TelescopeSize = 0.42   # size of the synthesized beam  [in arcsec] 
+TelescopeSize = 0.42   # size of the synthesized beam  [in arcsec]
 t_back_flag = True     # include the background temperature
 tBack = 45.0           # background temperature [in K]
 tslope = 0.0           # slope of the temperature
@@ -49,7 +49,7 @@ beta_dust = 0.0        # dust spectral index
 kappa_1300 = 0.0       # dust absorption coefficient
 RestFreq = 0.0         # rest frequency in MHz (if the data needs to be shifted)
 vLSR = 0.0             # line-of-sight velocity in km/s  (if the data needs to be shifted)
-iso_flag = False       # include isotoplogues 
+iso_flag = False       # include isotoplogues
 
 IsoTableFileName = "isonames.txt"
 
@@ -87,7 +87,7 @@ FreqsMax = [220000]
 # intensity ranges in Kelvin	
 
 IntensityMin = -1.5
-				  
+				
 IntensityMax = +100.0
 
 #
@@ -140,7 +140,7 @@ for c, chunk in enumerate(chunks):
 
     x = np.concatenate([x1,x2[x2>x1.max()]])
     y = np.concatenate([y1,y2[x2>x1.max()]])
-    
+
     expdata = np.array([x,y]).T
 
     #
@@ -150,29 +150,29 @@ for c, chunk in enumerate(chunks):
     dvel = -(dfreq - RestFreq) / RestFreq / 1000 * c + vLSR	
     data = expdata[:,1]
 
-    ax1.plot(dfreq, data, color='Gray', drawstyle = 'steps-mid', label="Data", lw=2) 
+    ax1.plot(dfreq, data, color='Gray', drawstyle = 'steps-mid', label="Data", lw=2)
 
     #
     # run XCLASS if wanted
     #
 	
     for m, MolfitsFileBaseName in enumerate(MolfitsFileBaseNames):
-          
+
           MolfitsFileName = "%s.molfit" % MolfitsFileBaseName
-          
+
           modeldata, log, TransEnergies, IntOptical, jobDir = myXCLASS()
-          
+
           #
           # plot output
           #
-          
+
           freq = modeldata[:,0] / 1000.
           mvel = modeldata[:,1]
           fit = modeldata[:,2]
           ax1.plot(freq, fit, color=colors[m], alpha=0.7, label=MolfitsFileBaseName, lw=2)
 
     ax1.set_xlim(xLowerLimit,xUpperLimit)
-    ax1.set_ylim(yLowerLimit,yUpperLimit) 
+    ax1.set_ylim(yLowerLimit,yUpperLimit)
     plt.xticks([i / 10. for i in range(FreqMin / 100, FreqMax / 100)])
 
     ax1.grid()
@@ -186,7 +186,7 @@ for c, chunk in enumerate(chunks):
     elif c == (len(chunks) - 1):
           #
           # determine the number of lines in the legend
-          
+
           if len(MolfitsFileBaseNames) % NumLegendColumns != 0:
                     numLines = (len(MolfitsFileBaseNames) / NumLegendColumns) + 1
           else:
@@ -194,11 +194,11 @@ for c, chunk in enumerate(chunks):
           #
           # adjust the location of the bottom legend
           print "numLines = ", numLines
-          
+
           #legend2 = ax1.legend(bbox_to_anchor=(0., (-0.25 - (numLines / 10.)), 1., 1.), loc=3, ncol=NumLegendColumns, mode="expand", borderaxespad=0.)
 
     #
-    # axis labels 
+    # axis labels
 
     ax1.set_ylabel (r"T$_{\rm MB}$ [K]")
     ax1.set_xlabel(r"Frequency [GHz]")
