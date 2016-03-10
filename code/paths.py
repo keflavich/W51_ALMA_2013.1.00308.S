@@ -16,6 +16,10 @@ observingpath = os.path.join(root, 'observing/')
 tablepath = os.path.join(root, 'tables/')
 vlapath = os.path.join(os.path.expanduser('~/work/w51/paper_w51_evla/'))
 spectrum_path = os.path.join(root, 'FITS/12m/spectra')
+perseus_synpath = os.path.join(root, 'perseus_synth')
+
+def path(x, basepath):
+    return os.path.join(basepath, x)
 
 def fpath(x, figurepath=figurepath):
     return os.path.join(figurepath, x)
@@ -49,3 +53,6 @@ def vpath(x, vlapath=vlapath):
 
 def spath(x, spectrum_path=spectrum_path):
     return os.path.join(spectrum_path, x)
+
+def pspath(x):
+    return path(x, perseus_synpath)

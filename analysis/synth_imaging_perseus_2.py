@@ -27,7 +27,10 @@ flux = dust_emissivity.blackbody.modified_blackbody(nu, temperature=20*u.K, beta
 alpha = np.log(flux[0]/flux[1])/np.log(nu[0]/nu[1])
 flux_scaling = (wave_herschel/wave_alma).decompose().value**alpha
 #flux_scaling *= 100 # for the other filament
-flux_scaling *= 50 # for NGC1333
+# 50x approximately matches the peak in W51
+#flux_scaling *= 50 # for NGC1333
+# 100x is my attempt to make more artifacts and sources...
+flux_scaling *= 100 # for NGC1333
 
 # Herschel 250um has ~18" beam
 #in_bm = (2*np.pi*(18.*u.arcsec/206265./2.35)**2)
@@ -226,7 +229,10 @@ tclean(vis='{0}_model.ms'.format(base_name),
        )
 exportfits(imagename='{0}_model_tclean_clean.image'.format(base_name), fitsimage='{0}_model_tclean_clean.image.fits'.format(base_name),  dropdeg=True, overwrite=True)
 exportfits(imagename='{0}_model_tclean_clean.model'.format(base_name), fitsimage='{0}_model_tclean_clean.model.fits'.format(base_name),  dropdeg=True, overwrite=True)
+exportfits(imagename='{0}_model_tclean_clean.residual'.format(base_name), fitsimage='{0}_model_tclean_clean.residual.fits'.format(base_name),  dropdeg=True, overwrite=True)
 
+# msclean has been failing often, so I reduced niter from 50000 to 100
+# and increased threshold from 2.0 to 5.0 for speed
 os.system('rm -rf {0}_model_tclean_msclean*'.format(base_name))
 tclean(vis='{0}_model.ms'.format(base_name),
        imagename='{0}_model_tclean_msclean'.format(base_name),
@@ -240,11 +246,33 @@ tclean(vis='{0}_model.ms'.format(base_name),
        phasecenter=phasecenter,
        scales=[0,3,9,27],
        robust = -2.0,
-       niter = 50000,
-       threshold = '2.0mJy',
+       niter = 100,
+       threshold = '5.0mJy',
        interactive = False,
        gridder = 'mosaic',
        savemodel='none',
        )
 exportfits(imagename='{0}_model_tclean_msclean.image'.format(base_name), fitsimage='{0}_model_tclean_msclean.image.fits'.format(base_name),  dropdeg=True, overwrite=True)
 exportfits(imagename='{0}_model_tclean_msclean.model'.format(base_name), fitsimage='{0}_model_tclean_msclean.model.fits'.format(base_name),  dropdeg=True, overwrite=True)
+exportfits(imagename='{0}_model_tclean_clean.residual'.format(base_name), fitsimage='{0}_model_tclean_clean.residual.fits'.format(base_name),  dropdeg=True, overwrite=True)
+
+from astropy.io import fits
+from FITS_tools import hcongrid
+from astropy import wcs
+import numpy as np
+fits_in = fits.open(perseus_casa_image+".fits")
+dirty_header = fits.getheader('{0}_model_tclean_dirty.image.fits'.format(base_name))
+header_in = wcs.WCS(fits_in[0].header).celestial.to_header()
+header_in['NAXIS1'] = fits_in[0].data.shape[-1]
+header_in['NAXIS2'] = fits_in[0].data.shape[-2]
+reproj_fits_in = hcongrid.hastrom(fits_in[0].data.squeeze(),
+                                  header_in,
+                                  dirty_header)
+d_in = reproj_fits_in
+d_out_dirty = fits.getdata('{0}_model_tclean_dirty.image.fits'.format(base_name))
+d_out_cln = fits.getdata('{0}_model_tclean_clean.image.fits'.format(base_name))
+d_out_mscln = fits.getdata('{0}_model_tclean_msclean.image.fits'.format(base_name))
+
+print("Distance from dirty: {0}".format((np.nan_to_num(d_in-d_out_dirty)**2).sum()**0.5))
+print("Distance from cln: {0}".format((np.nan_to_num(d_in-d_out_cln)**2).sum()**0.5))
+print("Distance from mscln: {0}".format((np.nan_to_num(d_in-d_out_mscln)**2).sum()**0.5))

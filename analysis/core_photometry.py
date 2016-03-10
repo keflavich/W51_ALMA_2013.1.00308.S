@@ -7,12 +7,13 @@ from astropy.io import fits
 from astropy.table import Table,Column
 import masscalc
 import radio_beam
+import files
 
 regions = pyregion.open(paths.rpath('cores.reg'))
 
-contfile = fits.open(paths.dpath('w51_spw3_continuum_r0_mulstiscale.image.fits'))
+contfile = fits.open(files.continuum_file)
 data = contfile[0].data
-beam = radio_beam.Beam.from_fits_header(paths.dpath('w51_spw3_continuum_r0_mulstiscale.image.fits'))
+beam = radio_beam.Beam.from_fits_header(files.continuum_file)
 
 results = {}
 units = {'peak':u.Jy/u.beam,
