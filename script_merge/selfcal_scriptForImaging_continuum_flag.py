@@ -13,45 +13,49 @@ field = ",".join([str(x) for x in fields_after_split])
 mergevis = 'continuum_7m12m_allspw.ms'
 if not os.path.exists(mergevis):
     for spw in range(4):
-        with open('linechannels12m_spw{0}'.format(spw),'r') as f:
-            linechannels7m = linechannels12m = f.read()
-
-        finalvis12m='calibrated_12m.ms'
         contvis12m='w51_spw{0}_continuum_flagged_12m.split'.format(spw)
-        flagmanager(vis=finalvis12m,mode='save',
-                    versionname='before_cont_flags')
 
-        flagdata(vis=finalvis12m,mode='manual',
-                 spw=linechannels12m,flagbackup=False)
+        if not os.path.exists(contvis12m):
+            with open('linechannels12m_spw{0}'.format(spw),'r') as f:
+                linechannels7m = linechannels12m = f.read()
 
-        split(vis=finalvis12m,
-              spw='{0},{1}'.format(spw,spw+4),
-              outputvis=contvis12m,
-              width=[192,192],
-              datacolumn='data')
+            finalvis12m='calibrated_12m.ms'
+            flagmanager(vis=finalvis12m,mode='save',
+                        versionname='before_cont_flags')
 
-        flagmanager(vis=finalvis12m, mode='restore',
-                    versionname='before_cont_flags')
+            flagdata(vis=finalvis12m,mode='manual',
+                     spw=linechannels12m,flagbackup=False)
 
-        with open('linechannels7m_spw{0}'.format(spw),'r') as f:
-            linechannels7m = f.read()
-        finalvis7m='calibrated_7m.ms'
+            split(vis=finalvis12m,
+                  spw='{0},{1}'.format(spw,spw+4),
+                  outputvis=contvis12m,
+                  width=[192,192],
+                  datacolumn='data')
+
+            flagmanager(vis=finalvis12m, mode='restore',
+                        versionname='before_cont_flags')
+
         contvis7m='w51_spw{0}_continuum_flagged_7m.split'.format(spw)
-        flagmanager(vis=finalvis7m,mode='save',
-                    versionname='before_cont_flags')
+        if not os.path.exists(contvis7m):
+            # assume same line channels in 7m data
+            #with open('linechannels7m_spw{0}'.format(spw),'r') as f:
+            #    linechannels7m = f.read()
+            finalvis7m='calibrated_7m.ms'
+            flagmanager(vis=finalvis7m,mode='save',
+                        versionname='before_cont_flags')
 
-        flagdata(vis=finalvis7m,mode='manual',
-                 spw=linechannels7m,flagbackup=False)
+            flagdata(vis=finalvis7m,mode='manual',
+                     spw=linechannels7m,flagbackup=False)
 
-        split(vis=finalvis7m,
-              spw='{0}'.format(spw),
-              outputvis=contvis7m,
-              width=[192],
-              datacolumn='data')
+            split(vis=finalvis7m,
+                  spw='{0}'.format(spw),
+                  outputvis=contvis7m,
+                  width=[192],
+                  datacolumn='data')
 
 
-        flagmanager(vis=finalvis7m,mode='restore',
-                    versionname='before_cont_flags')
+            flagmanager(vis=finalvis7m,mode='restore',
+                        versionname='before_cont_flags')
 
     to_concat = (['w51_spw{0}_continuum_flagged_12m.split'.format(spw)
                  for spw in range(4)] +
