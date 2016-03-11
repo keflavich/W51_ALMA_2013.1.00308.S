@@ -49,20 +49,21 @@ beam = radio_beam.Beam.from_fits_header(contfile[0].header)
 metadata = {}
 metadata['data_unit'] = u.Jy/u.beam
 pixel_scale = np.abs(mywcs.pixel_scale_matrix.diagonal().prod())**0.5 * u.deg
+pixel_scale_as = pixel_scale.to(u.arcsec).value
 metadata['spatial_scale'] = pixel_scale
 metadata['beam_major'] = beam.major
 metadata['beam_minor'] = beam.minor
 metadata['wavelength'] = 218.22219*u.GHz
 metadata['velocity_scale'] = u.km/u.s
 metadata['wcs'] = mywcs
+ppbeam = (beam.sr/(pixel_scale**2)).decompose().value
 
 ppcat = astrodendro.pp_catalog(dend, metadata)
 
 # add a 'noise' column to the catalog
 keys = ['noise', 'is_leaf', 'peak_flux', 'min_flux', 'mean_flux', 'peak_mass',
         'peak_col', 'beam_area']
-radii = (0.2,0.5,1.0,2.0,4.0)*u.arcsec
-keys += ['flux{0}arcsec'.format(rr.value) for rr in radii]
+radii = (0.2,0.4,0.6,0.8,1.0,1.5)*u.arcsec
 columns = {k:[] for k in (keys)}
 for ii, row in enumerate(ProgressBar(ppcat)):
     structure = dend[row['_idx']]
@@ -77,20 +78,6 @@ for ii, row in enumerate(ProgressBar(ppcat)):
     columns['peak_mass'].append(masscalc.mass_conversion_factor()*peakflux)
     columns['peak_col'].append(masscalc.col_conversion_factor()*peakflux)
     columns['beam_area'].append(beam.sr.value)
-    size = max(radii)*2.2
-    xc,yc = row['x_cen'], row['y_cen']
-    position = coordinates.SkyCoord(xc, yc, frame='fk5', unit=(u.deg,u.deg))
-    cutout = Cutout2D(data, position, size, mywcs, mode='partial')
-    for rr in radii:
-        aperture = photutils.SkyCircularAperture(positions=position,
-                                                 r=rr).to_pixel(cutout.wcs)
-        # takes 35 minutes with mode=exact
-        aperture_data = photutils.aperture_photometry(data=cutout.data,
-                                                      apertures=aperture,
-                                                      method='center')
-        flux = aperture_data[0]['aperture_sum']
-        columns['flux{0}arcsec'.format(rr.value)] = flux
-
 for k in columns:
     if k not in ppcat.keys():
         ppcat.add_column(Column(name=k, data=columns[k]))
@@ -106,4 +93,42 @@ for ii in ProgressBar(list(range(len(ppcat)))):
 outf = fits.PrimaryHDU(data=mask, header=contfile[0].header)
 outf.writeto('dendrograms_min1mJy_diff1mJy_mask_pruned.fits', clobber=True)
 
-pruned_ppcat.write(paths.tpath("dendrogram_continuum_catalog.ipac"), format='ascii.ipac')
+keys = ['flux{0}arcsec'.format(rr.value) for rr in radii]
+columns = {k:[] for k in (keys)}
+for ii, row in enumerate(ProgressBar(pruned_ppcat)):
+    size = max(radii)*2.2
+    xc,yc = row['x_cen'], row['y_cen']
+    position = coordinates.SkyCoord(xc, yc, frame='fk5', unit=(u.deg,u.deg))
+    cutout = Cutout2D(data, position, size, mywcs, mode='partial')
+    for rr in radii:
+        aperture = photutils.SkyCircularAperture(positions=position,
+                                                 r=rr).to_pixel(cutout.wcs)
+        aperture_data = photutils.aperture_photometry(data=cutout.data,
+                                                      apertures=aperture,
+                                                      method='exact')
+        flux_jybeam = aperture_data[0]['aperture_sum']
+        #flux_jybeam_average = flux_jybeam / aperture.area()
+        #flux_jysr_average = flux_jybeam_average / beam.sr.value
+        #flux_jysr = flux_jysr_average * aperture.area()
+        #flux_jy = (flux_jysr * (pixel_scale**2).to(u.sr).value)
+        columns['flux{0}arcsec'.format(rr.value)].append(flux_jybeam/ppbeam)
+
+for k in columns:
+    if k not in pruned_ppcat.keys():
+        pruned_ppcat.add_column(Column(name=k, data=columns[k]))
+
+for k in pruned_ppcat.colnames:
+    if "." in k:
+        pruned_ppcat.rename_column(k, k.replace(".","p"))
+
+pruned_ppcat.meta = {'ppbeam': ppbeam,
+                     'beam_area_sr': beam.sr.value,
+                     'pixel_scale_as': pixel_scale_as}
+
+annulus_mean = ((pruned_ppcat['flux0p4arcsec']-pruned_ppcat['flux0p2arcsec']) /
+                (np.pi*(0.4-0.2)**2/pixel_scale_as**2) * ppbeam)
+core_ish = pruned_ppcat['peak_flux'] > annulus_mean
+pruned_ppcat.add_column(Column(data=core_ish, name='corelike'))
+
+pruned_ppcat.write(paths.tpath("dendrogram_continuum_catalog.ipac"),
+                   format='ascii.ipac')
