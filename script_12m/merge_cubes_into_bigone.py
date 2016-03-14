@@ -35,6 +35,7 @@ def getinds(fn):
 
 def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
                   overwrite_existing=False, bmaj_limits=None,
+                  fnsuffix="",
                   add_beam_info=True):
     """
     Parameters
@@ -54,7 +55,7 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
 
     # First set up an empty file
     if not os.path.exists(big_filename):
-        header_fn = glob.glob('piece_of_{1}_cube.{0}.channels0to*.image.fits'.format(spw, fntemplate))
+        header_fn = glob.glob('piece_of_{1}_cube{2}.{0}.channels0to*.image.fits'.format(spw, fntemplate, fnsuffix))
         if len(header_fn) != 1:
             raise ValueError("Found too many or too few matches: {0}".format(header_fn))
         else:
@@ -95,7 +96,7 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
 
     # Find the appropriate files (this is NOT a good way to do this!  Better to
     # provide a list.  But wildcards are quick & easy...
-    files = glob.glob("piece_of_{1}_cube.{0}.chan*fits".format(spw,fntemplate))
+    files = glob.glob("piece_of_{1}_cube{2}.{0}.chan*fits".format(spw,fntemplate,fnsuffix))
     log.info(str(files))
 
     # open the file in update mode (it should have the right dims now)

@@ -7,6 +7,7 @@ from astropy import units as u
 from astropy import coordinates
 from astropy import wcs
 from astropy.io import fits
+import pyregion
 
 import pvextractor
 from pvextractor import extract_pv_slice
@@ -20,6 +21,21 @@ e8red_endpoint = coordinates.SkyCoord(290.92946, 14.509999, frame='fk5',
                                       unit=(u.deg, u.deg))
 endpoints = coordinates.SkyCoord([e8blue_endpoint, e8red_endpoint])
 e8flowxy = Path(endpoints, width=1.5*u.arcsec)
+
+
+
+# e2
+e2ereg = pyregion.open(paths.rpath('w51e2e.reg'))[0]
+w51e2e = coordinates.SkyCoord(e2ereg.coord_list[0]*u.deg, e2ereg.coord_list[1]*u.deg, frame='fk5')
+
+e2ediskpath = "19:23:44.197,+14:30:37.34,19:23:43.960,+14:30:34.55,19:23:43.882,+14:30:32.21,19:23:43.851,+14:30:31.26".split(",")
+e2ediskpath = coordinates.SkyCoord(["{0} {1}".format(e2ediskpath[jj],
+                                                     e2ediskpath[jj+1]) for
+                                      jj in (0,2,4)], unit=(u.hour, u.deg),
+                                     frame='fk5')
+e2eoutflow_coords = coordinates.SkyCoord(["19:23:44.127 +14:30:32.30", "19:23:43.822 +14:30:36.64"], unit=(u.hour, u.deg), frame='fk5')
+e2eoutflowpath = pvextractor.Path(e2eoutflow_coords, 0.2*u.arcsec)
+
 
 #lacyreg = pyregion.open(paths.rpath('lacyjet_segment_trace.reg'))
 lacypath = pvextractor.pvregions.paths_from_regfile(paths.rpath('lacyjet_segment_trace.reg'))[0]
@@ -60,19 +76,29 @@ parameters = {'e8':
                'wx': 0.005,
                'wv': 300e3,
                'origin': lacyorigin,
-              }
+              },
+              'e2e_disk':
+              {'path': e2ediskpath,
+               'cx': 0.0025,
+               'cv': 65e3,
+               'wx': 0.005,
+               'wv': 100e3,
+               'origin': w51e2e,
+              },
              }
 
 for ii, (fn, stretch, vmin, vmax, source) in enumerate(
     (
-     ('H77a_BDarray_speccube_briggs0_contsub_cvel_big.fits',
-      'arcsinh', -0.0005, 0.003, 'lacy'),
-     ('w51_SO_65-54_contsub.fits', 'arcsinh', -0.005, 0.15, 'lacy'),
-     ('w51_12CO_21_contsub_hires.image.pbcor.fits', 'arcsinh', -0.02, 0.2,
-      'lacy'),
-     ('w51_SO_65-54_contsub.fits', 'arcsinh', -0.01, 0.3, 'e8'),
-     ('w51_12CO_21_contsub_hires.image.pbcor.fits', 'arcsinh', -0.01, 0.2,
-      'e8'),
+     ('longbaseline/W51e2cax.CH3CN_K3_nat.image.fits',
+      'arcsinh', -0.0005, 0.003, 'e2e_disk'),
+     #('H77a_BDarray_speccube_briggs0_contsub_cvel_big.fits',
+     # 'arcsinh', -0.0005, 0.003, 'lacy'),
+     #('w51_SO_65-54_contsub.fits', 'arcsinh', -0.005, 0.15, 'lacy'),
+     #('w51_12CO_21_contsub_hires.image.pbcor.fits', 'arcsinh', -0.02, 0.2,
+     # 'lacy'),
+     #('w51_SO_65-54_contsub.fits', 'arcsinh', -0.01, 0.3, 'e8'),
+     #('w51_12CO_21_contsub_hires.image.pbcor.fits', 'arcsinh', -0.01, 0.2,
+     # 'e8'),
     )):
 
     pars = parameters[source]

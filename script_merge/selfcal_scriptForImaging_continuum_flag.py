@@ -345,6 +345,14 @@ exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwr
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 
+image2 = 'merge_selfcal_allspw_selfcal_3_mfs_deeper.image'
+ia.open(image2)
+ia.calcmask(mask=image2+" > 0.01", name='clean_mask_10mJy')
+ia.close()
+makemask(mode='copy', inpimage=image2,
+         inpmask=image2+":clean_mask_10mJy", output='clean_10mJy.mask',
+         overwrite=True)
+
 myimagebase = "merge_selfcal_allspw_selfcal_4ampphase_mfs_tclean_deeperbroader"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis4, imagename=myimagebase, field="", spw="", specmode='mfs',
@@ -355,12 +363,14 @@ tclean(vis=vis4, imagename=myimagebase, field="", spw="", specmode='mfs',
        threshold='15mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
        mask='clean_50mJy.mask',
        weighting='briggs', savemodel='modelcolumn', robust=-2.0)
+os.system('rm -rf merge_selfcal_allspw_selfcal_4ampphase_mfs_tclean_deeperbroader.mask')
 tclean(vis=vis4, imagename=myimagebase, field="", spw="", specmode='mfs',
        deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
        scales=multiscale,
        pblimit=0.4, interpolation='linear',
        interactive=False, niter=100000,
-       threshold='10mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
+       threshold='8mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
+       mask='clean_10mJy.mask',
        weighting='briggs', savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb',
