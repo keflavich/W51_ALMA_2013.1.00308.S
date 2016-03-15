@@ -1,3 +1,8 @@
+"""
+
+
+whitespace is for symmetry with unmerged
+"""
 finalvis12m='calibrated_12m.ms'
 finalvis7m='calibrated_7m.ms'
 
@@ -18,7 +23,7 @@ imsize = [960,960] # size of image in pixels.
 
 weighting = 'briggs'
 robust=0.5
-threshold = '5.0mJy'
+threshold = '20.0mJy'
 
 spws_12m = {0: '0,4',
             1: '1,5',
@@ -49,6 +54,7 @@ ncubes_per_window = 20
 
 for spwnum in '1320':
     spwnum = int(spwnum)
+
 
     concatvis = 'w51_concat_7m12m.spw{0}.merge'.format(spwnum)
     if not os.path.exists(concatvis):
@@ -113,16 +119,16 @@ for spwnum in '1320':
               imagename = output,
               field = '',
               spw = '', # there should be only one
+              gridder='mosaic',
               specmode = 'cube',
               width = width,
               start = startfreq,
               nchan = nchans_per_cube,
               veltype = 'radio',
               outframe = 'LSRK',
-               gridder='mosaic',
                deconvolver='clark',
               interactive = F,
-              niter = 25000,
+              niter = 5000,
               imsize = imsize,
               cell = cell,
               weighting = weighting,

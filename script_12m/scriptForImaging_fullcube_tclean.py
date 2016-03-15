@@ -1,7 +1,11 @@
 """
 In spw3, channels 1623~1983 cause huge problems.  There is something wrong with
 the *clean*, not with the calibration.
+whitespace is for symmetry with merged
 """
+
+
+
 import numpy as np
 
 field='4~40' # science field(s). For a mosaic, select all mosaic fields. DO
@@ -26,6 +30,11 @@ spws = {0: '0,4',
         2: '2,6',
         3: '3,7',
        }
+
+
+
+
+
 nchans_total = {0: 3840, 1: 3840, 2: 3840, 3: 3840}
 frange = {0: [218136., 218575.],
           1: [218422., 220268.],
@@ -51,6 +60,22 @@ for spwnum in '1320':
     if not os.path.exists(concatvis):
         print "# running cvel on all lines in spw{0}".format(spwnum)
         cvelvises = []
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         for ss in spw.split(","):
             ss = int(ss)
             cvelvis = 'w51_concat.spw{0}.cvel'.format(ss)
@@ -64,6 +89,7 @@ for spwnum in '1320':
                  width='{0}kHz'.format(fstep[spwnum]), interpolation='linear',
                  phasecenter='', restfreq='', outframe='LSRK', veltype='radio',
                  hanning=False,)
+
         concat(vis=cvelvises,
                concatvis=concatvis,)
     else:
@@ -100,11 +126,11 @@ for spwnum in '1320':
                    nchan = nchans_per_cube,
                    veltype = 'radio',
                    outframe = 'LSRK',
+                   deconvolver='clark',
                    interactive = F,
                    niter = 5000,
                    imsize = imsize,
                    cell = cell,
-                   deconvolver='clark',
                    weighting = weighting,
                    phasecenter = phasecenter,
                    robust = robust,
