@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from spectral_cube import SpectralCube
 from astropy.io import fits
@@ -5,7 +6,12 @@ from astropy.table import Table
 import FITS_tools
 import pyregion
 
-tmplt = "full_W51_spw{0}_lines.fits"
+if os.path.exists('full_W51_7m12m_spw0_lines.fits'):
+    tmplt = "full_W51_7m12m_spw{0}_lines.fits"
+    suffix = "_7m12m"
+else:
+    tmplt = "full_W51_spw{0}_lines.fits"
+    suffix = ''
 
 pruned_ppcat = Table.read("dendrogram_continuum_catalog.ipac",
                           format='ascii.ipac')
@@ -36,5 +42,5 @@ for spw in (0,1,2,3):
         #sc = cube[view].with_mask(mask[view[1:]])
         sc = cube.subcube_from_ds9region(SL)
         spec = sc.mean(axis=(1,2))
-        spec.hdu.writeto("spectra/dendro{0:03d}_spw{1}_mean.fits".format(name, spw),
+        spec.hdu.writeto("spectra/dendro{0:03d}_spw{1}_mean{2}.fits".format(name, spw, suffix),
                          clobber=True)

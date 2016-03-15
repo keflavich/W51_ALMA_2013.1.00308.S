@@ -84,7 +84,7 @@ for k in columns:
 
 cat_mask = (ppcat['is_leaf'] & (ppcat['peak_cont_flux']>8*ppcat['noise']) &
             (ppcat['mean_cont_flux']>5*ppcat['noise']) &
-            (ppcat['min_cont']>1*ppcat['noise']))
+            (ppcat['min_cont_flux']>1*ppcat['noise']))
 pruned_ppcat = ppcat[cat_mask]
 mask = dend.index_map.copy()
 for ii in ProgressBar(list(range(len(ppcat)))):
@@ -93,7 +93,7 @@ for ii in ProgressBar(list(range(len(ppcat)))):
 outf = fits.PrimaryHDU(data=mask, header=contfile[0].header)
 outf.writeto('dendrograms_min1mJy_diff1mJy_mask_pruned.fits', clobber=True)
 
-keys = ['flux{0}arcsec'.format(rr.value) for rr in radii]
+keys = ['cont_flux{0}arcsec'.format(rr.value) for rr in radii]
 columns = {k:[] for k in (keys)}
 for ii, row in enumerate(ProgressBar(pruned_ppcat)):
     size = max(radii)*2.2
