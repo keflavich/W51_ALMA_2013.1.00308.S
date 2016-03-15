@@ -61,7 +61,7 @@ ppbeam = (beam.sr/(pixel_scale**2)).decompose().value
 ppcat = astrodendro.pp_catalog(dend, metadata)
 
 # add a 'noise' column to the catalog
-keys = ['noise', 'is_leaf', 'peak_cont_flux', 'min_flux', 'mean_flux', 'peak_cont_mass',
+keys = ['noise', 'is_leaf', 'peak_cont_flux', 'min_cont_flux', 'mean_cont_flux', 'peak_cont_mass',
         'peak_cont_col', 'beam_area']
 radii = (0.2,0.4,0.6,0.8,1.0,1.5)*u.arcsec
 columns = {k:[] for k in (keys)}
