@@ -61,8 +61,8 @@ ppbeam = (beam.sr/(pixel_scale**2)).decompose().value
 ppcat = astrodendro.pp_catalog(dend, metadata)
 
 # add a 'noise' column to the catalog
-keys = ['noise', 'is_leaf', 'peak_flux', 'min_flux', 'mean_flux', 'peak_mass',
-        'peak_col', 'beam_area']
+keys = ['noise', 'is_leaf', 'peak_cont_flux', 'min_flux', 'mean_flux', 'peak_cont_mass',
+        'peak_cont_col', 'beam_area']
 radii = (0.2,0.4,0.6,0.8,1.0,1.5)*u.arcsec
 columns = {k:[] for k in (keys)}
 for ii, row in enumerate(ProgressBar(ppcat)):
@@ -72,19 +72,19 @@ for ii, row in enumerate(ProgressBar(ppcat)):
     columns['noise'].append(noise[dend_inds].mean())
     columns['is_leaf'].append(structure.is_leaf)
     peakflux = data[dend_inds].max()
-    columns['peak_flux'].append(peakflux)
-    columns['min_flux'].append(data[dend_inds].min())
-    columns['mean_flux'].append(data[dend_inds].mean())
-    columns['peak_mass'].append(masscalc.mass_conversion_factor()*peakflux)
-    columns['peak_col'].append(masscalc.col_conversion_factor()*peakflux)
+    columns['peak_cont_flux'].append(peakflux)
+    columns['min_cont_flux'].append(data[dend_inds].min())
+    columns['mean_cont_flux'].append(data[dend_inds].mean())
+    columns['peak_cont_mass'].append(masscalc.mass_conversion_factor()*peakflux)
+    columns['peak_cont_col'].append(masscalc.col_conversion_factor()*peakflux)
     columns['beam_area'].append(beam.sr.value)
 for k in columns:
     if k not in ppcat.keys():
         ppcat.add_column(Column(name=k, data=columns[k]))
 
-cat_mask = (ppcat['is_leaf'] & (ppcat['peak_flux']>8*ppcat['noise']) &
-            (ppcat['mean_flux']>5*ppcat['noise']) &
-            (ppcat['min_flux']>1*ppcat['noise']))
+cat_mask = (ppcat['is_leaf'] & (ppcat['peak_cont_flux']>8*ppcat['noise']) &
+            (ppcat['mean_cont_flux']>5*ppcat['noise']) &
+            (ppcat['min_cont']>1*ppcat['noise']))
 pruned_ppcat = ppcat[cat_mask]
 mask = dend.index_map.copy()
 for ii in ProgressBar(list(range(len(ppcat)))):
@@ -111,7 +111,7 @@ for ii, row in enumerate(ProgressBar(pruned_ppcat)):
         #flux_jysr_average = flux_jybeam_average / beam.sr.value
         #flux_jysr = flux_jysr_average * aperture.area()
         #flux_jy = (flux_jysr * (pixel_scale**2).to(u.sr).value)
-        columns['flux{0}arcsec'.format(rr.value)].append(flux_jybeam/ppbeam)
+        columns['cont_flux{0}arcsec'.format(rr.value)].append(flux_jybeam/ppbeam)
 
 for k in columns:
     if k not in pruned_ppcat.keys():
@@ -125,9 +125,9 @@ pruned_ppcat.meta = {'ppbeam': ppbeam,
                      'beam_area_sr': beam.sr.value,
                      'pixel_scale_as': pixel_scale_as}
 
-annulus_mean = ((pruned_ppcat['flux0p4arcsec']-pruned_ppcat['flux0p2arcsec']) /
+annulus_mean = ((pruned_ppcat['cont_flux0p4arcsec']-pruned_ppcat['cont_flux0p2arcsec']) /
                 (np.pi*(0.4-0.2)**2/pixel_scale_as**2) * ppbeam)
-core_ish = pruned_ppcat['peak_flux'] > annulus_mean
+core_ish = pruned_ppcat['peak_cont_flux'] > annulus_mean
 pruned_ppcat.add_column(Column(data=core_ish, name='corelike'))
 
 pruned_ppcat.write(paths.tpath("dendrogram_continuum_catalog.ipac"),

@@ -132,6 +132,11 @@ for row in pruned_ppcat:
     if okvelos:
         velo = np.mean(u.Quantity(okvelos))
         data[name]['mean_velo'] = velo
+        sp.plotter.axis.vlines(velo.to(u.km/u.s).value,
+                               sp.plotter.axis.get_ylim()[0],
+                               sp.plotter.axis.get_ylim()[1],
+                               linestyle='--', linewidth=2, color='r',
+                               zorder=-50, alpha=0.5)
     else:
         data[name]['mean_velo'] = np.nan*u.km/u.s
 

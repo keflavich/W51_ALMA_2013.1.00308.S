@@ -13,25 +13,25 @@ fig1 = pl.figure(1)
 fig1.clf()
 ax1 = fig1.gca()
 
-ax1.hist(pruned_ppcat['peak_flux'], log=True, bins=np.logspace(-3,-0.5,15))
+ax1.hist(pruned_ppcat['peak_cont_flux'], log=True, bins=np.logspace(-3,-0.5,15))
 ax1.set_xscale('log')
-ax1.set_ylim(0.3, 11)
+ax1.set_ylim(0.3, 51)
 
 
 fig2 = pl.figure(2)
 fig2.clf()
 ax2 = fig2.add_subplot(211)
 
-fit = powerlaw.Fit(pruned_ppcat['peak_flux'])
+fit = powerlaw.Fit(pruned_ppcat['peak_cont_flux'])
 fit.plot_ccdf(color='k')
 fit.power_law.plot_ccdf(color='r', linestyle='--')
 ax2.set_ylabel("Fraction of sources")
 
 ax3 = fig2.add_subplot(212)
 
-fit = powerlaw.Fit(pruned_ppcat['peak_flux'])
+fit = powerlaw.Fit(pruned_ppcat['peak_cont_flux'])
 # doesn't work at all fit.plot_pdf(color='k')
-ax3.hist(pruned_ppcat['peak_flux'], bins=np.logspace(-3,-0.5,15),
+ax3.hist(pruned_ppcat['peak_cont_flux'], bins=np.logspace(-3,-0.5,15),
          color='k', facecolor='none', histtype='step')
 ax3.set_xscale('log')
 fit.power_law.plot_pdf(color='r', linestyle='--')
@@ -43,7 +43,7 @@ fig2.savefig(paths.fpath('coreplots/dendro_flux_powerlaw_histogram_fit.png'))
 print("Fit parameters: alpha={0}".format(fit.power_law.alpha))
 
 radii = (0.2,0.4,0.6,0.8,1.0,1.5)*u.arcsec
-lines = np.array([[row['peak_flux']] + [row['flux{0}arcsec'.format(rad).replace(".","p")]
+lines = np.array([[row['peak_cont_flux']] + [row['flux{0}arcsec'.format(rad).replace(".","p")]
                                         for rad in radii.value]
                   for row in pruned_ppcat])
 pradii = (0.0,0.2,0.4,0.6,0.8,1.0,1.5)
@@ -59,60 +59,60 @@ pl.clf()
 # 0.05" pixels
 ppbeam = 16.201645578251686
 background = (lines[:,2]-lines[:,1])/(np.pi*(pradii[2]-pradii[1])**2/0.05**2) * ppbeam
-pl.plot(pruned_ppcat['peak_flux'], background, '.')
-pl.plot(pruned_ppcat['peak_flux'][corelike], background[corelike], '.')
+pl.plot(pruned_ppcat['peak_cont_flux'], background, '.')
+pl.plot(pruned_ppcat['peak_cont_flux'][corelike], background[corelike], '.')
 pl.xlabel("Peak Flux")
 pl.ylabel("Background Flux")
 pl.savefig(paths.fpath('coreplots/dendro_peak_vs_background.png'))
 
 
 pl.clf()
-pl.plot(pruned_ppcat['peak_flux'], (pruned_ppcat['peak_flux']-background), '.')
-pl.plot(pruned_ppcat['peak_flux'][corelike], (pruned_ppcat['peak_flux']-background)[corelike], '.')
+pl.plot(pruned_ppcat['peak_cont_flux'], (pruned_ppcat['peak_cont_flux']-background), '.')
+pl.plot(pruned_ppcat['peak_cont_flux'][corelike], (pruned_ppcat['peak_cont_flux']-background)[corelike], '.')
 pl.xlabel("Peak Flux")
 pl.ylabel("Background-subtracted Flux")
 pl.savefig(paths.fpath('coreplots/dendro_peak_vs_peak_minus_background.png'))
 
-#fig2 = pl.figure(2)
-#fig2.clf()
-#ax2 = fig2.add_subplot(211)
-#
-#fit = powerlaw.Fit(cores_merge['T_corrected_mass'])
-#fit.plot_ccdf(color='k')
-#fit.power_law.plot_ccdf(color='r', linestyle='--')
-#ax2.set_ylabel("Fraction of sources")
-#
-#ax3 = fig2.add_subplot(212)
-#
-#fit = powerlaw.Fit(cores_merge['T_corrected_mass'])
-## doesn't work at all fit.plot_pdf(color='k')
-#bmin, bmax = 0.2, 6.0
-#bins = np.logspace(np.log10(bmin),np.log10(bmax),15)
-#bins = np.linspace((bmin),(bmax),15)
-#H,L,P = ax3.hist(cores_merge['T_corrected_mass'], bins=bins, color='k',
-#                 facecolor='none', histtype='step')
-#pdf = fit.power_law.pdf(bins)*np.max(H)
-#ax3.plot(bins[bins>fit.power_law.xmin], pdf, 'r--')
-##fit.power_law.plot_pdf(color='r', linestyle='--')
-##ax3.set_ylim(0.03, 0.5)
-##ax3.set_xscale('log')
-##ax3.set_yscale('log')
-#ax3.set_xlabel("Temperature-corrected mass")
-##ax3.set_ylabel("Fraction of sources")
-#ax3.set_ylabel("Number of sources")
-#fig2.savefig(paths.fpath('coreplots/tcorr_mass_powerlaw_histogram_fit.png'))
-#
-#print("Fit parameters: alpha={0}".format(fit.power_law.alpha))
-#
-#fig2 = pl.figure(2)
-#fig2.clf()
-#ax3 = fig2.add_subplot(111)
-#bmin, bmax = 0.2, 6.0
-#bins = np.linspace((bmin),(bmax),15)
-#H,L,P = ax3.hist(cores_merge['T_corrected_mass'], bins=bins*0.99, color='k',
-#                 facecolor='none', histtype='step', label='M($T_B$)',
-#                 linewidth=2, alpha=0.5)
-#H,L,P = ax3.hist(cores_merge['peak_mass'], bins=np.linspace(bmin, 130, 50), color='b',
+fig2 = pl.figure(2)
+fig2.clf()
+ax2 = fig2.add_subplot(211)
+
+fit = powerlaw.Fit(pruned_ppcat['peak_cont_mass'])
+fit.plot_ccdf(color='k')
+fit.power_law.plot_ccdf(color='r', linestyle='--')
+ax2.set_ylabel("Fraction of sources")
+
+ax3 = fig2.add_subplot(212)
+
+fit = powerlaw.Fit(pruned_ppcat['peak_cont_mass'])
+# doesn't work at all fit.plot_pdf(color='k')
+bmin, bmax = 0.2, 6.0
+bins = np.logspace(np.log10(bmin),np.log10(bmax),15)
+bins = np.linspace((bmin),(bmax),15)
+H,L,P = ax3.hist(pruned_ppcat['peak_cont_mass'], bins=bins, color='k',
+                 facecolor='none', histtype='step')
+pdf = fit.power_law.pdf(bins)*np.max(H)
+ax3.plot(bins[bins>fit.power_law.xmin], pdf, 'r--')
+#fit.power_law.plot_pdf(color='r', linestyle='--')
+#ax3.set_ylim(0.03, 0.5)
+#ax3.set_xscale('log')
+#ax3.set_yscale('log')
+ax3.set_xlabel("Temperature-corrected mass")
+#ax3.set_ylabel("Fraction of sources")
+ax3.set_ylabel("Number of sources")
+fig2.savefig(paths.fpath('coreplots/tcorr_mass_powerlaw_histogram_fit.png'))
+
+print("Fit parameters: alpha={0}".format(fit.power_law.alpha))
+
+fig2 = pl.figure(2)
+fig2.clf()
+ax3 = fig2.add_subplot(111)
+bmin, bmax = 0.2, 6.0
+bins = np.linspace((bmin),(bmax),15)
+H,L,P = ax3.hist(pruned_ppcat['peak_cont_mass'], bins=bins*0.99, color='k',
+                 facecolor='none', histtype='step', label='M($20$ K)',
+                 linewidth=2, alpha=0.5)
+#H,L,P = ax3.hist(cores_merge['peak_cont_mass'], bins=np.linspace(bmin, 130, 50), color='b',
 #                 facecolor='none', histtype='step', label='M($20$K)',
 #                 linewidth=2, alpha=0.5)
 #peak_plot = P
@@ -131,7 +131,7 @@ pl.savefig(paths.fpath('coreplots/dendro_peak_vs_peak_minus_background.png'))
 #pl.legend(loc='best')
 #fig2.savefig(paths.fpath('coreplots/mass_histograms.png'))
 #peak_plot[0].set_visible(False)
-#H,L,P = ax3.hist(cores_merge['peak_mass'], bins=bins, color='b',
+#H,L,P = ax3.hist(cores_merge['peak_cont_mass'], bins=bins, color='b',
 #                 facecolor='none', histtype='step', label='M($20$K)',
 #                 linewidth=2, alpha=0.5)
 #ax3.set_xlim(0,7)
@@ -157,7 +157,7 @@ pl.savefig(paths.fpath('coreplots/dendro_peak_vs_peak_minus_background.png'))
 #fig4 = pl.figure(4)
 #fig4.clf()
 #ax5 = fig4.gca()
-#ax5.plot(cores_merge['peak_mass'], cores_merge['T_corrected_mass'], 's')
+#ax5.plot(cores_merge['peak_cont_mass'], cores_merge['T_corrected_mass'], 's')
 #ylims = ax5.get_ylim()
 #ax5.plot([0,20], [0,20], 'k--')
 #ax5.set_ylim(ylims)
