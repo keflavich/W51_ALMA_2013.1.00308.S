@@ -43,7 +43,7 @@ fig2.savefig(paths.fpath('coreplots/dendro_flux_powerlaw_histogram_fit.png'))
 print("Fit parameters: alpha={0}".format(fit.power_law.alpha))
 
 radii = (0.2,0.4,0.6,0.8,1.0,1.5)*u.arcsec
-lines = np.array([[row['peak_cont_flux']] + [row['flux{0}arcsec'.format(rad).replace(".","p")]
+lines = np.array([[row['peak_cont_flux']] + [row['cont_flux{0}arcsec'.format(rad).replace(".","p")]
                                         for rad in radii.value]
                   for row in pruned_ppcat])
 pradii = (0.0,0.2,0.4,0.6,0.8,1.0,1.5)
@@ -100,7 +100,7 @@ ax3.plot(bins[bins>fit.power_law.xmin], pdf, 'r--')
 ax3.set_xlabel("Temperature-corrected mass")
 #ax3.set_ylabel("Fraction of sources")
 ax3.set_ylabel("Number of sources")
-fig2.savefig(paths.fpath('coreplots/tcorr_mass_powerlaw_histogram_fit.png'))
+fig2.savefig(paths.fpath('coreplots/dendro_tcorr_mass_powerlaw_histogram_fit.png'))
 
 print("Fit parameters: alpha={0}".format(fit.power_law.alpha))
 
