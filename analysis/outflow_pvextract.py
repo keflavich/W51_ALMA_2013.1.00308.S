@@ -29,10 +29,11 @@ e2ereg = pyregion.open(paths.rpath('w51e2e.reg'))[0]
 w51e2e = coordinates.SkyCoord(e2ereg.coord_list[0]*u.deg, e2ereg.coord_list[1]*u.deg, frame='fk5')
 
 e2ediskpath = "19:23:44.197,+14:30:37.34,19:23:43.960,+14:30:34.55,19:23:43.882,+14:30:32.21,19:23:43.851,+14:30:31.26".split(",")
-e2ediskpath = coordinates.SkyCoord(["{0} {1}".format(e2ediskpath[jj],
-                                                     e2ediskpath[jj+1]) for
+e2ediskcoords = coordinates.SkyCoord(["{0} {1}".format(e2ediskpath[jj],
+                                                       e2ediskpath[jj+1]) for
                                       jj in (0,2,4)], unit=(u.hour, u.deg),
                                      frame='fk5')
+e2ediskpath = pvextractor.Path(e2ediskcoords, 0.2*u.arcsec)
 e2eoutflow_coords = coordinates.SkyCoord(["19:23:44.127 +14:30:32.30", "19:23:43.822 +14:30:36.64"], unit=(u.hour, u.deg), frame='fk5')
 e2eoutflowpath = pvextractor.Path(e2eoutflow_coords, 0.2*u.arcsec)
 
