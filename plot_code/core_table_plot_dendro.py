@@ -6,14 +6,15 @@ from astropy import coordinates
 import powerlaw
 import pylab as pl
 
-pruned_ppcat = Table.read(paths.tpath("dendrogram_continuum_catalog.ipac"), format='ascii.ipac')
-corelike = pruned_ppcat['corelike'] == 'True'
+#pruned_ppcat = Table.read(paths.tpath("dendrogram_continuum_catalog.ipac"), format='ascii.ipac')
+dendro_merge = Table.read(paths.tpath('dendro_merge_continuum_and_line.ipac'), format='ascii.ipac')
+corelike = dendro_merge['corelike'] == 'True'
 
 fig1 = pl.figure(1)
 fig1.clf()
 ax1 = fig1.gca()
 
-ax1.hist(pruned_ppcat['peak_cont_flux'], log=True, bins=np.logspace(-3,-0.5,15))
+ax1.hist(dendro_merge['peak_cont_flux'], log=True, bins=np.logspace(-3,-0.5,15))
 ax1.set_xscale('log')
 ax1.set_ylim(0.3, 51)
 
@@ -22,16 +23,16 @@ fig2 = pl.figure(2)
 fig2.clf()
 ax2 = fig2.add_subplot(211)
 
-fit = powerlaw.Fit(pruned_ppcat['peak_cont_flux'])
+fit = powerlaw.Fit(dendro_merge['peak_cont_flux'])
 fit.plot_ccdf(color='k')
 fit.power_law.plot_ccdf(color='r', linestyle='--')
 ax2.set_ylabel("Fraction of sources")
 
 ax3 = fig2.add_subplot(212)
 
-fit = powerlaw.Fit(pruned_ppcat['peak_cont_flux'])
+fit = powerlaw.Fit(dendro_merge['peak_cont_flux'])
 # doesn't work at all fit.plot_pdf(color='k')
-ax3.hist(pruned_ppcat['peak_cont_flux'], bins=np.logspace(-3,-0.5,15),
+ax3.hist(dendro_merge['peak_cont_flux'], bins=np.logspace(-3,-0.5,15),
          color='k', facecolor='none', histtype='step')
 ax3.set_xscale('log')
 fit.power_law.plot_pdf(color='r', linestyle='--')
@@ -45,7 +46,7 @@ print("Fit parameters: alpha={0}".format(fit.power_law.alpha))
 radii = (0.2,0.4,0.6,0.8,1.0,1.5)*u.arcsec
 lines = np.array([[row['peak_cont_flux']] + [row['cont_flux{0}arcsec'.format(rad).replace(".","p")]
                                         for rad in radii.value]
-                  for row in pruned_ppcat])
+                  for row in dendro_merge])
 pradii = (0.0,0.2,0.4,0.6,0.8,1.0,1.5)
 
 pl.clf()
@@ -59,16 +60,16 @@ pl.clf()
 # 0.05" pixels
 ppbeam = 16.201645578251686
 background = (lines[:,2]-lines[:,1])/(np.pi*(pradii[2]-pradii[1])**2/0.05**2) * ppbeam
-pl.plot(pruned_ppcat['peak_cont_flux'], background, '.')
-pl.plot(pruned_ppcat['peak_cont_flux'][corelike], background[corelike], '.')
+pl.plot(dendro_merge['peak_cont_flux'], background, '.')
+pl.plot(dendro_merge['peak_cont_flux'][corelike], background[corelike], '.')
 pl.xlabel("Peak Flux")
 pl.ylabel("Background Flux")
 pl.savefig(paths.fpath('coreplots/dendro_peak_vs_background.png'))
 
 
 pl.clf()
-pl.plot(pruned_ppcat['peak_cont_flux'], (pruned_ppcat['peak_cont_flux']-background), '.')
-pl.plot(pruned_ppcat['peak_cont_flux'][corelike], (pruned_ppcat['peak_cont_flux']-background)[corelike], '.')
+pl.plot(dendro_merge['peak_cont_flux'], (dendro_merge['peak_cont_flux']-background), '.')
+pl.plot(dendro_merge['peak_cont_flux'][corelike], (dendro_merge['peak_cont_flux']-background)[corelike], '.')
 pl.xlabel("Peak Flux")
 pl.ylabel("Background-subtracted Flux")
 pl.savefig(paths.fpath('coreplots/dendro_peak_vs_peak_minus_background.png'))
@@ -77,19 +78,19 @@ fig2 = pl.figure(2)
 fig2.clf()
 ax2 = fig2.add_subplot(211)
 
-fit = powerlaw.Fit(pruned_ppcat['peak_cont_mass'])
+fit = powerlaw.Fit(dendro_merge['peak_cont_mass'])
 fit.plot_ccdf(color='k')
 fit.power_law.plot_ccdf(color='r', linestyle='--')
 ax2.set_ylabel("Fraction of sources")
 
 ax3 = fig2.add_subplot(212)
 
-fit = powerlaw.Fit(pruned_ppcat['peak_cont_mass'])
+fit = powerlaw.Fit(dendro_merge['peak_cont_mass'])
 # doesn't work at all fit.plot_pdf(color='k')
 bmin, bmax = 0.2, 6.0
 bins = np.logspace(np.log10(bmin),np.log10(bmax),15)
 bins = np.linspace((bmin),(bmax),15)
-H,L,P = ax3.hist(pruned_ppcat['peak_cont_mass'], bins=bins, color='k',
+H,L,P = ax3.hist(dendro_merge['peak_cont_mass'], bins=bins, color='k',
                  facecolor='none', histtype='step')
 pdf = fit.power_law.pdf(bins)*np.max(H)
 ax3.plot(bins[bins>fit.power_law.xmin], pdf, 'r--')
@@ -109,7 +110,7 @@ fig2.clf()
 ax3 = fig2.add_subplot(111)
 bmin, bmax = 0.2, 6.0
 bins = np.linspace((bmin),(bmax),15)
-H,L,P = ax3.hist(pruned_ppcat['peak_cont_mass'], bins=bins*0.99, color='k',
+H,L,P = ax3.hist(dendro_merge['peak_cont_mass'], bins=bins*0.99, color='k',
                  facecolor='none', histtype='step', label='M($20$ K)',
                  linewidth=2, alpha=0.5)
 #H,L,P = ax3.hist(cores_merge['peak_cont_mass'], bins=np.linspace(bmin, 130, 50), color='b',
@@ -140,19 +141,23 @@ H,L,P = ax3.hist(pruned_ppcat['peak_cont_mass'], bins=bins*0.99, color='k',
 #
 #
 #
-#beam_area = cores_merge['beam_area']
-#jy_to_k = (1*u.Jy).to(u.K, u.brightness_temperature(beam_area,
-#                                                    220*u.GHz)).mean()
-#
-#fig3 = pl.figure(3)
-#fig3.clf()
-#ax4 = fig3.gca()
-#ax4.plot(cores_merge['peak'], cores_merge['PeakLineBrightness'], 's')
-#ax4.plot([0,0.4], [0, 0.4*jy_to_k.value], 'k--')
-#ax4.set_xlabel("Continuum flux density (Jy/beam)")
-#ax4.set_ylabel("Peak line brightness (K)")
-#ax4.set_xlim([0, 0.4])
-#fig3.savefig(paths.fpath('coreplots/peakTB_vs_continuum.png'))
+beam_area = u.Quantity(np.array(dendro_merge['beam_area']), u.sr)
+jy_to_k = (1*u.Jy).to(u.K, u.brightness_temperature(beam_area,
+                                                    220*u.GHz)).mean()
+
+fig3 = pl.figure(3)
+fig3.clf()
+ax4 = fig3.gca()
+for species in np.unique(dendro_merge['PeakLineSpecies']):
+    if species != 'NONE':
+        mask = species == dendro_merge['PeakLineSpecies']
+        ax4.plot(dendro_merge['peak_cont_flux'][mask], dendro_merge['PeakLineBrightness'][mask], 's', label=species)
+ax4.plot([0,0.4], [0, 0.4*jy_to_k.value], 'k--')
+ax4.set_xlabel("Continuum flux density (Jy/beam)")
+ax4.set_ylabel("Peak line brightness (K)")
+ax4.set_xlim([0, 0.4])
+pl.legend(loc='best')
+fig3.savefig(paths.fpath('coreplots/dendro_peakTB_vs_continuum.png'))
 #
 #fig4 = pl.figure(4)
 #fig4.clf()

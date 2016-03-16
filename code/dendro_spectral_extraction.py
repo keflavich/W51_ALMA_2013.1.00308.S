@@ -44,3 +44,10 @@ for spw in (0,1,2,3):
         spec = sc.mean(axis=(1,2))
         spec.hdu.writeto("spectra/dendro{0:03d}_spw{1}_mean{2}.fits".format(name, spw, suffix),
                          clobber=True)
+
+        bgSL = pyregion.parse("fk5; circle({0},{1},1.0\")"
+                              .format(row['x_cen'], row['y_cen']))
+        bgsc = cube.subcube_from_ds9region(bgSL)
+        bgspec = sc.mean(axis=(1,2)) - spec
+        bgspec.hdu.writeto("spectra/dendro{0:03d}_spw{1}_background_mean{2}.fits".format(name, spw, suffix),
+                           clobber=True)

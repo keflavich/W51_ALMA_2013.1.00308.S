@@ -25,36 +25,34 @@ imsize = [3072,3072]
 cell = '0.05arcsec'
 solint = 'int'
 threshold = '50.0mJy'
-multiscale = [0,5,15,45]
-# multiscale clean... does not work.
-multiscale = []
 
 clearcal(vis=vis0)
 #flagmanager(vis=vis0, versionname='flagdata_1', mode='restore')
 myimagebase = "selfcal_allspw_dirty"
 os.system('rm -rf {0}.*'.format(myimagebase))
-clean(vis=vis0, imagename=myimagebase, field="", spw='',
-      mode='mfs', outframe='LSRK', interpolation='linear', imagermode='mosaic',
-      interactive=False, niter=0, threshold=threshold, imsize=imsize,
-      cell=cell, phasecenter=phasecenter,
-      minpb=0.4,
-      weighting='briggs', usescratch=True, pbcor=True, robust=-2.0)
+tclean(vis=vis0, imagename=myimagebase, field="", spw='',
+       specmode='mfs', outframe='LSRK', interpolation='linear', gridder='mosaic',
+       interactive=False, niter=0, threshold=threshold, imsize=imsize,
+       cell=cell, phasecenter=phasecenter,
+       pblimit=0.4,
+       weighting='briggs', savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
         outfile=myimagebase+'.image.pbcor', overwrite=True)
 exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 myimagebase = "selfcal_allspw_mfs"
 os.system('rm -rf {0}.*'.format(myimagebase))
-clean(vis=vis0, imagename=myimagebase, field="", spw='',
-      mode='mfs', outframe='LSRK', interpolation='linear', imagermode='mosaic',
-      multiscale=multiscale,
+tclean(vis=vis0, imagename=myimagebase, field="", spw='',
+      specmode='mfs', outframe='LSRK', interpolation='linear', gridder='mosaic',
       interactive=False, niter=10000, threshold=threshold, imsize=imsize,
-      minpb=0.4,
+      pblimit=0.4,
       cell=cell, phasecenter=phasecenter,
-      weighting='briggs', usescratch=True, pbcor=True, robust=-2.0)
+      weighting='briggs', savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
         outfile=myimagebase+'.image.pbcor', overwrite=True)
@@ -84,14 +82,14 @@ split(vis=vis0, outputvis=vis1,
 
 myimagebase="selfcal_allspw_selfcal_mfs"
 os.system('rm -rf {0}.*'.format(myimagebase))
-clean(vis=vis1, imagename=myimagebase,
-      field="", spw='', mode='mfs', outframe='LSRK',
-      multiscale=multiscale,
-      interpolation='linear', imagermode='mosaic', interactive=False,
+tclean(vis=vis1, imagename=myimagebase,
+      field="", spw='', specmode='mfs', outframe='LSRK',
+      
+      interpolation='linear', gridder='mosaic', interactive=False,
       niter=10000, threshold=threshold, imsize=imsize, cell=cell,
       phasecenter=phasecenter, weighting='briggs',
-      minpb=0.4,
-      usescratch=True, pbcor=True, robust=-2.0)
+      pblimit=0.4,
+      savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
         outfile=myimagebase+'.image.pbcor', overwrite=True)
@@ -121,14 +119,14 @@ split(vis=vis1, outputvis=vis2,
 
 myimagebase = "selfcal_allspw_selfcal_2_mfs"
 os.system('rm -rf {0}.*'.format(myimagebase))
-clean(vis=vis2, imagename=myimagebase,
-      field="", spw='', mode='mfs', outframe='LSRK',
-      multiscale=multiscale,
-      interpolation='linear', imagermode='mosaic', interactive=False,
+tclean(vis=vis2, imagename=myimagebase,
+      field="", spw='', specmode='mfs', outframe='LSRK',
+      
+      interpolation='linear', gridder='mosaic', interactive=False,
       niter=10000, threshold=threshold, imsize=imsize, cell=cell,
-      minpb=0.4,
+      pblimit=0.4,
       phasecenter=phasecenter, weighting='briggs',
-      usescratch=True, pbcor=True, robust=-2.0)
+      savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
         outfile=myimagebase+'.image.pbcor', overwrite=True)
@@ -157,14 +155,14 @@ split(vis=vis2, outputvis=vis3,
 
 myimagebase = "selfcal_allspw_selfcal_3_mfs"
 os.system('rm -rf {0}.*'.format(myimagebase))
-clean(vis=vis3, imagename=myimagebase,
-      field="", spw='', mode='mfs', outframe='LSRK',
-      multiscale=multiscale,
-      interpolation='linear', imagermode='mosaic', interactive=False,
-      minpb=0.4,
+tclean(vis=vis3, imagename=myimagebase,
+      field="", spw='', specmode='mfs', outframe='LSRK',
+      
+      interpolation='linear', gridder='mosaic', interactive=False,
+      pblimit=0.4,
       niter=10000, threshold=threshold, imsize=imsize, cell=cell,
       phasecenter=phasecenter, weighting='briggs',
-      usescratch=True, pbcor=True, robust=-2.0)
+      savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
         outfile=myimagebase+'.image.pbcor', overwrite=True)
@@ -199,14 +197,14 @@ print("{flagged}/{total} flagged points in vis4 after restoration".format(**summ
 # WHY IS THIS EMPTY?!
 myimagebase = "selfcal_allspw_selfcal_4ampphase_mfs"
 os.system('rm -rf {0}.*'.format(myimagebase))
-clean(vis=vis4, imagename=myimagebase,
-      field="", spw='', mode='mfs', outframe='LSRK',
-      multiscale=multiscale,
-      minpb=0.4,
-      interpolation='linear', imagermode='mosaic', interactive=False,
+tclean(vis=vis4, imagename=myimagebase,
+      field="", spw='', specmode='mfs', outframe='LSRK',
+      
+      pblimit=0.4,
+      interpolation='linear', gridder='mosaic', interactive=False,
       niter=10000, threshold=threshold, imsize=imsize, cell=cell,
       phasecenter=phasecenter, weighting='briggs',
-      usescratch=True, pbcor=True, robust=-2.0)
+      savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
         outfile=myimagebase+'.image.pbcor', overwrite=True)
@@ -218,13 +216,29 @@ exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, 
 myimagebase = "selfcal_allspw_selfcal_4ampphase_mfs_tclean"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis4, imagename=myimagebase, field="", spw="", specmode='mfs',
-       deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
-       scales=multiscale, pblimit=0.4, interpolation='linear',
+       deconvolver='clark', gridder='mosaic', outframe='LSRK',
+       pblimit=0.4, interpolation='linear',
        interactive=False, niter=10000,
        threshold=threshold, imsize=imsize, cell=cell, phasecenter=phasecenter,
        weighting='briggs', savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+
+clearcal(vis=vis0)
+myimagebase = "iter0_selfcal_allspw_mfs_deeper_5mjy"
+os.system('rm -rf {0}.*'.format(myimagebase))
+tclean(vis=vis0, imagename=myimagebase, field="", spw='', specmode='mfs',
+       outframe='LSRK', interpolation='linear', gridder='mosaic',
+       interactive=False, niter=100000,
+       threshold='5mJy', imsize=imsize, pblimit=0.4, cell=cell,
+       phasecenter=phasecenter, weighting='briggs', savemodel='modelcolumn',
+       robust=-2.0)
+exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
         outfile=myimagebase+'.image.pbcor', overwrite=True)
 exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
@@ -282,14 +296,14 @@ exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, 
 # oooooh, vis3.corrected = vis4.data, and clean automatically selected corrected... sigh
 myimagebase = "selfcal_allspw_selfcal_4ampphase_mfs_deeper"
 os.system('rm -rf {0}.*'.format(myimagebase))
-clean(vis=vis4, imagename=myimagebase,
-      field="", spw='', mode='mfs', outframe='LSRK',
-      multiscale=multiscale,
-      interpolation='linear', imagermode='mosaic', interactive=False,
-      minpb=0.4,
+tclean(vis=vis4, imagename=myimagebase,
+      field="", spw='', specmode='mfs', outframe='LSRK',
+      
+      interpolation='linear', gridder='mosaic', interactive=False,
+      pblimit=0.4,
       niter=50000, threshold='5mJy', imsize=imsize, cell=cell,
       phasecenter=phasecenter, weighting='briggs',
-      usescratch=True, pbcor=True, robust=-2.0)
+      savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
         outfile=myimagebase+'.image.pbcor', overwrite=True)
@@ -300,14 +314,14 @@ exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, 
 # using vis2.corrected = vis3.data
 myimagebase = "selfcal_allspw_selfcal_3_mfs_deeper"
 os.system('rm -rf {0}.*'.format(myimagebase))
-clean(vis=vis2, imagename=myimagebase,
-      field="", spw='', mode='mfs', outframe='LSRK',
-      multiscale=multiscale,
-      interpolation='linear', imagermode='mosaic', interactive=False,
-      minpb=0.4,
+tclean(vis=vis2, imagename=myimagebase,
+      field="", spw='', specmode='mfs', outframe='LSRK',
+      
+      interpolation='linear', gridder='mosaic', interactive=False,
+      pblimit=0.4,
       niter=50000, threshold='5mJy', imsize=imsize, cell=cell,
       phasecenter=phasecenter, weighting='briggs',
-      usescratch=True, pbcor=True, robust=-2.0)
+      savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
         outfile=myimagebase+'.image.pbcor', overwrite=True)
@@ -337,7 +351,7 @@ print("Completed in {0}s".format(time.time()-t0))
 """
 Stats (mfs):
 dirty:             peak=0.57990 sigma=0.00056 s/n=1031.64363
-clean:             peak=0.62937 sigma=0.00059 s/n=1060.74211
+tclean:             peak=0.62937 sigma=0.00059 s/n=1060.74211
 selfcal:           peak=0.64963 sigma=0.00059 s/n=1104.06681
 selfcal2:          peak=0.65766 sigma=0.00059 s/n=1115.24844
 selfcal3:          peak=0.66613 sigma=0.00059 s/n=1129.29259
@@ -346,45 +360,45 @@ Completed in 2088.65619898s
 """
 
 
-# Extras to try to reproduce bug:
-phasecenter = "J2000 19:23:41.629000 +14.30.42.38000"
-imsize = [3072,3072]
-cell = '0.05arcsec'
-solint = 'int'
-threshold = '50.0mJy'
-multiscale = [0,5,15,45]
-vis4 = 'w51_contvis_selfcal_4.ms'
-myimagebase = "selfcal_allspw_selfcal_4ampphase_mfs_dirty"
-os.system('rm -rf {0}.*'.format(myimagebase))
-clean(vis=vis4, imagename=myimagebase,
-      field="", spw='', mode='mfs', outframe='LSRK',
-      multiscale=multiscale,
-      interpolation='linear', imagermode='mosaic', interactive=False,
-      minpb=0.4,
-      niter=0, threshold='5mJy', imsize=imsize, cell=cell,
-      phasecenter=phasecenter, weighting='briggs',
-      usescratch=True, pbcor=True, robust=-2.0)
-exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
-impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
-        outfile=myimagebase+'.image.pbcor', overwrite=True)
-exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
-exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
-exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
-
-
-myimagebase = "selfcal_allspw_selfcal_4ampphase_mfs_dirty_field32"
-os.system('rm -rf {0}.*'.format(myimagebase))
-clean(vis=vis4, imagename=myimagebase,
-      field="28", spw='', mode='mfs', outframe='LSRK',
-      multiscale=multiscale,
-      interpolation='linear', imagermode='mosaic', interactive=False,
-      minpb=0.4,
-      niter=0, threshold='5mJy', imsize=imsize, cell=cell,
-      phasecenter="", weighting='briggs',
-      usescratch=True, pbcor=True, robust=-2.0)
-exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
-impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
-        outfile=myimagebase+'.image.pbcor', overwrite=True)
-exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
-exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
-exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+# # Extras to try to reproduce bug:
+# phasecenter = "J2000 19:23:41.629000 +14.30.42.38000"
+# imsize = [3072,3072]
+# cell = '0.05arcsec'
+# solint = 'int'
+# threshold = '50.0mJy'
+# multiscale = [0,5,15,45]
+# vis4 = 'w51_contvis_selfcal_4.ms'
+# myimagebase = "selfcal_allspw_selfcal_4ampphase_mfs_dirty"
+# os.system('rm -rf {0}.*'.format(myimagebase))
+# tclean(vis=vis4, imagename=myimagebase,
+#       field="", spw='', specmode='mfs', outframe='LSRK',
+#       
+#       interpolation='linear', gridder='mosaic', interactive=False,
+#       pblimit=0.4,
+#       niter=0, threshold='5mJy', imsize=imsize, cell=cell,
+#       phasecenter=phasecenter, weighting='briggs',
+#       savemodel='modelcolumn', robust=-2.0)
+# exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+# impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
+#         outfile=myimagebase+'.image.pbcor', overwrite=True)
+# exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+# exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+# exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+# 
+# 
+# myimagebase = "selfcal_allspw_selfcal_4ampphase_mfs_dirty_field32"
+# os.system('rm -rf {0}.*'.format(myimagebase))
+# tclean(vis=vis4, imagename=myimagebase,
+#       field="28", spw='', specmode='mfs', outframe='LSRK',
+#       
+#       interpolation='linear', gridder='mosaic', interactive=False,
+#       pblimit=0.4,
+#       niter=0, threshold='5mJy', imsize=imsize, cell=cell,
+#       phasecenter="", weighting='briggs',
+#       savemodel='modelcolumn', robust=-2.0)
+# exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+# impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
+#         outfile=myimagebase+'.image.pbcor', overwrite=True)
+# exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+# exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+# exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
