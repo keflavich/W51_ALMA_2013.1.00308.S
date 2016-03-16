@@ -1,0 +1,84 @@
+PAPER DRAFT
+
+Cores and Outflows in the W51 Protoclusters
+
+
+
+"A multi-phase outflow from a high-mass protostar"
+
+
+\section{Observations}
+As part of ALMA Cycle 2 program 2013.1.00308.S, we observed a
+$\sim2\arcmin\times1\arcmin$ region centered between W51 IRS2 and W51 e1/e2
+with a 37-pointing mosaic.  Two configurations of the 12m array were used,
+achieving a resolution of 0.2\arcsec.  Additionally, a 12-pointing mosaic was
+performed using the 7m array, probing scales up to XXX\arcsec.  The full UV
+coverage was from XX to YY m.
+
+Data reduction was performed using CASA.  The QA2-produced data products were
+combined using the standard inverse variance weighting (check this).
+The visibilities were imaged into full spectral cubes at coarse (0.5\arcsec)
+resolution in order to get a first look at all 15630 spectral channels.  The
+resulting cube was used to identify bright lines in the spectrum extracted
+from source e8.  To produce continuum images, frequency channels including
+bright lines were excluded.
+
+The spectral setups were ...
+
+A continuum image combining all 4 spectral windows was produced using
+\texttt{tclean}.  We phase self-calibrated the image on baselines longer than
+100m to increase the dynamic range.  The final image was cleaned with 50000
+iterations to a threshold of 5 mJy.  The lowest noise level in the image, away
+from bright sources, is $\sim0.2$ mJy/beam, but near the bright sources e2 and
+IRS2, the noise reached as high as $\sim2$ mJy/beam.  Deeper cleaning was
+attempted, but lead to instabilities.
+
+\subsection{Simulations}
+The enhanced noise around bright sources is unavoidable.  We tested the noise
+properties of our data set using the CASA \texttt{simobserve} toolkit.  We
+obtained a Herschel Gould's Belt Survey image of the Perseus molecular cloud at
+250 \um \citep[resolution 18\arcsec][]{} and scaled it down by $\sim40\times$
+to match the resolution of our ALMA data.  We used the \texttt{sm.predict} task
+to ``observe'' the Herschel data with our exact UV data set.  We then used
+\texttt{sm.corrupt} to make the noise properties approximately match those of
+our observations.
+
+We performed two simulations to test the observability of the Perseus data.
+First, we scaled the surface brightness at 250 \um to 1100 \um by assuming a
+blackbody with $T=20$ K and opacity index $\beta=1.5$.  This resulted in only
+weak detections of the brightest 3 sources in Perseus, and the noise properties
+of the map were excellent and uniform.
+
+Second, we scaled the peak flux density of the Perseus map to be
+$\sim100\times$ brighter, or comparable to the flux density of W51e2 in the
+real ALMA observations.  In this map, even with deep cleaning, the noise around
+the bright sources remains very high.
+
+
+
+\section{Analysis}
+\subsection{Source Identification}
+% dendrogramming.py
+We used the \texttt{dendrogram} method described by \citet{Rosolowsky2008a} and
+implemented in \texttt{astrodendro} to identify sources.  We used a minimum
+value of 1 mJy/beam ($\sim5-\sigma$) and a minimum $\Delta=0.4$ mJy/beam
+($\sim2-\sigma$) with minimum 10 pixels (each pixel is 0.05\arcsec).  This
+cataloging yielded over 8000 candidate sources, of which the majority are noise
+or artifacts around the brightest sources.  To filter out these bad sources,
+we created a noise map taking the local RMS of the \texttt{tclean}-produced
+residual map over a $\sigma=30$ pixel (1.5\arcsec) gaussian.  We then removed
+all sources with peak S/N < 8, mean S/N per pixel $< 5$, and minimum S/N per
+pixel $ < 1$.  We also only included the smallest sources in the dendrogram,
+the ``leaves''.  These parameters were tuned by checking against ``real''
+sources identified by eye and selected using \texttt{ds9}: most real sources are
+recovered (but not all; see Section ...) and few spurious sources ($<10$) are
+included.  The resulting catalog includes 113 sources.
+
+\subsection{Photometry}
+We created a catalog of the dendrogram sources including their peak and mean flux density,
+their centroid, and their geometric properties.  For each source, we further extracted aperture
+photometry around the centroid in 6 apertures: 0.2, 0.4, 0.6, 0.8, 1.0, and 1.5\arcsec.
+We performed the same aperture photometry on the W51 Ku-band images from \citet{Ginsburg2016a}.
+These observations are reported in Table {...}.
+
+\section{Kinematics in and around W51e2e}
