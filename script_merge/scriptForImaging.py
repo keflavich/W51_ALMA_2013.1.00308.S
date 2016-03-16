@@ -64,7 +64,7 @@ tclean(vis = linesub,
        imagename = myimagebase,
        field = "w51",
        spw = '0,4',
-       specmode = 'velocity',
+       specmode = 'cube',
        nchan = 140,
        start = '20km/s',
        width = '0.5km/s',
@@ -84,7 +84,7 @@ impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb',
         outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
 exportfits(imagename=myimagebase+'.image.pbcor',
            fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
-exportfits(imagename=myimagebase+'.flux', fitsimage=myimagebase+'.flux.fits') # export the PB image
+exportfits(imagename=myimagebase+'.pb', fitsimage=myimagebase+'.pb.fits') # export the PB image
 
 
 

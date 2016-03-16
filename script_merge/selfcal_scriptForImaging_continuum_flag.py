@@ -329,7 +329,7 @@ exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, 
 # using vis2.corrected = vis3.data
 myimagebase = "merge_selfcal_allspw_selfcal_3_mfs_deeper"
 os.system('rm -rf {0}.*'.format(myimagebase))
-tclean(vis=vis2, imagename=myimagebase, field="", spw="", specmode='mfs',
+tclean(vis=vis3, imagename=myimagebase, field="", spw="", specmode='mfs',
        deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
        scales=multiscale,
        pblimit=0.4, interpolation='linear',
@@ -379,6 +379,32 @@ exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=
 exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
+
+myimagebase = "merge_selfcal_allspw_selfcal_3_mfs_tclean_deeperbroader"
+os.system('rm -rf {0}.*'.format(myimagebase))
+tclean(vis=vis3, imagename=myimagebase, field="", spw="", specmode='mfs',
+       deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
+       scales=multiscale,
+       pblimit=0.4, interpolation='linear',
+       interactive=False, niter=100000,
+       threshold='15mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
+       mask='clean_50mJy.mask',
+       weighting='briggs', savemodel='modelcolumn', robust=-2.0)
+os.system('rm -rf merge_selfcal_allspw_selfcal_3_mfs_tclean_deeperbroader.mask')
+tclean(vis=vis3, imagename=myimagebase, field="", spw="", specmode='mfs',
+       deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
+       scales=multiscale,
+       pblimit=0.4, interpolation='linear',
+       interactive=False, niter=100000,
+       threshold='8mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
+       mask='clean_10mJy.mask',
+       weighting='briggs', savemodel='modelcolumn', robust=-2.0)
+exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 
 import numpy as np

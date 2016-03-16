@@ -36,12 +36,6 @@ tclean(vis=vis0, imagename=myimagebase, field="", spw='',
        cell=cell, phasecenter=phasecenter,
        pblimit=0.4,
        weighting='briggs', savemodel='modelcolumn', robust=-2.0)
-exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
-impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
-        outfile=myimagebase+'.image.pbcor', overwrite=True)
-exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
-exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
-exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
@@ -316,7 +310,6 @@ myimagebase = "selfcal_allspw_selfcal_3_mfs_deeper"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis2, imagename=myimagebase,
       field="", spw='', specmode='mfs', outframe='LSRK',
-      
       interpolation='linear', gridder='mosaic', interactive=False,
       pblimit=0.4,
       niter=50000, threshold='5mJy', imsize=imsize, cell=cell,
@@ -334,7 +327,7 @@ import numpy as np
 from astropy.io import fits
 print("Stats (mfs):")
 slc = slice(1007,1434), slice(1644,1900)
-sigma, peak = (fits.getdata('selfcal_allspw_dirty.image.fits')[slc].std(),     np.nanmax(fits.getdata('selfcal_allspw_dirty.image.fits')))
+sigma, peak = (fits.getdata('selfcal_allspw_dirty.residual.fits')[slc].std(),     np.nanmax(fits.getdata('selfcal_allspw_dirty.residual.fits')))
 print("dirty:             peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))
 sigma, peak = (fits.getdata('selfcal_allspw_mfs.image.pbcor.fits')[slc].std(),           np.nanmax(fits.getdata('selfcal_allspw_mfs.image.pbcor.fits')))
 print("clean:             peak={1:0.5f} sigma={0:0.5f} s/n={2:0.5f}".format(sigma, peak, peak/sigma))

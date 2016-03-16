@@ -20,6 +20,9 @@ from astropy import coordinates
 contfile = fits.open(paths.dpath('W51_te_continuum_best.fits'))
 data = contfile[0].data
 
+radiofilename = paths.vlapath('data/W51Ku_BDarray_continuum_2048_both_uniform_hires.clean.image.fits')
+radio_image = fits.open(radiofilename)
+
 # estimate the noise from the local standard deviation of the residuals
 residfile = fits.open(paths.dpath('W51_te_continuum_best_residual.fits'))
 resid = residfile[0].data
@@ -93,25 +96,29 @@ for ii in ProgressBar(list(range(len(ppcat)))):
 outf = fits.PrimaryHDU(data=mask, header=contfile[0].header)
 outf.writeto('dendrograms_min1mJy_diff1mJy_mask_pruned.fits', clobber=True)
 
-keys = ['cont_flux{0}arcsec'.format(rr.value) for rr in radii]
-columns = {k:[] for k in (keys)}
-for ii, row in enumerate(ProgressBar(pruned_ppcat)):
-    size = max(radii)*2.2
-    xc,yc = row['x_cen'], row['y_cen']
-    position = coordinates.SkyCoord(xc, yc, frame='fk5', unit=(u.deg,u.deg))
-    cutout = Cutout2D(data, position, size, mywcs, mode='partial')
-    for rr in radii:
-        aperture = photutils.SkyCircularAperture(positions=position,
-                                                 r=rr).to_pixel(cutout.wcs)
-        aperture_data = photutils.aperture_photometry(data=cutout.data,
-                                                      apertures=aperture,
-                                                      method='exact')
-        flux_jybeam = aperture_data[0]['aperture_sum']
-        #flux_jybeam_average = flux_jybeam / aperture.area()
-        #flux_jysr_average = flux_jybeam_average / beam.sr.value
-        #flux_jysr = flux_jysr_average * aperture.area()
-        #flux_jy = (flux_jysr * (pixel_scale**2).to(u.sr).value)
-        columns['cont_flux{0}arcsec'.format(rr.value)].append(flux_jybeam/ppbeam)
+for image, name in ((contfile,''), (radio_image,'KUband')):
+    data = image[0].data
+    mywcs = wcs.WCS(image[0].header)
+
+    keys = ['{1}cont_flux{0}arcsec'.format(rr.value, name) for rr in radii]
+    columns = {k:[] for k in (keys)}
+    for ii, row in enumerate(ProgressBar(pruned_ppcat)):
+        size = max(radii)*2.2
+        xc,yc = row['x_cen'], row['y_cen']
+        position = coordinates.SkyCoord(xc, yc, frame='fk5', unit=(u.deg,u.deg))
+        cutout = Cutout2D(data, position, size, mywcs, mode='partial')
+        for rr in radii:
+            aperture = photutils.SkyCircularAperture(positions=position,
+                                                     r=rr).to_pixel(cutout.wcs)
+            aperture_data = photutils.aperture_photometry(data=cutout.data,
+                                                          apertures=aperture,
+                                                          method='exact')
+            flux_jybeam = aperture_data[0]['aperture_sum']
+            #flux_jybeam_average = flux_jybeam / aperture.area()
+            #flux_jysr_average = flux_jybeam_average / beam.sr.value
+            #flux_jysr = flux_jysr_average * aperture.area()
+            #flux_jy = (flux_jysr * (pixel_scale**2).to(u.sr).value)
+            columns['{1}cont_flux{0}arcsec'.format(rr.value, name)].append(flux_jybeam/ppbeam)
 
 for k in columns:
     if k not in pruned_ppcat.keys():
@@ -134,7 +141,6 @@ pruned_ppcat.meta = {'keywords':
                       'column_conversion_factor': {'value': masscalc.col_conversion_factor()},
                      }
                     }
-
 
 pruned_ppcat.write(paths.tpath("dendrogram_continuum_catalog.ipac"),
                    format='ascii.ipac')

@@ -207,11 +207,11 @@ linesub='w51_concat.ms.split.cal.spw0.contsub' #result of uvcontsub contains onl
 
 myimagebase = "w51_HC3N_24_23_contsub"
 os.system("rm -rf {0}.*".format(myimagebase))
-tclean(vis= 'w51_concat.ms.split.cal',
+tclean(vis=linesub,
        imagename = myimagebase,
        field = "w51",
        spw = '0,4',
-       specmode = 'velocity',
+       specmode = 'cube',
        nchan = 140,
        start = '20km/s',
        width = '0.5km/s',
@@ -222,8 +222,8 @@ tclean(vis= 'w51_concat.ms.split.cal',
        pblimit=0.4,
        interactive = False,
        niter = 5000,
-       threshold = '10mJy', #req rms 5.85 mJy, 38 antennas, 66min tos, pwv auto (combination of two EB, which both had different PWV),1arcsec res, 0.728 MHz BW gives 1.5mJy!
-       imsize = [2880,2880],
+       threshold = '10mJy',
+       imsize = [3192,3192],
        cell = '0.05arcsec',
        weighting = 'robust',
        robust = -0.5)
@@ -231,7 +231,7 @@ impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb',
         outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
 exportfits(imagename=myimagebase+'.image.pbcor',
            fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
-exportfits(imagename=myimagebase+'.flux', fitsimage=myimagebase+'.flux.fits') # export the PB image
+exportfits(imagename=myimagebase+'.pb', fitsimage=myimagebase+'.pb.fits') # export the PB image
 
 
 
