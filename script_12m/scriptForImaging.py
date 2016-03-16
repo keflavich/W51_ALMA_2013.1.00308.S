@@ -191,6 +191,7 @@ clean(vis= 'w51_concat.ms.split.cal',
  pbcor=False,
  robust = 0.0)
 
+
 fitspw='0:403~454;2893~3056;3821~2839,4:403~454;2893~3056;3821~2839'
 uvcontsub(vis='w51_concat.ms.split.cal',
          field='4~40',
@@ -203,6 +204,35 @@ uvcontsub(vis='w51_concat.ms.split.cal',
 os.system("rm -rf w51_concat.ms.split.cal.spw0.contsub")
 os.system("mv w51_concat.ms.split.cal.contsub w51_concat.ms.split.cal.spw0.contsub")
 linesub='w51_concat.ms.split.cal.spw0.contsub' #result of uvcontsub contains only the selected uvdata by the task
+
+myimagebase = "w51_HC3N_24_23_contsub"
+os.system("rm -rf {0}.*".format(myimagebase))
+tclean(vis= 'w51_concat.ms.split.cal',
+       imagename = myimagebase,
+       field = "w51",
+       spw = '0,4',
+       specmode = 'velocity',
+       nchan = 140,
+       start = '20km/s',
+       width = '0.5km/s',
+       restfreq = '218.32471GHz',
+       outframe = 'LSRK',
+       interpolation = 'linear',
+       gridder='mosaic',
+       pblimit=0.4,
+       interactive = False,
+       niter = 5000,
+       threshold = '10mJy', #req rms 5.85 mJy, 38 antennas, 66min tos, pwv auto (combination of two EB, which both had different PWV),1arcsec res, 0.728 MHz BW gives 1.5mJy!
+       imsize = [2880,2880],
+       cell = '0.05arcsec',
+       weighting = 'robust',
+       robust = -0.5)
+impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb',
+        outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
+exportfits(imagename=myimagebase+'.image.pbcor',
+           fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
+exportfits(imagename=myimagebase+'.flux', fitsimage=myimagebase+'.flux.fits') # export the PB image
+
 
 
 os.system("rm -rf w51_H2CO_303_202_contsub.*")

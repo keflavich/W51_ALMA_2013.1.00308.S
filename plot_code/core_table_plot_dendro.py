@@ -167,22 +167,70 @@ def m20ktickfunc(x):
 fig4 = pl.figure(4)
 fig4.clf()
 ax5 = fig4.gca()
-for species in np.unique(dendro_merge['PeakLineSpecies']):
-    if species != 'NONE':
-        mask = species == dendro_merge['PeakLineSpecies']
-        ax5.plot(dendro_merge['cont_flux0p4arcsec'][mask]-dendro_merge['cont_flux0p2arcsec'][mask],
-                 dendro_merge['peak_cont_flux'][mask], 's', label=species)
-ax5.plot([0, 0.5], [0, 0.5], 'k--')
+#for species in np.unique(dendro_merge['PeakLineSpecies']):
+#    if species != 'NONE':
+#        mask = species == dendro_merge['PeakLineSpecies']
+#        ax5.plot(dendro_merge['cont_flux0p4arcsec'][mask]-dendro_merge['cont_flux0p2arcsec'][mask],
+#                 dendro_merge['peak_cont_flux'][mask], 's', label=species)
+ax5.plot(dendro_merge['cont_flux0p4arcsec']-dendro_merge['cont_flux0p2arcsec'],
+         dendro_merge['peak_cont_flux'], 'ks')
+# R1=2 R0 -> V1/V0 = 7
+ax5.plot(np.array([0, 1.5])*15, [0, 1.5], 'b--', label='Constant density', zorder=-10)
+ax5.plot(np.array([0, 1.5])*7., [0, 1.5], 'b:', label='$\\rho\\propto R^{-1}$', zorder=-10)
+ax5.plot(np.array([0, 1.5])*3., [0, 1.5], 'b-.', label='$\\rho\\propto R^{-2}$', zorder=-10)
+ax5.plot(np.array([0, 1.5]), [0, 1.5], 'b-', alpha=0.5, label='$\\rho\\propto R^{-3}$', zorder=-10)
 ax5.set_ylabel("Peak continuum flux density (Jy/beam)")
 ax5.set_xlabel("Background $1000 \\rm{AU} < r < 2000 \\rm{AU}$ continuum flux density (Jy)")
+pl.legend(loc='best', prop={'size':16})
+ax5.set_xlim(0, 1.5)
+ax5.set_ylim(0, 0.5)
 ax5x = ax5.twiny()
 ax5x.set_xticklabels(m20ktickfunc(ax5.get_xticks()))
 ax5x.set_xlabel("Background Mass $M(20\\rm{K})$")
 ax5y = ax5.twinx()
 ax5y.set_yticklabels(m20ktickfunc(ax5.get_yticks()))
 ax5y.set_ylabel("Peak Mass $M(20\\rm{K})$")
-pl.legend(loc='best', prop={'size':16})
 fig4.savefig(paths.fpath('coreplots/dendro_continuum_background_vs_peak.png'))
+ax5.set_xlim(0, 0.4)
+ax5.set_ylim(0, 0.2)
+ax5x.set_xticklabels(m20ktickfunc(ax5.get_xticks()))
+ax5y.set_yticklabels(m20ktickfunc(ax5.get_yticks()))
+fig4.savefig(paths.fpath('coreplots/dendro_continuum_background_vs_peak_zoom.png'))
+ax5.set_xlim(0, 0.25)
+ax5.set_ylim(0, 0.06)
+ax5x.set_xticklabels(m20ktickfunc(ax5.get_xticks()))
+ax5y.set_yticklabels(m20ktickfunc(ax5.get_yticks()))
+fig4.savefig(paths.fpath('coreplots/dendro_continuum_background_vs_peak_zoom_more.png'))
+
+fig4 = pl.figure(4)
+fig4.clf()
+ax5 = fig4.gca()
+ax5.plot(dendro_merge['cont_flux0p6arcsec']-dendro_merge['cont_flux0p4arcsec'],
+         dendro_merge['cont_flux0p4arcsec']-dendro_merge['cont_flux0p2arcsec'], 'ks')
+# R1=2 R0 -> V1/V0 = 7
+ax5.plot(np.array([0, 1.5])*4.3333, [0, 1.5], 'b--', label='Constant density', zorder=-10)
+ax5.plot(np.array([0, 1.5])*2.7143, [0, 1.5], 'b:', label='$\\rho\\propto R^{-1}$', zorder=-10)
+ax5.plot(np.array([0, 1.5])*1.6666, [0, 1.5], 'b-.', label='$\\rho\\propto R^{-2}$', zorder=-10)
+ax5.plot(np.array([0, 1.5])*1.0000, [0, 1.5], 'b-', alpha=0.5, label='$\\rho\\propto R^{-3}$', zorder=-10)
+ax5.set_ylabel("Background $1000 \\rm{AU} < r < 2000 \\rm{AU}$ continuum flux density (Jy)")
+ax5.set_xlabel("Background $2000 \\rm{AU} < r < 3000 \\rm{AU}$ continuum flux density (Jy)")
+pl.legend(loc='best', prop={'size':16})
+ax5x = ax5.twiny()
+ax5.set_ylim(0, 1.5)
+ax5.set_xlim(0, 1.5)
+ax5x.set_xticklabels(m20ktickfunc(ax5.get_xticks()))
+ax5x.set_xlabel("Big Annulus mass $M(20\\rm{K})$")
+ax5y = ax5.twinx()
+ax5y.set_yticklabels(m20ktickfunc(ax5.get_yticks()))
+ax5y.set_ylabel("Small Annulus Mass $M(20\\rm{K})$")
+fig4.savefig(paths.fpath('coreplots/dendro_continuum_background_vs_peak_shell1to2.png'))
+ax5.set_xlim(0, 0.4)
+ax5.set_ylim(0, 0.4)
+ax5x.set_xticklabels(m20ktickfunc(ax5.get_xticks()))
+ax5y.set_yticklabels(m20ktickfunc(ax5.get_yticks()))
+fig4.savefig(paths.fpath('coreplots/dendro_continuum_background_vs_peak_shell1to2_zoom.png'))
+
+
 
 
 #fig4 = pl.figure(4)

@@ -58,6 +58,34 @@ exportfits(imagename=myimagebase+'.image.pbcor',fitsimage=myimagebase+'.image.pb
 exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # export the PB image
 
 
+myimagebase = "w51_merge7m12m_HC3N_24_23_contsub"
+os.system("rm -rf {0}.*".format(myimagebase))
+tclean(vis = linesub,
+       imagename = myimagebase,
+       field = "w51",
+       spw = '0,4',
+       specmode = 'velocity',
+       nchan = 140,
+       start = '20km/s',
+       width = '0.5km/s',
+       restfreq = '218.32471GHz',
+       outframe = 'LSRK',
+       interpolation = 'linear',
+       gridder='mosaic',
+       pblimit=0.4,
+       interactive = False,
+       niter = 5000,
+       threshold = '10mJy',
+       imsize = [2880,2880],
+       cell = '0.05arcsec',
+       weighting = 'robust',
+       robust = -0.5)
+impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb',
+        outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
+exportfits(imagename=myimagebase+'.image.pbcor',
+           fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
+exportfits(imagename=myimagebase+'.flux', fitsimage=myimagebase+'.flux.fits') # export the PB image
+
 
 
 os.system("rm -rf w51_merge7m12m_H2CO_303_202_contsub_briggs0.*")
