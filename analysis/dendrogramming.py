@@ -121,14 +121,20 @@ for k in pruned_ppcat.colnames:
     if "." in k:
         pruned_ppcat.rename_column(k, k.replace(".","p"))
 
-pruned_ppcat.meta = {'ppbeam': ppbeam,
-                     'beam_area_sr': beam.sr.value,
-                     'pixel_scale_as': pixel_scale_as}
-
 annulus_mean = ((pruned_ppcat['cont_flux0p4arcsec']-pruned_ppcat['cont_flux0p2arcsec']) /
                 (np.pi*(0.4-0.2)**2/pixel_scale_as**2) * ppbeam)
 core_ish = pruned_ppcat['peak_cont_flux'] > annulus_mean
 pruned_ppcat.add_column(Column(data=core_ish, name='corelike'))
+
+pruned_ppcat.meta = {'keywords':
+                     {'ppbeam': {'value': ppbeam},
+                      'beam_area_sr': {'value': beam.sr.value},
+                      'pixel_scale_as': {'value': pixel_scale_as},
+                      'mass_conversion_factor': {'value': masscalc.mass_conversion_factor()},
+                      'column_conversion_factor': {'value': masscalc.col_conversion_factor()},
+                     }
+                    }
+
 
 pruned_ppcat.write(paths.tpath("dendrogram_continuum_catalog.ipac"),
                    format='ascii.ipac')

@@ -5,6 +5,7 @@ from astropy import units as u
 from astropy import coordinates
 import powerlaw
 import pylab as pl
+pl.matplotlib.rc_file('pubfiguresrc')
 
 #pruned_ppcat = Table.read(paths.tpath("dendrogram_continuum_catalog.ipac"), format='ascii.ipac')
 dendro_merge = Table.read(paths.tpath('dendro_merge_continuum_and_line.ipac'), format='ascii.ipac')
@@ -158,7 +159,32 @@ ax4.set_ylabel("Peak line brightness (K)")
 ax4.set_xlim([0, 0.4])
 pl.legend(loc='best')
 fig3.savefig(paths.fpath('coreplots/dendro_peakTB_vs_continuum.png'))
-#
+
+m20kconv = dendro_merge.meta['keywords']['mass_conversion_factor']['value']
+def m20ktickfunc(x):
+    return ["{0:0.0f}".format(y*m20kconv) for y in x]
+
+fig4 = pl.figure(4)
+fig4.clf()
+ax5 = fig4.gca()
+for species in np.unique(dendro_merge['PeakLineSpecies']):
+    if species != 'NONE':
+        mask = species == dendro_merge['PeakLineSpecies']
+        ax5.plot(dendro_merge['cont_flux0p4arcsec'][mask]-dendro_merge['cont_flux0p2arcsec'][mask],
+                 dendro_merge['peak_cont_flux'][mask], 's', label=species)
+ax5.plot([0, 0.5], [0, 0.5], 'k--')
+ax5.set_ylabel("Peak continuum flux density (Jy/beam)")
+ax5.set_xlabel("Background $1000 \\rm{AU} < r < 2000 \\rm{AU}$ continuum flux density (Jy)")
+ax5x = ax5.twiny()
+ax5x.set_xticklabels(m20ktickfunc(ax5.get_xticks()))
+ax5x.set_xlabel("Background Mass $M(20\\rm{K})$")
+ax5y = ax5.twinx()
+ax5y.set_yticklabels(m20ktickfunc(ax5.get_yticks()))
+ax5y.set_ylabel("Peak Mass $M(20\\rm{K})$")
+pl.legend(loc='best', prop={'size':16})
+fig4.savefig(paths.fpath('coreplots/dendro_continuum_background_vs_peak.png'))
+
+
 #fig4 = pl.figure(4)
 #fig4.clf()
 #ax5 = fig4.gca()
