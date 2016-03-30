@@ -105,13 +105,15 @@ for row in pruned_ppcat:
 
     fn = paths.spath("dendro{name:03d}_spw{ii}_mean.fits")
 
-    data[name] = spectral_overlays.spectral_overlays(fn, name=name,
-                                                     freq_name_mapping=freq_name_mapping,
-                                                     frequencies=frequencies,
-                                                     yoffset=yoffset,
-                                                     minvelo=minvelo,
-                                                     maxvelo=maxvelo,
-                                                    )
+    result = spectral_overlays.spectral_overlays(fn, name=name,
+                                                 freq_name_mapping=freq_name_mapping,
+                                                 frequencies=frequencies,
+                                                 yoffset=yoffset,
+                                                 minvelo=minvelo,
+                                                 maxvelo=maxvelo,
+                                                )
+    if result:
+        data[name] = result
 
 firstentry = list(data.keys())[0]
 colnames = list(data[firstentry].keys())

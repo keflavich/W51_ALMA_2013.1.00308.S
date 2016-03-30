@@ -75,6 +75,29 @@ pl.xlabel("Peak Flux")
 pl.ylabel("Background-subtracted Flux")
 pl.savefig(paths.fpath('coreplots/dendro_peak_vs_peak_minus_background.png'))
 
+
+pl.clf()
+pl.title("Sanity check: what fraction of the peak flux is recovered in a 0.2\" aperture?")
+
+# integrate over a gaussian to determine aperture correction
+def gaussian2d(x,y):
+    return np.exp(-x**2/2.-y**2/2.)
+def gauss2d_integral(radius):
+    from scipy.integrate import dblquad
+    return dblquad(gaussian2d, 0, radius, lambda x: 0, lambda x:
+                   (radius**2-x**2)**0.5)[0] * 4
+
+aperture_correction = gauss2d_integral(0.2 / (dendro_merge['beam_area'][0]**0.5 * 206265.)) / gauss2d_integral(100)
+pl.plot(dendro_merge['cont_flux0p2arcsec'], (dendro_merge['peak_cont_flux']), '.')
+pl.plot(dendro_merge['cont_flux0p2arcsec'][corelike], (dendro_merge['peak_cont_flux'])[corelike], '.')
+pl.plot([0.,0.5], [0,0.5], 'k--', zorder=-5)
+pl.plot([0.,0.5], [0,0.5*aperture_correction], 'k:', zorder=-5)
+pl.xlabel("Peak Flux")
+pl.ylabel("0.2\" aperture flux")
+pl.savefig(paths.fpath('coreplots/dendro_peak_vs_0p2arcsec.png'))
+
+
+
 fig2 = pl.figure(2)
 fig2.clf()
 ax2 = fig2.add_subplot(211)
@@ -146,20 +169,6 @@ beam_area = u.Quantity(np.array(dendro_merge['beam_area']), u.sr)
 jy_to_k = (1*u.Jy).to(u.K, u.brightness_temperature(beam_area,
                                                     220*u.GHz)).mean()
 
-fig3 = pl.figure(3)
-fig3.clf()
-ax4 = fig3.gca()
-for species in np.unique(dendro_merge['PeakLineSpecies']):
-    if species != 'NONE':
-        mask = species == dendro_merge['PeakLineSpecies']
-        ax4.plot(dendro_merge['peak_cont_flux'][mask], dendro_merge['PeakLineBrightness'][mask], 's', label=species)
-ax4.plot([0,0.4], [0, 0.4*jy_to_k.value], 'k--')
-ax4.set_xlabel("Continuum flux density (Jy/beam)")
-ax4.set_ylabel("Peak line brightness (K)")
-ax4.set_xlim([0, 0.4])
-pl.legend(loc='best')
-fig3.savefig(paths.fpath('coreplots/dendro_peakTB_vs_continuum.png'))
-
 m20kconv = dendro_merge.meta['keywords']['mass_conversion_factor']['value']
 def m20ktickfunc(x):
     return ["{0:0.0f}".format(y*m20kconv) for y in x]
@@ -173,7 +182,7 @@ ax5 = fig4.gca()
 #        ax5.plot(dendro_merge['cont_flux0p4arcsec'][mask]-dendro_merge['cont_flux0p2arcsec'][mask],
 #                 dendro_merge['peak_cont_flux'][mask], 's', label=species)
 ax5.plot(dendro_merge['cont_flux0p4arcsec']-dendro_merge['cont_flux0p2arcsec'],
-         dendro_merge['peak_cont_flux'], 'ks')
+         dendro_merge['peak_cont_flux'], 'ks', label='')
 # R1=2 R0 -> V1/V0 = 7
 ax5.plot(np.array([0, 1.5])*15, [0, 1.5], 'b--', label='Constant density', zorder=-10)
 ax5.plot(np.array([0, 1.5])*7., [0, 1.5], 'b:', label='$\\rho\\propto R^{-1}$', zorder=-10)
@@ -206,7 +215,7 @@ fig4 = pl.figure(4)
 fig4.clf()
 ax5 = fig4.gca()
 ax5.plot(dendro_merge['cont_flux0p6arcsec']-dendro_merge['cont_flux0p4arcsec'],
-         dendro_merge['cont_flux0p4arcsec']-dendro_merge['cont_flux0p2arcsec'], 'ks')
+         dendro_merge['cont_flux0p4arcsec']-dendro_merge['cont_flux0p2arcsec'], 'ks', label='')
 # R1=2 R0 -> V1/V0 = 7
 ax5.plot(np.array([0, 1.5])*4.3333, [0, 1.5], 'b--', label='Constant density', zorder=-10)
 ax5.plot(np.array([0, 1.5])*2.7143, [0, 1.5], 'b:', label='$\\rho\\propto R^{-1}$', zorder=-10)
@@ -230,6 +239,21 @@ ax5x.set_xticklabels(m20ktickfunc(ax5.get_xticks()))
 ax5y.set_yticklabels(m20ktickfunc(ax5.get_yticks()))
 fig4.savefig(paths.fpath('coreplots/dendro_continuum_background_vs_peak_shell1to2_zoom.png'))
 
+
+########## REQUIRES LINE INFO ###########
+fig3 = pl.figure(3)
+fig3.clf()
+ax4 = fig3.gca()
+for species in np.unique(dendro_merge['PeakLineSpecies']):
+    if species != 'NONE':
+        mask = species == dendro_merge['PeakLineSpecies']
+        ax4.plot(dendro_merge['peak_cont_flux'][mask], dendro_merge['PeakLineBrightness'][mask], 's', label=species)
+ax4.plot([0,0.4], [0, 0.4*jy_to_k.value], 'k--')
+ax4.set_xlabel("Continuum flux density (Jy/beam)")
+ax4.set_ylabel("Peak line brightness (K)")
+ax4.set_xlim([0, 0.4])
+pl.legend(loc='best')
+fig3.savefig(paths.fpath('coreplots/dendro_peakTB_vs_continuum.png'))
 
 
 

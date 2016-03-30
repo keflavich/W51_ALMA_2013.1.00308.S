@@ -1,7 +1,9 @@
+import os
 import numpy as np
 from astropy.convolution import convolve_fft, Gaussian2DKernel
 from astropy.utils.console import ProgressBar
 from astropy import units as u
+from astropy import log
 import paths
 from astropy.io import fits
 from astropy.table import Column
@@ -20,7 +22,8 @@ from astropy import coordinates
 contfile = fits.open(paths.dpath('W51_te_continuum_best.fits'))
 data = contfile[0].data
 
-radiofilename = paths.vlapath('data/W51Ku_BDarray_continuum_2048_both_uniform_hires.clean.image.fits')
+radiofilename = os.path.join(paths.vlapath,
+                             'data/W51Ku_BDarray_continuum_2048_both_uniform.hires.clean.image.fits')
 radio_image = fits.open(radiofilename)
 
 # estimate the noise from the local standard deviation of the residuals
@@ -44,6 +47,8 @@ dend = astrodendro.Dendrogram.compute(data, min_value=0.001, min_delta=0.0004,
 dend.save_to('dendrograms_min1mJy_diff1mJy.fits')
 
 df = fits.open('dendrograms_min1mJy_diff1mJy.fits')
+# For viewing in ds9 etc: the 1st and 2nd extension headers don't include WCS
+# info by default
 df[1].header.update(df[0].header)
 df[2].header.update(df[0].header)
 df.writeto('dendrograms_min1mJy_diff1mJy.fits', clobber=True)
@@ -68,6 +73,8 @@ keys = ['noise', 'is_leaf', 'peak_cont_flux', 'min_cont_flux', 'mean_cont_flux',
         'peak_cont_col', 'beam_area']
 radii = (0.2,0.4,0.6,0.8,1.0,1.5)*u.arcsec
 columns = {k:[] for k in (keys)}
+
+log.info("Doing photometry")
 for ii, row in enumerate(ProgressBar(ppcat)):
     structure = dend[row['_idx']]
     assert structure.idx == row['_idx'] == ii
@@ -85,11 +92,13 @@ for k in columns:
     if k not in ppcat.keys():
         ppcat.add_column(Column(name=k, data=columns[k]))
 
-cat_mask = (ppcat['is_leaf'] & (ppcat['peak_cont_flux']>8*ppcat['noise']) &
+cat_mask = (ppcat['is_leaf'] &
+            (ppcat['peak_cont_flux']>8*ppcat['noise']) &
             (ppcat['mean_cont_flux']>5*ppcat['noise']) &
             (ppcat['min_cont_flux']>1*ppcat['noise']))
 pruned_ppcat = ppcat[cat_mask]
 mask = dend.index_map.copy()
+log.info("Pruning mask image")
 for ii in ProgressBar(list(range(len(ppcat)))):
     if ii not in pruned_ppcat['_idx']:
         mask[mask == ii] = -1
@@ -97,11 +106,12 @@ outf = fits.PrimaryHDU(data=mask, header=contfile[0].header)
 outf.writeto('dendrograms_min1mJy_diff1mJy_mask_pruned.fits', clobber=True)
 
 for image, name in ((contfile,''), (radio_image,'KUband')):
-    data = image[0].data
-    mywcs = wcs.WCS(image[0].header)
+    data = image[0].data.squeeze()
+    mywcs = wcs.WCS(image[0].header).celestial
 
     keys = ['{1}cont_flux{0}arcsec'.format(rr.value, name) for rr in radii]
     columns = {k:[] for k in (keys)}
+    log.info("Doing aperture photometry on {0}".format(name))
     for ii, row in enumerate(ProgressBar(pruned_ppcat)):
         size = max(radii)*2.2
         xc,yc = row['x_cen'], row['y_cen']
@@ -120,13 +130,13 @@ for image, name in ((contfile,''), (radio_image,'KUband')):
             #flux_jy = (flux_jysr * (pixel_scale**2).to(u.sr).value)
             columns['{1}cont_flux{0}arcsec'.format(rr.value, name)].append(flux_jybeam/ppbeam)
 
-for k in columns:
-    if k not in pruned_ppcat.keys():
-        pruned_ppcat.add_column(Column(name=k, data=columns[k]))
+    for k in columns:
+        if k not in pruned_ppcat.keys():
+            pruned_ppcat.add_column(Column(name=k, data=columns[k]))
 
-for k in pruned_ppcat.colnames:
-    if "." in k:
-        pruned_ppcat.rename_column(k, k.replace(".","p"))
+    for k in pruned_ppcat.colnames:
+        if "." in k:
+            pruned_ppcat.rename_column(k, k.replace(".","p"))
 
 annulus_mean = ((pruned_ppcat['cont_flux0p4arcsec']-pruned_ppcat['cont_flux0p2arcsec']) /
                 (np.pi*(0.4-0.2)**2/pixel_scale_as**2) * ppbeam)

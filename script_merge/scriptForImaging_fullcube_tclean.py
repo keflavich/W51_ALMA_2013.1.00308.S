@@ -8,9 +8,7 @@ finalvis7m='calibrated_7m.ms'
 
 import numpy as np
 
-field='4~40' # science field(s). For a mosaic, select all mosaic fields. DO
-             # NOT LEAVE BLANK ('') OR YOU WILL TRIGGER A BUG IN CLEAN THAT
-             # WILL PUT THE WRONG COORDINATE SYSTEM ON YOUR FINAL IMAGE.
+field='w51'
 phasecenter=''
 cell='.15arcsec' # cell size for imaging.
 imsize = [960,960] # size of image in pixels.
@@ -103,7 +101,7 @@ for spwnum in '1320':
         end = nchans_per_cube*(ii+1)
         if end > nchans_total_thiscube:
             end = nchans_total_thiscube
-        output = 'piece_of_full_W51_7m12m_cube.spw{0}.channels{1}to{2}'.format(spwnum, start, end)
+        output = 'piece_of_full_W51_7m12m_cube_hires.spw{0}.channels{1}to{2}'.format(spwnum, start, end)
 
         # Channel-based gridding has major bugs when dealing with CVEL'd data
         # It is therefore necessary to compute the frequency gridding by hand
