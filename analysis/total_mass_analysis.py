@@ -12,6 +12,7 @@ import astrodendro
 from astropy import wcs
 import masscalc
 import photutils
+import pyregion
 from astropy.nddata.utils import Cutout2D
 from astropy import coordinates
 
@@ -38,3 +39,18 @@ dendro_merge = Table.read(paths.tpath('dendro_merge_continuum_and_line.ipac'), f
 corelike = dendro_merge['corelike'] == 'True'
 print("Total protostar flux (0.2): {0}".format(dendro_merge['cont_flux0p2arcsec'].sum()))
 print("Total protostar flux (peak): {0}".format(dendro_merge['peak_cont_flux'].sum()))
+
+# determine BGPS total mass
+regions = pyregion.open(paths.rpath("12m_pointings.reg"))
+fh = fits.open("/Users/adam/work/w51/v2.0_ds2_l050_13pca_map20.fits")
+mask = regions.get_mask(fh[0])
+bgps_sum = fh[0].data[mask].sum()
+bgps_ppbeam = fh[0].header['PPBEAM']
+bgps_totalflux = bgps_sum/bgps_ppbeam
+print("Total flux (BGPS, 271 GHz): {0}".format(bgps_totalflux))
+bgps_scaled_225 = bgps_totalflux*(masscalc.centerfreq/(271.1*u.GHz))**3.5
+print("Total flux (BGPS, 225 GHz, alpha=3.5): {0}".format(bgps_scaled_225))
+bgps_totalmass = masscalc.dust.massofsnu(nu=271.1*u.GHz,
+                                         snu=bgps_totalflux*u.Jy,
+                                         distance=masscalc.distance)
+print("Total mass (BGPS, 20K): {0}".format(bgps_totalmass))

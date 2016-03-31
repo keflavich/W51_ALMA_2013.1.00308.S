@@ -85,8 +85,8 @@ for ii, row in enumerate(ProgressBar(ppcat)):
     columns['peak_cont_flux'].append(peakflux)
     columns['min_cont_flux'].append(data[dend_inds].min())
     columns['mean_cont_flux'].append(data[dend_inds].mean())
-    columns['peak_cont_mass'].append(masscalc.mass_conversion_factor()*peakflux)
-    columns['peak_cont_col'].append(masscalc.col_conversion_factor()*peakflux)
+    columns['peak_cont_mass'].append((masscalc.mass_conversion_factor()*peakflux).to(u.M_sun).value)
+    columns['peak_cont_col'].append((masscalc.col_conversion_factor(beamomega=beam.sr.value)*peakflux).to(u.cm**-2).value)
     columns['beam_area'].append(beam.sr.value)
 for k in columns:
     if k not in ppcat.keys():
@@ -148,7 +148,7 @@ pruned_ppcat.meta = {'keywords':
                       'beam_area_sr': {'value': beam.sr.value},
                       'pixel_scale_as': {'value': pixel_scale_as},
                       'mass_conversion_factor': {'value': masscalc.mass_conversion_factor()},
-                      'column_conversion_factor': {'value': masscalc.col_conversion_factor()},
+                      'column_conversion_factor': {'value': masscalc.col_conversion_factor(beam.sr)},
                      }
                     }
 
