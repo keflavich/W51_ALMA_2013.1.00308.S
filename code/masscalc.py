@@ -19,12 +19,14 @@ centerfreq = 226.6*u.GHz
 #def mass_conversion_factor(TK=20, d=distance.to(u.kpc).value):
 #    return 14.30 * (np.exp(13.01/TK) - 1)*d**2
 def mass_conversion_factor(TK=20, d=distance.to(u.kpc)):
-    return dust.massofsnu(nu=centerfreq, snu=1*u.Jy, distance=d)
+    return dust.massofsnu(nu=centerfreq, snu=1*u.Jy, distance=d,
+                          temperature=u.Quantity(TK, u.K))
 
 #def col_conversion_factor(TK=20):
 #    return 2.19e22 * (np.exp(13.01/TK - 1))
 def col_conversion_factor(beamomega, TK=20):
-    return dust.colofsnu(nu=centerfreq, snu=1*u.Jy, beamomega=beamomega)
+    return dust.colofsnu(nu=centerfreq, snu=1*u.Jy, beamomega=beamomega,
+                         temperature=u.Quantity(TK, u.K))
 
 def Jnu(T, nu):
     return (2*constants.h*nu**3 / constants.c**2 *

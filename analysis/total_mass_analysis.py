@@ -16,6 +16,11 @@ import pyregion
 from astropy.nddata.utils import Cutout2D
 from astropy import coordinates
 
+import warnings
+warnings.filterwarnings('ignore', category=wcs.FITSFixedWarning, append=True)
+warnings.filterwarnings('ignore', category=RuntimeWarning,
+                        message="invalid value encountered in greater", append=True)
+
 
 #contfile = fits.open(paths.dpath('selfcal_spw3_selfcal_4ampphase_mfs_tclean_deeper_10mJy.image.pbcor.fits'))
 #ln selfcal_allspw_selfcal_4ampphase_mfs_tclean_deeper_5mJy.image.pbcor.fits W51_te_continuum_best.fits
@@ -30,15 +35,27 @@ ppbeam = (beam.sr/(pixel_scale**2)).decompose().value / u.beam
 
 #pl.hist(data[np.isfinite(data)], bins=np.linspace(1e-4,0.1,100))
 
-definitely_signal = data > 10*u.mJy/u.beam
+threshold = 10*u.mJy/u.beam
+threshold_column = (threshold * u.beam/u.Jy * masscalc.col_conversion_factor(beam.sr.value)).to(u.cm**-2)
+threshold_column = masscalc.dust.colofsnu(nu=masscalc.centerfreq,
+                                          snu=threshold*u.beam,
+                                          beamomega=beam.sr).to(u.cm**-2,
+                                                                u.dimensionless_angles())
+definitely_signal = data > threshold
 total_signal = data[definitely_signal].sum() / ppbeam
 print("Total flux: {0}".format(total_signal))
 print("Total mass(20K): {0}".format(total_signal * masscalc.mass_conversion_factor()*u.M_sun/u.Jy))
+print("Threshold column (20K): {0:e}".format(threshold_column))
+
 
 dendro_merge = Table.read(paths.tpath('dendro_merge_continuum_and_line.ipac'), format='ascii.ipac')
 corelike = dendro_merge['corelike'] == 'True'
-print("Total protostar flux (0.2): {0}".format(dendro_merge['cont_flux0p2arcsec'].sum()))
-print("Total protostar flux (peak): {0}".format(dendro_merge['peak_cont_flux'].sum()))
+dendro_protostars_pt2 = dendro_merge['cont_flux0p2arcsec'].sum()*u.Jy
+print("Total protostar flux (0.2): {0}".format(dendro_protostars_pt2))
+print("Total protostar flux (peak): {0}".format(dendro_merge['peak_cont_flux'].sum()*u.Jy))
+total_minus_protostars = total_signal - dendro_protostars_pt2
+print("Total recovered flux minus protostars: {0}".format(total_minus_protostars))
+print("Total mass minus protostars (20K): {0}".format(total_minus_protostars * masscalc.mass_conversion_factor()*u.M_sun/u.Jy))
 
 # determine BGPS total mass
 regions = pyregion.open(paths.rpath("12m_pointings.reg"))
@@ -54,3 +71,5 @@ bgps_totalmass = masscalc.dust.massofsnu(nu=271.1*u.GHz,
                                          snu=bgps_totalflux*u.Jy,
                                          distance=masscalc.distance)
 print("Total mass (BGPS, 20K): {0}".format(bgps_totalmass))
+print("Fraction of recovered flux: {0}".format(total_minus_protostars / bgps_scaled_225))
+print("Protostellar fraction: {0}".format(dendro_protostars_pt2 / bgps_scaled_225))

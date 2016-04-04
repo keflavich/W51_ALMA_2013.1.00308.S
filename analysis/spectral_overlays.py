@@ -11,34 +11,41 @@ def quick_analyze(sp, freq_name_mapping, minvelo, maxvelo):
     argmax = np.nanargmax(sp.data)
     cont = np.nanpercentile(sp.data, 20)
 
+    shift = (minvelo+maxvelo)/2. / constants.c
+
     sp.data -= cont
     sp.xarr.convert_to_unit(u.GHz)
     peak = np.nanmax(sp.data)
     peakfreq = sp.xarr[argmax]
+    assert sp.data[argmax] == peak
+    peakfreq_shifted = peakfreq * (1+shift)
     freqlist = list(freq_name_mapping.keys())
-    bestmatch = np.argmin(np.abs(peakfreq - u.Quantity(freqlist)))
+    reverse_freq_name_mapping = {v:k for k,v in freq_name_mapping.items()}
+    bestmatch = np.argmin(np.abs(peakfreq_shifted - u.Quantity(freqlist)))
     closest_freq = freqlist[bestmatch]
     peakvelo = ((closest_freq-peakfreq)/closest_freq *
                 constants.c).to(u.km/u.s)
     velo_OK = (minvelo < peakvelo) and (peakvelo < maxvelo)
     peakspecies = (freq_name_mapping[closest_freq] if velo_OK else 'none')
 
-    return cont, peak, peakfreq, bestmatch, peakvelo, velo_OK, peakspecies, argmax
+    return (cont, peak, peakfreq, peakfreq_shifted, bestmatch, peakvelo,
+            velo_OK, peakspecies, argmax)
 
 
 
 
 def spectral_overlays(fn, name, freq_name_mapping, frequencies, yoffset,
-                      minvelo, maxvelo, suffix="", background_fn=None):
+                      minvelo, maxvelo, suffix="", background_fn=None,
+                      return_spectra=False):
 
     object_data_dict = {}
 
     spectra = pyspeckit.Spectra([fn.format(name=name, ii=ii)
                                  for ii in range(4)])
-    bad_1 = (233.84*u.GHz<spectra.xarr.to(u.GHz)).value & (spectra.xarr.to(u.GHz)>234.036*u.GHz).value
-    bad_2 = (230.00*u.GHz<spectra.xarr.to(u.GHz)).value & (spectra.xarr.to(u.GHz)>230.523*u.GHz).value
-    spectra.data[bad_1] = np.nan
-    spectra.data[bad_2] = np.nan
+    bad_1 = (233.74*u.GHz<spectra.xarr.to(u.GHz)) & (spectra.xarr.to(u.GHz)<234.036*u.GHz)
+    bad_2 = (230.00*u.GHz<spectra.xarr.to(u.GHz)) & (spectra.xarr.to(u.GHz)<230.523*u.GHz)
+    bad_3 = (spectra.xarr.to(u.GHz) < 218.11*u.GHz)
+    spectra.data[bad_1 | bad_2 | bad_3] = np.nan
 
     # scaling: determine how much to separate spectra by vertically
     scaling = np.nanmax(spectra.data) - np.nanpercentile(spectra.data, 20)
@@ -49,11 +56,8 @@ def spectral_overlays(fn, name, freq_name_mapping, frequencies, yoffset,
 
     if background_fn is not None:
         bgspectra = pyspeckit.Spectra([background_fn.format(name=name, ii=ii)
-                                     for ii in range(4)])
-        bgspectra.data[(233.84*u.GHz<bgspectra.xarr).value &
-                       (bgspectra.xarr>234.036*u.GHz).value] = np.nan
-        bgspectra.data[(230.00*u.GHz<bgspectra.xarr).value &
-                       (bgspectra.xarr>230.523*u.GHz).value] = np.nan
+                                       for ii in range(4)])
+        bgspectra.data[bad_1 | bad_2 | bad_3] = np.nan
         bg = True
     else:
         bg = False
@@ -62,19 +66,16 @@ def spectral_overlays(fn, name, freq_name_mapping, frequencies, yoffset,
     fig.clf()
 
     for spwnum,sp in enumerate(spectra):
-        if spwnum == 3:
-            # flag out the middle section where apparently many antennae have been flagged
-            sp.data[1600:1984] = np.nan
-        elif spwnum == 2:
-            # ignore 12CO if it's brightest: it's never representative
-            # (and it probably screws up the plot scale if it's around)
-            sp.data[:200] = np.nan
+        bad_1 = (233.74*u.GHz<sp.xarr.to(u.GHz)) & (sp.xarr.to(u.GHz)<234.036*u.GHz)
+        bad_2 = (230.00*u.GHz<sp.xarr.to(u.GHz)) & (sp.xarr.to(u.GHz)<230.523*u.GHz)
+        bad_3 = (sp.xarr.to(u.GHz) < 218.11*u.GHz)
+        sp.data[bad_1 | bad_2 | bad_3] = np.nan
         
         # temporary hack for bad data
         if bg and all(bgspectra[spwnum].data == 0):
             bg = False
 
-        (cont, peak, peakfreq, bestmatch, peakvelo, velo_OK,
+        (cont, peak, peakfreq, peakfreq_shifted, bestmatch, peakvelo, velo_OK,
          peakspecies, argmax) = quick_analyze(sp, freq_name_mapping, minvelo, maxvelo)
 
         object_data_dict['continuum20pct'] = cont
@@ -85,8 +86,10 @@ def spectral_overlays(fn, name, freq_name_mapping, frequencies, yoffset,
         object_data_dict['peak{0}'.format(spwnum)] = (peak if velo_OK else np.nan)*u.Jy/u.beam
 
         if bg:
-            (bgcont, bgpeak, bgpeakfreq, bgbestmatch, bgpeakvelo, bgvelo_OK,
-             bgpeakspecies, bgargmax) = quick_analyze(bgspectra[spwnum], freq_name_mapping, minvelo, maxvelo)
+            (bgcont, bgpeak, bgpeakfreq, bgpeakfreq_shifted, bgbestmatch,
+             bgpeakvelo, bgvelo_OK, bgpeakspecies,
+             bgargmax) = quick_analyze(bgspectra[spwnum], freq_name_mapping,
+                                       minvelo, maxvelo)
             object_data_dict['bgpeak{0}freq'.format(spwnum)] = bgpeakfreq
 
             object_data_dict['bgpeak{0}velo'.format(spwnum)] = bgpeakvelo if bgvelo_OK else np.nan*u.km/u.s
@@ -153,4 +156,7 @@ def spectral_overlays(fn, name, freq_name_mapping, frequencies, yoffset,
     fig.savefig(paths.fpath("spectral_overlays/{name}_overlaid_spectra{suffix}.png".format(name=name, suffix=suffix)),
                 bbox_inches='tight')
 
-    return object_data_dict
+    if return_spectra:
+        return object_data_dict, spectra
+    else:
+        return object_data_dict

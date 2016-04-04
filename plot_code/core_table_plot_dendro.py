@@ -169,7 +169,7 @@ beam_area = u.Quantity(np.array(dendro_merge['beam_area']), u.sr)
 jy_to_k = (1*u.Jy).to(u.K, u.brightness_temperature(beam_area,
                                                     220*u.GHz)).mean()
 
-m20kconv = dendro_merge.meta['keywords']['mass_conversion_factor']['value']
+m20kconv = float(dendro_merge.meta['keywords']['mass_conversion_factor']['value'].split()[1])
 def m20ktickfunc(x):
     return ["{0:0.0f}".format(y*m20kconv) for y in x]
 
@@ -257,30 +257,31 @@ fig3.savefig(paths.fpath('coreplots/dendro_peakTB_vs_continuum.png'))
 
 
 
-#fig4 = pl.figure(4)
-#fig4.clf()
-#ax5 = fig4.gca()
-#ax5.plot(cores_merge['peak_cont_mass'], cores_merge['T_corrected_mass'], 's')
-#ylims = ax5.get_ylim()
-#ax5.plot([0,20], [0,20], 'k--')
-#ax5.set_ylim(ylims)
-#ax5.set_xlabel("Mass at 20K [M$_\\odot$]")
-#ax5.set_ylabel("Mass at peak $T_B$ [M$_\\odot$]")
-#fig4.savefig(paths.fpath('coreplots/mass20K_vs_massTB.png'))
-#
-#fig2 = pl.figure(2)
-#fig2.clf()
-#ax2 = fig2.gca()
-#
-#coords = coordinates.SkyCoord(core_phot_tbl['RA'], core_phot_tbl['Dec'],
-#                              frame='fk5').galactic
-#ax2.plot(coords.l, coords.b, '.')
-#ax2.set_xlim(*ax2.get_xlim()[::-1])
-#ax2.set_ylabel('Galactic Latitude')
-#ax2.set_xlabel('Galactic Longitude')
-#ax2.set_aspect(1)
-#fig2.savefig(paths.fpath('core_spatial_distribution.png'))
-#
-#
-#pl.draw()
-#pl.show()
+fig4 = pl.figure(4)
+fig4.clf()
+ax5 = fig4.gca()
+ax5.plot(dendro_merge['peak_cont_mass'], dendro_merge['T_corrected_mass'], 's')
+ylims = ax5.get_ylim()
+ax5.plot([0,20], [0,20], 'k--')
+ax5.set_ylim(ylims)
+ax5.set_xlabel("Mass at 20K [M$_\\odot$]")
+ax5.set_ylabel("Mass at peak $T_B$ [M$_\\odot$]")
+fig4.savefig(paths.fpath('coreplots/dendro_mass20K_vs_massTB.png'))
+
+fig2 = pl.figure(2)
+fig2.clf()
+ax2 = fig2.gca()
+
+coords = coordinates.SkyCoord(dendro_merge['x_cen'].data, dendro_merge['y_cen'].data,
+                              unit=(u.deg, u.deg),
+                              frame='fk5').galactic
+ax2.plot(coords.l, coords.b, '.')
+ax2.set_xlim(*ax2.get_xlim()[::-1])
+ax2.set_ylabel('Galactic Latitude')
+ax2.set_xlabel('Galactic Longitude')
+ax2.set_aspect(1)
+fig2.savefig(paths.fpath('coreplots/dendro_core_spatial_distribution.png'))
+
+
+pl.draw()
+pl.show()

@@ -13,6 +13,7 @@ e2_green_fits = '/Users/adam/work/w51/alma/cycle3goddi/W51e2.cont.image.pbcor.fi
 north_green_fits = '/Users/adam/work/w51/alma/cycle3goddi/W51n.cont.image.pbcor.fits'
 blue_fits_fn = '/Users/adam/work/w51/alma/FITS/moments/w51_12co2-1_blue0to45_masked.fits'
 red_fits_fn = '/Users/adam/work/w51/alma/FITS/moments/w51_12co2-1_red73to130_masked.fits'
+#h77a
 
 red_fits = fits.open(red_fits_fn)
 blue_fits = fits.open(blue_fits_fn)

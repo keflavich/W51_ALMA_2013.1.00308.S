@@ -26,11 +26,12 @@ peak_line_brightness = (peak_line_flux*u.Jy).to(u.K, u.brightness_temperature(u.
                                                                               220*u.GHz))
 dendro_merge.add_column(Column(peak_line_brightness, name='PeakLineBrightness'))
 
-temperature_corrected_mass = Column([(masscalc.mass_conversion_factor(20).to(u.M_sun).value if
-                                      np.isnan(row['PeakLineBrightness']) else
-                                      masscalc.mass_conversion_factor(row['PeakLineBrightness']).to(u.M_sun).value)
-                                     * row['peak_cont_flux'] for row in dendro_merge],
-                                    name='T_corrected_mass', unit=u.M_sun)
+tcm = Column([(masscalc.mass_conversion_factor(20).to(u.M_sun).value if
+               np.isnan(row['PeakLineBrightness']) else
+               masscalc.mass_conversion_factor(TK=row['PeakLineBrightness']).to(u.M_sun).value)
+              * row['peak_cont_flux'] for row in dendro_merge],
+             name='T_corrected_mass', unit=u.M_sun)
+temperature_corrected_mass = tcm
 dendro_merge.add_column(temperature_corrected_mass)
 
 columns = ['SourceID',
