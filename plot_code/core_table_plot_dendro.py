@@ -5,6 +5,10 @@ from astropy import units as u
 from astropy import coordinates
 import powerlaw
 import pylab as pl
+
+# can take time:
+from volume_integrals import mass_scalings
+
 pl.matplotlib.rc_file('pubfiguresrc')
 
 #pruned_ppcat = Table.read(paths.tpath("dendrogram_continuum_catalog.ipac"), format='ascii.ipac')
@@ -184,10 +188,10 @@ ax5 = fig4.gca()
 ax5.plot(dendro_merge['cont_flux0p4arcsec']-dendro_merge['cont_flux0p2arcsec'],
          dendro_merge['peak_cont_flux'], 'ks', label='')
 # R1=2 R0 -> V1/V0 = 7
-ax5.plot(np.array([0, 1.5])*15, [0, 1.5], 'b--', label='Constant density', zorder=-10)
-ax5.plot(np.array([0, 1.5])*7., [0, 1.5], 'b:', label='$\\rho\\propto R^{-1}$', zorder=-10)
-ax5.plot(np.array([0, 1.5])*3., [0, 1.5], 'b-.', label='$\\rho\\propto R^{-2}$', zorder=-10)
-ax5.plot(np.array([0, 1.5]), [0, 1.5], 'b-', alpha=0.5, label='$\\rho\\propto R^{-3}$', zorder=-10)
+ax5.plot(np.array([0, 1.5]), np.array([0, 1.5])*mass_scalings['2-1to1-0'][0][0], 'b--', label='Constant density', zorder=-10)
+ax5.plot(np.array([0, 1.5]), np.array([0, 1.5])*mass_scalings['2-1to1-0'][1][0], 'b:', label='$\\rho\\propto R^{-1}$', zorder=-10)
+ax5.plot(np.array([0, 1.5]), np.array([0, 1.5])*mass_scalings['2-1to1-0'][2][0], 'b-.', label='$\\rho\\propto R^{-2}$', zorder=-10)
+ax5.plot(np.array([0, 1.5]), np.array([0, 1.5])*mass_scalings['2-1to1-0'][3][0], 'b-', alpha=0.5, label='$\\rho\\propto R^{-3}$', zorder=-10)
 ax5.set_ylabel("Peak continuum flux density (Jy/beam)")
 ax5.set_xlabel("Background $1000 \\rm{AU} < r < 2000 \\rm{AU}$ continuum flux density (Jy)")
 pl.legend(loc='best', prop={'size':16})
@@ -217,10 +221,10 @@ ax5 = fig4.gca()
 ax5.plot(dendro_merge['cont_flux0p6arcsec']-dendro_merge['cont_flux0p4arcsec'],
          dendro_merge['cont_flux0p4arcsec']-dendro_merge['cont_flux0p2arcsec'], 'ks', label='')
 # R1=2 R0 -> V1/V0 = 7
-ax5.plot(np.array([0, 1.5])*4.3333, [0, 1.5], 'b--', label='Constant density', zorder=-10)
-ax5.plot(np.array([0, 1.5])*2.7143, [0, 1.5], 'b:', label='$\\rho\\propto R^{-1}$', zorder=-10)
-ax5.plot(np.array([0, 1.5])*1.6666, [0, 1.5], 'b-.', label='$\\rho\\propto R^{-2}$', zorder=-10)
-ax5.plot(np.array([0, 1.5])*1.0000, [0, 1.5], 'b-', alpha=0.5, label='$\\rho\\propto R^{-3}$', zorder=-10)
+ax5.plot(np.array([0, 1.5]), np.array([0, 1.5])*mass_scalings['3-2to2-1'][0][0], 'b--', label='Constant density', zorder=-10)
+ax5.plot(np.array([0, 1.5]), np.array([0, 1.5])*mass_scalings['3-2to2-1'][1][0], 'b:', label='$\\rho\\propto R^{-1}$', zorder=-10)
+ax5.plot(np.array([0, 1.5]), np.array([0, 1.5])*mass_scalings['3-2to2-1'][2][0], 'b-.', label='$\\rho\\propto R^{-2}$', zorder=-10)
+ax5.plot(np.array([0, 1.5]), np.array([0, 1.5])*mass_scalings['3-2to2-1'][3][0], 'b-', alpha=0.5, label='$\\rho\\propto R^{-3}$', zorder=-10)
 ax5.set_ylabel("Background $1000 \\rm{AU} < r < 2000 \\rm{AU}$ continuum flux density (Jy)")
 ax5.set_xlabel("Background $2000 \\rm{AU} < r < 3000 \\rm{AU}$ continuum flux density (Jy)")
 pl.legend(loc='best', prop={'size':16})
