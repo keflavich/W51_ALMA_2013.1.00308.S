@@ -112,3 +112,86 @@ print("r2=2r1=4r0.  alpha={alpha}.  M(R2) = {0}, M(R1) = {1}, M(R0) = {2}  "
               alpha=alpha
              )
      )
+
+"""
+Do some correct integrals to determine how much of the outer envelope flux is
+included in the inner aperture.  These should effectively be infinite integrals
+over a cylinder, so there's not really much point in doing the spherical caps
+(oops).
+"""
+
+def cyl_integral(function, sphere_radius, cyl_radius, args):
+    """
+    Try to do a cylindrical integral of a function
+    """
+    from scipy.integrate import tplquad
+
+    assert sphere_radius > cyl_radius
+
+    # x bounds
+    qfun = lambda y,z: 0
+    rfun = lambda y,z: 2*np.pi
+
+    # y bounds
+    gfun = lambda y: 0
+    hfun = lambda y: cyl_radius
+
+    # z bounds
+    if cyl_radius > sphere_radius:
+        # in the case that we want to integrate out to infinity....
+        H = cyl_radius
+    else:
+        H = (sphere_radius**2 - cyl_radius**2)**0.5
+        assert H > 0
+
+    llim_a = -H/2
+    ulim_b = H/2
+
+    return tplquad(function, a=llim_a, b=ulim_b, gfun=gfun, hfun=hfun,
+                   qfun=qfun, rfun=rfun, args=args)
+
+def sph_integral(function, sphere_radius, args):
+    """
+    Try to do a spherical integral of a function
+    """
+    from scipy.integrate import tplquad
+
+    # x bounds
+    qfun = lambda y,z: 0
+    rfun = lambda y,z: sphere_radius
+
+    # y bounds
+    gfun = lambda y: 0
+    hfun = lambda y: np.pi
+
+    # z bounds
+    llim_a = 0
+    ulim_b = 2*np.pi
+
+    def f(r,th,ph):
+        return function(r,th,ph,*args) * r**2 * np.sin(th)
+
+    return tplquad(f, a=llim_a, b=ulim_b, gfun=gfun, hfun=hfun,
+                   qfun=qfun, rfun=rfun)
+
+def rho(radius, theta, z, alpha=1, r0=1):
+    if radius < r0:
+        return 1
+    else:
+        return (radius/r0)**-alpha
+
+def sphcapint(function, sphere_radius, cyl_radius, args):
+
+    from scipy.integrate import quad
+
+    def f(x, args):
+        return (sphere_radius**2-x**2)*function(x, 0, 0, *args)
+
+    H = (sphere_radius**2 - cyl_radius**2)**0.5
+    #h = sphere_radius - H
+    assert H > 1,"why integrate if density constant?"
+    assert f(0, args) > 0
+    assert f(H, args) > 0
+    #assert f(sphere_radius, args) > f(H, args)
+
+    return np.pi*quad(f, H, sphere_radius, args=(args,))[0]
