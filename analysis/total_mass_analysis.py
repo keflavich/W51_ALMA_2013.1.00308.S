@@ -46,7 +46,15 @@ total_signal = data[definitely_signal].sum() / ppbeam
 print("Total flux: {0}".format(total_signal))
 print("Total mass(20K): {0}".format(total_signal * masscalc.mass_conversion_factor()*u.M_sun/u.Jy))
 print("Threshold column (20K): {0:e}".format(threshold_column))
-
+flux_of_filament = 132*u.Jy/u.beam/ppbeam
+print("Total *filament* mass(20K): {0}".format(flux_of_filament * masscalc.mass_conversion_factor()*u.M_sun/u.Jy))
+print("Total *filament* mass(100K): {0}".format(flux_of_filament * masscalc.mass_conversion_factor(TK=100)*u.M_sun/u.Jy))
+print("Filament line mass: {0}".format(flux_of_filament *
+                                       masscalc.mass_conversion_factor() *
+                                       u.M_sun/u.Jy /
+                                       (0.0027*u.deg*masscalc.distance).to(u.pc, u.dimensionless_angles())
+                                      )
+     )
 
 dendro_merge = Table.read(paths.tpath('dendro_merge_continuum_and_line.ipac'), format='ascii.ipac')
 corelike = dendro_merge['corelike'] == 'True'

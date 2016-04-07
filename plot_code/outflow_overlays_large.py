@@ -72,6 +72,20 @@ F.show_contour('../../alma/FITS/12m/selfcal_spw3_selfcal_4ampphase_mfs_tclean_de
 F.save(paths.fpath("NACO_green_outflows_aplpy_CONTours_hires.png"))
 F.save(paths.fpath("NACO_green_outflows_aplpy_CONTours_hires.pdf"))
 
+
+
+h77a = SpectralCube.read(paths.vpath('data/W51north_H77_Outflow_cutout.fits'))
+h77a_outflow = h77a.spectral_slab(-16*u.km/u.s, -60*u.km/u.s).sum(axis=0)
+h77a_green = paths.dpath('W51_H77a_LacyJetOutflow_Sum.fits')
+h77a_outflow.hdu.writeto(h77a_green, clobber=True)
+
+F.show_contour(h77a_green, levels=[0.0075, 0.015, 0.030], colors=['b']*6,
+               layer='h77a_outflow')
+F.save(paths.fpath("NACO_green_outflows_aplpy_CONTours_hires_h77acontour.png"))
+F.save(paths.fpath("NACO_green_outflows_aplpy_CONTours_hires_h77acontour.pdf"))
+
+
+F.hide_layer('h77a_outflow')
 F.hide_layer('alma_cont_hires')
 
 
@@ -84,12 +98,6 @@ F.show_contour('../../alma/cycle3goddi/W51n.cont.image.pbcor.fits', levels=[0.00
 F.save(paths.fpath("NACO_green_outflows_aplpy_CONTours_cycle3hires.png"))
 F.save(paths.fpath("NACO_green_outflows_aplpy_CONTours_cycle3hires.pdf"))
 
-
-
-h77a = SpectralCube.read(paths.vpath('data/W51north_H77_Outflow_cutout.fits'))
-h77a_outflow = h77a.spectral_slab(-16*u.km/u.s, -60*u.km/u.s).sum(axis=0)
-h77a_green = paths.dpath('W51_H77a_LacyJetOutflow_Sum.fits')
-h77a_outflow.hdu.writeto(h77a_green, clobber=True)
 
 rgb_cube_h77a_fits = 'outflow_co_redblue_h77a_green.fits'
 if not os.path.exists(rgb_cube_h77a_fits):

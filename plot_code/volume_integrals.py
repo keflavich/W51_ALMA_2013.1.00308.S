@@ -166,15 +166,6 @@ def ratio_outer_inner(inner_radii, outer_radii, alpha=1, r0=1):
     outer = outer_1 - outer_0
     return outer/inner, outer, inner
 
-if 'mass_scalings' not in locals():
-    mass_scalings = {'2-1to1-0':
-                     {alpha: ratio_outer_inner((0,1),(1,2), alpha=alpha)
-                      for alpha in (0,1,2,3)},
-                     '3-2to2-1':
-                     {alpha: ratio_outer_inner((1,2),(2,3), alpha=alpha)
-                      for alpha in (0,1,2,3)},
-                    }
-
 def sph_integral(function, sphere_radius, args):
     """
     Try to do a spherical integral of a function
@@ -214,3 +205,66 @@ def sphcapint(function, sphere_radius, cyl_radius, args):
     #assert f(sphere_radius, args) > f(H, args)
 
     return np.pi*quad(f, H, sphere_radius, args=(args,))[0]
+
+
+def trivial_integrals(r_core, alpha, gridsize=100, plummer=False):
+
+    zz,yy,xx = np.indices([gridsize]*3, dtype='float')
+    center = gridsize/2.
+    rr = np.sum([(ii-center)**2 for ii in (xx,yy,zz)], axis=0)**0.5
+
+    if plummer:
+        dens = (1+rr**2/r_core**2)**-2.5
+    else:
+        dens = (rr >= r_core)*(rr/r_core)**-alpha
+        dens[(rr < r_core)] = 1.0
+
+    img = dens.sum(axis=0)
+
+    return img
+
+def ratio_outer_inner(inner_radii, outer_radii, alpha=1, r0=1):
+    """
+    Determine the flux ratio between an aperture integrated in the inner & outer radius
+    """
+    gridsize = 500
+    r_core = 10.
+    img = trivial_integrals(r_core=r_core, alpha=alpha, gridsize=gridsize)
+    yy,xx = np.indices([gridsize]*2, dtype='float')
+    center = gridsize/2.
+    rr = np.sum([(ii-center)**2 for ii in (xx,yy,)], axis=0)**0.5
+
+    inner = img[(rr>=inner_radii[0]*r_core) & (rr<inner_radii[1]*r_core)].sum()
+    outer = img[(rr>=outer_radii[0]*r_core) & (rr<outer_radii[1]*r_core)].sum()
+    return outer/inner, outer, inner
+
+def plummer(r, mtot, a, zh2=2.8, mh=1.66053886e-24):
+    """
+    Return the density given a Plummer profile
+    """
+    rho = 3 * mtot / (4*np.pi*a**3) * (1. + r**2/a**2)**(-2.5)
+    nh2 = rho / (mh*zh2)
+    return nh2
+
+
+if 'mass_scalings' not in locals():
+    from astropy.utils.console import ProgressBar
+    mass_scalings = {'2-1to1-0':
+                     {alpha: ratio_outer_inner((0,1),(1,2), alpha=alpha)
+                      for alpha in ProgressBar((0,1,2,3))},
+                     '3-2to2-1':
+                     {alpha: ratio_outer_inner((1,2),(2,3), alpha=alpha)
+                      for alpha in ProgressBar((0,1,2,3))},
+                    }
+
+"""
+old, integral version
+{'2-1to1-0': {0: (2.0, 50.26548245743669, 25.132741228718345),
+  1: (1.065947700104067, 21.708906086812526, 20.36582665799937),
+  2: (0.6127552207030073, 10.679812076833347, 17.429165376315385),
+  3: (0.3810163398660765, 5.928303633156673, 15.559184772076739)},
+ '3-2to2-1': {0: (1.5, 75.39822368615503, 50.26548245743669),
+  1: (0.9357720656646151, 20.314587892175695, 21.708906086812526),
+  2: (0.5636783713680823, 6.019979077986598, 10.679812076833347),
+  3: (0.32721823156524066, 1.9398490310233178, 5.928303633156673)}}
+"""

@@ -1,3 +1,6 @@
+"""
+REQUIRES aplpy branch my_master_mar2016
+"""
 import numpy as np
 from astropy import units as u
 import os
@@ -8,12 +11,14 @@ from astropy.io import fits
 from astropy.nddata import Cutout2D
 from astropy.coordinates import SkyCoord
 from astropy import wcs
+import paths
 
 e2_green_fits = '/Users/adam/work/w51/alma/cycle3goddi/W51e2.cont.image.pbcor.fits'
 north_green_fits = '/Users/adam/work/w51/alma/cycle3goddi/W51n.cont.image.pbcor.fits'
 blue_fits_fn = '/Users/adam/work/w51/alma/FITS/moments/w51_12co2-1_blue0to45_masked.fits'
 red_fits_fn = '/Users/adam/work/w51/alma/FITS/moments/w51_12co2-1_red73to130_masked.fits'
 #h77a
+h77a_green = paths.dpath('W51_H77a_LacyJetOutflow_Sum.fits')
 
 red_fits = fits.open(red_fits_fn)
 blue_fits = fits.open(blue_fits_fn)
@@ -135,6 +140,11 @@ F.show_contour('../../alma/cycle3goddi/W51n.cont.image.pbcor.fits', levels=[0.00
                colors=['w']*6, layer='alma_cont_cycle3hires')
 F.save(paths.fpath("NACO_green_outflows_aplpy_zoomNorth_cycle3hires.png"))
 F.save(paths.fpath("NACO_green_outflows_aplpy_zoomNorth_cycle3hires.pdf"))
+F.show_contour(h77a_green, levels=[0.0075, 0.015], colors=['b']*6,
+               layer='h77a_outflow')
+F.save(paths.fpath("NACO_green_outflows_aplpy_zoomNorth_cycle3hires_h77acontour.png"))
+F.save(paths.fpath("NACO_green_outflows_aplpy_zoomNorth_cycle3hires_h77acontour.pdf"))
+F.remove_layer('h77a_outflow')
 
 rgb_cube_naco_png_fullstretch = rgb_cube_naco_fits[:-5]+"_asinhgreen_fullstretch_ALMAmm31.png"
 rgb_im = aplpy.make_rgb_image(data=rgb_cube_naco_fits,
