@@ -117,6 +117,24 @@ def ch3cn_fitter():
 
 pyspeckit.spectrum.fitters.default_Registry.add_fitter('ch3cn',ch3cn_fitter(),4)
 
+def ch3cn_absorption_fitter():
+    """
+    Generator for CH3CN absorption fitter class
+    """
+
+    myclass = model.SpectralModel(ch3cn_model, 5,
+            parnames=['shift','width','tex','column','background'],
+            parlimited=[(False,False),(True,False),(True,False),(True,False),(True,False)],
+            parlimits=[(0,0), (0,0), (0,0),(0,0),(0,0)],
+            shortvarnames=(r'\Delta x',r'\sigma','T_{ex}','N','T_{BG}'),
+            centroid_par='shift',
+            )
+    myclass.__name__ = "ch3cn_absorption"
+    
+    return myclass
+
+pyspeckit.spectrum.fitters.default_Registry.add_fitter('ch3cn_absorption',ch3cn_absorption_fitter(),5)
+
 
 if __name__ == "__main__":
     cube = SpectralCube.read('../FITS/longbaseline/W51e2e_CH3CN_cutout.fits')

@@ -345,6 +345,80 @@ exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwr
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 
+myimagebase = "merge_selfcal_allspw_selfcal_3_mfs_deeper_r0.0"
+os.system('rm -rf {0}.*'.format(myimagebase))
+tclean(vis=vis3, imagename=myimagebase, field="", spw="", specmode='mfs',
+       deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
+       scales=multiscale,
+       pblimit=0.4, interpolation='linear',
+       interactive=False, niter=50000,
+       threshold='5mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
+       mask='clean_50mJy.mask',
+       weighting='briggs', savemodel='modelcolumn', robust=0.0)
+exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+
+
+myimagebase = "merge_selfcal_allspw_selfcal_3_mfs_deeper_r2.0"
+os.system('rm -rf {0}.*'.format(myimagebase))
+tclean(vis=vis3, imagename=myimagebase, field="", spw="", specmode='mfs',
+       deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
+       scales=multiscale,
+       pblimit=0.4, interpolation='linear',
+       interactive=False, niter=50000,
+       threshold='5mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
+       mask='clean_50mJy.mask',
+       weighting='briggs', savemodel='modelcolumn', robust=2.0)
+exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+
+
+myimagebase = "merge_selfcal_allspw_selfcal_3_mfs_deeper_taper_r0"
+os.system('rm -rf {0}.*'.format(myimagebase))
+tclean(vis=vis3, imagename=myimagebase, field="", spw="", specmode='mfs',
+       deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
+       scales=multiscale,
+       pblimit=0.4, interpolation='linear',
+       interactive=False, niter=50000,
+       threshold='5mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
+       mask='clean_50mJy.mask',
+       uvrange='0~335m',
+       weighting='briggs', savemodel='modelcolumn', robust=0.0)
+exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+
+
+myimagebase = "merge_selfcal_allspw_selfcal_3_mfs_deeper_taper_longonly_r0"
+os.system('rm -rf {0}.*'.format(myimagebase))
+tclean(vis=vis3, imagename=myimagebase, field="", spw="", specmode='mfs',
+       deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
+       scales=[0],
+       pblimit=0.4, interpolation='linear',
+       interactive=False, niter=50000,
+       threshold='5mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
+       mask='clean_50mJy.mask',
+       uvrange='335~5000m',
+       weighting='briggs', savemodel='modelcolumn', robust=0.0)
+exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+
+
 image2 = 'merge_selfcal_allspw_selfcal_3_mfs_deeper.image'
 ia.open(image2)
 ia.calcmask(mask=image2+" > 0.01", name='clean_mask_10mJy')

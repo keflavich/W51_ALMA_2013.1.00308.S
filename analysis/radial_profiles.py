@@ -10,6 +10,7 @@ from astropy import units as u
 from astropy import coordinates
 import pylab as pl
 import itertools
+import masscalc
 
 ffiles = """
 selfcal_allspw_mfs.image.pbcor.fits
@@ -42,10 +43,12 @@ nplots = len(names)
 for ii in range(nplots):
     pl.figure(ii).clf()
     pl.figure(nplots+ii).clf()
+    pl.figure(nplots*2+ii).clf()
 
 size = u.Quantity([1.25,1.25], u.arcsec)
 
-linestyles = itertools.cycle(['-']*8 + ['--']*8 + [':']*8)
+linestyles = {name: itertools.cycle(['-'] + ['--'] + [':'] + ['-.'])
+              for name in names}
 
 for fn in ffiles:
     fh = fits.open(paths.dpath("12m/continuum/"+fn))
@@ -71,13 +74,13 @@ for fn in ffiles:
                                                                      binsize=1.0,
                                                                      return_nr=True)
 
-        linestyle = next(linestyles)
+        linestyle = next(linestyles[name])
 
         pl.figure(ii)
         pl.title(name)
-        pl.plot(bins*pixscale*3600., rprof*nr/ppbeam,
+        pl.plot(bins*pixscale*3600., rprof/ppbeam,
                 label=fn.split(".")[0], linestyle=linestyle)
-        pl.ylabel("Azimuthally Summed Flux")
+        pl.ylabel("Azimuthally Averaged Flux (Jy)")
         pl.xlabel("Radius (arcsec)")
 
         cumul_rprof = np.nan_to_num(rprof*nr/ppbeam).cumsum()
@@ -89,14 +92,67 @@ for fn in ffiles:
         pl.ylabel("Cumulative Flux (Jy)")
         pl.xlabel("Radius (arcsec)")
 
-for ii in range(len(names)):
-    for xtra in (0,nplots):
+        pl.figure(nplots*2+ii)
+        pl.title(name)
+        pl.plot(((bins*pixscale*u.deg)*masscalc.distance).to(u.pc,
+                                                             u.dimensionless_angles()),
+                cumul_rprof * masscalc.mass_conversion_factor(),
+                label=fn.split(".")[0], linestyle=linestyle)
+        pl.ylabel("Cumulative Mass (M$_\\odot$, $T=20$ K)")
+        pl.xlabel("Radius (pc)")
+
+for ii in range(nplots):
+    for xtra in (0,nplots*2):
         ax = pl.figure(ii+xtra).gca()
         box = ax.get_position()
         ax.set_position([box.x0, box.y0, box.width * 0.6, box.height])
 
         # Put a legend to the right of the current axis
         ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+pl.figure(nplots*3+1).clf()
+pl.figure(nplots*3+2).clf()
+pl.figure(nplots*3+3).clf()
+fn = "selfcal_allspw_selfcal_3_mfs_deeper.image.pbcor.fits"
+fh = fits.open(paths.dpath("12m/continuum/"+fn))
+mywcs = wcs.WCS(fh[0].header)
+beam = radio_beam.Beam.from_fits_header(fh[0].header)
+pixscale = (mywcs.pixel_scale_matrix.diagonal()**2).sum()**0.5
+ppbeam = (beam.sr/(pixscale**2*u.deg**2)).decompose().value / u.beam
+for ii,(name,position) in enumerate(zip(names, center_positions)):
+    cutout = Cutout2D(fh[0].data, position, size, wcs=mywcs)
+
+    nr, bins, rprof = image_tools.radialprofile.azimuthalAverage(cutout.data,
+                                                                 binsize=1.0,
+                                                                 return_nr=True)
+
+    pl.figure(nplots*3+1)
+    pl.title(fn.replace(".image.pbcor.fits",""))
+    pl.plot(bins*pixscale*3600., rprof/ppbeam,
+            label=name)
+    pl.ylabel("Azimuthally Averaged Flux (Jy)")
+    pl.xlabel("Radius (arcsec)")
+    pl.legend(loc='best')
+
+    cumul_rprof = np.nan_to_num(rprof*nr/ppbeam).cumsum()
+
+    pl.figure(nplots*3+2)
+    pl.title(fn.replace(".image.pbcor.fits",""))
+    pl.plot(bins*pixscale*3600., cumul_rprof,
+            label=name)
+    pl.ylabel("Cumulative Flux (Jy)")
+    pl.xlabel("Radius (arcsec)")
+    pl.legend(loc='best')
+
+    pl.figure(nplots*3+3)
+    pl.title(fn.replace(".image.pbcor.fits",""))
+    pl.plot(((bins*pixscale*u.deg)*masscalc.distance).to(u.pc,
+                                                         u.dimensionless_angles()),
+            cumul_rprof * masscalc.mass_conversion_factor(),
+            label=name)
+    pl.ylabel("Cumulative Mass (M$_\\odot$, $T=20$ K)")
+    pl.xlabel("Radius (pc)")
+    pl.legend(loc='best')
 
 pl.draw()
 pl.show()

@@ -68,8 +68,8 @@ for corereg in cores:
     fn = "{name}_spw{ii}_mean.fits"
     spectra = pyspeckit.Spectra([paths.spath(fn.format(name=name, ii=ii))
                                  for ii in range(4)])
-    spectra.data[(233.84*u.GHz<spectra.xarr).value & (spectra.xarr>234.036*u.GHz).value] = np.nan
-    spectra.data[(230.00*u.GHz<spectra.xarr).value & (spectra.xarr>230.523*u.GHz).value] = np.nan
+    spectra.data[(233.84*u.GHz<spectra.xarr) & (spectra.xarr>234.036*u.GHz)] = np.nan
+    spectra.data[(230.00*u.GHz<spectra.xarr) & (spectra.xarr>230.523*u.GHz)] = np.nan
     scaling = np.nanmax(spectra.data) - np.nanpercentile(spectra.data, 20)
     print("Scaling for {fn} = {scaling}".format(fn=fn.format(name=name, ii=0), scaling=scaling))
 
