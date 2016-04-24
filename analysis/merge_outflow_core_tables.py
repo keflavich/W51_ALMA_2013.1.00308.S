@@ -22,9 +22,9 @@ cores_merge.add_column(Column(brightest_line_name, name='PeakLineSpecies'))
 peak_line_brightness = (peak_line_flux*u.Jy).to(u.K, u.brightness_temperature(cores_merge['beam_area'], 220*u.GHz))
 cores_merge.add_column(Column(peak_line_brightness, name='PeakLineBrightness'))
 
-temperature_corrected_mass = Column([(masscalc.mass_conversion_factor(20)
+temperature_corrected_mass = Column([(masscalc.mass_conversion_factor(20).value
                                       if np.isnan(row['PeakLineBrightness'])
-                                      else masscalc.mass_conversion_factor(row['PeakLineBrightness']))
+                                      else masscalc.mass_conversion_factor(row['PeakLineBrightness'])).value
                                      * row['peak'] for row in cores_merge],
                                     name='T_corrected_mass',
                                     unit=u.M_sun)

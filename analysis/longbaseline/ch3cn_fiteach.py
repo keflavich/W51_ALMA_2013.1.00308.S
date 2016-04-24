@@ -18,6 +18,8 @@ err = cubeK.std(axis=0)
 err[:] = 5*u.K
 peak = (cubeK).max(axis=0)
 mask = (peak > 200*u.K)# & (peak > 6*err)
+absorption_mask = cubeK.min(axis=0) < -150*u.K
+mask = mask & (~absorption_mask)
 
 pcube = pyspeckit.Cube(cube=cubeK[:400,:,:]) # crop out k=0,1
 
@@ -44,15 +46,17 @@ pcube.fiteach(fittype='ch3cn', guesses=guesses, integral=False,
               verbose_level=3, start_from_point=start_point,
               use_neighbor_as_guess=True, position_order=position_order,
               limitedmax=[T,T,T,T],
+              limitedmin=[T,T,T,T],
               maxpars=[100,5,1500,1e18],
               minpars=[0,0.1,50,1e13],
               signal_cut=0,
               maskmap=mask,
               errmap=err.value, multicore=4)
-pcube.write_fit('e2e_CH3CN_Emission_fits.fits')
+pcube.write_fit('e2e_CH3CN_Emission_fits.fits', clobber=True)
 
-absorption_mask = cubeK.min(axis=0) < -150*u.K
-background_guess = med
+min_background = 100
+background_guess = med.value
+background_guess[background_guess < min_background] = min_background
 guesses = np.empty((5,)+cube.shape[1:], dtype='float')
 guesses[0,:] = 62
 guesses[1,:] = 2
@@ -64,6 +68,11 @@ guesses[4,:] = background_guess
 # trace the disk
 pcube_cont = pyspeckit.Cube(cube=contcubeK[:400,:,:])
 start_point = (71,66)#np.unravel_index(np.nanargmax(peak*mask), peak.shape)
+sp = pcube_cont.get_spectrum(71,66)
+sp.specfit(fittype='ch3cn_absorption', guesses=guesses[:,66,71],
+           limitedmax=[T,T,T,T,T], limitedmin=[T,T,T,T,T],
+           maxpars=[100,5,1500,1e18,10000],
+           minpars=[0,0.1,50,1e13,100],)
 
 pcube_cont.fiteach(fittype='ch3cn_absorption', guesses=guesses, integral=False,
                    verbose_level=3, start_from_point=start_point,
@@ -71,11 +80,11 @@ pcube_cont.fiteach(fittype='ch3cn_absorption', guesses=guesses, integral=False,
                    limitedmax=[T,T,T,T,T],
                    limitedmin=[T,T,T,T,T],
                    maxpars=[70,5,1500,1e18,10000],
-                   minpars=[40,0.1,50,1e13,200],
+                   minpars=[40,0.1,50,1e13,min_background],
                    signal_cut=0,
                    maskmap=absorption_mask,
                    errmap=err.value, multicore=4)
-pcube_cont.write_fit('e2e_CH3CN_Absorption_fits.fits')
+pcube_cont.write_fit('e2e_CH3CN_Absorption_fits.fits', clobber=True)
 
 from kinematic_analysis_pv_LB import diskycoords, outflowpath
 import pvextractor

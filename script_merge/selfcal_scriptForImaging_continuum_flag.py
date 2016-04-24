@@ -408,7 +408,7 @@ tclean(vis=vis3, imagename=myimagebase, field="", spw="", specmode='mfs',
        pblimit=0.4, interpolation='linear',
        interactive=False, niter=50000,
        threshold='5mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
-       mask='clean_50mJy.mask',
+       #mask='clean_50mJy.mask',
        uvrange='335~5000m',
        weighting='briggs', savemodel='modelcolumn', robust=0.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)

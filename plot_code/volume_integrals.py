@@ -154,17 +154,17 @@ def cyl_integral(function, cyl_radius, height, args):
     return tplquad(function, a=llim_a, b=ulim_b, gfun=gfun, hfun=hfun,
                    qfun=qfun, rfun=rfun, args=args)
 
-def ratio_outer_inner(inner_radii, outer_radii, alpha=1, r0=1):
-    """
-    Determine the flux ratio between an aperture integrated in the inner & outer radius
-    """
-    inner_1 = cyl_integral(rho_cyl, inner_radii[1], inner_radii[1]*2, (alpha, r0))[0]
-    inner_0 = cyl_integral(rho_cyl, inner_radii[0], inner_radii[1]*2, (alpha, r0))[0]
-    inner = inner_1 - inner_0
-    outer_1 = cyl_integral(rho_cyl, outer_radii[1], outer_radii[1]*2, (alpha, r0))[0]
-    outer_0 = cyl_integral(rho_cyl, outer_radii[0], outer_radii[1]*2, (alpha, r0))[0]
-    outer = outer_1 - outer_0
-    return outer/inner, outer, inner
+#def ratio_outer_inner(inner_radii, outer_radii, alpha=1, r0=1):
+#    """
+#    Determine the flux ratio between an aperture integrated in the inner & outer radius
+#    """
+#    inner_1 = cyl_integral(rho_cyl, inner_radii[1], inner_radii[1]*2, (alpha, r0))[0]
+#    inner_0 = cyl_integral(rho_cyl, inner_radii[0], inner_radii[1]*2, (alpha, r0))[0]
+#    inner = inner_1 - inner_0
+#    outer_1 = cyl_integral(rho_cyl, outer_radii[1], outer_radii[1]*2, (alpha, r0))[0]
+#    outer_0 = cyl_integral(rho_cyl, outer_radii[0], outer_radii[1]*2, (alpha, r0))[0]
+#    outer = outer_1 - outer_0
+#    return outer/inner, outer, inner
 
 def sph_integral(function, sphere_radius, args):
     """
@@ -207,7 +207,7 @@ def sphcapint(function, sphere_radius, cyl_radius, args):
     return np.pi*quad(f, H, sphere_radius, args=(args,))[0]
 
 
-def trivial_integrals(r_core, alpha, gridsize=100, plummer=False):
+def gridded_integrals(r_core, alpha, gridsize=100, plummer=False):
 
     zz,yy,xx = np.indices([gridsize]*3, dtype='float')
     center = gridsize/2.
@@ -229,7 +229,7 @@ def ratio_outer_inner(inner_radii, outer_radii, alpha=1, r0=1):
     """
     gridsize = 500
     r_core = 10.
-    img = trivial_integrals(r_core=r_core, alpha=alpha, gridsize=gridsize)
+    img = gridded_integrals(r_core=r_core, alpha=alpha, gridsize=gridsize)
     yy,xx = np.indices([gridsize]*2, dtype='float')
     center = gridsize/2.
     rr = np.sum([(ii-center)**2 for ii in (xx,yy,)], axis=0)**0.5
