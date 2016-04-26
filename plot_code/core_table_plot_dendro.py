@@ -133,6 +133,45 @@ fig2.savefig(paths.fpath('coreplots/dendro_tcorr_mass_powerlaw_histogram_fit.png
 
 print("Fit parameters: alpha={0}".format(fit.power_law.alpha))
 
+
+
+fig2 = pl.figure(2)
+fig2.clf()
+#ax = fig2.gca()
+
+for ii,aperture in enumerate(('0p2', '0p4', '0p6', '0p8', '1p0', '1p5')):
+    flux = (dendro_merge['cont_flux{0}arcsec'.format(aperture)] -
+            dendro_merge['KUbandcont_flux{0}arcsec'.format(aperture)])
+    ff = (dendro_merge['KUbandcont_flux{0}arcsec'.format(aperture)] /
+          dendro_merge['cont_flux{0}arcsec'.format(aperture)]) > 0.5
+
+    ax = pl.subplot(6,1,ii+1)
+    ax.set_ylabel("${0}''$".format(aperture.replace("p",".")))
+    H,L,P = ax.hist(flux[~ff], bins=np.logspace(-3,1.05, 20),
+                    #facecolor='none',
+                    #alpha=0.5,
+                    histtype='step',
+                    label=aperture)
+    if ii < 5:
+        ax.set_xticklabels([])
+        ax.get_xaxis().set_visible(False)
+
+    max_yticks=3
+    yloc = pl.MaxNLocator(max_yticks)
+    ax.yaxis.set_major_locator(yloc)
+
+    ax.set_xscale('log')
+    ax.set_xlim(0.002, 15)
+ax.set_xlabel("Flux (Jy)")
+pl.subplots_adjust(hspace=0)
+pl.savefig(paths.fpath("core_flux_histogram_apertureradius.png"))
+#pl.legend(loc='best')
+
+
+
+
+
+
 fig2 = pl.figure(2)
 fig2.clf()
 ax3 = fig2.add_subplot(111)
