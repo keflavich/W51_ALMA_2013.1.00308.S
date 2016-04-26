@@ -257,6 +257,27 @@ if 'mass_scalings' not in locals():
                       for alpha in ProgressBar((0,1,2,3))},
                     }
 
+if __name__ == "__main__":
+
+    pl.matplotlib.rc_file('pubfiguresrc')
+    pl.figure(1).clf()
+    for r_core in (1,5,10):
+        for alpha in (0,1,2,3,'plummer'):
+            if alpha == 'plummer':
+                synthim = gridded_integrals(r_core, 0, plummer=True)
+                label = 'r={0} plummer'.format(r_core)
+            else:
+                synthim = gridded_integrals(r_core, alpha, plummer=False)
+                label = 'r={0} $\\alpha={1}$'.format(r_core, alpha)
+
+            nr, bins, rprof = image_tools.radialprofile.azimuthalAverage(synthim,
+                                                                         binsize=1.0,
+                                                                         return_nr=True)
+            pl.plot(bins, rprof/np.nanmax(rprof),
+                    label=label, linewidth=r_core % 4,
+                    alpha=0.75)
+    pl.legend(loc='best', fontsize=14)
+
 """
 old, integral version
 {'2-1to1-0': {0: (2.0, 50.26548245743669, 25.132741228718345),

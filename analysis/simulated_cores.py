@@ -91,29 +91,53 @@ def synthetically_image_fitsfile(fitsfilename, base_name,
     assert 'fits' in fitsfilename, "Must have .fits as extension"
     ffile = fits.open(fitsfilename)
     hdr = ffile[0].header
-    assert ffile[0].header['BUNIT'] == 'Jy/beam', "Must have Jy/beam units"
+    assert ffile[0].header['BUNIT'] in ("Jy/beam","Jy/pixel")
+
+    ffile[0].header['CTYPE1'] = 'RA---TAN'
+    ffile[0].header['CTYPE2'] = 'DEC--TAN'
+    ffile[0].header['CRPIX3'] = 1
+    ffile[0].header['CRVAL3'] = 2.33946806e+11
+    ffile[0].header['CUNIT3'] = 'Hz'
+    ffile[0].header['CDELT3'] = 1e9
+    ffile[0].header['CTYPE3'] = 'FREQ'
+    ffile[0].header['CRPIX4'] = 1
+    ffile[0].header['CRVAL4'] = 1
+    ffile[0].header['CUNIT4'] = ''
+    ffile[0].header['CDELT4'] = 1
+    ffile[0].header['CTYPE4'] = 'STOKES'
+    ffile[0].header['RESTFRQ'] = 2.33946806e+11
+    for k in ffile[0].header:
+        if ("PC" == k[:2] or "PV" == k[:2] or k[:3]=="OBS" or k[:3]=='TEL'
+            or k == 'DATE-OBS'):
+            del ffile[0].header[k]
+    ffile[0].header['TELESCOP'] = 'NotReal'
+    if ffile[0].data.ndim == 3:
+        ffile[0].data = ffile[0].data[None,:,:,:]
+    elif ffile[0].data.ndim == 2:
+        ffile[0].data = ffile[0].data[None,None,:,:]
+    ffile.writeto("_"+fitsfilename, clobber=True)
+    hdr = ffile[0].header
 
     sim_image = fitsfilename.replace(".fits",".image")
     # doesn't always work: unreliable = don't use.
     # rmresult = rmtables([sim_image])
     os.system('rm -rf {0}'.format(sim_image))
-    importfits(fitsimage=fitsfilename,
+    importfits(fitsimage="_"+fitsfilename,
                imagename=sim_image,
                overwrite=True,
-               #defaultaxes=True,#['RA---TAN','DEC--TAN','FREQUENCY','STOKES'],
-               #defaultaxesvalues=['2.909234541667E+02deg',
-               #                   '1.451177222222E+01deg',
-               #                   '233.9468GHz','I'],
-               ## 18" = 1.22 lambda/D
-               #beam=["{0}deg".format(18/3600.*distance_scaling),
-               #      "{0}deg".format(18/3600.*distance_scaling),
-               #      "0deg"],
+               defaultaxes=True,#['RA---TAN','DEC--TAN','FREQUENCY','STOKES'],
+               defaultaxesvalues=['{0}deg'.format(hdr['CRVAL1']),
+                                  '{0}deg'.format(hdr['CRVAL2']),
+                                  '{0}GHz'.format(hdr['CRVAL3']),
+                                  'I'],
+               beam=["{0}deg".format(hdr['BMAJ']),
+                     "{0}deg".format(hdr['BMIN']),
+                     "{0}deg".format(hdr['BPA'])],
               )
     print("FITS CDELT1={0}, CDELT2={1}".format(hdr['CDELT1'], hdr['CDELT2']))
     print("image CDELT1={0[value]}{0[unit]}, CDELT2={1[value]}{1[unit]}"
           .format(imhead(imagename=sim_image, mode='get', hdkey='CDELT1'),
-                  imhead(imagename=sim_image, mode='get',
-                         hdkey='CDELT2'),)
+                  imhead(imagename=sim_image, mode='get', hdkey='CDELT2'),)
          )
 
     #imhead(sim_image, mode='put', hdkey='CDELT1', hdvalue={'value':hdr['CDELT1'], 'unit':'deg'})
@@ -130,30 +154,38 @@ def synthetically_image_fitsfile(fitsfilename, base_name,
                overwrite=True)
     hdr = fits.getheader(sim_image+".fits")
     print("CDELT1={0}, CDELT2={1}".format(hdr['CDELT1'], hdr['CDELT2']))
+    print("CTYPE1={0}, CTYPE2={1}".format(hdr['CTYPE1'], hdr['CTYPE2']))
+    print("CTYPE3={0}, CTYPE4={1}".format(hdr['CTYPE3'], hdr['CTYPE4']))
 
     os.system('rm -rf {0}'.format(sim_image))
     # try re-importing (this definitely should not fix any outstanding issues)
-    importfits(fitsimage=fitsfilename,
+    importfits(fitsimage="_"+fitsfilename,
                imagename=sim_image,
                overwrite=True,
                # The beam is OBVIOUSLY AND CORRECTLY in the header.
                # but if you leave this out, CASA complains loudly
-               #beam=["{0}deg".format(18/3600.*distance_scaling),
-               #      "{0}deg".format(18/3600.*distance_scaling),
-               #      "0deg"],
+               beam=["{0}deg".format(hdr['BMAJ']),
+                     "{0}deg".format(hdr['BMIN']),
+                     "{0}deg".format(hdr['BPA'])],
               )
     ia.open(sim_image)
     print("BUNIT: ",ia.summary()['unit'])
     ia.close()
 
     #sm.openfromms("w51_contvis_selfcal_0.ms")
-    sm.openfromms(msfile)
+    result = sm.openfromms(msfile)
+    print("Result of openfromms: {0}".format(result))
     #sm.openfromms("w51_test_onechan.ms")
-    sm.setvp()
+    result = sm.setvp()
+    print("Result of setvp: {0}".format(result))
     success = sm.predict(sim_image)
+    print("Result of predict: {0}".format(success))
+    assert success
     # TODO: get these from ASDM_CALWVR and WEATHER
     success2 = sm.setnoise(mode='tsys-atm', relhum=60.0, pwv='2mm', tatmos=265.0, )
+    print("Result of setnoise: {0}".format(success2))
     success3 = sm.corrupt()
+    print("Result of corrupt: {0}".format(success3))
     sm.done()
     sm.close()
 

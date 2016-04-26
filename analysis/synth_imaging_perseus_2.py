@@ -137,6 +137,8 @@ sm.openfromms("continuum_7m12m_noflag.ms")
 #sm.openfromms("w51_test_onechan.ms")
 sm.setvp()
 success = sm.predict(perseus_casa_image)
+assert success
+raise ValueError("Successs!!!!")
 # TODO: get these from ASDM_CALWVR and WEATHER
 success2 = sm.setnoise(mode='tsys-atm', relhum=60.0, pwv='2mm', tatmos=265.0, )
 success3 = sm.corrupt()
