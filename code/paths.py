@@ -18,6 +18,7 @@ vlapath = os.path.join(os.path.expanduser('~/work/w51/paper_w51_evla/'))
 spectrum_path = os.path.join(root, 'FITS/12m/spectra')
 merge_spectrum_path = os.path.join(root, 'FITS/merge/spectra')
 perseus_synpath = os.path.join(root, 'perseus_synth')
+simulation_path = os.path.join(root, 'simulations')
 
 def path(x, basepath):
     return os.path.join(basepath, x)
@@ -60,3 +61,6 @@ def merge_spath(x, spectrum_path=merge_spectrum_path):
 
 def pspath(x):
     return path(x, perseus_synpath)
+
+def simpath(x):
+    return path(x, simulation_path)

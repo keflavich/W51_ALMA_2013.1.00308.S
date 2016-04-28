@@ -2,6 +2,7 @@ import os
 import numpy as np
 from astropy.convolution import convolve_fft, Gaussian2DKernel
 from astropy.utils.console import ProgressBar
+from astropy import constants
 from astropy import units as u
 from astropy import log
 import paths
@@ -41,11 +42,16 @@ threshold_column = masscalc.dust.colofsnu(nu=masscalc.centerfreq,
                                           snu=threshold*u.beam,
                                           beamomega=beam.sr).to(u.cm**-2,
                                                                 u.dimensionless_angles())
+threshold_density = (masscalc.mass_conversion_factor(20) * 0.01 /
+                     (4/3.*np.pi) /
+                     (beam.sr.value*masscalc.distance**2)**(1.5) /
+                     (2.8*constants.m_p)).to(1/u.cm**3)
 definitely_signal = data > threshold
 total_signal = data[definitely_signal].sum() / ppbeam
 print("Total flux: {0}".format(total_signal))
 print("Total mass(20K): {0}".format(total_signal * masscalc.mass_conversion_factor()*u.M_sun/u.Jy))
 print("Threshold column (20K): {0:e}".format(threshold_column))
+print("Threshold density (20K): {0:e}".format(threshold_density))
 flux_of_filament = 132*u.Jy/u.beam/ppbeam
 print("Total *filament* mass(20K): {0}".format(flux_of_filament * masscalc.mass_conversion_factor()*u.M_sun/u.Jy))
 print("Total *filament* mass(100K): {0}".format(flux_of_filament * masscalc.mass_conversion_factor(TK=100)*u.M_sun/u.Jy))
@@ -73,11 +79,18 @@ bgps_sum = fh[0].data[mask].sum()
 bgps_ppbeam = fh[0].header['PPBEAM']
 bgps_totalflux = bgps_sum/bgps_ppbeam
 print("Total flux (BGPS, 271 GHz): {0}".format(bgps_totalflux))
-bgps_scaled_225 = bgps_totalflux*(masscalc.centerfreq/(271.1*u.GHz))**3.5
+bgps_scaled_225 = bgps_totalflux*(masscalc.centerfreq/(271.4*u.GHz))**3.5
+bgps_scaled_225_4 = bgps_totalflux*(masscalc.centerfreq/(271.4*u.GHz))**4.0
+bgps_scaled_225_3 = bgps_totalflux*(masscalc.centerfreq/(271.4*u.GHz))**3.0
 print("Total flux (BGPS, 225 GHz, alpha=3.5): {0}".format(bgps_scaled_225))
-bgps_totalmass = masscalc.dust.massofsnu(nu=271.1*u.GHz,
+bgps_totalmass = masscalc.dust.massofsnu(nu=271.4*u.GHz,
                                          snu=bgps_totalflux*u.Jy,
                                          distance=masscalc.distance)
 print("Total mass (BGPS, 20K): {0}".format(bgps_totalmass))
-print("Fraction of recovered flux: {0}".format(total_minus_protostars / bgps_scaled_225))
+print("*total* Fraction of recovered flux alpha=3.5: {0}".format(total_signal / bgps_scaled_225))
+print("*total* Fraction of recovered flux alpha=3: {0}".format(total_signal / bgps_scaled_225_3))
+print("*total* Fraction of recovered flux alpha=4: {0}".format(total_signal / bgps_scaled_225_4))
+print("*nonprotostellar* Fraction of recovered flux alpha=3.5: {0}".format(total_minus_protostars / bgps_scaled_225))
+print("*nonprotostellar* Fraction of recovered flux alpha=3: {0}".format(total_minus_protostars / bgps_scaled_225_3))
+print("*nonprotostellar* Fraction of recovered flux alpha=4: {0}".format(total_minus_protostars / bgps_scaled_225_4))
 print("Protostellar fraction: {0}".format(dendro_protostars_pt2 / bgps_scaled_225))

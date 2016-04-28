@@ -101,7 +101,7 @@ for spwnum in '1320':
         end = nchans_per_cube*(ii+1)
         if end > nchans_total_thiscube:
             end = nchans_total_thiscube
-        output = 'piece_of_full_W51_7m12m_cube_hires.spw{0}.channels{1}to{2}'.format(spwnum, start, end)
+        output = 'piece_of_full_W51_7m12m_cube.spw{0}.channels{1}to{2}'.format(spwnum, start, end)
 
         # Channel-based gridding has major bugs when dealing with CVEL'd data
         # It is therefore necessary to compute the frequency gridding by hand
@@ -110,31 +110,31 @@ for spwnum in '1320':
 
 
         # LINE IMAGING (MOSAIC MODE)
-        #if not os.path.exists(output+".image"):
-        print "Imaging {0}".format(output)
-        os.system('rm -rf ' + output + '*')
-        tclean(vis = concatvis,
-              imagename = output,
-              field = '',
-              spw = '', # there should be only one
-              gridder='mosaic',
-              specmode = 'cube',
-              width = width,
-              start = startfreq,
-              nchan = nchans_per_cube,
-              veltype = 'radio',
-              outframe = 'LSRK',
-               deconvolver='clark',
-              interactive = F,
-              niter = 5000,
-              imsize = imsize,
-              cell = cell,
-              weighting = weighting,
-              phasecenter = phasecenter,
-              robust = robust,
-              threshold = threshold,
-              savemodel='none',
-              overwrite=True)
+        if not os.path.exists(output+".image"):
+            print "Imaging {0}".format(output)
+            os.system('rm -rf ' + output + '*')
+            tclean(vis = concatvis,
+                  imagename = output,
+                  field = '',
+                  spw = '', # there should be only one
+                  gridder='mosaic',
+                  specmode = 'cube',
+                  width = width,
+                  start = startfreq,
+                  nchan = nchans_per_cube,
+                  veltype = 'radio',
+                  outframe = 'LSRK',
+                   deconvolver='clark',
+                  interactive = F,
+                  niter = 5000,
+                  imsize = imsize,
+                  cell = cell,
+                  weighting = weighting,
+                  phasecenter = phasecenter,
+                  robust = robust,
+                  threshold = threshold,
+                  savemodel='none',
+                  )
 
           
         myimagebase = output

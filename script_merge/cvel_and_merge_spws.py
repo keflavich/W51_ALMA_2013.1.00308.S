@@ -17,7 +17,7 @@ for spwnum in '1320':
         spw = spws_12m[spwnum]
         for ss in spw.split(","):
             ss = int(ss)
-            cvelvis12m = 'w51_concat.spw{0}.cvel'.format(ss)
+            cvelvis12m = 'w51_12m.spw{0}.cvel'.format(ss)
             cvelvises.append(cvelvis12m)
             if not os.path.exists(cvelvis12m):
                 print("cveling {0}".format(cvelvis12m))
@@ -35,7 +35,7 @@ for spwnum in '1320':
         spw = spws_7m[spwnum]
         for ss in spw.split(","):
             ss = int(ss)
-            cvelvis7m = 'w51_concat_7m.spw{0}.cvel'.format(ss)
+            cvelvis7m = 'w51_7m.spw{0}.cvel'.format(ss)
             cvelvises.append(cvelvis7m)
             if not os.path.exists(cvelvis7m):
                 print("cveling {0}".format(cvelvis7m))

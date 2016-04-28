@@ -11,7 +11,7 @@ import numpy as np
 field='w51'
 phasecenter=''
 cell='.05arcsec' # cell size for imaging.
-imsize = [3192,3192] # size of image in pixels.
+imsize = [3200,3200] # size of image in pixels.
 
 # imaging control
 # ----------------
@@ -61,9 +61,10 @@ for spwnum in '1320':
         spw = spws_12m[spwnum]
         for ss in spw.split(","):
             ss = int(ss)
-            cvelvis12m = 'w51_concat.spw{0}.cvel'.format(ss)
+            cvelvis12m = 'w51_12m.spw{0}.cvel'.format(ss)
             cvelvises.append(cvelvis12m)
-            if not os.path.exists('cvelvis12m'):
+            if not os.path.exists(cvelvis12m):
+                print("cveling {0}".format(cvelvis12m))
                 cvel(vis=finalvis12m,
                      outputvis=cvelvis12m,
                      passall=False, field=field, spw=str(ss), selectdata=True,
@@ -71,14 +72,17 @@ for spwnum in '1320':
                      nchan=nchans_total[spwnum],
                      start='{0}MHz'.format(frange[spwnum][0]),
                      width='{0}kHz'.format(fstep[spwnum]), interpolation='linear',
-                     phasecenter='', restfreq='', outframe='', veltype='radio',
+                     phasecenter='', restfreq='', outframe='LSRK', veltype='radio',
                      hanning=False,)
+            else:
+                print("skipping {0}".format(cvelvis12m))
         spw = spws_7m[spwnum]
         for ss in spw.split(","):
             ss = int(ss)
-            cvelvis7m = 'w51_concat.spw{0}.cvel'.format(ss)
+            cvelvis7m = 'w51_7m.spw{0}.cvel'.format(ss)
             cvelvises.append(cvelvis7m)
-            if not os.path.exists('cvelvis7m'):
+            if not os.path.exists(cvelvis7m):
+                print("cveling {0}".format(cvelvis7m))
                 cvel(vis=finalvis7m,
                      outputvis=cvelvis7m,
                      passall=False, field=field, spw=str(ss), selectdata=True,
@@ -86,8 +90,10 @@ for spwnum in '1320':
                      nchan=nchans_total[spwnum],
                      start='{0}MHz'.format(frange[spwnum][0]),
                      width='{0}kHz'.format(fstep[spwnum]), interpolation='linear',
-                     phasecenter='', restfreq='', outframe='', veltype='radio',
+                     phasecenter='', restfreq='', outframe='LSRK', veltype='radio',
                      hanning=False,)
+            else:
+                print("skipping {0}".format(cvelvis7m))
         concat(vis=cvelvises,
                concatvis=concatvis,)
     else:
@@ -101,7 +107,7 @@ for spwnum in '1320':
         end = nchans_per_cube*(ii+1)
         if end > nchans_total_thiscube:
             end = nchans_total_thiscube
-        output = 'piece_of_full_W51_7m12m_cube.spw{0}.channels{1}to{2}'.format(spwnum, start, end)
+        output = 'piece_of_full_W51_7m12m_cube_hires.spw{0}.channels{1}to{2}'.format(spwnum, start, end)
 
         # Channel-based gridding has major bugs when dealing with CVEL'd data
         # It is therefore necessary to compute the frequency gridding by hand
@@ -134,7 +140,7 @@ for spwnum in '1320':
                   robust = robust,
                   threshold = threshold,
                   savemodel='none',
-                  overwrite=True)
+                  )
 
               
             myimagebase = output

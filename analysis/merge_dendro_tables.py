@@ -3,6 +3,7 @@ import paths
 from astropy.table import Table, Column
 from astropy import table
 from astropy import units as u
+from astropy import coordinates
 import masscalc
 
 dendro_velo_tbl = Table.read(paths.tpath("dendro_core_velocities.ipac"), format="ascii.ipac")
@@ -46,6 +47,11 @@ columns = ['SourceID',
            'peak_cont_flux',
           ]
 columns += sorted([c for c in dendro_merge.colnames if c not in columns])
+
 dendro_merge = dendro_merge[columns]
+
+cat = coordinates.SkyCoord(u.Quantity(dendro_merge['x_cen'].data, u.deg), u.Quantity(dendro_merge['y_cen'].data, u.deg), frame='fk5')
+nearest = cat.match_to_catalog_sky(cat, 2)
+dendro_merge.add_column(Column(nearest[1], name='nndist'))
 
 dendro_merge.write(paths.tpath('dendro_merge_continuum_and_line.ipac'), format='ascii.ipac')

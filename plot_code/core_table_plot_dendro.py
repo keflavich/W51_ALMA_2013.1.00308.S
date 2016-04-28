@@ -162,6 +162,7 @@ for ii,aperture in enumerate(('0p2', '0p4', '0p6', '0p8', '1p0', '1p5')):
 
     ax.set_xscale('log')
     ax.set_xlim(0.002, 15)
+    ax.set_ylim(0, H.max()+1)
 ax.set_xlabel("Flux (Jy)")
 pl.subplots_adjust(hspace=0)
 pl.savefig(paths.fpath("core_flux_histogram_apertureradius.png"))

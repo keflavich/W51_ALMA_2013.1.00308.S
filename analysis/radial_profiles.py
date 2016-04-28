@@ -94,6 +94,25 @@ def make_rprof(regions, ploteach=False):
                         label=fn.split(".")[0], linestyle=linestyle)
                 pl.ylabel("Cumulative Flux (Jy)")
                 pl.xlabel("Radius (arcsec)")
+                if ii == 0:
+                    ax = pl.gca()
+                    ax2 = ax.twiny()
+                    ax3 = ax.twinx()
+                    def tick_function(old_x):
+                        newx = (old_x*u.arcsec*masscalc.distance).to(u.pc, u.dimensionless_angles()).value
+                        return ["%.1f" % z for z in newx]
+                    new_tick_locations = [0.005,0.01,0.015,0.02,0.025]*u.pc
+                    new_tick_locs_as = (new_tick_locations/masscalc.distance).to(u.arcsec, u.dimensionless_angles())
+                    ax2.set_xlim(ax.get_xlim())
+                    ax2.set_xticks(new_tick_locs_as.value)
+                    ax2.set_xticklabels(tick_function(new_tick_locs_as.value))
+                    ax2.set_xlabel(r"Radius (pc)")
+                    ax3.set_ylim(ax.get_ylim())
+                    yticks_mass = np.arange(0,6000,1000)
+                    yticks_Jy = yticks_mass/masscalc.mass_conversion_factor().value
+                    ax3.set_yticks(yticks_Jy)
+                    ax3.set_yticklabels(yticks_mass)
+                    ax3.set_ylabel("Cumulative Mass (M$_\\odot$, $T=20$ K)")
 
                 pl.figure(nplots*2+ii)
                 pl.title(name)
@@ -166,6 +185,26 @@ def make_rprof(regions, ploteach=False):
             # Put a legend to the right of the current axis
             ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
+        if ii == len(names) - 1:
+            ax = pl.gca()
+            ax2 = ax.twiny()
+            ax3 = ax.twinx()
+            def tick_function(old_x):
+                newx = (old_x*u.arcsec*masscalc.distance).to(u.au, u.dimensionless_angles()).value
+                return ["%.1f" % z for z in newx]
+            new_tick_locations = np.arange(0,8000,1000)*u.au
+            new_tick_locs_as = (new_tick_locations/masscalc.distance).to(u.arcsec, u.dimensionless_angles())
+            ax2.set_xlim(ax.get_xlim())
+            ax2.set_xticks(new_tick_locs_as.value)
+            ax2.set_xticklabels(tick_function(new_tick_locs_as.value))
+            ax2.set_xlabel(r"Radius (au)")
+            ax3.set_ylim(ax.get_ylim())
+            yticks_mass = np.arange(0,6000,1000)
+            yticks_Jy = yticks_mass/masscalc.mass_conversion_factor().value
+            ax3.set_yticks(yticks_Jy)
+            ax3.set_yticklabels(yticks_mass)
+            ax3.set_ylabel("Cumulative Mass (M$_\\odot$, $T=20$ K)")
+
         pl.figure(nplots*3+3)
         #pl.title(fn.replace(".image.pbcor.fits",""))
         pl.plot(((bins*pixscale*u.deg)*masscalc.distance).to(u.pc,
@@ -185,11 +224,12 @@ def make_rprof(regions, ploteach=False):
             ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
 
-# regions = pyregion.open(paths.rpath("hmcore_centroids.reg"))
-# make_rprof(regions, ploteach=True)
-# nplots = len(regions)
-# pl.figure(nplots*3+2).savefig(paths.fpath("cumulative_radial_flux_massivecores.png"))
-# pl.figure(nplots*3+3).savefig(paths.fpath("cumulative_radial_mass_massivecores.png"))
+regions = pyregion.open(paths.rpath("hmcore_centroids.reg"))
+make_rprof(regions, ploteach=True)
+nplots = len(regions)
+pl.figure(nplots*3+2).savefig(paths.fpath("cumulative_radial_flux_massivecores.png"))
+pl.figure(nplots*3+3).savefig(paths.fpath("cumulative_radial_mass_massivecores.png"))
+
 regions = pyregion.open(paths.rpath("cores.reg"))
 make_rprof(regions, ploteach=False)
 nplots = 3

@@ -65,6 +65,8 @@ def ch3cn_model(xarr, vcen, width, tex, column, background=None, tbg=2.73):
         tbg = tbg.value
     if hasattr(column, 'unit'):
         column = column.value
+    if column < 25:
+        column = 10**column
     if hasattr(vcen, 'unit'):
         vcen = vcen.value
     if hasattr(width, 'unit'):
@@ -136,7 +138,7 @@ def ch3cn_absorption_fitter():
 pyspeckit.spectrum.fitters.default_Registry.add_fitter('ch3cn_absorption',ch3cn_absorption_fitter(),5)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__" and False:
     cube = SpectralCube.read('../FITS/longbaseline/W51e2e_CH3CN_cutout.fits')
     sp_ = cube[:,43,43]
     hdr = sp_.header

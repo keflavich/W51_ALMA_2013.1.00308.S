@@ -9,7 +9,7 @@ import glob
 
 applyonly = True
 
-savingslevel=0
+savingslevel=3
 if globals().has_key("SPACESAVING"):
     print 'SPACESAVING =', SPACESAVING
     if (type(SPACESAVING)!=int or SPACESAVING<0):

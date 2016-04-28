@@ -1,9 +1,7 @@
-PAPER DRAFT
-
-Cores and Outflows in the W51 Protoclusters
-
-
-
+\documentclass{aa}
+\input{preface}
+\begin{document}
+\title{Cores and Outflows in the W51 Protoclusters}
 "A multi-phase outflow from a high-mass protostar"
 
 
@@ -75,11 +73,25 @@ recovered (but not all; see Section ...) and few spurious sources ($<10$) are
 included.  The resulting catalog includes 113 sources.
 
 \subsection{Photometry}
-We created a catalog of the dendrogram sources including their peak and mean flux density,
-their centroid, and their geometric properties.  For each source, we further extracted aperture
-photometry around the centroid in 6 apertures: 0.2, 0.4, 0.6, 0.8, 1.0, and 1.5\arcsec.
-We performed the same aperture photometry on the W51 Ku-band images from \citet{Ginsburg2016a}.
-These observations are reported in Table {...}.
+We created a catalog of the dendrogram sources including their peak and mean
+flux density, their centroid, and their geometric properties.  For each source,
+we further extracted aperture photometry around the centroid in 6 apertures:
+0.2, 0.4, 0.6, 0.8, 1.0, and 1.5\arcsec.  We performed the same aperture
+photometry on the W51 Ku-band images from \citet{Ginsburg2016a}.  These
+observations are reported in Table {...}.
+
+The source flux density distribution is shown in Figure
+\ref{fig:fluxhistograms}.  The most common nearest-neighbor separation between
+cataloged cores is $\sim0.3\arcsec$, which implies that the larger apertures
+double-count some pixels.  The smallest separation is
+0.26\arcsec, so the 0.2\arcsec aperture contains only unique pixels.
+
+\Figure{figures/core_flux_histogram_apertureradius.png}
+{Histograms of the core fluxes measured with circular apertures centered
+on the dendrogram-extracted core centroids.  The aperture size is listed 
+in the y-axis label.  Free-free-dominated sources are excluded.}
+{fig:fluxhistograms}
+{1}{10cm}
 
 \subsection{Spectral Lines \& Velocities}
 To determine the line-of-sight velocity of each source, we extracted a spectrum
@@ -91,7 +103,60 @@ the source velocity.   This process also allowed us to identify the brightest
 lines in each window and the brightest overall line observed, which we use
 later for temperature estimation.
 
-\subsection{A limit on the most massive cores in W51}
+\subsection{The most massive protostellar cores in W51}
+In Figure \ref{fig:hmradprof}, we show the radial profiles extracted from the
+three high-mass protostellar cores in W51: W51 North, W51 e2e, and W51 e8.
+The plot shows the enclosed mass out to $\sim1\arcsec$, which is ???the limit
+of our recovered spatial scales??? / ???the limit of where a `core' might reasonably
+be defined???  
+
+All three sources show similar radial profiles, containing up to 4000 \msun
+within a very compact radius of 5400 AU (0.03 pc).  However, the temperature
+structure within these sources is certainly not homogeneous, and very likely a
+large fraction of the total flux comes from $T\sim300$ K heated material
+\citep{Goddi2016a}.  If the observed dust were all at 300 K, the mass would
+be $\sim20\times$ lower, 300 \msun, which we treat as a strict lower bound
+as it is unlikely that the dust more than $\gtrsim1000$ au is so warm.
+
+\Figure{figures/cumulative_radial_flux_massivecores.png}
+{The cumulative flux density radial profiles centered on three
+massive protostellar cores.  They share similar profiles and
+are likely dominated by hot dust in their innermost regions,
+but they are more likely to be dominated by cooler dust in their
+outer, more massive regions.}
+{fig:hmradprof}{1}{10cm}
+
+\subsection{The most massive prestellar cores in W51}
+To place limits on the most massive prestellar cores, we need to know the
+temperature of the dust in all of the bright ($>15$ mJy) sources.  We do not
+have any direct means of evaluating the dust temperature, but we can infer at
+least a lower limit on it by determining the peak brightness temperature of an
+optically thick line that is excited at densities $n\gtrsim10^5$ \percc, at
+which the dust and gas are coupled.
+
+To accomplish this, we have found the brightest lines across the full $\sim6
+GHz$ spectra and measured their peak brightness temperature.
 
 
 \subsection{The mass budget on different spatial scales}
+An important evolutionary indicator is the amount of mass at a given density; a
+more evolved (more efficiently star-forming) region will have more mass at high
+densities.  We cannot measure the dense gas fraction directly, but the amount of
+flux density recovered by an interferometer provides a reasonable approximation.
+
+% total_mass_analysis
+For the ``total'' flux density in the region, we use the Bolocam Galactic Plane
+Survey observations \citep{Aguirre2011a,Ginsburg2013a}, which are the closest
+in frequency single-dish millimeter data available.  We assume a spectral index
+$\alpha=3.5$ to convert the BGPS flux density measurements at 271.4 GHz to the
+mean ALMA frequency of 226.6 GHz.  The ALMA data have a total flux 23.2 Jy above
+a very conservative threshold of 10 mJy/beam in our
+mosaic; in the same area the BGPS data have a flux of 144 Jy, which scales down to
+76.5 Jy.  The recovery fraction is 30$\pm3$\%, where the error bar accounts
+for a change in $\alpha\pm0.5$.  The threshold of 10 mJy/beam corresponds to
+a column threshold $N>10^{25}$ \percc for 20 K dust.  For an unresolved spherical source,
+this corresponds to a volume density $n>10^{8.1}$ \percc.
+
+- largest angular scale in ALMA image
+
+\end{document}
