@@ -380,6 +380,28 @@ exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=
 exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
+# these came out to be quite bad
+for robust in (2.0, 0.0, -2.0):
+    myimagebase = "merge_nocal_allspw_mfs_r{0:0.1f}".format(robust)
+    os.system('rm -rf {0}.*'.format(myimagebase))
+    delmod(vis=mergevis)
+    tclean(vis=mergevis, imagename=myimagebase, field="", spw="", specmode='mfs',
+           deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
+           scales=multiscale,
+           pblimit=0.4, interpolation='linear',
+           interactive=False, niter=50000,
+           threshold='25mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
+           #mask='clean_50mJy.mask',
+           weighting='briggs', savemodel='none', robust=robust)
+    exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+    impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
+            outfile=myimagebase+'.image.pbcor', overwrite=True)
+    exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+    exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+    exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+
+
+
 
 myimagebase = "merge_selfcal_allspw_selfcal_3_mfs_deeper_taper_r0"
 os.system('rm -rf {0}.*'.format(myimagebase))

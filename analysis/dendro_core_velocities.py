@@ -1,3 +1,6 @@
+"""
+Determine velocities *and* peak_TB's
+"""
 import numpy as np
 import paths
 import pyspeckit

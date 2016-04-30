@@ -12,8 +12,8 @@ from astropy import coordinates
 from astropy import table
 from FITS_tools import hcongrid
 
-contfile_original = fits.open(paths.pspath('perseus_250_to_w51_2.image.fits'))
-contfile = fits.open(paths.pspath('perseus_250_2_model_tclean_clean.image.fits'))
+contfile_original = fits.open(paths.pspath('perseus_250_to_w51.image.fits'))
+contfile = fits.open(paths.pspath('perseus_250_model_tclean_clean.image.fits'))
 data_original = contfile_original[0].data
 data = contfile[0].data
 
@@ -27,7 +27,7 @@ data_original = reproj_fits_in
 data_original[np.isnan(data)] = np.nan
 
 # estimate the noise from the local standard deviation of the residuals
-residfile = fits.open(paths.pspath('perseus_250_2_model_tclean_clean.residual.fits'))
+residfile = fits.open(paths.pspath('perseus_250_model_tclean_clean.residual.fits'))
 resid = residfile[0].data
 smresid = convolve_fft(np.nan_to_num(resid), Gaussian2DKernel(30))
 # have *low* noise outside when adding noise to the input image
@@ -35,14 +35,15 @@ synthnoise = convolve_fft(np.abs(resid-smresid),  Gaussian2DKernel(30))
 resid[np.isnan(resid)] = 0.01 # make the noise outside very high
 noise = convolve_fft(np.abs(resid-smresid),  Gaussian2DKernel(30))
 residfile[0].data = noise
-residfile.writeto(paths.pspath('perseus_250_2_model_tclean_clean_noise.fits'), clobber=True)
+residfile.writeto(paths.pspath('perseus_250_model_tclean_clean_noise.fits'), clobber=True)
 # lowest reasonable noise level is 0.2 mJy/beam
 
 mywcs = wcs.WCS(contfile[0].header)
 
 # Add noise to the data so that there is a sensible floor
-noise_level = 0.0002
-data_original += np.random.randn(*data_original.shape) * noise_level
+# (no noise addition needed for perseus - too faint)
+# noise_level = 0.0002
+# data_original += np.random.randn(*data_original.shape) * noise_level
 
 orig_dend = astrodendro.Dendrogram.compute(data_original, min_value=0.001,
                                            min_delta=0.0004, min_npix=10,

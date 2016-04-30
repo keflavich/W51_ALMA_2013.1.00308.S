@@ -1,3 +1,4 @@
+import radio_beam
 import numpy as np
 import paths
 import pyspeckit
@@ -46,6 +47,7 @@ def spectral_overlays(fn, name, freq_name_mapping, frequencies, yoffset,
     bad_2 = (230.00*u.GHz<spectra.xarr.to(u.GHz)) & (spectra.xarr.to(u.GHz)<230.523*u.GHz)
     bad_3 = (spectra.xarr.to(u.GHz) < 218.11*u.GHz)
     spectra.data[bad_1 | bad_2 | bad_3] = np.nan
+    beams = [radio_beam.Beam.from_fits_header(sp.header) for sp in spectra]
 
     # scaling: determine how much to separate spectra by vertically
     scaling = np.nanmax(spectra.data) - np.nanpercentile(spectra.data, 20)
@@ -84,6 +86,7 @@ def spectral_overlays(fn, name, freq_name_mapping, frequencies, yoffset,
         object_data_dict['peak{0}velo'.format(spwnum)] = peakvelo if velo_OK else np.nan*u.km/u.s
         object_data_dict['peak{0}species'.format(spwnum)] = peakspecies
         object_data_dict['peak{0}'.format(spwnum)] = (peak if velo_OK else np.nan)*u.Jy/u.beam
+        object_data_dict['beam{0}area'.format(spwnum)] = beams[spwnum].sr.value
 
         if bg:
             (bgcont, bgpeak, bgpeakfreq, bgpeakfreq_shifted, bgbestmatch,

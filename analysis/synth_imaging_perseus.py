@@ -15,7 +15,7 @@ import dust_emissivity
 dperseus = 140.
 dw51 = 5410.
 distance_scaling = dperseus/dw51
-freq_alma = 225*u.GHz
+freq_alma = 226.6*u.GHz
 wave_alma = constants.c/(freq_alma)
 wave_herschel = 250*u.um
 freq_herschel = constants.c/wave_herschel
@@ -28,7 +28,8 @@ flux_scaling = (wave_herschel/wave_alma).decompose().value**alpha
 #in_bm = (2*np.pi*(18.*u.arcsec/206265./2.35)**2)
 # but we want to keep constant MJy/sr (surface brightness) out to a larger
 # distance, then convert that to Jy/(ALMA beam)
-out_bm = (2*np.pi*((18.*distance_scaling)*u.arcsec/2.35)**2)
+# use 18.2" from Konyves 2015
+out_bm = (2*np.pi*((18.2*distance_scaling)*u.arcsec/2.35)**2)
 #MJySr_to_JyBm = (1*u.MJy/u.sr).to(u.Jy/in_bm).value
 MJySr_to_JyBm = (1*u.MJy/u.sr).to(u.Jy/out_bm).value
 
@@ -127,6 +128,7 @@ sm.openfromms("continuum_7m12m_noflag.ms")
 #sm.openfromms("w51_test_onechan.ms")
 sm.setvp()
 success = sm.predict(perseus_casa_image)
+assert success
 # TODO: get these from ASDM_CALWVR and WEATHER
 success2 = sm.setnoise(mode='tsys-atm', relhum=60.0, pwv='2mm', tatmos=265.0, )
 success3 = sm.corrupt()
@@ -142,6 +144,7 @@ assert split(vis="continuum_7m12m_noflag.ms", outputvis="perseus_250_model.ms",
 
 phasecenter = 'J2000 19h23m41.580 +14d30m41.37'
 
+delmod(vis='perseus_250_model.ms')
 os.system('rm -rf perseus_250_model_tclean_dirty*')
 tclean(vis='perseus_250_model.ms',
        imagename='perseus_250_model_tclean_dirty',

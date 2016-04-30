@@ -135,15 +135,32 @@ print("Fit parameters: alpha={0}".format(fit.power_law.alpha))
 
 
 
+powerlaw_parameters = {}
+
 fig2 = pl.figure(2)
 fig2.clf()
 #ax = fig2.gca()
 
-for ii,aperture in enumerate(('0p2', '0p4', '0p6', '0p8', '1p0', '1p5')):
+apertures = ('0p2', '0p4', '0p6', '0p8', '1p0', '1p5')
+for ii,aperture in enumerate(apertures):
     flux = (dendro_merge['cont_flux{0}arcsec'.format(aperture)] -
             dendro_merge['KUbandcont_flux{0}arcsec'.format(aperture)])
     ff = (dendro_merge['KUbandcont_flux{0}arcsec'.format(aperture)] /
           dendro_merge['cont_flux{0}arcsec'.format(aperture)]) > 0.5
+
+
+    fit = powerlaw.Fit(flux[~ff])
+    print("Powerlaw fit for apertures {0}: {1}+/-{4}     xmin: {2}"
+          "    n: {3}".format(aperture, fit.power_law.alpha,
+                              fit.power_law.xmin, fit.power_law.n,
+                              fit.power_law.sigma,
+                             ))
+    powerlaw_parameters[aperture] = {'alpha':fit.power_law.alpha,
+                                     'e_alpha':fit.power_law.sigma,
+                                     'xmin':fit.power_law.xmin,
+                                     'number':fit.power_law.n,
+                                    }
+
 
     ax = pl.subplot(6,1,ii+1)
     ax.set_ylabel("${0}''$".format(aperture.replace("p",".")))
@@ -168,6 +185,13 @@ pl.subplots_adjust(hspace=0)
 pl.savefig(paths.fpath("core_flux_histogram_apertureradius.png"))
 #pl.legend(loc='best')
 
+powerlaw_par_table = Table()
+for colname in ('alpha','e_alpha','xmin','number'):
+    powerlaw_par_table.add_column(Column([powerlaw_parameters[ap][colname]
+                                          for ap in apertures],
+                                         name=colname))
+powerlaw_par_table.write(paths.tpath("dendro_powerlaw_fit_parameters.ipac"),
+                         format='ascii.ipac')
 
 
 
@@ -209,6 +233,7 @@ H,L,P = ax3.hist(dendro_merge['peak_cont_mass'], bins=bins*0.99, color='k',
 #
 #
 #
+# beam area is for the continuum data
 beam_area = u.Quantity(np.array(dendro_merge['beam_area']), u.sr)
 jy_to_k = (1*u.Jy).to(u.K, u.brightness_temperature(beam_area,
                                                     220*u.GHz)).mean()
@@ -296,7 +321,7 @@ ax4.plot([0,0.4], [0, 0.4*jy_to_k.value], 'k--')
 ax4.set_xlabel("Continuum flux density (Jy/beam)")
 ax4.set_ylabel("Peak line brightness (K)")
 ax4.set_xlim([0, 0.4])
-pl.legend(loc='best')
+pl.legend(loc='best', fontsize=14)
 fig3.savefig(paths.fpath('coreplots/dendro_peakTB_vs_continuum.png'))
 
 

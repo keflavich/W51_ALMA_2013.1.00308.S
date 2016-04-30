@@ -22,6 +22,7 @@ brightest_line_name = np.array([dendro_merge[('peak0species','peak1species','pea
 dendro_merge.add_column(Column(peak_line_flux, name='PeakLineFlux', unit=dendro_merge['peak0'].unit))
 dendro_merge.add_column(Column(brightest_line_name, name='PeakLineSpecies'))
 
+# WRONG!!!! the beam area is for the continuum data, which is smaller than that for the line data in general
 peak_line_brightness = (peak_line_flux*u.Jy).to(u.K, u.brightness_temperature(u.Quantity(np.array(dendro_merge['beam_area']),
                                                                                          u.sr),
                                                                               220*u.GHz))

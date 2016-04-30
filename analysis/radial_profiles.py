@@ -200,18 +200,18 @@ def make_rprof(regions, ploteach=False):
             ax2.set_xlabel(r"Radius (au)")
             ax3.set_ylim(ax.get_ylim())
             yticks_mass = np.arange(0,6000,1000)
-            yticks_Jy = yticks_mass/masscalc.mass_conversion_factor().value
+            yticks_Jy = yticks_mass/masscalc.mass_conversion_factor(TK=40).value
             ax3.set_yticks(yticks_Jy)
             ax3.set_yticklabels(yticks_mass)
-            ax3.set_ylabel("Cumulative Mass (M$_\\odot$, $T=20$ K)")
+            ax3.set_ylabel("Cumulative Mass (M$_\\odot$, $T=40$ K)")
 
         pl.figure(nplots*3+3)
         #pl.title(fn.replace(".image.pbcor.fits",""))
         pl.plot(((bins*pixscale*u.deg)*masscalc.distance).to(u.pc,
                                                              u.dimensionless_angles()),
-                cumul_rprof * masscalc.mass_conversion_factor(),
+                cumul_rprof * masscalc.mass_conversion_factor(TK=40),
                 label=name)
-        pl.ylabel("Cumulative Mass (M$_\\odot$, $T=20$ K)")
+        pl.ylabel("Cumulative Mass (M$_\\odot$, $T=40$ K)")
         pl.xlabel("Radius (pc)")
         if len(names) < 5:
             pl.legend(loc='best')

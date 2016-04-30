@@ -5,6 +5,11 @@ import time
 t0 = time.time()
 
 phasecenter = "J2000 19:23:41.629000 +14.30.42.38000"
+imsize = [3072,3072]
+cell = '0.05arcsec'
+solint = 'int'
+threshold = '50.0mJy'
+
 
 fields_to_selfcal = (31,32,33,39,40,24,25,20,13,21,27)
 fields_after_split = [f-4 for f in fields_to_selfcal]
@@ -20,11 +25,6 @@ assert concat(vis=contvis, concatvis=vis0,)
 print("Done splitting")
 summary_init = flagdata(vis=vis0, mode='summary')
 print("{flagged}/{total} of flagged points in vis0".format(**summary_init))
-
-imsize = [3072,3072]
-cell = '0.05arcsec'
-solint = 'int'
-threshold = '50.0mJy'
 
 clearcal(vis=vis0)
 #flagmanager(vis=vis0, versionname='flagdata_1', mode='restore')
@@ -321,6 +321,67 @@ impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
 exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+
+
+
+
+image1 = 'selfcal_allspw_selfcal_3_mfs_deeper.image'
+ia.open(image1)
+ia.calcmask(mask=image1+" > 0.005", name='clean_mask_5mJy_r-2')
+ia.close()
+cleanimage = image1
+makemask(mode='copy', inpimage=image1,
+         inpmask=cleanimage+":clean_mask_5mJy_r-2", output='clean_5mJy_r-2.mask',
+         overwrite=True)
+
+
+myimagebase = "selfcal_allspw_selfcal_3_mfs_50mJy_r2.0"
+os.system('rm -rf {0}.*'.format(myimagebase))
+tclean(vis=vis2, imagename=myimagebase, field="", spw="", specmode='mfs',
+       deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
+       scales=[0,5,15,45],
+       pblimit=0.4, interpolation='linear',
+       interactive=False, niter=50000,
+       mask='clean_5mJy_r-2.mask',
+       threshold='50mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
+       weighting='briggs', savemodel='modelcolumn', robust=2.0)
+exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+
+
+image1 = myimagebase+".image"
+ia.open(image1)
+ia.calcmask(mask=image1+" > 0.025", name='clean_mask_25mJy')
+ia.close()
+cleanimage = myimagebase+".image"
+makemask(mode='copy', inpimage=image1,
+         inpmask=cleanimage+":clean_mask_25mJy", output='clean_25mJy_r2.0.mask',
+         overwrite=True)
+
+myimagebase = "selfcal_allspw_selfcal_3_mfs_deeper_r2.0"
+os.system('rm -rf {0}.*'.format(myimagebase))
+tclean(vis=vis2, imagename=myimagebase, field="", spw="", specmode='mfs',
+       deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
+       scales=[0,5,15,45],
+       pblimit=0.4, interpolation='linear',
+       interactive=False, niter=50000,
+       mask='clean_25mJy_r2.0.mask',
+       threshold='10mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
+       weighting='briggs', savemodel='modelcolumn', robust=2.0)
+exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+
+
+
+
 
 
 import numpy as np

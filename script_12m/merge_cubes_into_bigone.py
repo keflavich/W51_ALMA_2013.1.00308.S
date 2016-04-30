@@ -51,7 +51,7 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
     """
     spw = spw.format(spwnum)
 
-    big_filename = '{1}_{0}_lines.fits'.format(spw, fntemplate)
+    big_filename = '{1}_{0}{2}_lines.fits'.format(spw, fntemplate, fnsuffix)
 
     # First set up an empty file
     if not os.path.exists(big_filename):
