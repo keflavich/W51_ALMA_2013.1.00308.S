@@ -38,10 +38,22 @@ W51 IRS2 HII region, which are relatively uninteresting since their properties
 have been previously well-characterized using radio (JVLA) data.  More exciting
 are the bright dusty structures, especially the ``tail'' pointing south of W51
 e8, which can be described as a 0.25 pc by 0.05 pc filament. This structure has
-a very high surface brightness, exceeding 40 mJy/beam in our TE maps (23 K or
-3.7\ee{4} MJy sr$^{-1}$)
+a very high surface brightness along its ridge, exceeding 40 mJy/beam in our TE
+maps (23 K or 3.7\ee{4} MJy sr$^{-1}$).  This high brightness implies a high
+intrinsic temperature, $T>30$ K (Section \ref{sec:temperature}).
+
+This narrow filament is most prominent in the continuum. It is evident
+in some lines (\formaldehyde, $^{13}$CS, \ceighteeno), but not others (SO, ).
+It is surrounded by molecular emission that is only slightly fainter...
+...in SO it's pretty uniform brightness...
 
 \subsection{Simulations}
+{\bf Unfortunately CASA's simulations produce reproducible incorrectness, in that
+I cannot get an image that matches the input image.  There seems to *always* be some
+flux scaling no matter what input unit is used.  Therefore, I don't trust any of
+the results of CASA simulations yet.  Perseus looks OK, but Aquila is just flat out wrong,
+and the scale-recovery simulations I attempted also failed.}
+
 The enhanced noise around bright sources is unavoidable.  We tested the noise
 properties of our data set using the CASA \texttt{simobserve} toolkit.  We
 obtained a Herschel Gould's Belt Survey image of the Perseus molecular cloud at
@@ -184,16 +196,17 @@ before probing most of the dust.  Some transitions, e.g. CO and \formaldehyde,
 are likely to be affected by this issue.
 
 
-\Figure{figures/dendro_peakTB_vs_continuum.png}
-{The peak line brightness vs the flux density of our target sources.  The
-points are color-coded by the brightest observed line.  The dashed line shows
-where the brightness temperature of the continuum matches that of the lines;
-technically this means that it should be literally impossible for any point to
-be below the line.  However, in this iteration of the plot, the lines are
-extracted from broader apertures than the continuum, so the continuum peak
-brightness is capable of being higher than the line peak brightness.  TODO:
-replace this plot once spectra have been appropriately extracted from the
-high-resolution spectral data cube.
+\Figure{figures/dendro_peakTB_vs_selfconsistentcontinuum.png}
+{The peak line brightness vs the continuum brightness of our target sources
+within $\sim1\arcsec$ beams.  The points are color-coded by the brightest
+observed line.  The dashed line shows where the brightness temperature of the
+continuum matches that of the lines; technically this means that it should be
+impossible for any point to be below the line.  
+%However, in this
+%iteration of the plot, the lines are extracted from broader apertures than the
+%continuum, so the continuum peak brightness is capable of being higher than the
+%line peak brightness.  TODO: replace this plot once spectra have been
+%appropriately extracted from the high-resolution spectral data cube.
 }
 {fig:peaktb}{1}{10cm}
 

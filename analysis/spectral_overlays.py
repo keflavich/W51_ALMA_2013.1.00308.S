@@ -80,7 +80,7 @@ def spectral_overlays(fn, name, freq_name_mapping, frequencies, yoffset,
         (cont, peak, peakfreq, peakfreq_shifted, bestmatch, peakvelo, velo_OK,
          peakspecies, argmax) = quick_analyze(sp, freq_name_mapping, minvelo, maxvelo)
 
-        object_data_dict['continuum20pct'] = cont
+        object_data_dict['continuum20pct{0}'.format(spwnum)] = cont
         object_data_dict['peak{0}freq'.format(spwnum)] = peakfreq
 
         object_data_dict['peak{0}velo'.format(spwnum)] = peakvelo if velo_OK else np.nan*u.km/u.s

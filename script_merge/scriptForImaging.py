@@ -438,27 +438,27 @@ exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # e
 
 
 os.system("rm -rf w51_13CS_54_merge7m12m_nocontsub.*")
-clean(vis= 'w51_concat_7m12m.spw2.merge',
- imagename = 'w51_13CS_54_merge7m12m_nocontsub',
- field = "w51",
- spw = '',
- mode = 'velocity',
- nchan = 55,
- start = '30km/s',
- width = '1.265km/s',
- restfreq = '231.221GHz',
- outframe = 'LSRK',
- interpolation = 'linear',
- imagermode='mosaic',
- interactive = False,
- niter = 5000,
- threshold = '1.3mJy', #req threshold 5.85 mJy, 38 antennas, 66min tos, pwv auto,1arcsec res, 1.33km/s MHz BW gives 1.3mJy!
- imsize = [1280,1280],
- cell = '0.15arcsec',
- weighting = 'natural',
- minpb=0.4,
- pbcor=False,
- robust=2.0)
+tclean(vis='w51_concat_7m12m.spw2.merge',
+       imagename='w51_13CS_54_merge7m12m_nocontsub',
+       field="w51",
+       spw='',
+       nchan=55,
+       start='30km/s',
+       width='1.265km/s',
+       restfreq='231.221GHz',
+       outframe='LSRK',
+       interpolation='linear',
+       gridder='mosaic',
+       specmode='cube',
+       interactive=False,
+       niter=5000,
+       threshold='5.0mJy', #req threshold 5.85 mJy, 38 antennas, 66min tos, pwv auto,1arcsec res, 1.33km/s MHz BW gives 1.3mJy!
+       imsize=[1280,1280],
+       cell='0.15arcsec',
+       weighting='natural',
+       pblimit=0.4,
+       savemodel='none',
+       robust=2.0)
 
 myimagebase= 'w51_13CS_54_merge7m12m_nocontsub'
 impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.flux', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
@@ -597,7 +597,7 @@ exportfits(imagename=myimagebase+'.flux',fitsimage=myimagebase+'.flux.fits') # e
 
 
 
-myimagebase= 'w51_N2Dp_3-2_merge7m12m_contsub'
+myimagebase= 'w51_N2Dp_3-2_merge7m12m_nocontsub'
 os.system("rm -rf {0}.*".format(myimagebase))
 tclean(vis = 'w51_concat_7m12m.spw2.merge',
        imagename = myimagebase,
@@ -627,7 +627,7 @@ exportfits(imagename=myimagebase+'.image.pbcor',
 exportfits(imagename=myimagebase+'.pb', fitsimage=myimagebase+'.pb.fits') # export the PB image
 
 
-myimagebase= 'w51_D2CO_4-3_merge7m12m_contsub'
+myimagebase= 'w51_D2CO_4-3_merge7m12m_nocontsub'
 os.system("rm -rf {0}.*".format(myimagebase))
 tclean(vis = 'w51_concat_7m12m.spw2.merge',
        imagename = myimagebase,
@@ -656,7 +656,7 @@ exportfits(imagename=myimagebase+'.image.pbcor',
            fitsimage=myimagebase+'.image.pbcor.fits') # export the corrected image
 exportfits(imagename=myimagebase+'.pb', fitsimage=myimagebase+'.pb.fits') # export the PB image
 
-myimagebase= 'w51_H213CO_312-211_merge7m12m_contsub'
+myimagebase= 'w51_H213CO_312-211_merge7m12m_nocontsub'
 os.system("rm -rf {0}.*".format(myimagebase))
 tclean(vis = 'w51_concat_7m12m.spw1.merge',
        imagename = myimagebase,

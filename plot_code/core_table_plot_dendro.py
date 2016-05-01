@@ -324,6 +324,20 @@ ax4.set_xlim([0, 0.4])
 pl.legend(loc='best', fontsize=14)
 fig3.savefig(paths.fpath('coreplots/dendro_peakTB_vs_continuum.png'))
 
+fig3 = pl.figure(3)
+fig3.clf()
+ax4 = fig3.gca()
+for species in np.unique(dendro_merge['PeakLineSpecies']):
+    if species != 'NONE':
+        mask = species == dendro_merge['PeakLineSpecies']
+        ax4.plot(dendro_merge['PeakLineContinuumBG'][mask], dendro_merge['PeakLineBrightness'][mask], 's', label=species)
+ax4.plot([0,6], [0, 6], 'k--')
+ax4.set_xlabel("Continuum Brightness (K)")
+ax4.set_ylabel("Peak line brightness (K)")
+ax4.set_xlim([0, 6])
+pl.legend(loc='best', fontsize=14)
+fig3.savefig(paths.fpath('coreplots/dendro_peakTB_vs_selfconsistentcontinuum.png'))
+
 
 
 fig4 = pl.figure(4)
