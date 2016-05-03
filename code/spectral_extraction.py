@@ -22,9 +22,10 @@ for spw in (0,1,2,3):
             sc = cube.subcube_from_ds9region(SL)
             spec = sc.mean(axis=(1,2))
 
-            spec.meta['beam'] = radio_beam.Beam(major=np.nanmedian([bm.major.to(u.deg).value for bm in spec.beams]),
-                                                minor=np.nanmedian([bm.minor.to(u.deg).value for bm in spec.beams]),
-                                                pa=np.nanmedian([bm.pa.to(u.deg).value for bm in spec.beams]),
-                                               )
+            # these cubes don't have beams =(
+            #spec.meta['beam'] = radio_beam.Beam(major=np.nanmedian([bm.major.to(u.deg).value for bm in spec.beams]),
+            #                                    minor=np.nanmedian([bm.minor.to(u.deg).value for bm in spec.beams]),
+            #                                    pa=np.nanmedian([bm.pa.to(u.deg).value for bm in spec.beams]),
+            #                                   )
             spec.hdu.writeto("spectra/{0}_spw{1}_mean.fits".format(name, spw),
                              clobber=True)

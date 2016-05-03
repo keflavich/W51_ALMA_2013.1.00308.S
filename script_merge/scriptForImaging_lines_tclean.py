@@ -46,19 +46,26 @@ for line, restfreq, velocity_res in (
     for array in ('7m','12m'):
         outputvis = outms_template.format(line=line, array=array)
         if not os.path.exists(outputvis):
-            cvel(vis=os.path.join(calpath, vistemplate.format(array)),
-                 outputvis=outputvis,
-                 passall=False, field='w51', selectdata=True, timerange='',
-                 array='', antenna='', scan='', mode='velocity', nchan=nchans,
-                 start='{0}km/s'.format(velocity_range[0]),
-                 width='{0}km/s'.format(velocity_res), interpolation='linear',
-                 phasecenter='', restfreq=restfreq, outframe='LSRK',
-                 veltype='radio', hanning=False,)
+            cvel2(vis=os.path.join(calpath, vistemplate.format(array)),
+                  outputvis=outputvis,
+                  datacolumn='data',
+                  field='w51',
+                  mode='velocity',
+                  nchan=nchans,
+                  start='{0}km/s'.format(velocity_range[0]),
+                  width='{0}km/s'.format(velocity_res),
+                  interpolation='linear',
+                  phasecenter='',
+                  restfreq=restfreq,
+                  outframe='LSRK',
+                  veltype='radio',
+                  hanning=False,)
 
     if not os.path.exists(concatvis):
         concat(vis=[outms_template.format(line=line, array=array) for array in ('7m','12m')],
                concatvis=concatvis)
 
+    assert os.path.exists(concatvis)
 
     output = 'W51_b6_7M_12M.{0}'.format(line)
     #---------------------------------------------------
