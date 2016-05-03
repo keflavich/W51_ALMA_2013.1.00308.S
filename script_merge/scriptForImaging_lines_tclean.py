@@ -9,7 +9,7 @@ vistemplate = 'calibrated_{0}.ms'
 vis_7m='calibrated_7m.ms'
 vis_tc='calibrated_12m.ms'
 
-velocity_range = -25,95
+velocity_range = 25,95
 velocity_res = 1.0
 
 # It's not clear how cvel will handle overlapping SPWs
