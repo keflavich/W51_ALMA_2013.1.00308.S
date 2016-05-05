@@ -13,13 +13,28 @@ try:
         #'12m/w51_SO_65-54_contsub.fits',
         #'12m/w51_h41alpha_contsub.image.pbcor.fits',
         #'12m/w51_H2CO_321_220_contsub.image.pbcor.fits',
+        'W51_b6_12M.H2CO303_202.image.pbcor.fits',
+        'W51_b6_12M.H2CO321_220.image.pbcor.fits',
+        'W51_b6_12M.H2CO322_221.image.pbcor.fits',
+        'W51_b6_12M.OCS18-17.image.pbcor.fits',
+        'W51_b6_12M.CH3OH422-312.image.pbcor.fits',
+        'W51_b6_12M.HC3N24-23.image.pbcor.fits',
+        'W51_b6_7M_12M.13CS5-4.image.pbcor.fits',
+        'W51_b6_7M_12M.CH3OCH3_13013-12112.image.pbcor.fits',
+        'W51_b6_7M_12M.CH3OH422-312.image.pbcor.fits',
+        'W51_b6_7M_12M.CH3OH423-514.image.pbcor.fits',
+        'W51_b6_7M_12M.CH3OH5m42-6m43.image.pbcor.fits',
+        'W51_b6_7M_12M.CH3OH808-716.image.pbcor.fits',
         'W51_b6_7M_12M.H2CO303_202.image.pbcor.fits',
         'W51_b6_7M_12M.H2CO321_220.image.pbcor.fits',
-        'W51_b6_7M_12M.HNCO10110-919.image.pbcor.fits',
-        'W51_b6_7M_12M.OCS18-17.image.pbcor.fits',
-        'W51_b6_7M_12M.HNCO1028-927.image.pbcor.fits',
         'W51_b6_7M_12M.H2CO322_221.image.pbcor.fits',
+        'W51_b6_7M_12M.HC3N24-23.image.pbcor.fits',
+        'W51_b6_7M_12M.HNCO10110-919.image.pbcor.fits',
+        'W51_b6_7M_12M.HNCO1028-927.image.pbcor.fits',
+        'W51_b6_7M_12M.NH2CHO11210-1029.image.pbcor.fits',
+        'W51_b6_7M_12M.OCS18-17.image.pbcor.fits',
         'W51_b6_7M_12M.OCS19-18.image.pbcor.fits',
+        'W51_b6_7M_12M.SO65-54.image.pbcor.fits',
     ]
 
 except ImportError:
@@ -43,6 +58,7 @@ def load_projection(filename):
 
 for fn in files:
     fname = os.path.splitext(os.path.basename(fn))[0]
+    print(fname)
 
     m0fn = dpath("moments/{0}_moment0.fits".format(fname))
     m1fn = dpath("moments/{0}_moment1.fits".format(fname))
@@ -55,7 +71,7 @@ for fn in files:
     else:
         cube = SpectralCube.read(dpath(fn)).minimal_subcube()
         vcube = cube.with_spectral_unit(u.km/u.s, velocity_convention='radio')
-        vcube = vcube.spectral_slab(40*u.km/u.s, 80*u.km/u.s)
+        vcube = vcube.spectral_slab(35*u.km/u.s, 75*u.km/u.s)
         try:
             m0 = vcube.with_mask(vcube>0.05*u.Jy).moment0()
             m1 = vcube.with_mask(vcube>0.05*u.Jy).moment1()

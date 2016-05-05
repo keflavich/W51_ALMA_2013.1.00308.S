@@ -324,7 +324,6 @@ exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, 
 
 
 
-
 image1 = 'selfcal_allspw_selfcal_3_mfs_deeper.image'
 ia.open(image1)
 ia.calcmask(mask=image1+" > 0.005", name='clean_mask_5mJy_r-2')
@@ -333,6 +332,53 @@ cleanimage = image1
 makemask(mode='copy', inpimage=image1,
          inpmask=cleanimage+":clean_mask_5mJy_r-2", output='clean_5mJy_r-2.mask',
          overwrite=True)
+
+
+
+myimagebase = "selfcal_allspw_selfcal_3_mfs_deeper1mJy_mask5mJy"
+os.system('rm -rf {0}.*'.format(myimagebase))
+tclean(vis=vis2, imagename=myimagebase,
+       field="", spw='', specmode='mfs', outframe='LSRK',
+       interpolation='linear', gridder='mosaic', interactive=False,
+       pblimit=0.4,
+       mask='clean_5mJy_r-2.mask',
+       niter=50000, threshold='1mJy', imsize=imsize, cell=cell,
+       phasecenter=phasecenter, weighting='briggs',
+       savemodel='modelcolumn', robust=-2.0)
+exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+
+image1 = 'selfcal_allspw_selfcal_3_mfs_deeper1mJy_mask5mJy.image'
+ia.open(image1)
+ia.calcmask(mask=image1+" > 0.003", name='clean_mask_3mJy_r-2')
+ia.close()
+cleanimage = image1
+makemask(mode='copy', inpimage=image1,
+         inpmask=cleanimage+":clean_mask_3mJy_r-2", output='clean_3mJy_r-2.mask',
+         overwrite=True)
+
+myimagebase = "selfcal_allspw_selfcal_3_mfs_deeper1mJy_mask3mJy"
+os.system('rm -rf {0}.*'.format(myimagebase))
+tclean(vis=vis2, imagename=myimagebase,
+       field="", spw='', specmode='mfs', outframe='LSRK',
+       interpolation='linear', gridder='mosaic', interactive=False,
+       pblimit=0.4,
+       mask='clean_3mJy_r-2.mask',
+       niter=50000, threshold='1mJy', imsize=imsize, cell=cell,
+       phasecenter=phasecenter, weighting='briggs',
+       savemodel='modelcolumn', robust=-2.0)
+exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+
+
 
 
 myimagebase = "selfcal_allspw_selfcal_3_mfs_50mJy_r2.0"
