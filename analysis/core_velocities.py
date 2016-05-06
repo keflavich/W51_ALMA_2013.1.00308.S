@@ -71,6 +71,7 @@ for corereg in cores:
     spectra.data[(233.84*u.GHz<spectra.xarr) & (spectra.xarr>234.036*u.GHz)] = np.nan
     spectra.data[(230.00*u.GHz<spectra.xarr) & (spectra.xarr>230.523*u.GHz)] = np.nan
     scaling = np.nanmax(spectra.data) - np.nanpercentile(spectra.data, 20)
+    assert not np.isnan(scaling)
     print("Scaling for {fn} = {scaling}".format(fn=fn.format(name=name, ii=0), scaling=scaling))
 
     fig = pl.figure(1)

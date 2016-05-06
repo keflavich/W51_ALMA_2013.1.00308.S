@@ -11,6 +11,7 @@ region_list = pyregion.open("cores.reg")
 for spw in (0,1,2,3):
     cube = SpectralCube.read(tmplt.format(spw))
     print(cube)
+    beam = radio_beam.Beam.from_fits_header(cube.header)
 
     for reg in region_list:
         if 'text' not in reg.attr[1]:
@@ -21,11 +22,13 @@ for spw in (0,1,2,3):
             SL = pyregion.ShapeList([reg])
             sc = cube.subcube_from_ds9region(SL)
             spec = sc.mean(axis=(1,2))
+            assert not all(np.isnan(spec))
 
             # these cubes don't have beams =(
             #spec.meta['beam'] = radio_beam.Beam(major=np.nanmedian([bm.major.to(u.deg).value for bm in spec.beams]),
             #                                    minor=np.nanmedian([bm.minor.to(u.deg).value for bm in spec.beams]),
             #                                    pa=np.nanmedian([bm.pa.to(u.deg).value for bm in spec.beams]),
             #                                   )
+            spec.meta['beam'] = beam
             spec.hdu.writeto("spectra/{0}_spw{1}_mean.fits".format(name, spw),
                              clobber=True)

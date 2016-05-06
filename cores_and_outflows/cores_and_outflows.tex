@@ -56,6 +56,31 @@ in some lines (\formaldehyde, $^{13}$CS, \ceighteeno), but not others (SO, ).
 It is surrounded by molecular emission that is only slightly fainter...
 ...in SO it's pretty uniform brightness...
 
+\subsubsection{A bubble around e5}
+There is evidence of a bubble in the continuum around e5 with a radius of
+6.2\arcsec (0.16 pc; Figure \ref{fig:e5bubble}).  The bubble is completely
+absent in the centimeter continuum, so it is most likely dust emission.  The
+bubble edge can be seen from 58 \kms to 63 \kms in \ceighteeno and
+\formaldehyde, though it is not continuous in any single velocity channel.
+There is a collection of compact sources (protostars or cores) along the
+southeast edge of the bubble.
+
+The presence of such a bubble in dense gas, but its absence in ionizing gas, is
+surprising.  The most likely mechanism for blowing such a bubble is ionizing
+radiative feedback, especially around a source that is currently a hypercompact
+HII region, but since no free-free emission is evident within or on the edge of
+the bubble, it is at least not presently driving the bubble.  A plausible
+explanation for this discrepancy is that e5 was an exposed O-star within the
+past Myr, but has since begun accreting heavily and therefore had its HII
+region shrunk.  This model is marginally supported by the presence of a `pillar'
+of dense material pointing from e5 toward the south.
+
+\Figure{figures/e5_bubble.png}
+{The bubble around source e5.
+}{fig:e5bubble}{1}{10cm}
+
+
+
 
 \subsection{Kinematics}
 \label{sec:kinematics}
@@ -149,6 +174,33 @@ uncleaned PSF sidelobe artifacts.  In particular, the dendrogram catalog include
 a number of sources around e2/e8 that, by eye, appear to be parts of continuous
 extended emission rather than local peaks; ``streaking'' artifacts in the
 reduced data result in their identification despite our threshold criteria.
+
+\subsection{The spatial distribution of cores}
+The detected cores are not uniformly distributed across the observed region.
+The most notable feature in the spatial distribution is their alignment: most
+of the cores are detected along common lines.  This is especially evident
+in W51 IRS2, where the core density is very high and there is virtually no
+deviation from the line.  The e8 filament is also notably linear, though there
+area few sources detected just off the filament. 
+
+On a larger scale, the e8 filament points toward e2, apparently tracing a
+slightly longer filamentary structure.  With some imagination, this might be
+extended along the entire northeast ridge to eventually connect in a broad
+half-circle with the IRS2 filament (Figure \ref{fig:corepositions}).  This
+morphology hints at a possible sequential star formation event, where some
+central bubble has swept gas into these filaments.  However, this ring has no
+counterparts in ionized gas, and there is little reason to expect such circular
+symmetry from a real cloud, so the star forming circle may be merely a figment.
+
+Whether it is physical or not, there is a notable lack of cores within the
+circle.  There is no lack of molecular gas, however, as both CO and \formaldehyde
+emission fill the full field of view.
+
+\Figure{figures/core_spatial_distribution.png}
+{The spatial distribution of the hand-identified core sample.
+The black outer contour shows the observed field of view.
+The dashed circle shows a hypothetical ring of star formation.
+}{fig:corepositions}{1}{10cm}
 
 \subsection{Photometry}
 We created a catalog of the dendrogram sources including their peak and mean
@@ -315,25 +367,37 @@ this corresponds to a volume density $n>10^{8.1}$ \percc.
 - largest angular scale in ALMA image
 
 \subsection{Chemically Distint Regions}
-Surrounding W51e2e, we noted the presence of sharp-edged uniform-brightness regions 
-in a few spectral lines over the range 55-60 \kms.  These features are elongated
-in the direction of the outflow, but have significant extend orthogonal to the outflow,
-spanning $9500\times6600$ AU.  They are prominent in CH3OH, OCS, and CH3OCH3, weak
-but present in H2CO and SO, and absent in HC3N and HNCO.
+Surrounding W51e2e, we noted the presence of sharp-edged uniform-brightness
+regions in a few spectral lines over the range 51-60 \kms (Figure
+\ref{fig:chemmaps}).  These features are elongated in the direction of the
+outflow, but have significant extend orthogonal to the outflow, spanning
+$9500\times6600$ AU.  They are prominent in \methanol, OCS, and CH3OCH3, weak
+but present in \formaldehyde and SO, and absent in \cyanoacetylene and HNCO.
 
 Around e8, a similar feature is observed, but this time CH3OCH3 is absent.
 
 Along the south end of the e8 filament, no such enhanced features are seen; only
-H2CO and the lowest transition of CH3OH are evident.
+\formaldehyde and the lowest transition of \methanol are evident.
 
-Toward W51 north, CH3OH, H2CO, and SO exhibit the sharp-edged enhancement feature,
-while the other species do not.  The enhancement is from 57-63 \kms.
+Toward W51 north, \methanol, \formaldehyde, and SO exhibit the sharp-edged enhancement feature,
+while the other species do not.  The enhancement is from 50-60 \kms.
 
-Given the enhanced abundance of CH3OH in particular, it seems likely that these
+Given the enhanced abundance of \methanol in particular, it seems likely that these
 sharp-edged bubbles represent sublimation zones in which substantial quantities
 of grain-processed materials are released into the gas phase.  The sharp edges
 likely reflect the particular point where the temperature exceeds the sublimation
 temperature for each species.
 
+\Figure{figures/chemical_m0_slabs_e2e8.png}
+{Moment 0 maps of the e2 region in 25 different species over the range 51 to 60
+\kms with continuum subtraction using the 30th percentile emission
+over the ranges 25-40 and 75-90 \kms.  All images are on the same scale, and
+the negative features show absorption against the continuum.  There
+is a strong `halo' of emission seen in the CH$_3$Ox lines and OCS.  Extended
+emission is also clearly seen in SO, $^{13}$CS, and \formaldehyde, though these
+lines more smoothly blend into their surroundings.  HNCO and \formamide have
+smaller but substantial regions of enhancement with a sharp contrast to their
+surroundings.  HC$_3$N traces the e2 outflow.
+}{fig:chemmaps}{1}{18cm}
 
 \end{document}

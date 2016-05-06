@@ -5,6 +5,11 @@ from astropy import units as u
 from astropy import coordinates
 import powerlaw
 import pylab as pl
+from astropy.io import fits
+from astropy import wcs
+from matplotlib.patches import Circle
+
+pl.matplotlib.rc_file('pubfiguresrc')
 
 core_velo_tbl = Table.read(paths.tpath("core_velocities.ipac"), format="ascii.ipac")
 core_phot_tbl = Table.read(paths.tpath("continuum_photometry.ipac"), format='ascii.ipac')
@@ -135,17 +140,50 @@ ax5.set_xlabel("Mass at 20K [M$_\\odot$]")
 ax5.set_ylabel("Mass at peak $T_B$ [M$_\\odot$]")
 fig4.savefig(paths.fpath('coreplots/mass20K_vs_massTB.png'))
 
+
+
+ffile = fits.open(paths.dpath('w51_te_continuum_best.fits'))
+mywcs = wcs.WCS(ffile[0].header)
+img = np.isfinite(ffile[0].data)
+x,y = img.max(axis=0), img.max(axis=1)
+xlim = np.where(x)[0].min(),np.where(x)[0].max()
+ylim = np.where(y)[0].min(),np.where(y)[0].max()
+
 fig2 = pl.figure(2)
 fig2.clf()
-ax2 = fig2.gca()
+ax2 = fig2.add_subplot(1,1,1, projection=mywcs)
 
-coords = coordinates.SkyCoord(core_phot_tbl['RA'], core_phot_tbl['Dec'],
-                              frame='fk5').galactic
-ax2.plot(coords.l, coords.b, '.')
-ax2.set_xlim(*ax2.get_xlim()[::-1])
-ax2.set_ylabel('Galactic Latitude')
-ax2.set_xlabel('Galactic Longitude')
+coords = coordinates.SkyCoord(cores_merge['RA'], cores_merge['Dec'],
+                              frame='fk5')
+ax2.contour(img, levels=[0.5], colors='k')
+sc = ax2.scatter(coords.ra.deg, coords.dec.deg, marker='.',
+                 s=120,
+                 transform=ax2.get_transform('fk5'), c=cores_merge['mean_velo'],
+                 edgecolors='none',
+                 cmap=pl.cm.jet)
+cb = pl.colorbar(mappable=sc, ax=ax2)
+cb.set_label('Velocity (km s$^{-1}$)')
+ax2.set_xlim(*xlim)
+ax2.set_ylim(*ylim)
+#ax2.set_xlim(*ax2.get_xlim()[::-1])
+ax2.set_ylabel('Right Ascension')
+ax2.set_xlabel('Declination')
 ax2.set_aspect(1)
+
+# bigger circle; doesn't fit south sources as well
+#circlecen = coordinates.SkyCoord('19:23:40.747 +14:30:22.75', frame='fk5',
+#                                 unit=(u.hour, u.deg))
+#ax2.add_patch(Circle([circlecen.ra.deg, circlecen.dec.deg], radius=0.01287,
+#                     facecolor='none', edgecolor='b', zorder=-10, alpha=0.5,
+#                     linewidth=4,
+#                     transform=ax2.get_transform('fk5')))
+
+circlecen = coordinates.SkyCoord('19:23:41.253 +14:30:32.11', frame='fk5',
+                                 unit=(u.hour, u.deg))
+ax2.add_patch(Circle([circlecen.ra.deg, circlecen.dec.deg], radius=0.0105479,
+                     facecolor='none', edgecolor='k', zorder=-15, alpha=0.2,
+                     linewidth=8, linestyle=':',
+                     transform=ax2.get_transform('fk5')))
 fig2.savefig(paths.fpath('coreplots/core_spatial_distribution.png'))
 
 

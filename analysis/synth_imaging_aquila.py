@@ -89,6 +89,11 @@ pixel_area = np.abs(ffile[0].header['CDELT1'] * ffile[0].header['CDELT2']) * u.d
 fluxdens = surfbright.to(u.MJy/u.sr).value * MJySr_to_JyBm
 #ffile[0].data = np.expand_dims(ffile[0].data, axis=0)
 
+ffile[0].data = fluxdens / ppbeam
+
+
+ffile.writeto(paths.dpath('not_w51/aquila04-250-rescaled-jybeam.fits'), clobber=True)
+
 # divide by ppbeam for jy/pixel
 ppbeam = (out_bm / pixel_area).decompose().value
 ffile[0].data = fluxdens / ppbeam
@@ -234,9 +239,10 @@ tclean(vis='aquila_dusttem_model.ms',
 exportfits(imagename='aquila_dusttem_model_tclean_dirty.residual', fitsimage='aquila_dusttem_model_tclean_dirty.image.fits',  dropdeg=True, overwrite=True)
 
 
-os.system('rm -rf aquila_dusttem_model_tclean_clean*')
+myimagebase = 'aquila_dusttem_model_tclean_clean'
+os.system('rm -rf {0}*'.format(myimagebase))
 tclean(vis='aquila_dusttem_model.ms',
-       imagename='aquila_dusttem_model_tclean_clean',
+       imagename=myimagebase,
        field='',
        spw='',
        specmode='mfs',
@@ -254,12 +260,16 @@ tclean(vis='aquila_dusttem_model.ms',
        gridder = 'mosaic',
        savemodel='none',
        )
-exportfits(imagename='aquila_dusttem_model_tclean_clean.image', fitsimage='aquila_dusttem_model_tclean_clean.image.fits',  dropdeg=True, overwrite=True)
-exportfits(imagename='aquila_dusttem_model_tclean_clean.model', fitsimage='aquila_dusttem_model_tclean_clean.model.fits',  dropdeg=True, overwrite=True)
+exportfits(imagename='{0}.image'.format(myimagebase), fitsimage='{0}.image.fits'.format(myimagebase),  dropdeg=True, overwrite=True)
+exportfits(imagename='{0}.model'.format(myimagebase), fitsimage='{0}.model.fits'.format(myimagebase),  dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
 
-os.system('rm -rf aquila_dusttem_model_tclean_msclean*')
+myimagebase = 'aquila_dusttem_model_tclean_msclean'
+os.system('rm -rf {0}*'.format(myimagebase))
 tclean(vis='aquila_dusttem_model.ms',
-       imagename='aquila_dusttem_model_tclean_msclean',
+       imagename=myimagebase,
        field='',
        spw='',
        specmode='mfs',
@@ -277,5 +287,8 @@ tclean(vis='aquila_dusttem_model.ms',
        gridder = 'mosaic',
        savemodel='none',
        )
-exportfits(imagename='aquila_dusttem_model_tclean_msclean.image', fitsimage='aquila_dusttem_model_tclean_msclean.image.fits',  dropdeg=True, overwrite=True)
-exportfits(imagename='aquila_dusttem_model_tclean_msclean.model', fitsimage='aquila_dusttem_model_tclean_msclean.model.fits',  dropdeg=True, overwrite=True)
+exportfits(imagename='{0}.image'.format(myimagebase), fitsimage='{0}.image.fits'.format(myimagebase),  dropdeg=True, overwrite=True)
+exportfits(imagename='{0}.model'.format(myimagebase), fitsimage='{0}.model.fits'.format(myimagebase),  dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
