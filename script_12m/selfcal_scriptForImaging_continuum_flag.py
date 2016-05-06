@@ -306,6 +306,22 @@ exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwr
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 # using vis2.corrected = vis3.data
+myimagebase = "selfcal_allspw_selfcal_3_mfs_deeper_10mJy"
+os.system('rm -rf {0}.*'.format(myimagebase))
+tclean(vis=vis2, imagename=myimagebase,
+      field="", spw='', specmode='mfs', outframe='LSRK',
+      interpolation='linear', gridder='mosaic', interactive=False,
+      pblimit=0.4,
+      niter=50000, threshold='10mJy', imsize=imsize, cell=cell,
+      phasecenter=phasecenter, weighting='briggs',
+      savemodel='modelcolumn', robust=-2.0)
+exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+
 myimagebase = "selfcal_allspw_selfcal_3_mfs_deeper"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis2, imagename=myimagebase,
@@ -408,22 +424,23 @@ makemask(mode='copy', inpimage=image1,
          inpmask=cleanimage+":clean_mask_25mJy", output='clean_25mJy_r2.0.mask',
          overwrite=True)
 
-myimagebase = "selfcal_allspw_selfcal_3_mfs_deeper_r2.0"
-os.system('rm -rf {0}.*'.format(myimagebase))
-tclean(vis=vis2, imagename=myimagebase, field="", spw="", specmode='mfs',
-       deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
-       scales=[0,5,15,45],
-       pblimit=0.4, interpolation='linear',
-       interactive=False, niter=50000,
-       mask='clean_25mJy_r2.0.mask',
-       threshold='10mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
-       weighting='briggs', savemodel='modelcolumn', robust=2.0)
-exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
-impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
-        outfile=myimagebase+'.image.pbcor', overwrite=True)
-exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
-exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
-exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+for robust in (-1.0, 0.0, 1.0, 2.0):
+    myimagebase = "selfcal_allspw_selfcal_3_mfs_deeper_r{0:0.1f}".format(robust)
+    os.system('rm -rf {0}.*'.format(myimagebase))
+    tclean(vis=vis2, imagename=myimagebase, field="", spw="", specmode='mfs',
+           deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
+           scales=[0,5,15,45],
+           pblimit=0.4, interpolation='linear',
+           interactive=False, niter=50000,
+           mask='clean_25mJy_r2.0.mask',
+           threshold='10mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
+           weighting='briggs', savemodel='modelcolumn', robust=robust)
+    exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+    impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
+            outfile=myimagebase+'.image.pbcor', overwrite=True)
+    exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+    exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+    exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 
 

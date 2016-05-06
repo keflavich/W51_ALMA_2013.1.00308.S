@@ -12,7 +12,7 @@ regions = pyregion.open(paths.rpath('cores.reg'))
 
 fig1 = pl.figure(1)
 fig1.clf()
-FF2 = aplpy.FITSFigure('../FITS/w51_spw3_continuum_r0_mulstiscale.image.fits', figure=fig1)
+FF2 = aplpy.FITSFigure(paths.dpath("w51_te_continuum_best.fits"), figure=fig1)
 FF2.show_grayscale()
 FF2.add_scalebar((1*u.pc/distance).to(u.deg, u.dimensionless_angles()).value,)
 FF2.scalebar.set_label('1 pc')

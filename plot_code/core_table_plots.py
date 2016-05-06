@@ -146,7 +146,7 @@ ax2.set_xlim(*ax2.get_xlim()[::-1])
 ax2.set_ylabel('Galactic Latitude')
 ax2.set_xlabel('Galactic Longitude')
 ax2.set_aspect(1)
-fig2.savefig(paths.fpath('core_spatial_distribution.png'))
+fig2.savefig(paths.fpath('coreplots/core_spatial_distribution.png'))
 
 
 pl.draw()

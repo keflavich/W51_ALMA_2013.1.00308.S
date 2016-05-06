@@ -23,6 +23,8 @@ bright lines were excluded.
 
 The spectral setups were ...
 
+\subsection{Data Reduction}
+\subsubsection{Continuum}
 A continuum image combining all 4 spectral windows was produced using
 \texttt{tclean}.  We phase self-calibrated the image on baselines longer than
 100m to increase the dynamic range.  The final image was cleaned with 50000
@@ -30,6 +32,13 @@ iterations to a threshold of 5 mJy.  The lowest noise level in the image, away
 from bright sources, is $\sim0.2$ mJy/beam, but near the bright sources e2 and
 IRS2, the noise reached as high as $\sim2$ mJy/beam.  Deeper cleaning was
 attempted, but lead to instabilities.
+
+
+\subsubsection{Lines}
+We produced spectral image cubes of the lines listed in Table ....
+The cubes use only 12m data, as the 12m + 7m combination was unsuccessful.
+
+
 
 \subsection{Morphological Analysis}
 \label{sec:morphology}
@@ -131,6 +140,15 @@ the ``leaves''.  These parameters were tuned by checking against ``real''
 sources identified by eye and selected using \texttt{ds9}: most real sources are
 recovered (but not all; see Section ...) and few spurious sources ($<10$) are
 included.  The resulting catalog includes 113 sources.
+
+The `by-eye' core extraction approach, in which we placed ds9 regions on all
+sources that look `real', produced a more reliable but less complete (and less
+quantifiable) catalog.  This catalog is more useful in the regions around the
+bright sources e2 and north, since these regions are affected by substantial
+uncleaned PSF sidelobe artifacts.  In particular, the dendrogram catalog includes
+a number of sources around e2/e8 that, by eye, appear to be parts of continuous
+extended emission rather than local peaks; ``streaking'' artifacts in the
+reduced data result in their identification despite our threshold criteria.
 
 \subsection{Photometry}
 We created a catalog of the dendrogram sources including their peak and mean
@@ -296,6 +314,26 @@ this corresponds to a volume density $n>10^{8.1}$ \percc.
 
 - largest angular scale in ALMA image
 
+\subsection{Chemically Distint Regions}
+Surrounding W51e2e, we noted the presence of sharp-edged uniform-brightness regions 
+in a few spectral lines over the range 55-60 \kms.  These features are elongated
+in the direction of the outflow, but have significant extend orthogonal to the outflow,
+spanning $9500\times6600$ AU.  They are prominent in CH3OH, OCS, and CH3OCH3, weak
+but present in H2CO and SO, and absent in HC3N and HNCO.
+
+Around e8, a similar feature is observed, but this time CH3OCH3 is absent.
+
+Along the south end of the e8 filament, no such enhanced features are seen; only
+H2CO and the lowest transition of CH3OH are evident.
+
+Toward W51 north, CH3OH, H2CO, and SO exhibit the sharp-edged enhancement feature,
+while the other species do not.  The enhancement is from 57-63 \kms.
+
+Given the enhanced abundance of CH3OH in particular, it seems likely that these
+sharp-edged bubbles represent sublimation zones in which substantial quantities
+of grain-processed materials are released into the gas phase.  The sharp edges
+likely reflect the particular point where the temperature exceeds the sublimation
+temperature for each species.
 
 
 \end{document}

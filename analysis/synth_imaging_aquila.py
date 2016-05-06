@@ -29,7 +29,9 @@ wave_alma = constants.c/(freq_alma)
 # but we want to keep constant MJy/sr (surface brightness) out to a larger
 # distance, then convert that to Jy/(ALMA beam)
 # use 18.2" from Konyves 2015
-out_bm = (2*np.pi*((18.2*distance_scaling)*u.arcsec/2.35)**2)
+herschel_resoln = 18.2 # arcsec
+fwhm_scale = (8*np.log(2))**0.5
+out_bm = (2*np.pi*((herschel_resoln*distance_scaling)*u.arcsec/fwhm_scale)**2)
 #MJySr_to_JyBm = (1*u.MJy/u.sr).to(u.Jy/in_bm).value
 MJySr_to_JyBm = (1*u.MJy/u.sr).to(u.Jy/out_bm).value
 
@@ -64,14 +66,14 @@ ffile[0].header['CRPIX3'] = 1
 ffile[0].header['CRVAL3'] = 2.33946806e+11
 ffile[0].header['CUNIT3'] = 'Hz'
 ffile[0].header['CDELT3'] = 1e9
-ffile[0].header['CTYPE3'] = 'FREQ'
+ffile[0].header['CTYPE3'] = 'FREQ' # MAYBE frequency?
 ffile[0].header['CRPIX4'] = 1
 ffile[0].header['CRVAL4'] = 1
 ffile[0].header['CUNIT4'] = ''
 ffile[0].header['CDELT4'] = 0
 ffile[0].header['CTYPE4'] = 'STOKES'
 ffile[0].header['RESTFRQ'] = 2.33946806e+11
-ffile[0].header['BUNIT'] = 'Jy/beam'
+ffile[0].header['BUNIT'] = 'Jy/pixel'
 dustcol = fits.getdata(d_aquila)
 dusttem = fits.getdata(t_aquila)
 surfbright = dust_emissivity.blackbody.modified_blackbody(freq_alma,
@@ -85,8 +87,12 @@ np.testing.assert_almost_equal(surfbright[3687,2015].value, testval.value)
 assert not np.all(surfbright[surfbright==surfbright]==0)
 pixel_area = np.abs(ffile[0].header['CDELT1'] * ffile[0].header['CDELT2']) * u.deg**2
 fluxdens = surfbright.to(u.MJy/u.sr).value * MJySr_to_JyBm
-ffile[0].data = fluxdens
 #ffile[0].data = np.expand_dims(ffile[0].data, axis=0)
+
+# divide by ppbeam for jy/pixel
+ppbeam = (out_bm / pixel_area).decompose().value
+ffile[0].data = fluxdens / ppbeam
+
 ffile.writeto(aquila_rescaled, clobber=True)
 hdr = ffile[0].header
 
@@ -102,8 +108,8 @@ importfits(fitsimage=aquila_rescaled,
                               '1.451177222222E+01deg',
                               '233.9468GHz','I'],
            # 18" = 1.22 lambda/D
-           beam=["{0}deg".format(18/3600.*distance_scaling),
-                 "{0}deg".format(18/3600.*distance_scaling),
+           beam=["{0}deg".format(herschel_resoln/3600.*distance_scaling),
+                 "{0}deg".format(herschel_resoln/3600.*distance_scaling),
                  "0deg"],
           )
 print("FITS CDELT1={0}, CDELT2={1}".format(hdr['CDELT1'], hdr['CDELT2']))
@@ -135,27 +141,68 @@ importfits(fitsimage=aquila_rescaled,
            overwrite=True,
            # The beam is OBVIOUSLY AND CORRECTLY in the header.
            # but if you leave this out, CASA complains loudly
-           beam=["{0}deg".format(18/3600.*distance_scaling),
-                 "{0}deg".format(18/3600.*distance_scaling),
+           beam=["{0}deg".format(herschel_resoln/3600.*distance_scaling),
+                 "{0}deg".format(herschel_resoln/3600.*distance_scaling),
                  "0deg"],
           )
 ia.open(aquila_casa_image)
 print("BUNIT: ",ia.summary()['unit'])
+print("brightnessunit: ",ia.brightnessunit())
+print("Peak value: {max}  Total: {sum}".format(**ia.statistics()))
 ia.close()
 
 #sm.openfromms("w51_contvis_selfcal_0.ms")
 sm.openfromms("continuum_7m12m_noflag.ms")
 #sm.openfromms("w51_test_onechan.ms")
 sm.setvp()
+ia.open(aquila_casa_image)
+print("After setvp: ")
+print("BUNIT: ",ia.summary()['unit'])
+print("brightnessunit: ",ia.brightnessunit())
+print("Peak value: {max}  Total: {sum}".format(**ia.statistics()))
+ia.close()
+
+
 success = sm.predict(aquila_casa_image)
+
+ia.open(aquila_casa_image)
+print("After prediction: ")
+print("BUNIT: ",ia.summary()['unit'])
+print("brightnessunit: ",ia.brightnessunit())
+print("Peak value: {max}  Total: {sum}".format(**ia.statistics()))
+ia.close()
+
 # TODO: get these from ASDM_CALWVR and WEATHER
 success2 = sm.setnoise(mode='tsys-atm', relhum=60.0, pwv='2mm', tatmos=265.0, )
+
+ia.open(aquila_casa_image)
+print("After setnoise: ")
+print("BUNIT: ",ia.summary()['unit'])
+print("brightnessunit: ",ia.brightnessunit())
+print("Peak value: {max}  Total: {sum}".format(**ia.statistics()))
+ia.close()
+
 success3 = sm.corrupt()
+
+ia.open(aquila_casa_image)
+print("After corrupt: ")
+print("BUNIT: ",ia.summary()['unit'])
+print("brightnessunit: ",ia.brightnessunit())
+print("Peak value: {max}  Total: {sum}".format(**ia.statistics()))
+ia.close()
+
+
 sm.done()
 sm.close()
 
-# problem:
-# plotms(vis='continuum_7m12m_noflag.ms', xaxis='uvdist', ydatacolumn='model')
+ia.open(aquila_casa_image)
+print("After prediction & corruption & close: ")
+print("BUNIT: ",ia.summary()['unit'])
+print("brightnessunit: ",ia.brightnessunit())
+print("Peak value: {max}  Total: {sum}".format(**ia.statistics()))
+ia.close()
+
+
 
 os.system('rm -rf aquila_dusttem_model.ms')
 assert split(vis="continuum_7m12m_noflag.ms", outputvis="aquila_dusttem_model.ms",
@@ -185,38 +232,6 @@ tclean(vis='aquila_dusttem_model.ms',
        savemodel='none',
        )
 exportfits(imagename='aquila_dusttem_model_tclean_dirty.residual', fitsimage='aquila_dusttem_model_tclean_dirty.image.fits',  dropdeg=True, overwrite=True)
-
-# dirtyimage = 'aquila_dusttem_model_tclean_dirty.residual'
-# assert ia.open(dirtyimage)
-# assert ia.calcmask(mask=dirtyimage+" > 0.1", name='dirty_mask_100mJy')
-# assert ia.close()
-# makemask(mode='copy', inpimage=dirtyimage,
-#          inpmask=dirtyimage+":dirty_mask_100mJy", output='dirty_100mJy.mask',
-#          overwrite=True)
-# exportfits('dirty_100mJy.mask', 'dirty_100mJy.mask.fits', dropdeg=True, overwrite=True)
-# 
-# os.system('rm -rf aquila_dusttem_model_tclean_clean_masked*')
-# tclean(vis='aquila_dusttem_model.ms',
-#        imagename='aquila_dusttem_model_tclean_clean_masked',
-#        field='',
-#        spw='',
-#        specmode='mfs',
-#        deconvolver='clark',
-#        imsize = [1536,1536],
-#        cell= '0.1arcsec',
-#        weighting = 'uniform',
-#        phasecenter=phasecenter,
-#        #scales=[0,3,9,27,81],
-#        robust = -2.0,
-#        niter = 50000,
-#        threshold = '7.0mJy',
-#        interactive = False,
-#        gridder = 'mosaic',
-#        savemodel='none',
-#        mask='dirty_100mJy.mask',
-#        )
-# exportfits(imagename='aquila_dusttem_model_tclean_clean.image', fitsimage='aquila_dusttem_model_tclean_clean.image.fits',  dropdeg=True, overwrite=True)
-# exportfits(imagename='aquila_dusttem_model_tclean_clean.model', fitsimage='aquila_dusttem_model_tclean_clean.model.fits',  dropdeg=True, overwrite=True)
 
 
 os.system('rm -rf aquila_dusttem_model_tclean_clean*')
