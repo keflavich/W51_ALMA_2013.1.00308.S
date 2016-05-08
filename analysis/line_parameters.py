@@ -1,3 +1,9 @@
+"""
+Lines to examine as possible brightest lines in bad for determining the source
+velocity.  This is a more restrictive list than the lines_to_image_list; it
+excludes things that are likely to be wrong like h30a and C18O (which will
+trace ionized/diffuse gas)
+"""
 from astropy import units as u
 
 #lines_to_overlay = ['OCS','H2CO', 'HNCO', 'SO']
@@ -43,4 +49,5 @@ yoffset = {'H2CO303_202': 0,
            'CH3OH808-716': 17,
            #'H30alpha': 4.5,
            #'C18O2-1': 3.5,
+
           }

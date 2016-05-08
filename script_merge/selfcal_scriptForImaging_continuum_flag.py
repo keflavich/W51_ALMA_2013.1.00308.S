@@ -90,6 +90,9 @@ multiscale = [0,5,15,45,135]
 # mask)
 #multiscale = []
 
+
+######### FIRST ITERATION
+
 clearcal(vis=vis0)
 #flagmanager(vis=vis0, versionname='flagdata_1', mode='restore')
 myimagebase = "merge_selfcal_allspw_dirty"
@@ -155,6 +158,8 @@ os.system('rm -rf {0}.flagversions'.format(vis1))
 split(vis=vis0, outputvis=vis1,
       datacolumn="corrected")
 
+##### SECOND ITERATION
+
 myimagebase="selfcal_allspw_selfcal_mfs"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis1, imagename=myimagebase, field="", spw='',
@@ -195,6 +200,10 @@ os.system('rm -rf {0}.flagversions'.format(vis2))
 split(vis=vis1, outputvis=vis2,
       datacolumn="corrected")
 
+
+##### THIRD ITERATION
+
+
 myimagebase = "merge_selfcal_allspw_selfcal_2_mfs"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis2, imagename=myimagebase, field="", spw='',
@@ -230,6 +239,11 @@ os.system('rm -rf {0}'.format(vis3))
 os.system('rm -rf {0}.flagversions'.format(vis3))
 split(vis=vis2, outputvis=vis3,
       datacolumn="corrected")
+
+
+######## THIRD ITERATION
+
+
 
 myimagebase = "merge_selfcal_allspw_selfcal_3_mfs"
 os.system('rm -rf {0}.*'.format(myimagebase))
@@ -272,6 +286,12 @@ split(vis=vis3, outputvis=vis4,
       datacolumn="corrected")
 summary4 = flagdata(vis=vis4, mode='summary')
 print("{flagged}/{total} flagged points in vis4 after restoration".format(**summary4))
+
+
+
+###### FOURTH ITERATION
+
+
 
 myimagebase = "merge_selfcal_allspw_selfcal_4ampphase_mfs"
 os.system('rm -rf {0}.*'.format(myimagebase))
@@ -322,6 +342,10 @@ impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb',
 exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+
+
+
+#######  FURTHER CLEANING OFF THIRD ITERATION
 
 
 
@@ -381,24 +405,26 @@ exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwr
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 # these came out to be quite bad
-for robust in (2.0, 0.0, -2.0):
-    myimagebase = "merge_nocal_allspw_mfs_r{0:0.1f}".format(robust)
-    os.system('rm -rf {0}.*'.format(myimagebase))
-    delmod(vis=mergevis)
-    tclean(vis=mergevis, imagename=myimagebase, field="", spw="", specmode='mfs',
-           deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
-           scales=multiscale,
-           pblimit=0.4, interpolation='linear',
-           interactive=False, niter=50000,
-           threshold='25mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
-           #mask='clean_50mJy.mask',
-           weighting='briggs', savemodel='none', robust=robust)
-    exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
-    impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
-            outfile=myimagebase+'.image.pbcor', overwrite=True)
-    exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
-    exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
-    exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+for robust in (2.0, -1.0, 0.0, 1.0, -2.0):
+    for npix in (0, 5, 15):
+        myimagebase = "merge_selfcal_allspw_selfcal_3_r{0:0.1f}_superuniformnpix{1}".format(robust, npix)
+        os.system('rm -rf {0}.*'.format(myimagebase))
+        delmod(vis=vis3)
+        tclean(vis=vis3, imagename=myimagebase, field="", spw="", specmode='mfs',
+               deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
+               scales=multiscale,
+               pblimit=0.4, interpolation='linear',
+               interactive=False, niter=50000,
+               threshold='25mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
+               npixels=npix,
+               mask='clean_50mJy.mask',
+               weighting='briggs', savemodel='none', robust=robust)
+        exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+        impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
+                outfile=myimagebase+'.image.pbcor', overwrite=True)
+        exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+        exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+        exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 
 
