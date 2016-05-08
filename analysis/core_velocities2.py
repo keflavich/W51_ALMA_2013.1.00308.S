@@ -22,40 +22,40 @@ cores = pyregion.open(paths.rpath('cores.reg'))
 minvelo = 45*u.km/u.s
 maxvelo = 90*u.km/u.s
 
-# # array merged
-# data = {}
-# 
-# for corereg in cores:
-#     name = corereg.attr[1]['text']
-#     data[name] = {}
-# 
-#     fn = paths.merge_spath("{name}_spw{ii}_mean_7m12m.fits")
-#     bgfn = paths.merge_spath("{name}_spw{ii}_background_mean_7m12m.fits")
-# 
-#     data[name] = spectral_overlays.spectral_overlays(fn, name=name,
-#                                                      freq_name_mapping=freq_name_mapping,
-#                                                      frequencies=frequencies,
-#                                                      yoffset=yoffset,
-#                                                      minvelo=minvelo,
-#                                                      maxvelo=maxvelo,
-#                                                      suffix="_7m12m",
-#                                                      background_fn=bgfn,
-#                                                     )
-# 
-# firstentry = list(data.keys())[0]
-# colnames = list(data[firstentry].keys())
-# coltypes = {k:type(data[firstentry][k]) for k in colnames}
-# names = Column([name for name in data], name='SourceID')
-# data_list = [Column(u.Quantity([data[name][key] for name in names]), name=key)
-#              if coltypes[key] not in (str,)
-#              else Column([data[name][key] for name in names], name=key)
-#              for key in colnames]
-# data_list.insert(0, names)
-# 
-# 
-# tbl = Table(data_list)
-# tbl.sort('SourceID')
-# tbl.write(paths.tpath("core_velocities_7m12mspectra.ipac"), format="ascii.ipac")
+# array merged hi-res
+data = {}
+
+for corereg in cores:
+    name = corereg.attr[1]['text']
+    data[name] = {}
+
+    fn = paths.merge_spath("{name}_spw{ii}_7m12m_hires_mean.fits")
+    #bgfn = paths.merge_spath("{name}_spw{ii}_background_mean_7m12m.fits")
+
+    data[name] = spectral_overlays.spectral_overlays(fn, name=name,
+                                                     freq_name_mapping=freq_name_mapping,
+                                                     frequencies=frequencies,
+                                                     yoffset=yoffset,
+                                                     minvelo=minvelo,
+                                                     maxvelo=maxvelo,
+                                                     suffix="_7m12m_hires",
+                                                     #background_fn=bgfn,
+                                                    )
+
+firstentry = list(data.keys())[0]
+colnames = list(data[firstentry].keys())
+coltypes = {k:type(data[firstentry][k]) for k in colnames}
+names = Column([name for name in data], name='SourceID')
+data_list = [Column(u.Quantity([data[name][key] for name in names]), name=key)
+             if coltypes[key] not in (str,)
+             else Column([data[name][key] for name in names], name=key)
+             for key in colnames]
+data_list.insert(0, names)
+
+
+tbl = Table(data_list)
+tbl.sort('SourceID')
+tbl.write(paths.tpath("core_velocities_7m12m_hires.ipac"), format="ascii.ipac")
 
 
 # 12m only

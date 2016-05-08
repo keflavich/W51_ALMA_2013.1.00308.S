@@ -116,7 +116,8 @@ for spwnum in '1320':
 
 
         # LINE IMAGING (MOSAIC MODE)
-        if not os.path.exists(output+".image.fits"):
+        if not (os.path.exists(output+".image.fits") or
+                os.path.exists(output+".image.pbcor.fits")):
             print "Imaging {0}".format(output)
             os.system('rm -rf ' + output + '*')
             tclean(vis = concatvis,
@@ -144,9 +145,14 @@ for spwnum in '1320':
 
               
             myimagebase = output
-            # I've given up on primary beam correction, at least for now
-            exportfits(imagename=myimagebase+'.image',
-                       fitsimage=myimagebase+'.image.fits',
-                       overwrite=True,
-                       dropdeg=True)
-
+            exportfits(myimagebase+'.image', myimagebase+'.image.fits',
+                       dropdeg=True, overwrite=True)
+            impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
+                    outfile=myimagebase+'.image.pbcor', overwrite=True)
+            exportfits(myimagebase+'.image.pbcor',
+                       myimagebase+'.image.pbcor.fits', dropdeg=True,
+                       overwrite=True)
+            
+            for suffix in ('psf', 'weight', 'sumwt', 'pb', 'model', 'residual',
+                           'mask', 'image'):
+                os.system('rm -rf {0}.{1}'.format(myimagebase, suffix))
