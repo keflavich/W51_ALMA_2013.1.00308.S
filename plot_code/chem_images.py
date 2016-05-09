@@ -54,6 +54,7 @@ labeldict = {
                'CH3OCH323321-23222EE':'CH$_3$OCH$_3$ $23_{3,21}-23_{2,22}$EE',
                'HNCO10010-909':'HNCO $10_{0,10}-9_{0,9}$',
                'O13CS18-17':'O$^{13}$CS 18-17',
+               'N2D+_3-2': 'N$_2$D+ 3-2',
 }
 
 def chem_plot(yslice=slice(367,467), xslice=slice(114,214), vrange=[51,60]*u.km/u.s,
