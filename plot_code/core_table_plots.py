@@ -187,5 +187,56 @@ ax2.add_patch(Circle([circlecen.ra.deg, circlecen.dec.deg], radius=0.0105479,
 fig2.savefig(paths.fpath('coreplots/core_spatial_distribution.png'))
 
 
+
+powerlaw_parameters = {}
+
+fig2 = pl.figure(2)
+fig2.clf()
+#ax = fig2.gca()
+
+apertures = ('0p2', '0p4', '0p6', '0p8', '1p0', '1p5')
+for ii,aperture in enumerate(apertures):
+    flux = (cores_merge['cont_flux{0}arcsec'.format(aperture)] -
+            cores_merge['KUbandcont_flux{0}arcsec'.format(aperture)])
+    ff = (cores_merge['KUbandcont_flux{0}arcsec'.format(aperture)] /
+          cores_merge['cont_flux{0}arcsec'.format(aperture)]) > 0.5
+
+
+    fit = powerlaw.Fit(flux[~ff])
+    print("Powerlaw fit for apertures {0}: {1}+/-{4}     xmin: {2}"
+          "    n: {3}".format(aperture, fit.power_law.alpha,
+                              fit.power_law.xmin, fit.power_law.n,
+                              fit.power_law.sigma,
+                             ))
+    powerlaw_parameters[aperture] = {'alpha':fit.power_law.alpha,
+                                     'e_alpha':fit.power_law.sigma,
+                                     'xmin':fit.power_law.xmin,
+                                     'number':fit.power_law.n,
+                                    }
+
+
+    ax = pl.subplot(6,1,ii+1)
+    ax.set_ylabel("${0}''$".format(aperture.replace("p",".")))
+    H,L,P = ax.hist(flux[~ff], bins=np.logspace(-3,1.05, 20),
+                    #facecolor='none',
+                    #alpha=0.5,
+                    histtype='step',
+                    label=aperture)
+    if ii < 5:
+        ax.set_xticklabels([])
+        ax.get_xaxis().set_visible(False)
+
+    max_yticks=3
+    yloc = pl.MaxNLocator(max_yticks)
+    ax.yaxis.set_major_locator(yloc)
+
+    ax.set_xscale('log')
+    ax.set_xlim(0.002, 15)
+    ax.set_ylim(0, H.max()+1)
+ax.set_xlabel("Flux (Jy)")
+pl.subplots_adjust(hspace=0)
+pl.savefig(paths.fpath("coreplots/core_flux_histogram_apertureradius.png"))
+
+
 pl.draw()
 pl.show()

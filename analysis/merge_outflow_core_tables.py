@@ -64,7 +64,20 @@ cores_merge = cores_merge['SourceID',
                           'beam_area',
                           'RA',
                           'Dec',
+                          'cont_flux0p2arcsec',
+                          'KUbandcont_flux0p2arcsec',
+                          'cont_flux0p4arcsec',
+                          'KUbandcont_flux0p4arcsec',
+                          'cont_flux0p6arcsec',
+                          'KUbandcont_flux0p6arcsec',
+                          'cont_flux0p8arcsec',
+                          'KUbandcont_flux0p8arcsec',
+                          'cont_flux1p0arcsec',
+                          'KUbandcont_flux1p0arcsec',
+                          'cont_flux1p5arcsec',
+                          'KUbandcont_flux1p5arcsec',
                          ]
+                         
 
 cores_merge.write(paths.tpath('core_continuum_and_line.ipac'), format='ascii.ipac')
 

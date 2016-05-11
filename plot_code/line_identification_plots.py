@@ -24,10 +24,12 @@ spectra_to_species = {'e8mm': [('vinyl_cyanide', 'CH2CHCN', 500),
 snu_min = {'e8mm': 0.3,
            'e2e': 0.3,
            'ALMAmm14': 0.0,
+           'north': 0.3,
           }
 velo = {'e8mm': 61*u.km/u.s,
         'e2e': 56*u.km/u.s,
         'ALMAmm14': 62*u.km/u.s,
+        'north': 55*u.km/u.s,
        }
 
 pl.figure(1).clf()

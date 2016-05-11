@@ -1,8 +1,73 @@
 \documentclass{aa}
 \input{preface}
 \begin{document}
-\title{Cores and Outflows in the W51 Protoclusters}
-"A multi-phase outflow from a high-mass protostar"
+\title{Cores and Outflows and Chemistry in the W51 Protoclusters}
+
+This is not yet a paper.  It is a collection of paper ideas and some 
+preliminary analysis that will make it in to one or more papers.
+
+Data summary: the 7m and 12m data have all been delivered, but the UV coverage
+is non-optimal.  Importantly and unfortunately, no single-dish (total power)
+data were ever acquired.  I have requested APEX observations using the new
+PI230 instrument to recover the spectral line zero spacings, but that data may
+not be received for quite some time.  The original proposed project connecting
+cloud scales to core scales will not be possible until the single dish data are
+acquired.
+
+
+Subprojects:
+\begin{enumerate}
+    \item Core identification and mass estimation and maybe even
+        core mass function constraints.  Lead: Ginsburg.  This document
+        is a quasi-draft of that work.
+    \item ``A multi-phase outflow from a high-mass protostar"
+        The Lacy jet is detected in both CO and RRLs.  This tells us something
+        about its proximity to the HII region IRS2, but what else can we learn
+        from it?  Lead: maybe Ginsburg.  Maybe this gets incorporated
+        into other papers.
+    \item Comparitive chemistry of the W51 cores.  Lead: Victor Rivilla \&
+        Maite Beltr{\'a}n, possibly with participation from Alvaro
+        Sanchez-Monge.
+        This project will involve identifying all of the lines in the W51 cores
+        and examining how the chemistry relates to physical parameters.
+        We will use LTE modeling tools (XCLASS, MADCUBA) for many species to
+        identify lines and determine abunances and temperatures
+    \item \formaldehyde and CO turbulent cloud modeling / simulation comparison
+        (Loughnane).  A difficulty here is that combination of the 7m and 12m
+        data has not worked out very well yet, either for the lines or the
+        continuum, and that may render cloud-scale analysis quite difficult.
+    \item A study of the CO outflows.  Lead: Maybe Luke Maud?  Ciriaco Goddi
+        will be involved.  The $^{12}$CO and SO outflows are spectacular and
+        plentiful.  It is not obvious whether they can or should be
+        incorporated into this paper; at least, I am not presently prepared to
+        put in the effort to quantify the outflows properly.  Ciriaco is PI of
+        a long-baseline program that has resolved the e2/e8 and North cores
+        with $5\times$ better resolution than this program, and that data set
+        may therefore be better suited to a core-outflow association work.
+\end{enumerate}
+
+
+\section{Overview}
+\todo{This section is not part of any proposed paper text.}
+The work below will be incorporated into one or more papers as it proves useful.
+The figures \& text represent an initial exploration of the data.  There are some important notes
+that are not included in the text:
+\begin{itemize}
+    \item The data reduction has some substantial problems because of strange UV coverage
+        and stranger behavior of clean (for which I have opened many tickets).  It appears
+        impossible to get the noise below $\sim1 $ mJy around the bright sources, and detections
+        are unreliable below $\sim10$ mJy in these area (which I've tried to account for when doing
+        source extraction)
+    \item The 7m data does not combine well with the 12m data.  It seems to
+        cause major large-angular-scale artifacts.  I think this is a weighting
+        issue in which the 7m data have lower noise than the 12m data and are
+        therefore too heavily weighted, causing large "halos" where the large
+        angular scale dominates over the small, providing spuriously strong
+        detections.  In principle, this can be solved by downweighting the 7m data,
+        but it turns out CASA does not have that implemented (\texttt{innertaper}
+        is the relevant keyword)
+
+\end{itemize}
 
 
 \section{Observations}
@@ -39,6 +104,11 @@ We produced spectral image cubes of the lines listed in Table ....
 The cubes use only 12m data, as the 12m + 7m combination was unsuccessful.
 
 
+\subsubsection{UV coverage}
+\Figure{figures/visibility_weight_vs_uvdist_linear.png}
+{A weighted histogram of the visibility weights as a function of UV distance;
+this approximately shows the amount of data received at each UV spacing}
+{fig:uvcov}{1}{16cm}
 
 \subsection{Morphological Analysis}
 \label{sec:morphology}
@@ -107,11 +177,17 @@ foreground, and this gas is clearly moving toward the cores.
 The source ALMAmm14 shows a similar kinematic signature....
 
 \subsection{Simulations}
-{\bf Unfortunately CASA's simulations produce reproducible incorrectness, in that
-I cannot get an image that matches the input image.  There seems to *always* be some
-flux scaling no matter what input unit is used.  Therefore, I don't trust any of
-the results of CASA simulations yet.  Perseus looks OK, but Aquila is just flat out wrong,
-and the scale-recovery simulations I attempted also failed.}
+{\bf Unfortunately CASA's simulations produce reproducible incorrectness, in
+that I cannot get an image that matches the input image.  There seems to
+*always* be some flux scaling no matter what input unit is used.  Therefore, I
+don't trust any of the results of CASA simulations yet.  Perseus looks OK, but
+Aquila is just flat out wrong, and the scale-recovery simulations I attempted
+also failed.
+
+Followup on the above paragraph: I've gotten the simulations worked out; CASA
+always treats data as if they are in Jy/beam even if Jy/pixel units are
+specified when using the \texttt{sm.predict} module.  However, I'm not
+convinced of their utility at this stage.}
 
 The enhanced noise around bright sources is unavoidable.  We tested the noise
 properties of our data set using the CASA \texttt{simobserve} toolkit.  We
@@ -200,7 +276,7 @@ emission fill the full field of view.
 {The spatial distribution of the hand-identified core sample.
 The black outer contour shows the observed field of view.
 The dashed circle shows a hypothetical ring of star formation.
-}{fig:corepositions}{1}{10cm}
+}{fig:corepositions}{1}{16cm}
 
 \subsection{Photometry}
 We created a catalog of the dendrogram sources including their peak and mean
@@ -218,10 +294,17 @@ double-count some pixels.  The smallest separation is
 
 \Figure{figures/core_flux_histogram_apertureradius.png}
 {Histograms of the core fluxes measured with circular apertures centered
+on the hand-extracted core positions.  The aperture size is listed 
+in the y-axis label.}
+{fig:fluxhistograms}
+{1}{16cm}
+
+\Figure{figures/dendro_core_flux_histograms.png}
+{Histograms of the core fluxes measured with circular apertures centered
 on the dendrogram-extracted core centroids.  The aperture size is listed 
 in the y-axis label.  Free-free-dominated sources are excluded.}
-{fig:fluxhistograms}
-{1}{10cm}
+{fig:dendrofluxhistograms}
+{1}{16cm}
 
 \subsubsection{Distribution Functions}
 We fit power law distributions to each aperture's flux distribution.  The
@@ -343,9 +426,13 @@ which the dust and gas are coupled.
 To accomplish this, we have found the brightest lines across the full $\sim6
 GHz$ spectra and measured their peak brightness temperature.
 
+\todo{TODO: use coarser resolution (2\arcsec = 0.1 pc?) data to extract ``cores''
+where no smaller (protostellar) cores are detected.  Try to estimate their masses.
+These are the best candidate ``prestellar" cores, though likely anything this
+large is likely to be a massive cluster...}
 
 \subsection{The mass budget on different spatial scales}
-\ref{sec:massbudget}
+\label{sec:massbudget}
 An important evolutionary indicator is the amount of mass at a given density; a
 more evolved (more efficiently star-forming) region will have more mass at high
 densities.  We cannot measure the dense gas fraction directly, but the amount of
@@ -366,17 +453,17 @@ this corresponds to a volume density $n>10^{8.1}$ \percc.
 
 - largest angular scale in ALMA image
 
-\subsection{Chemically Distint Regions}
+\subsection{Chemically Distinct Regions}
 The ``hot cores'' in W51 are resolved and multi-layered.
 
 Surrounding W51e2e, we noted the presence of sharp-edged uniform-brightness
 regions in a few spectral lines over the range 51-60 \kms (Figure
 \ref{fig:chemmaps}).  These features are elongated in the direction of the
 outflow, but have significant extend orthogonal to the outflow, spanning
-$9500\times6600$ AU.  They are prominent in \methanol, OCS, and CH3OCH3, weak
+$9500\times6600$ AU.  They are prominent in \methanol, OCS, and \dimethylether, weak
 but present in \formaldehyde and SO, and absent in \cyanoacetylene and HNCO.
 
-Around e8, a similar feature is observed, but this time CH3OCH3 is absent.
+Around e8, a similar feature is observed, but this time \dimethylether is absent.
 
 Along the south end of the e8 filament, no such enhanced features are seen; only
 \formaldehyde and the lowest transition of \methanol are evident.
@@ -390,8 +477,28 @@ of grain-processed materials are released into the gas phase.  The sharp edges
 likely reflect the particular point where the temperature exceeds the sublimation
 temperature for each species.
 
-\Figure{figures/chemical_m0_slabs_e2e8.png}
-{Moment 0 maps of the e2 region in 25 different species over the range 51 to 60
+The relative chemical structures of e2, e8, and IRS2 are relatively similar.
+The same species are detected in all of the central cores.  However, in e2,
+\dimethylether, \methylformate, \ethylcyanide, and Acetone (\acetone) are
+significantly more extended in e2 than in the other sources.
+\gaucheethanol is detected in W51 North, but is weak in e8 and almost absent
+in e2.
+
+The substructure of different species in e2 is also revealing.  Species that
+are elongated in the NW/SE direction are associated primarily with the outflow
+(\cyanoacetylene, \ethylcyanide).  Other species are associated primarily with
+the extended core (\methylformate, \dimethylether, \acetone).  Some are only
+seen in the compact core (\methyleneamidogen, HNCO, \formamide, and
+vibrationally excited \cyanoacetylene).  Only \methanol and OCS are associated
+with both the extended core and the outflow, but not the greater extended
+emission.  \ketene seems to be associated with only the extended core, but not
+the compact core. Finally, there are the species that trace the broader ISM in
+addition to the cores and outflows (\formaldehyde, $^{13}$CS, OCS, C$^{18}$O
+and SO).  Both HCOOH and N$_2$D+ are weak and associated only with the innermost
+e2e core.
+
+\Figure{figures/chemical_m0_slabs_e2.png}
+{Moment 0 maps of the e2 region in 40 different lines over the range 51 to 60
 \kms with continuum subtraction using the 30th percentile emission
 over the ranges 25-40 and 75-90 \kms.  All images are on the same scale, and
 the negative features show absorption against the continuum.  There
@@ -399,7 +506,54 @@ is a strong `halo' of emission seen in the CH$_3$Ox lines and OCS.  Extended
 emission is also clearly seen in SO, $^{13}$CS, and \formaldehyde, though these
 lines more smoothly blend into their surroundings.  HNCO and \formamide have
 smaller but substantial regions of enhancement with a sharp contrast to their
-surroundings.  HC$_3$N traces the e2 outflow.
-}{fig:chemmaps}{1}{18cm}
+surroundings.  HC$_3$N traces the e2 outflow.  The bright H30$\alpha$ emission
+marks the position of e2w, the hypercompact HII region that dominates the
+centimeter emission in e2.
+}{fig:chemmapse2}{1}{18cm}
+
+\Figure{figures/chemical_m0_slabs_e8.png}
+{Moment 0 maps of the e8 region in 40 different lines over the range 52 to 63
+\kms with continuum subtraction using the 30th percentile emission
+over the ranges 25-40 and 75-90 \kms.  All images are on the same scale, and
+the negative features show absorption against the continuum.  As in e2,
+there is extended emission in the CH$_3$OH and OCS lines, but in contrast,
+the othe CH$_3$Ox lines are more compact. SO is brighter than OCS in e8, 
+whereas the opposite is true in e2.
+}{fig:chemmapse8}{1}{18cm}
+
+\Figure{figures/chemical_m0_slabs_north.png}
+{Moment 0 maps of the W51 IRS2 region in 40 different lines over the range 54 to 64
+\kms with continuum subtraction using the 30th percentile emission
+over the ranges 25-40 and 75-90 \kms.  All images are on the same scale, and
+the negative features show absorption against the continuum.  Qualitatively,
+ the relative extents of species seem comparable to e8.  The H30$\alpha$ 
+ point source is W51 d2.
+}{fig:chemmapsnorth}{1}{18cm}
+
+\Figure{figures/chemical_m0_slabs_ALMAmm14.png}
+{Moment 0 maps of the ALMAmm14 region in 40 different lines over the range 58 to 67
+\kms with continuum subtraction using the 30th percentile emission
+over the ranges 25-40 and 75-90 \kms.  All images are on the same scale. 
+ALMAmm14 is one of the brightest sources outside of e2/e8/IRS2, but
+it is substantially fainter than those regions.  Still, it has a noticeably
+rich chemistry.
+}{fig:ALMAmm14}{1}{18cm}
+ 
+\clearpage
+
+\section{Outflows}
+We detected many outflows in CO and SO.  
+
+\Figure{{figures/Alma1.4mmcont_green_outflows_aplpy_CONTours}.png}
+{Outflows in red and blue overlaid on mm continuum in green with cm continuum contours in white.}
+{fig:outflowscontinuume2}{1}{12cm}
+
+\Figure{{figures/NACO_green_outflows_aplpy_CONTours_hires_h77acontour}.png}
+{Outflows in the W51 IRS2 region.  The green emission is NACO K-band continuum, with ALMA 1.4 mm
+continuum contours in white and H77$\alpha$ contours in blue.  The \citet{Lacy2007a} jet is prominent
+in H77$\alpha$.}
+{fig:outflowscontinuumnorth}{1}{12cm}
+
+\input{solobib}
 
 \end{document}

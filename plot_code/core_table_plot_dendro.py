@@ -185,7 +185,7 @@ for ii,aperture in enumerate(apertures):
     ax.set_ylim(0, H.max()+1)
 ax.set_xlabel("Flux (Jy)")
 pl.subplots_adjust(hspace=0)
-pl.savefig(paths.fpath("core_flux_histogram_apertureradius.png"))
+pl.savefig(paths.fpath("coreplots/dendro_core_flux_histogram_apertureradius.png"))
 #pl.legend(loc='best')
 
 powerlaw_par_table = Table()

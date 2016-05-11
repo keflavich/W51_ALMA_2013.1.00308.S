@@ -37,7 +37,7 @@ def quick_analyze(sp, freq_name_mapping, minvelo, maxvelo):
 
 def spectral_overlays(fn, name, freq_name_mapping, frequencies, yoffset,
                       minvelo, maxvelo, suffix="", background_fn=None,
-                      return_spectra=False):
+                      return_spectra=False, plot_fullspec=True):
 
     object_data_dict = {}
 
@@ -155,9 +155,44 @@ def spectral_overlays(fn, name, freq_name_mapping, frequencies, yoffset,
                                zorder=-50, alpha=0.5)
     else:
         object_data_dict['mean_velo'] = np.nan*u.km/u.s
+        velo = 60*u.km/u.s
 
     fig.savefig(paths.fpath("spectral_overlays/{name}_overlaid_spectra{suffix}.png".format(name=name, suffix=suffix)),
                 bbox_inches='tight')
+
+    # plot type #2: full spectrum, with lines ID'd
+    if plot_fullspec:
+        linenames = list(frequencies.keys())
+        freqs_ghz = list(frequencies.values())
+        plot_kwargs = {'color':'r', 'linestyle':'--'}
+        annotate_kwargs = {'color': 'r'}
+
+        for spwnum,sp in enumerate(spectra):
+            fig = pl.figure(1)
+            fig.clf()
+            sp.xarr.convert_to_unit(u.GHz)
+            sp.plotter(figure=fig, axis=fig.gca())
+            sp.plotter.line_ids(linenames,
+                                u.Quantity(freqs_ghz),
+                                velocity_offset=velo,
+                                plot_kwargs=plot_kwargs,
+                                annotate_kwargs=annotate_kwargs)
+
+            if bg:
+                bgs = bgspectra[spwnum]
+                bgs.xarr.convert_to_unit(u.GHz)
+                bgs.plotter(axis=sp.plotter.axis,
+                                          clear=False,
+                                          color='b',
+                                          zorder=-100,
+                                         )
+
+            fig.savefig(paths.fpath("spectral_overlays/{name}_spw{spw}_fullspec{suffix}.png".format(name=name,
+                                                                                                    spw=spwnum,
+                                                                                                    suffix=suffix)),
+                        bbox_inches='tight')
+
+            
 
     if return_spectra:
         return object_data_dict, spectra

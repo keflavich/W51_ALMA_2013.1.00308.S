@@ -1,9 +1,15 @@
+import os
 import numpy as np
 from astropy import units as u
+from astropy.utils.console import ProgressBar
 from astropy import log
+from astropy import coordinates
+from astropy.nddata.utils import Cutout2D
+import photutils
 import paths
 import pyregion
 from astropy.io import fits
+from astropy import wcs
 from astropy.table import Table,Column
 import masscalc
 import radio_beam
@@ -14,6 +20,12 @@ regions = pyregion.open(paths.rpath('cores.reg'))
 contfile = fits.open(files.continuum_file)
 data = contfile[0].data
 beam = radio_beam.Beam.from_fits_header(files.continuum_file)
+
+radiofilename = os.path.join(paths.vlapath,
+                             'data/W51Ku_BDarray_continuum_2048_both_uniform.hires.clean.image.fits')
+radio_image = fits.open(radiofilename)
+
+radii = (0.2,0.4,0.6,0.8,1.0,1.5)*u.arcsec
 
 results = {}
 units = {'peak':u.Jy/u.beam,
@@ -36,6 +48,7 @@ for reg in regions:
 
     mask = shreg.get_mask(hdu=contfile[0])
 
+    data = contfile[0].data
     results[name] = {'peak': data[mask].max(),
                      'sum': data[mask].sum(),
                      'npix': mask.sum(),
@@ -46,6 +59,39 @@ for reg in regions:
     results[name]['peak_mass'] = masscalc.mass_conversion_factor()*results[name]['peak']
     results[name]['peak_col'] = masscalc.col_conversion_factor(beamomega=beam.sr.value)*results[name]['peak']
 
+
+    for image, imname in ((contfile,''), (radio_image,'KUband')):
+        data = image[0].data.squeeze()
+        mywcs = wcs.WCS(image[0].header).celestial
+
+        beam = radio_beam.Beam.from_fits_header(image[0].header)
+        pixel_scale = np.abs(mywcs.pixel_scale_matrix.diagonal().prod())**0.5 * u.deg
+        pixel_scale_as = pixel_scale.to(u.arcsec).value
+        ppbeam = (beam.sr/(pixel_scale**2)).decompose().value
+
+        keys = ['{1}cont_flux{0}arcsec'.format(rr.value, imname) for rr in radii]
+        for k in keys:
+            results[name][k] = []
+        log.info("Doing aperture photometry on {0}".format(imname))
+
+        size = max(radii)*2.2
+        xc,yc = reg.coord_list[:2]
+        position = coordinates.SkyCoord(xc, yc, frame='fk5', unit=(u.deg,u.deg))
+        cutout = Cutout2D(data, position, size, mywcs, mode='partial')
+        for rr in radii:
+            aperture = photutils.SkyCircularAperture(positions=position,
+                                                     r=rr).to_pixel(cutout.wcs)
+            aperture_data = photutils.aperture_photometry(data=cutout.data,
+                                                          apertures=aperture,
+                                                          method='exact')
+            flux_jybeam = aperture_data[0]['aperture_sum']
+            #flux_jybeam_average = flux_jybeam / aperture.area()
+            #flux_jysr_average = flux_jybeam_average / beam.sr.value
+            #flux_jysr = flux_jysr_average * aperture.area()
+            #flux_jy = (flux_jysr * (pixel_scale**2).to(u.sr).value)
+            colname = '{1}cont_flux{0}arcsec'.format(rr.value, imname)
+            results[name][colname].append(flux_jybeam/ppbeam)
+
 # invert the table to make it parseable by astropy...
 # (this shouldn't be necessary....)
 results_inv = {'name':{}}
@@ -54,6 +100,7 @@ for k,v in results.items():
     results_inv['name'][k] = k
     columns['name'].append(k)
     for kk,vv in v.items():
+        kk = kk.replace(".","p")
         if kk in results_inv:
             results_inv[kk][k] = vv
             columns[kk].append(vv)
@@ -64,10 +111,16 @@ for k,v in results.items():
 for c in columns:
     if c in units:
         columns[c] = columns[c] * units[c]
+        
+keys = ['{1}cont_flux{0}arcsec'.format(rr.value, imname).replace(".",'p')
+        for rr in radii
+        for imname in ("", "KUband")
+       ]
 
 tbl = Table([Column(data=columns[k],
                     name=k)
-             for k in ['name','RA','Dec','peak','sum','npix','beam_area','peak_mass','peak_col']])
+             for k in ['name', 'RA', 'Dec', 'peak', 'sum', 'npix', 'beam_area',
+                       'peak_mass', 'peak_col']+keys])
 
 tbl.sort('peak_mass')
 tbl.write(paths.tpath("continuum_photometry.ipac"), format='ascii.ipac')
