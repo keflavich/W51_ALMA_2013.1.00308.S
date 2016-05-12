@@ -10,6 +10,6 @@
 #
 
 cd "$GH_PUBLISHER_PROJECT_DIR"
-echo "Path to pdflatex: ",`which pdflatex`
-export texpath=""
+echo "Path to pdflatex: `which pdflatex`"
+export texpath=$(dirname $(which pdflatex))
 make

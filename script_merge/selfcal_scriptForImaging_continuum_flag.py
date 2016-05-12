@@ -533,6 +533,17 @@ exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwr
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 
+rmtables("selfcal_allspw_phase_4_deeper.cal")
+gaincal(vis=vis3, caltable="selfcal_allspw_phase_4_deeper.cal", field=field,
+        solint=solint, calmode="p", refant="", gaintype="G", minsnr=5,
+        uvrange='100~5000m')
+
+rmtables("selfcal_allspw_ampphase_deeper.cal")
+gaincal(vis=vis3, caltable="selfcal_allspw_ampphase_deeper.cal", field=field,
+        solint=solint, solnorm=True, calmode="ap", refant="", gaintype="G",
+        minsnr=5, uvrange='100~5000m')
+
+
 import numpy as np
 from astropy.io import fits
 print("Stats (mfs):")
