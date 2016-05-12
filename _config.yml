@@ -19,7 +19,7 @@ iframe_src: cores_and_outflows_compressed.pdf
 # These fields can contain HTML tags.  You probably want to put <br />
 # in the address somewhere, indicating a line break.
 
-#authors:
+authors:
 - name: Adam Ginsburg
   address: adam.g.ginsburg@gmail.com
 #- name: Clara McNarma
