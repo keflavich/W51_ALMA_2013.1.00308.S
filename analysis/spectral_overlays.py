@@ -64,7 +64,7 @@ def spectral_overlays(fn, name, freq_name_mapping, frequencies, yoffset,
     else:
         bg = False
 
-    fig = pl.figure(1)
+    fig = pl.figure(0)
     fig.clf()
 
     for spwnum,sp in enumerate(spectra):
@@ -168,7 +168,7 @@ def spectral_overlays(fn, name, freq_name_mapping, frequencies, yoffset,
         annotate_kwargs = {'color': 'r'}
 
         for spwnum,sp in enumerate(spectra):
-            fig = pl.figure(1)
+            fig = pl.figure(spwnum+1)
             fig.clf()
             sp.xarr.convert_to_unit(u.GHz)
             sp.plotter(figure=fig, axis=fig.gca())

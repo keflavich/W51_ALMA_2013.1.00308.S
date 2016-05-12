@@ -272,20 +272,24 @@ gaincal(vis=vis3, caltable="selfcal_allspw_ampphase.cal", field=field,
         minsnr=5, uvrange='100~5000m')
 
 flagmanager(vis=vis3, mode='save', versionname='backup')
-applycal(vis=vis3, field="", gaintable=["selfcal_allspw_phase_4.cal", 'selfcal_allspw_ampphase.cal'],
+applycal(vis=vis3, field="", gaintable=["selfcal_allspw_phase_4.cal",
+                                        'selfcal_allspw_ampphase.cal'],
          interp="linear", applymode='calonly', calwt=False)
 summary3 = flagdata(vis=vis3, mode='summary')
-print("{flagged}/{total} flagged points in vis3 afer applycal".format(**summary3))
+summary3['flagfrac'] = summary3['flagged'] / summary3['total']
+print("{flagged}/{total} flagged points in vis3 afer applycal (f={flagfrac:0.3f})".format(**summary3))
 flagmanager(vis=vis3, mode='restore', versionname='backup')
 summary3 = flagdata(vis=vis3, mode='summary')
-print("{flagged}/{total} flagged points in vis3 after restoration".format(**summary3))
+summary3['flagfrac'] = summary3['flagged'] / summary3['total']
+print("{flagged}/{total} flagged points in vis3 after restoration (f={flagfrac:0.3f})".format(**summary3))
 vis4 = 'w51_continuum_7m12m_contvis_selfcal_4.ms'
 os.system('rm -rf {0}'.format(vis4))
 os.system('rm -rf {0}.flagversions'.format(vis4))
 split(vis=vis3, outputvis=vis4,
       datacolumn="corrected")
 summary4 = flagdata(vis=vis4, mode='summary')
-print("{flagged}/{total} flagged points in vis4 after restoration".format(**summary4))
+summary4['flagfrac'] = summary3['flagged'] / summary3['total']
+print("{flagged}/{total} flagged points in vis4 after restoration (f={flagfrac:0.3f})".format(**summary4))
 
 
 
@@ -491,7 +495,7 @@ tclean(vis=vis4, imagename=myimagebase, field="", spw="", specmode='mfs',
        scales=multiscale,
        pblimit=0.4, interpolation='linear',
        interactive=False, niter=100000,
-       threshold='8mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
+       threshold='5mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
        mask='clean_10mJy.mask',
        weighting='briggs', savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -518,7 +522,7 @@ tclean(vis=vis3, imagename=myimagebase, field="", spw="", specmode='mfs',
        scales=multiscale,
        pblimit=0.4, interpolation='linear',
        interactive=False, niter=100000,
-       threshold='8mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
+       threshold='5mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
        mask='clean_10mJy.mask',
        weighting='briggs', savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)

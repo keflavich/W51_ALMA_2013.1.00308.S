@@ -7,6 +7,7 @@ finalvis12m='calibrated_12m.ms'
 finalvis7m='calibrated_7m.ms'
 
 import numpy as np
+from astropy.io import fits
 
 field='w51'
 phasecenter=''
@@ -103,8 +104,11 @@ for spwnum in '1320':
     nchans_total_thiscube = nchans_total[spwnum]
     nchans_per_cube = int(nchans_total_thiscube/ncubes_per_window)
     for ii in range(ncubes_per_window):
-        start = nchans_per_cube*ii
-        end = nchans_per_cube*(ii+1)
+        # add 1 channel at start and 1 at end because tclean mistreats these channels
+        start = nchans_per_cube*ii -1
+        if start <= 0:
+            start = 0
+        end = nchans_per_cube*(ii+1) +1
         if end > nchans_total_thiscube:
             end = nchans_total_thiscube
         output = 'piece_of_full_W51_7m12m_cube_hires.spw{0}.channels{1}to{2}'.format(spwnum, start, end)
@@ -128,7 +132,7 @@ for spwnum in '1320':
                   specmode = 'cube',
                   width = width,
                   start = startfreq,
-                  nchan = nchans_per_cube,
+                  nchan = nchans_per_cube + 2, # 1 channel at either end for buffer
                   veltype = 'radio',
                   outframe = 'LSRK',
                    deconvolver='clark',
@@ -152,6 +156,18 @@ for spwnum in '1320':
             exportfits(myimagebase+'.image.pbcor',
                        myimagebase+'.image.pbcor.fits', dropdeg=True,
                        overwrite=True)
+
+            # crop out the junk channels
+            fh = fits.open(myimagebase+".image.pbcor.fits")
+            ds = 1 if start > 0 else 0
+            de = -1 if end < nchans_total_thiscube else 0
+            newoutput = 'piece_of_full_W51_7m12m_cube_hires.spw{0}.channels{1}to{2}'.format(spwnum, start+ds, end+de)
+            fh[0].data = fh[0].data[ds:fh[0].data.shape[0]+de,:,:]
+            fh[0].header['CRPIX3'] = fh[0].header['CRPIX3'] - ds
+            fh[0].writeto(newoutput+".image.pbcor.fits", clobber=True)
+            os.system('rm -rf {output}.image.fits'.format(output=output))
+            os.system('rm -rf {output}.image.pbcor.fits'.format(output=output))
+
             
             for suffix in ('psf', 'weight', 'sumwt', 'pb', 'model', 'residual',
                            'mask', 'image'):
