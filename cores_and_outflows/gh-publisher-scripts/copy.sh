@@ -20,4 +20,4 @@ find . \( \
      -name \*.png -o \
      -name \*.pdf \
      \) -print0 |
-    rsync -av --files-from=- --from0 ./ "$GH_PUBLISHER_PUBLISH_DIR"
+    rsync -avL --files-from=- --from0 ./ "$GH_PUBLISHER_PUBLISH_DIR"
