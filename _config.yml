@@ -7,24 +7,22 @@
 # Remove the # from the front of each line, and then edit appropriately.
 #
 
-#title:
-#abstract:
+title: W51 ALMA observations
+abstract: This is an abstract placeholder
 
 # This controls which file is shown on the right-hand side of the published
 # HTML page.  By default it will take the first PDF or HTML file that it
 # finds.  If that doesn't work for you, you can specify the correct file here.
-#iframe_src: book.pdf
+iframe_src: cores_and_outflows_compressed.pdf
 
 # You can specify multiple authors, just follow the pattern below.
 # These fields can contain HTML tags.  You probably want to put <br />
 # in the address somewhere, indicating a line break.
 
 #authors:
-#- name: Joseph H. Bloggs
-#  address: International Institute for Interminable Examples, P.O. Box 1,<br />Beverly Hills, CA 90210, USA.
+- name: Adam Ginsburg
+  address: adam.g.ginsburg@gmail.com
 #- name: Clara McNarma
 #  address: School of Dance and Drama,<br />College of the Northern Light,<br />Dogger, Fisher, German Bight.
 github_username: keflavich
 github_repo: W51_ALMA_2013
-iframe_src: cores_and_outflows_compressed.pdf
-title: W51_ALMA_2013
