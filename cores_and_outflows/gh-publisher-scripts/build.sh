@@ -10,4 +10,5 @@
 #
 
 cd "$GH_PUBLISHER_PROJECT_DIR"
+export texpath=/usr/local/texlive
 make

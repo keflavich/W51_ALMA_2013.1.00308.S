@@ -1,5 +1,7 @@
 # latex Makefile
+ifndef texpath
 texpath=/usr/texbin/
+endif
 PDFLATEX=${texpath}pdflatex -halt-on-error -synctex=1 --interaction=nonstopmode
 SKIPERR=${texpath}pdflatex --interaction=nonstopmode
 LATEX=${PDFLATEX}
@@ -16,7 +18,7 @@ w51_evla_h2co:
 	#${LATEX} w51_evla_h2co.tex
 	#${BIBTEX} w51_evla_h2co
 	#${LATEX} w51_evla_h2co.tex
-	python make.py
+	python make.py --texpath=${texpath}
 	gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=cores_and_outflows_compressed.pdf cores_and_outflows.pdf
 
 diff:
@@ -41,7 +43,7 @@ supplement:
 	gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=ptsrcphotometryfigures_compressed.pdf ptsrcphotometryfigures.pdf
 
 referee:
-	python make.py --referee
+	python make.py --referee --texpath=${texpath}
 
 package:
 	-ln ptsrcphotometryfigures_compressed.pdf diff_and_supplement_package/
