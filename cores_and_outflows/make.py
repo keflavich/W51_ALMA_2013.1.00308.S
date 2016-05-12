@@ -67,7 +67,7 @@ def do_everything():
 
     gscmd = ["gs",
              "-dSAFER",
-             "-dBATCH", 
+             "-dBATCH",
              "-dNOPAUSE",
              "-sDEVICE=pdfwrite",
              "-sOutputFile={0}_compressed.pdf".format(outprefix),

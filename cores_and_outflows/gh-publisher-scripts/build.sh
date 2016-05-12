@@ -10,5 +10,6 @@
 #
 
 cd "$GH_PUBLISHER_PROJECT_DIR"
-export texpath=/usr/local/texlive
+echo "Path to pdflatex: ",`which pdflatex`
+export texpath=""
 make
