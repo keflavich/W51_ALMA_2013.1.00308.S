@@ -44,6 +44,10 @@ Subprojects:
         a long-baseline program that has resolved the e2/e8 and North cores
         with $5\times$ better resolution than this program, and that data set
         may therefore be better suited to a core-outflow association work.
+    \item Relative kinematics of ionized and molecular gas.  Lead: Galv{\`a}n-Madrid.
+        Kinematics similar to \citet{Keto2008a} using RRLs+molecular lines to determine
+        outflow vs infall
+        
 \end{enumerate}
 
 
@@ -146,8 +150,10 @@ region shrunk.  This model is marginally supported by the presence of a `pillar'
 of dense material pointing from e5 toward the south.
 
 \Figure{figures/e5_bubble.png}
-{The bubble around source e5.
-}{fig:e5bubble}{1}{10cm}
+{The bubble around source e5.  The bubble interior shows no sign of centimeter emission,
+though the lower-left region of the shell - just south of the ``cores'' - coincides with
+part of the W51 Main ionized shell.  The source of the ionization is not obvious.
+}{fig:e5bubble}{1}{14cm}
 
 
 
@@ -315,7 +321,7 @@ the Salpeter-like slope for the mass function derived by \citep{Konyves2015a}
 for their sample, though with only modest significance ($<3-\sigma$).  Of
 course, these measurements are of the continuum flux density, not directly of
 the mass, and so a direct comparison may not be appropriate.  We revisit this
-question after assessing the dust temperature in Section \ref{sec:massfunc}.
+question after assessing the dust temperature in Section \ref{sec:temperature}.
 
 \subsection{Spectral Lines \& Velocities}
 To determine the line-of-sight velocity of each source, we extracted a spectrum
@@ -411,7 +417,7 @@ massive protostellar cores.  They share similar profiles and
 are likely dominated by hot dust in their innermost regions,
 but they are more likely to be dominated by cooler dust in their
 outer, more massive regions.}
-{fig:hmradprof}{1}{10cm}
+{fig:hmradprof}{1}{14cm}
 
 \subsection{The most massive prestellar cores in W51}
 % may be repeated from temperature section above
@@ -443,22 +449,24 @@ For the ``total'' flux density in the region, we use the Bolocam Galactic Plane
 Survey observations \citep{Aguirre2011a,Ginsburg2013a}, which are the closest
 in frequency single-dish millimeter data available.  We assume a spectral index
 $\alpha=3.5$ to convert the BGPS flux density measurements at 271.4 GHz to the
-mean ALMA frequency of 226.6 GHz.  The ALMA data have a total flux 23.2 Jy above
-a very conservative threshold of 10 mJy/beam in our
+mean ALMA frequency of 226.6 GHz.  The ALMA data (\todo{specifically, the
+0.2\arcsec 12m-only data}) have a total flux 23.2 Jy above a very conservative
+threshold of 10 mJy/beam in our
 mosaic; in the same area the BGPS data have a flux of 144 Jy, which scales down to
 76.5 Jy.  The recovery fraction is 30$\pm3$\%, where the error bar accounts
 for a change in $\alpha\pm0.5$.  The threshold of 10 mJy/beam corresponds to
 a column threshold $N>10^{25}$ \percc for 20 K dust.  For an unresolved spherical source,
 this corresponds to a volume density $n>10^{8.1}$ \percc.
 
-- largest angular scale in ALMA image
+\todo{TODO: determine the largest angular scale in the ALMA images.  Requires
+using the simulations.}
 
 \subsection{Chemically Distinct Regions}
 The ``hot cores'' in W51 are resolved and multi-layered.
 
 Surrounding W51e2e, we noted the presence of sharp-edged uniform-brightness
 regions in a few spectral lines over the range 51-60 \kms (Figure
-\ref{fig:chemmaps}).  These features are elongated in the direction of the
+\ref{fig:chemmapse2}).  These features are elongated in the direction of the
 outflow, but have significant extend orthogonal to the outflow, spanning
 $9500\times6600$ AU.  They are prominent in \methanol, OCS, and \dimethylether, weak
 but present in \formaldehyde and SO, and absent in \cyanoacetylene and HNCO.
