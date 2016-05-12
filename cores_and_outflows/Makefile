@@ -13,6 +13,7 @@ all: referee w51_evla_h2co
 
 .PHONY: w51_evla_h2co
 w51_evla_h2co: 
+	echo "texpath: ${texpath}"
 	python make.py --texpath=${texpath}
 	gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=cores_and_outflows_compressed.pdf cores_and_outflows.pdf
 
@@ -31,4 +32,5 @@ diff:
 
 .PHONY: referee
 referee:
+	echo "texpath: ${texpath}"
 	python make.py --referee --texpath=${texpath}

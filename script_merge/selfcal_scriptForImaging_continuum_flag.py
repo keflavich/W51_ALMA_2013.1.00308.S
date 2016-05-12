@@ -59,7 +59,7 @@ if not os.path.exists(mergevis):
 
     to_concat = (['w51_spw{0}_continuum_flagged_12m.split'.format(spw)
                  for spw in range(4)] +
-                 ['w51_spw{0}_continuum_flagged_12m.split'.format(spw)
+                 ['w51_spw{0}_continuum_flagged_7m.split'.format(spw)
                  for spw in range(4)])
 
     concat(vis=to_concat, concatvis=mergevis)
