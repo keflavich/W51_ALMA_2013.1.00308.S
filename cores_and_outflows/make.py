@@ -47,7 +47,9 @@ def do_everything():
     pdfcmd = [PDFLATEX] + pdflatex_args + [args.infile]
     bibcmd = [BIBTEX, args.infile.replace(".tex","")]
 
+    print("Executing PDF command: {0}".format(pdfcmd))
     subprocess.call(pdfcmd)
+    print("Executing bibtex command: {0}".format(bibcmd))
     subprocess.call(bibcmd)
     subprocess.call(pdfcmd)
     subprocess.call(bibcmd)
