@@ -1,0 +1,449 @@
+%\renewcommand\ion[2]{#1$\;${%
+%\ifx\@currsize\normalsize\small \else
+%\ifx\@currsize\small\footnotesize \else
+%\ifx\@currsize\footnotesize\scriptsize \else
+%\ifx\@currsize\scriptsize\tiny \else
+%\ifx\@currsize\large\normalsize \else
+%\ifx\@currsize\Large\large
+%\fi\fi\fi\fi\fi\fi
+%\rmfamily\@Roman{#2}}\relax}% 
+
+\newcommand{\paa}{Pa\ensuremath{\alpha}}
+\newcommand{\brg}{Br\ensuremath{\gamma}}
+\newcommand{\msun}{\ensuremath{M_{\odot}}\xspace}			%  Msun
+\newcommand{\mdot}{\ensuremath{\dot{M}}\xspace}
+\newcommand{\lsun}{\ensuremath{L_{\odot}}\xspace}			%  Lsun
+\newcommand{\lbol}{\ensuremath{L_{\mathrm{bol}}\xspace}}	%  Lbol
+\newcommand{\ks}{K\ensuremath{_{\mathrm{s}}}}		%  Ks
+\newcommand{\hh}{\ensuremath{\textrm{H}_{2}}\xspace}			%  H2
+\newcommand{\dens}{\ensuremath{n(\hh) [\percc]}\xspace}
+\newcommand{\formaldehyde}{\ensuremath{\textrm{H}_2\textrm{CO}}\xspace}
+\newcommand{\formamide}{\ensuremath{\textrm{NH}_2\textrm{CHO}}\xspace}
+\newcommand{\formaldehydeIso}{\ensuremath{\textrm{H}_2~^{13}\textrm{CO}}\xspace}
+\newcommand{\methanol}{\ensuremath{\textrm{CH}_3\textrm{OH}}\xspace}
+\newcommand{\ortho}{\ensuremath{\textrm{o-H}_2\textrm{CO}}\xspace}
+\newcommand{\para}{\ensuremath{\textrm{p-H}_2\textrm{CO}}\xspace}
+\newcommand{\oneone}{\ensuremath{1_{1,0}-1_{1,1}}\xspace}
+\newcommand{\twotwo}{\ensuremath{2_{1,1}-2_{1,2}}\xspace}
+\newcommand{\threethree}{\ensuremath{3_{1,2}-3_{1,3}}\xspace}
+\newcommand{\threeohthree}{\ensuremath{3_{0,3}-2_{0,2}}\xspace}
+\newcommand{\threetwotwo}{\ensuremath{3_{2,2}-2_{2,1}}\xspace}
+\newcommand{\threetwoone}{\ensuremath{3_{2,1}-2_{2,0}}\xspace}
+\newcommand{\fourtwotwo}{\ensuremath{4_{2,2}-3_{1,2}}\xspace} % CH3OH 218.4 GHz
+\newcommand{\methylcyanide}{\ensuremath{\textrm{CH}_{3}\textrm{CN}}\xspace}
+\newcommand{\ketene}{\ensuremath{\textrm{H}_{2}\textrm{CCO}}\xspace}
+\newcommand{\ethylcyanide}{\ensuremath{\textrm{CH}_3\textrm{CH}_2\textrm{CN}}\xspace}
+\newcommand{\cyanoacetylene}{\ensuremath{\textrm{HC}_{3}\textrm{N}}\xspace}
+\newcommand{\methylformate}{\ensuremath{\textrm{CH}_{3}\textrm{OCHO}}\xspace}
+\newcommand{\dimethylether}{\ensuremath{\textrm{CH}_{3}\textrm{OCH}_{3}}\xspace}
+\newcommand{\gaucheethanol}{\ensuremath{\textrm{g-CH}_3\textrm{CH}_2\textrm{OH}}\xspace}
+\newcommand{\acetone}{\ensuremath{\left[\textrm{CH}_{3}\right]_2\textrm{CO}}\xspace}
+\newcommand{\methyleneamidogen}{\ensuremath{\textrm{H}_{2}\textrm{CN}}\xspace}
+\newcommand{\Rone}{\ensuremath{\para~S_{\nu}(\threetwoone) / S_{\nu}(\threeohthree)}\xspace}
+\newcommand{\Rtwo}{\ensuremath{\para~S_{\nu}(\threetwotwo) / S_{\nu}(\threetwoone)}\xspace}
+\newcommand{\JKaKc}{\ensuremath{J_{K_a K_c}}}
+\newcommand{\water}{H$_{2}$O\xspace}		%  H2O
+\newcommand{\feii}{\ion{Fe}{2}}		%  FeII
+\newcommand{\uchii}{\ion{UCH}{ii}\xspace}
+\newcommand{\UCHII}{\ion{UCH}{ii}\xspace}
+\newcommand{\hchii}{\ion{HCH}{ii}\xspace}
+\newcommand{\HCHII}{\ion{HCH}{ii}\xspace}
+\newcommand{\hii}{\ion{H}{ii}\xspace}
+\newcommand{\hi}{H~{\sc i}\xspace}
+\newcommand{\Hii}{\hii}
+\newcommand{\HII}{\hii}
+\newcommand{\Xform}{\ensuremath{X_{\formaldehyde}}}
+\newcommand{\kms}{\textrm{km~s}\ensuremath{^{-1}}\xspace}	%  km s-1
+\newcommand{\nsample}{456\xspace}
+\newcommand{\CFR}{5\xspace} % nMPC / 0.25 / 2 (6 for W51 once, 8 for W51 twice) REFEDIT: With f_observed=0.3, becomes 3/2./0.3 = 5
+\newcommand{\permyr}{\ensuremath{\mathrm{Myr}^{-1}}\xspace}
+\newcommand{\pers}{\ensuremath{\mathrm{s}^{-1}}\xspace}
+\newcommand{\tsuplim}{0.5\xspace} % upper limit on starless timescale
+\newcommand{\ncandidates}{18\xspace}
+\newcommand{\mindist}{8.7\xspace}
+\newcommand{\rcluster}{2.5\xspace}
+\newcommand{\ncomplete}{13\xspace}
+\newcommand{\middistcut}{13.0\xspace}
+\newcommand{\nMPC}{3\xspace} % only count W51 once.  W51, W49, G010
+\newcommand{\obsfrac}{30}
+\newcommand{\nMPCtot}{10\xspace} % = nmpc / obsfrac
+\newcommand{\nMPCtoterr}{6\xspace} % = sqrt(nmpc) / obsfrac
+\newcommand{\plaw}{2.1\xspace}
+\newcommand{\plawerr}{0.3\xspace}
+\newcommand{\mmin}{\ensuremath{10^4~\msun}\xspace}
+%\newcommand{\perkmspc}{\textrm{per~km~s}\ensuremath{^{-1}}\textrm{pc}\ensuremath{^{-1}}\xspace}	%  km s-1 pc-1
+\newcommand{\kmspc}{\textrm{km~s}\ensuremath{^{-1}}\textrm{pc}\ensuremath{^{-1}}\xspace}	%  km s-1 pc-1
+\newcommand{\sqcm}{cm$^{2}$\xspace}		%  cm^2
+\newcommand{\percc}{\ensuremath{\textrm{cm}^{-3}}\xspace}
+\newcommand{\perpc}{\ensuremath{\textrm{pc}^{-1}}\xspace}
+\newcommand{\persc}{\ensuremath{\textrm{cm}^{-2}}\xspace}
+\newcommand{\persr}{\ensuremath{\textrm{sr}^{-1}}\xspace}
+\newcommand{\peryr}{\ensuremath{\textrm{yr}^{-1}}\xspace}
+\newcommand{\perkmspc}{\textrm{km~s}\ensuremath{^{-1}}\textrm{pc}\ensuremath{^{-1}}\xspace}	%  km s-1 pc-1
+\newcommand{\perkms}{\textrm{per~km~s}\ensuremath{^{-1}}\xspace}	%  km s-1 
+\newcommand{\um}{\ensuremath{\mu \textrm{m}}\xspace}    % micron
+\newcommand{\microjy}{\ensuremath{\mu\textrm{Jy}}\xspace}    % micron
+\newcommand{\mum}{\um}
+\newcommand{\htwo}{\ensuremath{\textrm{H}_2}}
+\newcommand{\Htwo}{\ensuremath{\textrm{H}_2}}
+\newcommand{\HtwoO}{\ensuremath{\textrm{H}_2\textrm{O}}}
+\newcommand{\htwoo}{\ensuremath{\textrm{H}_2\textrm{O}}}
+\newcommand{\ha}{\ensuremath{\textrm{H}\alpha}}
+\newcommand{\hb}{\ensuremath{\textrm{H}\beta}}
+\newcommand{\so}{SO~\ensuremath{5_6-4_5}\xspace}
+\newcommand{\SO}{SO~\ensuremath{1_2-1_1}\xspace}
+\newcommand{\ammonia}{NH\ensuremath{_3}\xspace}
+\newcommand{\twelveco}{\ensuremath{^{12}\textrm{CO}}\xspace}
+\newcommand{\thirteenco}{\ensuremath{^{13}\textrm{CO}}\xspace}
+\newcommand{\ceighteeno}{\ensuremath{\textrm{C}^{18}\textrm{O}}\xspace}
+\def\ee#1{\ensuremath{\times10^{#1}}}
+\newcommand{\degrees}{\ensuremath{^{\circ}}}
+% can't have \degree because I'm getting a degree...
+\newcommand{\lowirac}{800}
+\newcommand{\highirac}{8000}
+\newcommand{\lowmips}{600}
+\newcommand{\highmips}{5000}
+\newcommand{\perbeam}{\ensuremath{\textrm{beam}^{-1}}}
+\newcommand{\ds}{\ensuremath{\textrm{d}s}}
+\newcommand{\dnu}{\ensuremath{\textrm{d}\nu}}
+\newcommand{\dv}{\ensuremath{\textrm{d}v}}
+\def\secref#1{Section \ref{#1}}
+\def\eqref#1{Equation \ref{#1}}
+\def\facility#1{#1}
+%\newcommand{\arcmin}{'}
+
+\newcommand{\necluster}{Sh~2-233IR~NE}
+\newcommand{\swcluster}{Sh~2-233IR~SW}
+\newcommand{\region}{IRAS 05358}
+
+\newcommand{\nwfive}{40}
+\newcommand{\nouter}{15}
+
+\newcommand{\vone}{{\rm v}1.0\xspace}
+\newcommand{\vtwo}{{\rm v}2.0\xspace}
+\newcommand\mjysr{\ensuremath{{\rm MJy~sr}^{-1}}}
+\newcommand\jybm{\ensuremath{{\rm Jy~bm}^{-1}}}
+\newcommand\nbolocat{8552\xspace}
+\newcommand\nbolocatnew{548\xspace}
+\newcommand\nbolocatnonew{8004\xspace} % = nbolocat-nbolocatnew
+\renewcommand\arcdeg{\mbox{$^\circ$}\xspace} 
+\renewcommand\arcmin{\mbox{$^\prime$}\xspace} 
+\renewcommand\arcsec{\mbox{$^{\prime\prime}$}\xspace} 
+
+\newcommand{\todo}[1]{\textcolor{red}{#1}}
+\newcommand{\okinfinal}[1]{{#1}}
+%% only needed if not aastex
+%\newcommand{\keywords}[1]{}
+%\newcommand{\email}[1]{}
+%\newcommand{\affil}[1]{}
+
+
+%aastex hack
+%\newcommand\arcdeg{\mbox{$^\circ$}}%
+%\newcommand\arcmin{\mbox{$^\prime$}\xspace}%
+%\newcommand\arcsec{\mbox{$^{\prime\prime}$}\xspace}%
+
+%\newcommand\epsscale[1]{\gdef\eps@scaling{#1}}
+%
+%\newcommand\plotone[1]{%
+% \typeout{Plotone included the file #1}
+% \centering
+% \leavevmode
+% \includegraphics[width={\eps@scaling\columnwidth}]{#1}%
+%}%
+%\newcommand\plottwo[2]{{%
+% \typeout{Plottwo included the files #1 #2}
+% \centering
+% \leavevmode
+% \columnwidth=.45\columnwidth
+% \includegraphics[width={\eps@scaling\columnwidth}]{#1}%
+% \hfil
+% \includegraphics[width={\eps@scaling\columnwidth}]{#2}%
+%}}%
+
+
+%\newcommand\farcm{\mbox{$.\mkern-4mu^\prime$}}%
+%\let\farcm\farcm
+%\newcommand\farcs{\mbox{$.\!\!^{\prime\prime}$}}%
+%\let\farcs\farcs
+%\newcommand\fp{\mbox{$.\!\!^{\scriptscriptstyle\mathrm p}$}}%
+%\newcommand\micron{\mbox{$\mu$m}}%
+%\def\farcm{%
+% \mbox{.\kern -0.7ex\raisebox{.9ex}{\scriptsize$\prime$}}%
+%}%
+%\def\farcs{%
+% \mbox{%
+%  \kern  0.13ex.%
+%  \kern -0.95ex\raisebox{.9ex}{\scriptsize$\prime\prime$}%
+%  \kern -0.1ex%
+% }%
+%}%
+
+\def\Figure#1#2#3#4#5{
+\begin{figure*}[!htp]
+\includegraphics[scale=#4,width=#5]{#1}
+\caption{#2}
+\label{#3}
+\end{figure*}
+}
+
+\def\WrapFigure#1#2#3#4#5#6{
+\begin{wrapfigure}{#6}{0.5\textwidth}
+\includegraphics[scale=#4,width=#5]{#1}
+\caption{#2}
+\label{#3}
+\end{wrapfigure}
+}
+
+% % #1 - filename
+% % #2 - caption
+% % #3 - label
+% % #4 - epsscale
+% % #5 - R or L?
+% \def\WrapFigure#1#2#3#4#5#6{
+% \begin{wrapfigure}[#6]{#5}{0.45\textwidth}
+% %  \centercaption
+% %  \vspace{-14pt}
+%   \epsscale{#4}
+%   \includegraphics[scale=#4]{#1}
+%   \caption{#2}
+%   \label{#3}
+% \end{wrapfigure}
+% }
+
+\def\RotFigure#1#2#3#4#5{
+\begin{sidewaysfigure*}[!htp]
+\includegraphics[scale=#4,width=#5]{#1}
+\caption{#2}
+\label{#3}
+\end{sidewaysfigure*}
+}
+
+\def\FigureSVG#1#2#3#4{
+\begin{figure*}[!htp]
+    \def\svgwidth{#4}
+    \input{#1}
+    \caption{#2}
+    \label{#3}
+\end{figure*}
+}
+
+% originally intended to be included in a two-column paper
+% this is in includegraphics: ,width=3in
+% but, not for thesis
+\def\OneColFigure#1#2#3#4#5{
+\begin{figure}[!htpb]
+\epsscale{#4}
+\includegraphics[scale=#4,angle=#5]{#1}
+\caption{#2}
+\label{#3}
+\end{figure}
+}
+
+\def\SubFigure#1#2#3#4#5{
+\begin{figure*}[!htp]
+\addtocounter{figure}{-1}
+\epsscale{#4}
+\includegraphics[angle=#5]{#1}
+\caption{#2}
+\label{#3}
+\end{figure*}
+}
+
+%\def\FigureTwo#1#2#3#4#5{
+%\begin{figure*}[!htp]
+%\epsscale{#5}
+%\plottwo{#1}{#2}
+%\caption{#3}
+%\label{#4}
+%\end{figure*}
+%}
+
+\def\FigureTwo#1#2#3#4#5#6{
+\begin{figure*}[!htp]
+\subfigure[]{ \includegraphics[scale=#5,width=#6]{#1} }
+\subfigure[]{ \includegraphics[scale=#5,width=#6]{#2} }
+\caption{#3}
+\label{#4}
+\end{figure*}
+}
+
+\def\FigureTwoAA#1#2#3#4#5#6{
+\begin{figure*}[!htp]
+\subfigure[]{ \includegraphics[scale=#5,width=#6]{#1} }
+\subfigure[]{ \includegraphics[scale=#5,width=#6]{#2} }
+\caption{#3}
+\label{#4}
+\end{figure*}
+}
+
+\newenvironment{rotatepage}%
+{}{}
+   %{\pagebreak[4]\afterpage\global\pdfpageattr\expandafter{\the\pdfpageattr/Rotate 90}}%
+   %{\pagebreak[4]\afterpage\global\pdfpageattr\expandafter{\the\pdfpageattr/Rotate 0}}%
+
+
+\def\RotFigureTwoAA#1#2#3#4#5#6{
+\begin{rotatepage}
+\begin{sidewaysfigure*}[!htp]
+\subfigure[]{ \includegraphics[scale=#5,width=#6]{#1} }
+\\
+\subfigure[]{ \includegraphics[scale=#5,width=#6]{#2} }
+\caption{#3}
+\label{#4}
+\end{sidewaysfigure*}
+\end{rotatepage}
+}
+
+\def\RotFigureThreeAA#1#2#3#4#5#6#7{
+\begin{rotatepage}
+\begin{sidewaysfigure*}[!htp]
+\subfigure[]{ \includegraphics[scale=#6,width=#7]{#1} }
+\\
+\subfigure[]{ \includegraphics[scale=#6,width=#7]{#2} }
+\\
+\subfigure[]{ \includegraphics[scale=#6,width=#7]{#3} }
+\caption{#4}
+\label{#5}
+\end{sidewaysfigure*}
+\end{rotatepage}
+\clearpage
+}
+
+\def\FigureThreeAA#1#2#3#4#5#6#7{
+\begin{figure*}[!htp]
+\subfigure[]{ \includegraphics[scale=#6,width=#7]{#1} }
+\subfigure[]{ \includegraphics[scale=#6,width=#7]{#2} }
+\subfigure[]{ \includegraphics[scale=#6,width=#7]{#3} }
+\caption{#4}
+\label{#5}
+\end{figure*}
+}
+
+
+
+\def\SubFigureTwo#1#2#3#4#5{
+\begin{figure*}[!htp]
+\addtocounter{figure}{-1}
+\epsscale{#5}
+\plottwo{#1}{#2}
+\caption{#3}
+\label{#4}
+\end{figure*}
+}
+
+\def\FigureFour#1#2#3#4#5#6{
+\begin{figure*}[!htp]
+\subfigure[]{ \includegraphics[width=3in,type=png,ext=.png,read=.png]{#1} }
+\subfigure[]{ \includegraphics[width=3in,type=png,ext=.png,read=.png]{#2} }
+\subfigure[]{ \includegraphics[width=3in,type=png,ext=.png,read=.png]{#3} }
+\subfigure[]{ \includegraphics[width=3in,type=png,ext=.png,read=.png]{#4} }
+\caption{#5}
+\label{#6}
+\end{figure*}
+}
+
+\def\FigureFourPDF#1#2#3#4#5#6{
+\begin{figure*}[!htp]
+\subfigure[]{ \includegraphics[width=3in,type=pdf,ext=.pdf,read=.pdf]{#1} }
+\subfigure[]{ \includegraphics[width=3in,type=pdf,ext=.pdf,read=.pdf]{#2} }
+\subfigure[]{ \includegraphics[width=3in,type=pdf,ext=.pdf,read=.pdf]{#3} }
+\subfigure[]{ \includegraphics[width=3in,type=pdf,ext=.pdf,read=.pdf]{#4} }
+\caption{#5}
+\label{#6}
+\end{figure*}
+}
+
+\def\FigureThreePDF#1#2#3#4#5{
+\begin{figure*}[!htp]
+\subfigure[]{ \includegraphics[width=3in,type=pdf,ext=.pdf,read=.pdf]{#1} }
+\subfigure[]{ \includegraphics[width=3in,type=pdf,ext=.pdf,read=.pdf]{#2} }
+\subfigure[]{ \includegraphics[width=3in,type=pdf,ext=.pdf,read=.pdf]{#3} }
+\caption{#4}
+\label{#5}
+\end{figure*}
+}
+
+\def\Table#1#2#3#4#5{
+%\renewcommand{\thefootnote}{\alph{footnote}}
+\begin{table}
+\caption{#2}
+\label{#3}
+    \begin{tabular}{#1}
+        \hline\hline
+        #4
+        \hline
+        #5
+        \hline
+    \end{tabular}
+\end{table}
+%\renewcommand{\thefootnote}{\arabic{footnote}}
+}
+
+
+%\def\Table#1#2#3#4#5#6{
+%%\renewcommand{\thefootnote}{\alph{footnote}}
+%\begin{deluxetable}{#1}
+%\tablewidth{0pt}
+%\tabletypesize{\footnotesize}
+%\tablecaption{#2}
+%\tablehead{#3}
+%\startdata
+%\label{#4}
+%#5
+%\enddata
+%\bigskip
+%#6
+%\end{deluxetable}
+%%\renewcommand{\thefootnote}{\arabic{footnote}}
+%}
+
+%\def\tablenotetext#1#2{
+%\footnotetext[#1]{#2}
+%}
+
+\def\LongTable#1#2#3#4#5#6#7#8{
+% required to get tablenotemark to work: http://www2.astro.psu.edu/users/stark/research/psuthesis/longtable.html
+\renewcommand{\thefootnote}{\alph{footnote}}
+\begin{longtable}{#1}
+\caption[#2]{#2}
+\label{#4} \\
+
+ \\
+\hline 
+#3 \\
+\hline
+\endfirsthead
+
+\hline
+#3 \\
+\hline
+\endhead
+
+\hline
+\multicolumn{#8}{r}{{Continued on next page}} \\
+\hline
+\endfoot
+
+\hline 
+\endlastfoot
+#7 \\
+
+#5
+\hline
+#6 \\
+
+\end{longtable}
+\renewcommand{\thefootnote}{\arabic{footnote}}
+}
+
+\def\TallFigureTwo#1#2#3#4#5#6{
+\begin{figure*}[htp]
+\epsscale{#5}
+\subfigure[]{ \includegraphics[width=#6]{#1} }
+\subfigure[]{ \includegraphics[width=#6]{#2} }
+\caption{#3}
+\label{#4}
+\end{figure*}
+}
+
