@@ -1,3 +1,4 @@
+import os
 import time
 import selfcal_heuristics
 import numpy as np
@@ -5,6 +6,7 @@ t0 = time.time()
 
 phasecenter = "J2000 19:23:41.629000 +14.30.42.38000"
 
+fields_to_selfcal_7m = (49,50,45,51,52,55,56)
 fields_to_selfcal = (31,32,33,39,40,24,25,20,13,21,27)
 fields_after_split = [f-4 for f in fields_to_selfcal]
 field = ",".join([str(x) for x in fields_after_split])
@@ -84,7 +86,7 @@ print("{flagged}/{total} of flagged points in vis0".format(**summary_init))
 imsize = [3072,3072]
 cell = '0.05arcsec'
 solint = 'int'
-threshold = '20.0mJy'
+threshold = '50.0mJy'
 multiscale = [0,5,15,45,135]
 # multiscale clean... does not work without a mask (but it's not bad with a
 # mask)
@@ -115,15 +117,14 @@ makemask(mode='copy', inpimage=dirtyimage,
 exportfits('dirty_100mJy.mask', 'dirty_100mJy.mask.fits', dropdeg=True, overwrite=True)
 
 
-# rms ~3.7 mJy/beam
 myimagebase = "merge_selfcal_allspw_mfs"
 # threshold = 50mJy with no other restrictions -> infinite divergence
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis0, imagename=myimagebase, field="", spw='',
        outframe='LSRK', interpolation='linear', gridder='mosaic',
-       deconvolver='multiscale', pblimit=0.4,
+       deconvolver='hogbom', pblimit=0.4,
        scales=multiscale, interactive=False, niter=10000,
-       threshold='100mJy', imsize=imsize, specmode='mfs',
+       threshold=threshold, imsize=imsize, specmode='mfs',
        mask='dirty_100mJy.mask', savemodel='modelcolumn',
        cell=cell, phasecenter=phasecenter, weighting='briggs', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)

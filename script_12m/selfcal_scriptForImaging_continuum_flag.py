@@ -2,6 +2,7 @@
 run this then iterative_clean to get the "best" image
 """
 import time
+import os
 t0 = time.time()
 
 phasecenter = "J2000 19:23:41.629000 +14.30.42.38000"
