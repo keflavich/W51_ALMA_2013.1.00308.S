@@ -157,18 +157,37 @@ for spwnum in '1320':
                        myimagebase+'.image.pbcor.fits', dropdeg=True,
                        overwrite=True)
 
+            for suffix in ('psf', 'weight', 'sumwt', 'pb', 'model', 'residual',
+                           'mask', 'image'):
+                os.system('rm -rf {0}.{1}'.format(myimagebase, suffix))
+
+        if (os.path.exists(output+".image.fits") and
+            os.path.exists(output+".image.pbcor.fits")):
+            print("Cropping {0}".format(output))
             # crop out the junk channels
             fh = fits.open(myimagebase+".image.pbcor.fits")
             ds = 1 if start > 0 else 0
             de = -1 if end < nchans_total_thiscube else 0
             newoutput = 'piece_of_full_W51_7m12m_cube_hires.spw{0}.channels{1}to{2}'.format(spwnum, start+ds, end+de)
-            fh[0].data = fh[0].data[ds:fh[0].data.shape[0]+de,:,:]
-            fh[0].header['CRPIX3'] = fh[0].header['CRPIX3'] - ds
-            fh[0].writeto(newoutput+".image.pbcor.fits", clobber=True)
+            if fh[0].data.shape[0] > nchans_total_thiscube:
+                fh[0].data = fh[0].data[ds:fh[0].data.shape[0]+de,:,:]
+                fh[0].header['CRPIX3'] = fh[0].header['CRPIX3'] - ds
+            else:
+                print("Size of dim 0 was {0} and desired was {1} so no cropping was done"
+                      .format(fh[0].data.shape[0], nchans_total_thiscube))
+
+            if (len(fh) == 2 and fh[1].data.size > fh[0].data.shape[0]) or len(fh) == 1:
+                # get the beams
+                print("Resizing beams from {0} to {1}".format(fh[1].data.size, fh[0].data.shape[0]))
+                beams = fits.open(myimagebase+".image.fits")[1]
+                beams.data = beams.data[ds:fh[0].data.shape[0]+de]
+                if len(fh) == 2:
+                    fh[1] = beams
+                else:
+                    fh.append(beams)
+
+            fh.writeto(newoutput+".image.pbcor.fits", clobber=True)
+
+            # a bit dangerous... but I already did it, oh well.  Only way to keep file sizes in check.
             os.system('rm -rf {output}.image.fits'.format(output=output))
             os.system('rm -rf {output}.image.pbcor.fits'.format(output=output))
-
-            
-            for suffix in ('psf', 'weight', 'sumwt', 'pb', 'model', 'residual',
-                           'mask', 'image'):
-                os.system('rm -rf {0}.{1}'.format(myimagebase, suffix))

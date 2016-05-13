@@ -35,7 +35,7 @@ def getinds(fn):
 
 def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
                   overwrite_existing=False, bmaj_limits=None,
-                  fnsuffix="",
+                  fnsuffix="", filesuffix='.image.fits',
                   add_beam_info=True):
     """
     Parameters
@@ -55,7 +55,7 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
 
     # First set up an empty file
     if not os.path.exists(big_filename):
-        header_fn = glob.glob('piece_of_{1}_cube{2}.{0}.channels0to*.image.fits'.format(spw, fntemplate, fnsuffix))
+        header_fn = glob.glob('piece_of_{1}_cube{2}.{0}.channels0to*.{3}'.format(spw, fntemplate, fnsuffix, filesuffix))
         if len(header_fn) != 1:
             raise ValueError("Found too many or too few matches: {0}".format(header_fn))
         else:

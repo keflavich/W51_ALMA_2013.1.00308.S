@@ -21,6 +21,8 @@ ax1 = fig1.gca()
 
 ax1.hist(core_phot_tbl['peak'], log=True, bins=np.logspace(-3,-0.5,15))
 ax1.set_xscale('log')
+ax1.set_xlabel("Peak flux density (Jy)")
+ax1.set_ylabel("Source Counts")
 ax1.set_ylim(0.3, 11)
 
 
@@ -134,7 +136,7 @@ fig4.clf()
 ax5 = fig4.gca()
 ax5.plot(cores_merge['peak_mass'], cores_merge['T_corrected_mass'], 's')
 ylims = ax5.get_ylim()
-ax5.plot([0,20], [0,20], 'k--')
+ax5.plot([0,250], [0,250], 'k--')
 ax5.set_ylim(ylims)
 ax5.set_xlabel("Mass at 20K [M$_\\odot$]")
 ax5.set_ylabel("Mass at peak $T_B$ [M$_\\odot$]")

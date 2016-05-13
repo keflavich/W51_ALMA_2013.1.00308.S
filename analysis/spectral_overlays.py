@@ -146,7 +146,7 @@ def spectral_overlays(fn, name, freq_name_mapping, frequencies, yoffset,
                (minvelo < object_data_dict['peak{0}velo'.format(ii)]) and
                (object_data_dict['peak{0}velo'.format(ii)] < maxvelo)]
     if okvelos:
-        velo = np.mean(u.Quantity(okvelos))
+        velo = np.median(u.Quantity(okvelos))
         object_data_dict['mean_velo'] = velo
         sp.plotter.axis.vlines(velo.to(u.km/u.s).value,
                                sp.plotter.axis.get_ylim()[0],
@@ -172,20 +172,27 @@ def spectral_overlays(fn, name, freq_name_mapping, frequencies, yoffset,
             fig.clf()
             sp.xarr.convert_to_unit(u.GHz)
             sp.plotter(figure=fig, axis=fig.gca())
+            # labels don't update.  still don't know why
+            sp.plotter(figure=fig, axis=fig.gca())
+            assert sp.plotter._xunit == u.GHz
+            assert sp.plotter.xlabel == 'Frequency (GHz)'
             sp.plotter.line_ids(linenames,
                                 u.Quantity(freqs_ghz),
                                 velocity_offset=velo,
                                 plot_kwargs=plot_kwargs,
                                 annotate_kwargs=annotate_kwargs)
+            assert sp.plotter.xlabel == 'Frequency (GHz)'
 
             if bg:
                 bgs = bgspectra[spwnum]
                 bgs.xarr.convert_to_unit(u.GHz)
                 bgs.plotter(axis=sp.plotter.axis,
-                                          clear=False,
-                                          color='b',
-                                          zorder=-100,
-                                         )
+                            clear=False,
+                            color='b',
+                            zorder=-100,
+                           )
+                assert bgs.plotter.xlabel == 'Frequency (GHz)'
+            assert sp.plotter.xlabel == 'Frequency (GHz)'
 
             fig.savefig(paths.fpath("spectral_overlays/{name}_spw{spw}_fullspec{suffix}.png".format(name=name,
                                                                                                     spw=spwnum,

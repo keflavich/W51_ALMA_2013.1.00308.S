@@ -7,6 +7,7 @@ t0 = time.time()
 phasecenter = "J2000 19:23:41.629000 +14.30.42.38000"
 
 fields_to_selfcal_7m = (49,50,45,51,52,55,56)
+fields7m_after_split = [f-8 for f in fields_to_selfcal_7m]
 fields_to_selfcal = (31,32,33,39,40,24,25,20,13,21,27)
 fields_after_split = [f-4 for f in fields_to_selfcal]
 field = ",".join([str(x) for x in fields_after_split])
@@ -81,12 +82,12 @@ assert split(vis=contvis,
 
 print("Done splitting")
 summary_init = flagdata(vis=vis0, mode='summary')
+summary_init['flagfrac'] = summary_init['flagged'] / summary_init['total']
 print("{flagged}/{total} of flagged points in vis0".format(**summary_init))
 
 imsize = [3072,3072]
 cell = '0.05arcsec'
 solint = 'int'
-threshold = '50.0mJy'
 multiscale = [0,5,15,45,135]
 # multiscale clean... does not work without a mask (but it's not bad with a
 # mask)
@@ -97,17 +98,17 @@ multiscale = [0,5,15,45,135]
 
 clearcal(vis=vis0)
 #flagmanager(vis=vis0, versionname='flagdata_1', mode='restore')
-myimagebase = "merge_selfcal_allspw_dirty"
+myimagebase = "merge_allspw_dirty"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis0, imagename=myimagebase, field="", spw='',
        specmode='mfs', outframe='LSRK', interpolation='linear', gridder='mosaic',
-       interactive=False, niter=0, threshold=threshold, imsize=imsize,
+       interactive=False, niter=0, imsize=imsize,
        cell=cell, phasecenter=phasecenter,
        weighting='briggs', savemodel='modelcolumn', robust=-2.0)
 exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
-dirtyimage = 'merge_selfcal_allspw_dirty.residual'
+dirtyimage = 'merge_allspw_dirty.residual'
 ia.open(dirtyimage)
 ia.calcmask(mask=dirtyimage+" > 0.1", name='dirty_mask_100mJy')
 ia.close()
@@ -117,14 +118,14 @@ makemask(mode='copy', inpimage=dirtyimage,
 exportfits('dirty_100mJy.mask', 'dirty_100mJy.mask.fits', dropdeg=True, overwrite=True)
 
 
-myimagebase = "merge_selfcal_allspw_mfs"
+myimagebase = "merge_allspw_selfcal_mfs_iter0"
 # threshold = 50mJy with no other restrictions -> infinite divergence
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis0, imagename=myimagebase, field="", spw='',
        outframe='LSRK', interpolation='linear', gridder='mosaic',
        deconvolver='hogbom', pblimit=0.4,
-       scales=multiscale, interactive=False, niter=10000,
-       threshold=threshold, imsize=imsize, specmode='mfs',
+       interactive=False, niter=10000,
+       threshold='100mJy', imsize=imsize, specmode='mfs',
        mask='dirty_100mJy.mask', savemodel='modelcolumn',
        cell=cell, phasecenter=phasecenter, weighting='briggs', robust=-2.0)
 exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
@@ -138,7 +139,7 @@ rmtables('selfcal_allspw_phase.cal')
 gaincal(vis=vis0, caltable="selfcal_allspw_phase.cal", field=field, solint='inf',
         calmode="p", refant="", gaintype="G", minsnr=5, uvrange='100~5000m')
 
-image1 = 'merge_selfcal_allspw_mfs.image'
+image1 = 'merge_allspw_selfcal_mfs_iter0.image'
 ia.open(image1)
 ia.calcmask(mask=image1+" > 0.05", name='clean_mask_50mJy')
 ia.close()
@@ -161,12 +162,13 @@ split(vis=vis0, outputvis=vis1,
 
 ##### SECOND ITERATION
 
-myimagebase="selfcal_allspw_selfcal_mfs"
+myimagebase="merge_allspw_selfcal_mfs_iter1"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis1, imagename=myimagebase, field="", spw='',
        outframe='LSRK', interpolation='linear', gridder='mosaic',
-       deconvolver='multiscale', pblimit=0.4,
-       scales=multiscale, interactive=False, niter=10000,
+       deconvolver='hogbom', pblimit=0.4,
+       #scales=multiscale, 
+       interactive=False, niter=10000,
        mask='clean_50mJy.mask',
        threshold='50mJy', imsize=imsize, specmode='mfs',
        cell=cell, phasecenter=phasecenter, weighting='briggs', robust=-2.0,
@@ -205,12 +207,13 @@ split(vis=vis1, outputvis=vis2,
 ##### THIRD ITERATION
 
 
-myimagebase = "merge_selfcal_allspw_selfcal_2_mfs"
+myimagebase = "merge_allspw_selfcal_mfs_iter2"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis2, imagename=myimagebase, field="", spw='',
        outframe='LSRK', interpolation='linear', gridder='mosaic',
-       deconvolver='multiscale', pblimit=0.4,
-       scales=multiscale, interactive=False, niter=10000,
+       deconvolver='hogbom', pblimit=0.4,
+       #scales=multiscale,
+       interactive=False, niter=10000,
        threshold='50mJy', imsize=imsize, specmode='mfs',
        mask='clean_50mJy.mask', savemodel='modelcolumn',
        cell=cell, phasecenter=phasecenter, weighting='briggs', robust=-2.0)
@@ -242,16 +245,18 @@ split(vis=vis2, outputvis=vis3,
       datacolumn="corrected")
 
 
-######## THIRD ITERATION
+######## FOURTH ITERATION
 
 
 
-myimagebase = "merge_selfcal_allspw_selfcal_3_mfs"
+myimagebase = "merge_allspw_selfcal_selfcal_3_mfs"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis3, imagename=myimagebase, field="", spw='',
        outframe='LSRK', interpolation='linear', gridder='mosaic',
-       deconvolver='multiscale', pblimit=0.4,
-       scales=multiscale, interactive=False, niter=10000,
+       #deconvolver='multiscale',
+       pblimit=0.4,
+       #scales=multiscale,
+       interactive=False, niter=10000,
        threshold='50mJy', imsize=imsize, specmode='mfs',
        mask='clean_50mJy.mask', savemodel='modelcolumn',
        cell=cell, phasecenter=phasecenter, weighting='briggs', robust=-2.0)
@@ -289,21 +294,23 @@ os.system('rm -rf {0}.flagversions'.format(vis4))
 split(vis=vis3, outputvis=vis4,
       datacolumn="corrected")
 summary4 = flagdata(vis=vis4, mode='summary')
-summary4['flagfrac'] = summary3['flagged'] / summary3['total']
+summary4['flagfrac'] = summary4['flagged'] / summary4['total']
 print("{flagged}/{total} flagged points in vis4 after restoration (f={flagfrac:0.3f})".format(**summary4))
 
 
 
-###### FOURTH ITERATION
+###### FIFTH ITERATION
 
 
 
-myimagebase = "merge_selfcal_allspw_selfcal_4ampphase_mfs"
+myimagebase = "merge_allspw_selfcal_mfs_iter4ampphase"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis4, imagename=myimagebase, field="", spw='',
        outframe='LSRK', interpolation='linear', gridder='mosaic',
-       deconvolver='multiscale', pblimit=0.4,
-       scales=multiscale, interactive=False, niter=10000,
+       deconvolver='hogbom',
+       pblimit=0.4,
+       #scales=multiscale,
+       interactive=False, niter=10000,
        threshold='50mJy', imsize=imsize, specmode='mfs',
        mask='clean_50mJy.mask', savemodel='modelcolumn',
        cell=cell, phasecenter=phasecenter, weighting='briggs', robust=-2.0)
@@ -315,7 +322,7 @@ exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwr
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 
-myimagebase = "merge_selfcal_allspw_selfcal_4ampphase_mfs_tclean"
+myimagebase = "merge_allspw_selfcal_mfs_iter4ampphase_20mJy"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis4, imagename=myimagebase, field="", spw="", specmode='mfs',
        deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
@@ -331,9 +338,66 @@ exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=
 exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
-myimagebase = "merge_selfcal_allspw_selfcal_4ampphase_mfs_tclean_deeper"
+myimagebase = "merge_allspw_selfcal_mfs_iter4ampphase_15mJy"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis4, imagename=myimagebase, field="", spw="", specmode='mfs',
+       deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
+       scales=multiscale,
+       pblimit=0.4, interpolation='linear',
+       interactive=False, niter=100000,
+       threshold='15mJy', imsize=imsize, cell=cell, phasecenter=phasecenter,
+       mask='clean_50mJy.mask',
+       weighting='briggs', savemodel='modelcolumn', robust=-2.0)
+exportfits(myimagebase+'.image', myimagebase+'.image.fits', dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor', myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwrite=True)
+exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
+
+
+###### SIXTH ITERATION: FIRST ITERATION OFF MULTISCALE
+
+
+
+rmtables("selfcal_allspw_phase_5.cal")
+gaincal(vis=vis4, caltable="selfcal_allspw_phase_5.cal", field=field+",".join([str(x) for x in fields7m_after_split]),
+        solint=solint, calmode="p", refant="", gaintype="G", minsnr=5,
+        #uvrange='100~5000m',
+       )
+
+rmtables("selfcal_allspw_ampphase_5.cal")
+gaincal(vis=vis4, caltable="selfcal_allspw_ampphase_5.cal", field=field+",".join([str(x) for x in fields7m_after_split]),
+        solint=solint, solnorm=True, calmode="ap", refant="", gaintype="G",
+        minsnr=5,
+        #uvrange='100~5000m',
+       )
+
+flagmanager(vis=vis4, mode='save', versionname='backup')
+applycal(vis=vis4, field="", gaintable=["selfcal_allspw_phase_5.cal",
+                                        'selfcal_allspw_ampphase_5.cal'],
+         interp="linear", applymode='calonly', calwt=False)
+summary4 = flagdata(vis=vis4, mode='summary')
+summary4['flagfrac'] = summary4['flagged'] / summary4['total']
+print("{flagged}/{total} flagged points in vis4 afer applycal (f={flagfrac:0.3f})".format(**summary4))
+flagmanager(vis=vis4, mode='restore', versionname='backup')
+summary4 = flagdata(vis=vis4, mode='summary')
+summary4['flagfrac'] = summary4['flagged'] / summary3['total']
+print("{flagged}/{total} flagged points in vis4 after restoration (f={flagfrac:0.3f})".format(**summary4))
+vis5 = 'w51_continuum_7m12m_contvis_selfcal_5.ms'
+os.system('rm -rf {0}'.format(vis5))
+os.system('rm -rf {0}.flagversions'.format(vis5))
+split(vis=vis4, outputvis=vis5,
+      datacolumn="corrected")
+summary5 = flagdata(vis=vis5, mode='summary')
+summary5['flagfrac'] = summary5['flagged'] / summary5['total']
+print("{flagged}/{total} flagged points in vis5 after restoration (f={flagfrac:0.3f})".format(**summary5))
+
+
+
+myimagebase = "merge_allspw_selfcal_mfs_iter5ampphase_15mJy"
+os.system('rm -rf {0}.*'.format(myimagebase))
+tclean(vis=vis5, imagename=myimagebase, field="", spw="", specmode='mfs',
        deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
        scales=multiscale,
        pblimit=0.4, interpolation='linear',
@@ -356,7 +420,7 @@ exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, 
 
 
 # using vis2.corrected = vis3.data
-myimagebase = "merge_selfcal_allspw_selfcal_3_mfs_deeper"
+myimagebase = "merge_allspw_selfcal_mfs_iter3_5mJy"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis3, imagename=myimagebase, field="", spw="", specmode='mfs',
        deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
@@ -374,7 +438,7 @@ exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwr
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 
-myimagebase = "merge_selfcal_allspw_selfcal_3_mfs_deeper_r0.0"
+myimagebase = "merge_allspw_selfcal_mfs_iter3_5mJy_r0.0"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis3, imagename=myimagebase, field="", spw="", specmode='mfs',
        deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
@@ -392,7 +456,7 @@ exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwr
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 
-myimagebase = "merge_selfcal_allspw_selfcal_3_mfs_deeper_r2.0"
+myimagebase = "merge_allspw_selfcal_mfs_iter3_5mJy_r2.0"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis3, imagename=myimagebase, field="", spw="", specmode='mfs',
        deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
@@ -412,7 +476,7 @@ exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, 
 # these came out to be quite bad
 for robust in (2.0, -1.0, 0.0, 1.0, -2.0):
     for npix in (0, 5, 15):
-        myimagebase = "merge_selfcal_allspw_selfcal_3_r{0:0.1f}_superuniformnpix{1}".format(robust, npix)
+        myimagebase = "merge_allspw_selfcal_mfs_iter3_r{0:0.1f}_superuniformnpix{1}".format(robust, npix)
         os.system('rm -rf {0}.*'.format(myimagebase))
         delmod(vis=vis3)
         tclean(vis=vis3, imagename=myimagebase, field="", spw="", specmode='mfs',
@@ -434,7 +498,7 @@ for robust in (2.0, -1.0, 0.0, 1.0, -2.0):
 
 
 
-myimagebase = "merge_selfcal_allspw_selfcal_3_mfs_deeper_taper_r0"
+myimagebase = "merge_allspw_selfcal_mfs_iter3_5mJy_taper_r0"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis3, imagename=myimagebase, field="", spw="", specmode='mfs',
        deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
@@ -453,7 +517,7 @@ exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwr
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 
-myimagebase = "merge_selfcal_allspw_selfcal_3_mfs_deeper_taper_longonly_r0"
+myimagebase = "merge_allspw_selfcal_mfs_iter3_5mJy_taper_longonly_r0"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis3, imagename=myimagebase, field="", spw="", specmode='mfs',
        deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
@@ -472,7 +536,7 @@ exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwr
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 
-image2 = 'merge_selfcal_allspw_selfcal_3_mfs_deeper.image'
+image2 = 'merge_allspw_selfcal_mfs_iter3_5mJy.image'
 ia.open(image2)
 ia.calcmask(mask=image2+" > 0.01", name='clean_mask_10mJy')
 ia.close()
@@ -480,7 +544,7 @@ makemask(mode='copy', inpimage=image2,
          inpmask=image2+":clean_mask_10mJy", output='clean_10mJy.mask',
          overwrite=True)
 
-myimagebase = "merge_selfcal_allspw_selfcal_4ampphase_mfs_tclean_deeperbroader"
+myimagebase = "merge_allspw_selfcal_mfs_iter4ampphase_tclean_deeperbroader"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis4, imagename=myimagebase, field="", spw="", specmode='mfs',
        deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
@@ -507,7 +571,7 @@ exportfits(myimagebase+'.model', myimagebase+'.model.fits', dropdeg=True, overwr
 exportfits(myimagebase+'.residual', myimagebase+'.residual.fits', dropdeg=True, overwrite=True)
 
 
-myimagebase = "merge_selfcal_allspw_selfcal_3_mfs_tclean_deeperbroader"
+myimagebase = "merge_allspw_selfcal_mfs_iter3ampphase_tclean_deeperbroader"
 os.system('rm -rf {0}.*'.format(myimagebase))
 tclean(vis=vis3, imagename=myimagebase, field="", spw="", specmode='mfs',
        deconvolver='multiscale', gridder='mosaic', outframe='LSRK',
