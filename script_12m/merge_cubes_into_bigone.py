@@ -36,6 +36,7 @@ def getinds(fn):
 def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
                   overwrite_existing=False, bmaj_limits=None,
                   fnsuffix="", filesuffix='.image.fits',
+                  cropends=False,
                   add_beam_info=True):
     """
     Parameters
@@ -48,6 +49,8 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
         Filename template (goes into the glob)
     overwrite_existing : bool
         Overwrite data in the output cube?
+    cropends: bool or int
+        Number of pixels to crop off the ends of an image
     """
     spw = spw.format(spwnum)
 
@@ -114,15 +117,35 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
     for fn in ProgressBar(files):
         log.info("{0} {1}".format(getinds(fn), fn))
         ind0,ind1 = getinds(fn)
+
+        if cropends:
+            # don't crop 1st or last pixel in full cube
+            if ind0 > 0:
+                ind0 = ind0 + cropends
+                dataind0 = cropends
+            else:
+                dataind0 = 0
+
+            if ind1 < nchans_total[spwnum] - 1:
+                ind1 = ind1 - cropends
+                dataind1 = -cropends
+            else:
+                dataind1 = None
+
         if 'cdelt_sign' not in locals():
-            log.warn("cdelt_sign was not defined: overwriting a previously-existing file.  "
-                     "This may not be what you want!!!  Check that the original header is OK.")
             cdelt_sign = np.sign(fits.getheader(fn)['CDELT3'])
+            log.warn("cdelt_sign was not defined: overwriting a"
+                     " previously-existing file.  "
+                     "This may not be what you want; the data could be going "
+                     "opposite the parent cube.  Check that the original "
+                     "header is OK. sign(CDELT) is now {0}".format(cdelt_sign))
         if cdelt_sign == -1:
-            ind1, ind0 = nchans_total[spwnum] - ind0 - 1, nchans_total[spwnum] - ind1 - 1
+            ind1, ind0 = (nchans_total[spwnum] - ind0 - 1,
+                          nchans_total[spwnum] - ind1 - 1)
         plane = hdul[0].data[ind0]
         if np.all(plane == 0) or overwrite_existing:
-            log.info("Replacing indices {0}->{2} {1}".format(getinds(fn), fn, (ind0,ind1)))
+            log.info("Replacing indices {0}->{2} {1}"
+                     .format(getinds(fn), fn, (ind0,ind1)))
 
             data = fits.getdata(fn)
 
@@ -133,8 +156,8 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
                 data[~ok_beam] = np.nan
             if add_beam_info:
                 beamtable = fits.open(fn)[1]
-                hdul[1].data[ind0:ind1] = beamtable.data
+                hdul[1].data[ind0:ind1] = beamtable.data[dataind0:dataind1]
 
 
-            hdul[0].data[ind0:ind1,:,:] = data
+            hdul[0].data[ind0:ind1,:,:] = data[dataind0:dataind1]
             hdul.flush()

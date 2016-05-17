@@ -130,18 +130,19 @@ def chem_plot(yslice=slice(367,467), xslice=slice(114,214), vrange=[51,60]*u.km/
     pl.show()
 
 
-chem_plot(yslice=slice(367,467), xslice=slice(114,214),
-          vrange=[51,60]*u.km/u.s, sourcename='e2',
-          filelist=glob.glob(paths.dpath('12m/cutouts/*e2e8*fits')))
+if __name__ == "__main__":
+    chem_plot(yslice=slice(367,467), xslice=slice(114,214),
+              vrange=[51,60]*u.km/u.s, sourcename='e2',
+              filelist=glob.glob(paths.dpath('12m/cutouts/*e2e8*fits')))
 
-chem_plot(yslice=slice(227,347), xslice=slice(119,239),
-          vrange=[52,63]*u.km/u.s, sourcename='e8',
-          filelist=glob.glob(paths.dpath('12m/cutouts/*e2e8*fits')))
+    chem_plot(yslice=slice(227,347), xslice=slice(119,239),
+              vrange=[52,63]*u.km/u.s, sourcename='e8',
+              filelist=glob.glob(paths.dpath('12m/cutouts/*e2e8*fits')))
 
-chem_plot(yslice=slice(31,231), xslice=slice(152,350),
-          vrange=[54,64]*u.km/u.s, sourcename='north',
-          filelist=glob.glob(paths.dpath('12m/cutouts/*north*fits')))
+    chem_plot(yslice=slice(31,231), xslice=slice(152,350),
+              vrange=[54,64]*u.km/u.s, sourcename='north',
+              filelist=glob.glob(paths.dpath('12m/cutouts/*north*fits')))
 
-chem_plot(yslice=slice(50,150), xslice=slice(80,180),
-          vrange=[58,67]*u.km/u.s, sourcename='ALMAmm14',
-          filelist=glob.glob(paths.dpath('12m/cutouts/*ALMAmm14*fits')))
+    chem_plot(yslice=slice(50,150), xslice=slice(80,180),
+              vrange=[58,67]*u.km/u.s, sourcename='ALMAmm14',
+              filelist=glob.glob(paths.dpath('12m/cutouts/*ALMAmm14*fits')))
