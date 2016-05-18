@@ -99,7 +99,7 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
 
     # Find the appropriate files (this is NOT a good way to do this!  Better to
     # provide a list.  But wildcards are quick & easy...
-    files = glob.glob("piece_of_{1}_cube{2}.{0}.chan*fits".format(spw,fntemplate,fnsuffix))
+    files = glob.glob("piece_of_{1}_cube{2}.{0}.chan*{3}".format(spw,fntemplate,fnsuffix,filesuffix))
     log.info(str(files))
 
     # open the file in update mode (it should have the right dims now)
@@ -123,12 +123,17 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
             if ind0 > 0:
                 ind0 = ind0 + cropends
                 dataind0 = cropends
+                extra = 0
             else:
+                # because I forgot to reduce nchan, there is an "extra" pixel
+                # when we start at zero (there should not be a corresponding one
+                # when we end too late)
                 dataind0 = 0
+                extra = 1
 
             if ind1 < nchans_total[spwnum] - 1:
                 ind1 = ind1 - cropends
-                dataind1 = -cropends
+                dataind1 = - cropends - extra
             else:
                 dataind1 = None
 
