@@ -143,7 +143,10 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
                      " previously-existing file.  "
                      "This may not be what you want; the data could be going "
                      "opposite the parent cube.  Check that the original "
-                     "header is OK. sign(CDELT) is now {0}".format(cdelt_sign))
+                     "header is OK. sign(CDELT) is now {0}, "
+                     "while for the big header it is {1}"
+                     .format(cdelt_sign,
+                             np.sign(fits.getheader(big_filename)['CDELT3'])))
         if cdelt_sign == -1:
             ind1, ind0 = (nchans_total[spwnum] - ind0 - 1,
                           nchans_total[spwnum] - ind1 - 1)
