@@ -22,7 +22,7 @@ imsize = [3200,3200] # size of image in pixels.
 
 weighting = 'briggs'
 robust=-0.5
-threshold = '20.0mJy'
+threshold = '100.0mJy'
 
 spws_12m = {0: '0,4',
             1: '1,5',
@@ -121,31 +121,34 @@ for spwnum in '3201':
 
         # LINE IMAGING (MOSAIC MODE)
         if (not (os.path.exists(output+".image.fits") or
-                 os.path.exists(output+".image.pbcor.fits"))):
+                 os.path.exists(output+".image.pbcor.fits"))
+            or ('reclean' in locals() and reclean)):
             print "Imaging {0}".format(output)
             os.system('rm -rf ' + output + '*')
             tclean(vis = concatvis,
-                  imagename = output,
-                  field = '',
-                  spw = '', # there should be only one
-                  gridder='mosaic',
-                  specmode = 'cube',
-                  width = width,
-                  start = startfreq,
-                  nchan = nchans_per_cube + 2, # 1 channel at either end for buffer
-                  veltype = 'radio',
-                  outframe = 'LSRK',
+                   imagename = output,
+                   field = '',
+                   spw = '', # there should be only one
+                   gridder='mosaic',
+                   specmode = 'cube',
+                   width = width,
+                   start = startfreq,
+                   nchan = nchans_per_cube + 2, # 1 channel at either end for buffer
+                   veltype = 'radio',
+                   outframe = 'LSRK',
                    deconvolver='clark',
-                  interactive = F,
-                  niter = 5000,
-                  imsize = imsize,
-                  cell = cell,
-                  weighting = weighting,
-                  phasecenter = phasecenter,
-                  robust = robust,
-                  threshold = threshold,
-                  savemodel='none',
-                  )
+                   interactive = F,
+                   niter = 500000, # huge niter: forcibly go to the threshold
+                   # in principle, at least, this might help smooth over the
+                   # band-edge issues
+                   imsize = imsize,
+                   cell = cell,
+                   weighting = weighting,
+                   phasecenter = phasecenter,
+                   robust = robust,
+                   threshold = threshold,
+                   savemodel='none',
+                   )
 
               
             myimagebase = output

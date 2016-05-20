@@ -35,8 +35,9 @@ def getinds(fn):
 
 def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
                   overwrite_existing=False, bmaj_limits=None,
-                  fnsuffix="", filesuffix='.image.fits',
+                  fnsuffix="", filesuffix='image.fits',
                   cropends=False,
+                  minimize=True,
                   add_beam_info=True):
     """
     Parameters
@@ -51,6 +52,9 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
         Overwrite data in the output cube?
     cropends: bool or int
         Number of pixels to crop off the ends of an image
+    minimize: bool
+        Compute the spatial minimal subcube before building the cube?  Slices
+        for all subsequent cubes will be computed from the first cube.
     """
     spw = spw.format(spwnum)
 
@@ -63,7 +67,19 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
             raise ValueError("Found too many or too few matches: {0}".format(header_fn))
         else:
             header_fn = header_fn[0]
-        header = fits.getheader(header_fn)
+
+        if minimize:
+            cube0 = SpectralCube.read(header_fn)
+            slices = cube0.subcube_slices_from_mask(cube0.mask,
+                                                    spatial_only=True)
+            # use the calculated 3rd dimension, plus the difference of the
+            # x and y slices
+            #header['NAXIS2'] = slices[1].stop-slices[1].start
+            #header['NAXIS1'] = slices[2].stop-slices[2].start
+            header = cube0[slices].header
+        else:
+            header = fits.getheader(header_fn)
+
         # Make an arbitrary, small data before prepping the header
         data = np.zeros((100, 100), dtype=np.float32)
         hdu = fits.PrimaryHDU(data=data, header=header)
@@ -74,21 +90,23 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
             ind0, ind1 = getinds(header_fn)
             header['CRPIX3'] = nchans_total[spwnum] - ind1 + 1
 
+        shape = (header['NAXIS3'], header['NAXIS2'], header['NAXIS1'])
+
         # Write to disk
         header.tofile(big_filename)
         # Using the 'append' io method, update the *header*
         with open(big_filename, 'rb+') as fobj:
-             # Seek past the length of the header, plus the length of the
-             # data we want to write.
-             # The -1 is to account for the final byte that we are about to
-             # write:
-             # 'seek' works on bytes, so divide #bits / (bytes/bit)
-             fobj.seek(len(header.tostring()) + (header['NAXIS1'] *
-                                                 header['NAXIS2'] *
-                                                 header['NAXIS3'] *
-                                                 np.abs(header['BITPIX'])/8) -
-                       1)
-             fobj.write('\0')
+            # Seek past the length of the header, plus the length of the
+            # data we want to write.
+            # The -1 is to account for the final byte that we are about to
+            # write:
+            # 'seek' works on bytes, so divide #bits / (bytes/bit)
+            fobj.seek(len(header.tostring()) + (shape[0] *
+                                                shape[1] *
+                                                shape[2] *
+                                                int(np.abs(header['BITPIX'])/8)) -
+                      1)
+            fobj.write(b'\0')
 
         big_cube = SpectralCube.read(big_filename)
         header_cube = SpectralCube.read(header_fn)
@@ -100,6 +118,7 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
     # Find the appropriate files (this is NOT a good way to do this!  Better to
     # provide a list.  But wildcards are quick & easy...
     files = glob.glob("piece_of_{1}_cube{2}.{0}.chan*{3}".format(spw,fntemplate,fnsuffix,filesuffix))
+    log.info("Files to be merged: ")
     log.info(str(files))
 
     # open the file in update mode (it should have the right dims now)
@@ -117,6 +136,14 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
     for fn in ProgressBar(files):
         log.info("{0} {1}".format(getinds(fn), fn))
         ind0,ind1 = getinds(fn)
+
+        if 'slices' not in locals():
+            if minimize:
+                cube0 = SpectralCube.read(fn)
+                slices = cube0.subcube_slices_from_mask(cube0.mask,
+                                                        spatial_only=True)
+            else:
+                slices = (slice(None),)*3
 
         if cropends:
             # don't crop 1st or last pixel in full cube
@@ -167,5 +194,5 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
                 hdul[1].data[ind0:ind1] = beamtable.data[dataind0:dataind1]
 
 
-            hdul[0].data[ind0:ind1,:,:] = data[dataind0:dataind1]
+            hdul[0].data[ind0:ind1,:,:] = data[dataind0:dataind1, slices[1], slices[2]]
             hdul.flush()
