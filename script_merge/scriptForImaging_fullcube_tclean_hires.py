@@ -51,7 +51,7 @@ nchans_total = {ii: int(np.abs(np.diff(frange[ii])/fstep[ii]*1000.)[0])
 ncubes_per_window = 40
 
 
-for spwnum in '3201':
+for spwnum in '2013':
     spwnum = int(spwnum)
 
 

@@ -9,9 +9,9 @@ import aplpy
 import paths
 from astropy.io import fits
 from astropy.nddata import Cutout2D
-from astropy.coordinates import SkyCoord
 from astropy import wcs
 import paths
+from outflow_meta import e2e
 
 e2_green_fits = '/Users/adam/work/w51/alma/cycle3goddi/W51e2.cont.image.pbcor.fits'
 north_green_fits = '/Users/adam/work/w51/alma/cycle3goddi/W51n.cont.image.pbcor.fits'
@@ -27,7 +27,6 @@ bluehead = blue_fits[0].header
 red_wcs = wcs.WCS(redhead)
 blue_wcs = wcs.WCS(bluehead)
 
-e2e = SkyCoord('19:23:43.967','14:30:34.54', unit=(u.hour, u.deg))
 cutout_red = Cutout2D(red_fits[0].data, e2e, 0.0072*u.deg, wcs=red_wcs)
 cutout_blue = Cutout2D(blue_fits[0].data, e2e, 0.0072*u.deg, wcs=blue_wcs)
 

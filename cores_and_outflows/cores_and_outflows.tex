@@ -111,7 +111,7 @@ The cubes use only 12m data, as the 12m + 7m combination was unsuccessful.
 \subsubsection{UV coverage}
 \Figure{figures/visibility_weight_vs_uvdist_linear.png}
 {A weighted histogram of the visibility weights as a function of UV distance;
-this approximately shows the amount of data received at each UV spacing}
+this approximately shows the amount of data received at each baseline length.}
 {fig:uvcov}{1}{16cm}
 
 \subsection{Morphological Analysis}
@@ -487,7 +487,8 @@ dust is also present but undetectable because it is hidden by the hotter dust.
 massive protostellar cores.  They share similar profiles and
 are likely dominated by hot dust in their innermost regions,
 but they are more likely to be dominated by cooler dust in their
-outer, more massive regions.}
+outer, more massive regions.  The cumulative mass distribution may
+therefore be deceptive.}
 {fig:hmradprof}{1}{14cm}
 
 \subsection{The most massive prestellar cores in W51}
@@ -658,23 +659,59 @@ reveals the position at which the CO is breaking out of the cloud and into the
 \hii region.
 
 \subsection{The e2e outflow}
-The dominant outflow in W51, which was previously detected by the SMA \citep{}, comes from 
-the source e2e.  Its morphology is peculiar: both the red- and blue-shifted ends show a `notch'
-effect, turning 90 degrees at their ends.  This is particularly strange because the right angle
-turns are in the same direction, not the opposite as would be expected if the whole system were
-rotating in the plane of the sky.  To the northwest, the notch 
+The dominant outflow in W51, which was previously detected by the SMA \citep{},
+comes from the source e2e.  This outflow is remarkable for its high velocity,
+extending nearly to the limit of our spectral coverage.  The ends of the flow
+cover at least $-50 < v_{\lsr} < 160$ \kms, or a velocity $v\pm100$ \kms.  
 
-TODO: discuss the velocity structure of this flow.
+The morphology is also notable.  Both ends of the outflow are sharply truncated
+at $\sim2.5\arcsec$ (0.07 pc) from e2e. To the southeast, the high-velocity
+flow lies along a line that is consistent with the extrapolation from the
+northwest flow,
+but at lower velocities ($10 < v_{LSR} < 45$ \kms), it jogs toward a more
+north-south direction.  In the northwest, the redshifted part of this flow ($70
+< v_{LSR} < 120$ \kms) apparently collides with a \emph{blue}shifted flow from
+another source ($22 < v_{LSR} < 45$ \kms), suggesting that these outflows
+intersect, though such a scenario seems probabilistically implausible given
+their small volume filling factor.
+
+% really?  important implications?  Maybe not.
+The extreme velocity and morphology carry a few important implications for the
+accretion process in W51.  The sharp symmetric truncation, combined with the
+extraordinary velocity, suggests that the outflow is freshly carving a cavity
+in the surrounding dense gas.  The observed velocities are high enough that
+their bow shocks likely dissociated all molecules, so some ionized gas is
+likely present at the endpoints; this ionized gas has not been detected in
+radio images because of the nearby 100 mJy HCHII region e2w.  The dynamical age
+of the outflow is $\sim600$ years at the peak observed velocity, which is a
+lower limit on the true age of the outflow.
+
+\subsection{e8}
+There are at least four distinct outflows coming from the e8 filament.
+The e8 core is launching a redshifted outflow to the northwest.  A blueshifted
+outflow is coming from somewhere south of the e8 peak and pointing straight
+east.  While these originate quite near each other, they seem not to have
+a common source, since the red and blue streams are not parallel.
+
 
 \Figure{{figures/Alma1.4mmcont_green_outflows_aplpy_CONTours}.png}
 {Outflows in red and blue overlaid on mm continuum in green with cm continuum contours in white.}
 {fig:outflowscontinuume2}{1}{12cm}
 
 \Figure{{figures/NACO_green_outflows_aplpy_CONTours_hires_h77acontour}.png}
-{Outflows in the W51 IRS2 region.  The green emission is NACO K-band continuum, with ALMA 1.4 mm
-continuum contours in white and H77$\alpha$ contours in blue.  The \citet{Lacy2007a} jet is prominent
-in H77$\alpha$.}
+{Outflows in the W51 IRS2 region.  The green emission is NACO K-band continuum,
+with ALMA 1.4 mm continuum contours in white and H77$\alpha$ contours in blue.
+The \citet{Lacy2007a} jet is prominent in H77$\alpha$.}
 {fig:outflowscontinuumnorth}{1}{12cm}
+
+\Figure{{figures/e2e_CO2-1_channelmaps}.png}
+{Channel maps of the e2e outflow in CO 2-1.  The dashed line approximately
+connects the northwest and southeast extrema of the flow.
+{fig:e2ecooutflow}{1}{18cm}
+
+\Figure{{figures/e8_CO2-1_channelmaps}.png}
+{channel maps of the e8 outflow in CO}
+{fig:e8cooutflow}{1}{18cm}
 
 \input{solobib}
 
