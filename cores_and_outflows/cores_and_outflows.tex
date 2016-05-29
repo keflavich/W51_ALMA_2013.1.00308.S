@@ -114,7 +114,7 @@ The cubes use only 12m data, as the 12m + 7m combination was unsuccessful.
 this approximately shows the amount of data received at each baseline length.}
 {fig:uvcov}{1}{16cm}
 
-\subsection{Morphological Analysis}
+\subsection{Continuum Morphological Analysis}
 \label{sec:morphology}
 The largest detected structures include the W51 Main HII region bubble and the
 W51 IRS2 HII region, which are relatively uninteresting since their properties
@@ -229,7 +229,7 @@ confirming that they consist only of dust emission.
 
 
 
-\subsection{Kinematics}
+\subsection{Dense Gas Kinematics}
 \label{sec:kinematics}
 We examine the gas kinematics throughout the cloud, but especially near the 
 massive cores.
@@ -253,51 +253,51 @@ foreground, and this gas is clearly moving toward the cores.
 
 The source ALMAmm14 shows a similar kinematic signature....
 
-\subsection{Simulations}
-{\bf Unfortunately CASA's simulations produce reproducible incorrectness, in
-that I cannot get an image that matches the input image.  There seems to
-*always* be some flux scaling no matter what input unit is used.  Therefore, I
-don't trust any of the results of CASA simulations yet.  Perseus looks OK, but
-Aquila is just flat out wrong, and the scale-recovery simulations I attempted
-also failed.
-
-Followup on the above paragraph: I've gotten the simulations worked out; CASA
-always treats data as if they are in Jy/beam even if Jy/pixel units are
-specified when using the \texttt{sm.predict} module.  However, I'm not
-convinced of their utility at this stage.}
-
-The enhanced noise around bright sources is unavoidable.  We tested the noise
-properties of our data set using the CASA \texttt{simobserve} toolkit.  We
-obtained a Herschel Gould's Belt Survey image of the Perseus molecular cloud at
-250 \um \citep[resolution 18\arcsec][]{} and scaled it down by $\sim40\times$
-to match the resolution of our ALMA data.  We used the \texttt{sm.predict} task
-to ``observe'' the Herschel data with our exact UV data set.  We then used
-\texttt{sm.corrupt} to make the noise properties approximately match those of
-our observations.
-
-We used the Perseus data scaled from 250 \um to 1.3 mm assuming
-a relatively shallow $\beta=1.5$ and a constant temperature $T=20$ K
-(since temperature maps are not available).
-For the Aquila data, we used the column density and temperature maps to
-derive a synthetic 1.3 mm map assuming an opacity $\kappa_{505 \mathrm{GHz}} =
-4$ g \percc.  Since Aquila is at a greater distance, the Herschel resolution is
-coarser (0.9 \arcsec at 5.4 kpc) than our best resolution of 0.2\arcsec, so it
-is best compared to lower-resolution tapered data.
-
-
-When imaging the Perseus data set, we put NGC 1333 at the image center.  At the
-noise levels in our data, only the central portions of NGC 1333 are detected,
-with three point sources recovered.  In this map, the noise properties are
-very uniform.  We are therefore unable to analyze the NGC
-1333 data with the exact same parameters as were used on W51.  However, using
-similar parameters (but with a lower significance threshold), we detect only
-three sources.
-
-In a second experiment, we scaled the peak flux density of the Perseus map to
-be $\sim100\times$ brighter than it should be, making it comparable to the flux
-density of W51e2 in the real ALMA observations.  In this map, even with deep
-cleaning, the noise around the bright sources remains very high and artifacts
-are evident.
+% \subsection{Simulations}
+% {\bf Unfortunately CASA's simulations produce reproducible incorrectness, in
+% that I cannot get an image that matches the input image.  There seems to
+% *always* be some flux scaling no matter what input unit is used.  Therefore, I
+% don't trust any of the results of CASA simulations yet.  Perseus looks OK, but
+% Aquila is just flat out wrong, and the scale-recovery simulations I attempted
+% also failed.
+% 
+% Followup on the above paragraph: I've gotten the simulations worked out; CASA
+% always treats data as if they are in Jy/beam even if Jy/pixel units are
+% specified when using the \texttt{sm.predict} module.  However, I'm not
+% convinced of their utility at this stage.}
+% 
+% The enhanced noise around bright sources is unavoidable.  We tested the noise
+% properties of our data set using the CASA \texttt{simobserve} toolkit.  We
+% obtained a Herschel Gould's Belt Survey image of the Perseus molecular cloud at
+% 250 \um \citep[resolution 18\arcsec][]{} and scaled it down by $\sim40\times$
+% to match the resolution of our ALMA data.  We used the \texttt{sm.predict} task
+% to ``observe'' the Herschel data with our exact UV data set.  We then used
+% \texttt{sm.corrupt} to make the noise properties approximately match those of
+% our observations.
+% 
+% We used the Perseus data scaled from 250 \um to 1.3 mm assuming
+% a relatively shallow $\beta=1.5$ and a constant temperature $T=20$ K
+% (since temperature maps are not available).
+% For the Aquila data, we used the column density and temperature maps to
+% derive a synthetic 1.3 mm map assuming an opacity $\kappa_{505 \mathrm{GHz}} =
+% 4$ g \percc.  Since Aquila is at a greater distance, the Herschel resolution is
+% coarser (0.9 \arcsec at 5.4 kpc) than our best resolution of 0.2\arcsec, so it
+% is best compared to lower-resolution tapered data.
+% 
+% 
+% When imaging the Perseus data set, we put NGC 1333 at the image center.  At the
+% noise levels in our data, only the central portions of NGC 1333 are detected,
+% with three point sources recovered.  In this map, the noise properties are
+% very uniform.  We are therefore unable to analyze the NGC
+% 1333 data with the exact same parameters as were used on W51.  However, using
+% similar parameters (but with a lower significance threshold), we detect only
+% three sources.
+% 
+% In a second experiment, we scaled the peak flux density of the Perseus map to
+% be $\sim100\times$ brighter than it should be, making it comparable to the flux
+% density of W51e2 in the real ALMA observations.  In this map, even with deep
+% cleaning, the noise around the bright sources remains very high and artifacts
+% are evident.
 
 
 
@@ -692,6 +692,8 @@ The e8 core is launching a redshifted outflow to the northwest.  A blueshifted
 outflow is coming from somewhere south of the e8 peak and pointing straight
 east.  While these originate quite near each other, they seem not to have
 a common source, since the red and blue streams are not parallel.
+
+\subsection{north}
 
 
 \Figure{{figures/Alma1.4mmcont_green_outflows_aplpy_CONTours}.png}

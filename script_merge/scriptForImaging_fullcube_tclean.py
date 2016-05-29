@@ -20,8 +20,8 @@ imsize = [960,960] # size of image in pixels.
 # be controlled within clean.
 
 weighting = 'briggs'
-robust=0.5
-threshold = '20.0mJy'
+robust=1.0
+threshold = '100.0mJy'
 
 spws_12m = {0: '0,4',
             1: '1,5',
@@ -61,9 +61,10 @@ for spwnum in '1320':
         spw = spws_12m[spwnum]
         for ss in spw.split(","):
             ss = int(ss)
-            cvelvis12m = 'w51_concat.spw{0}.cvel'.format(ss)
+            cvelvis12m = 'w51_12m.spw{0}.cvel'.format(ss)
             cvelvises.append(cvelvis12m)
-            if not os.path.exists('cvelvis12m'):
+            if not os.path.exists(cvelvis12m):
+                print("cveling {0}".format(cvelvis12m))
                 cvel(vis=finalvis12m,
                      outputvis=cvelvis12m,
                      passall=False, field=field, spw=str(ss), selectdata=True,
@@ -71,14 +72,17 @@ for spwnum in '1320':
                      nchan=nchans_total[spwnum],
                      start='{0}MHz'.format(frange[spwnum][0]),
                      width='{0}kHz'.format(fstep[spwnum]), interpolation='linear',
-                     phasecenter='', restfreq='', outframe='', veltype='radio',
+                     phasecenter='', restfreq='', outframe='LSRK', veltype='radio',
                      hanning=False,)
+            else:
+                print("skipping {0}".format(cvelvis12m))
         spw = spws_7m[spwnum]
         for ss in spw.split(","):
             ss = int(ss)
-            cvelvis7m = 'w51_concat.spw{0}.cvel'.format(ss)
+            cvelvis7m = 'w51_7m.spw{0}.cvel'.format(ss)
             cvelvises.append(cvelvis7m)
-            if not os.path.exists('cvelvis7m'):
+            if not os.path.exists(cvelvis7m):
+                print("cveling {0}".format(cvelvis7m))
                 cvel(vis=finalvis7m,
                      outputvis=cvelvis7m,
                      passall=False, field=field, spw=str(ss), selectdata=True,
@@ -86,8 +90,10 @@ for spwnum in '1320':
                      nchan=nchans_total[spwnum],
                      start='{0}MHz'.format(frange[spwnum][0]),
                      width='{0}kHz'.format(fstep[spwnum]), interpolation='linear',
-                     phasecenter='', restfreq='', outframe='', veltype='radio',
+                     phasecenter='', restfreq='', outframe='LSRK', veltype='radio',
                      hanning=False,)
+            else:
+                print("skipping {0}".format(cvelvis7m))
         concat(vis=cvelvises,
                concatvis=concatvis,)
     else:
@@ -97,8 +103,11 @@ for spwnum in '1320':
     nchans_total_thiscube = nchans_total[spwnum]
     nchans_per_cube = int(nchans_total_thiscube/ncubes_per_window)
     for ii in range(ncubes_per_window):
-        start = nchans_per_cube*ii
-        end = nchans_per_cube*(ii+1)
+        # add 1 channel at start and 1 at end because tclean mistreats these channels
+        start = nchans_per_cube*ii -1
+        if start <= 0:
+            start = 0
+        end = nchans_per_cube*(ii+1) +1
         if end > nchans_total_thiscube:
             end = nchans_total_thiscube
         output = 'piece_of_full_W51_7m12m_cube.spw{0}.channels{1}to{2}'.format(spwnum, start, end)
@@ -110,37 +119,46 @@ for spwnum in '1320':
 
 
         # LINE IMAGING (MOSAIC MODE)
-        if not os.path.exists(output+".image"):
+        if (not (os.path.exists(output+".image.fits") or
+                 os.path.exists(output+".image.pbcor.fits"))
+            or ('reclean' in locals() and reclean)):
             print "Imaging {0}".format(output)
             os.system('rm -rf ' + output + '*')
             tclean(vis = concatvis,
-                  imagename = output,
-                  field = '',
-                  spw = '', # there should be only one
-                  gridder='mosaic',
-                  specmode = 'cube',
-                  width = width,
-                  start = startfreq,
-                  nchan = nchans_per_cube,
-                  veltype = 'radio',
-                  outframe = 'LSRK',
+                   imagename = output,
+                   field = '',
+                   spw = '', # there should be only one
+                   gridder='mosaic',
+                   specmode = 'cube',
+                   width = width,
+                   start = startfreq,
+                   nchan = nchans_per_cube + 2, # 1 channel at either end for buffer
+                   veltype = 'radio',
+                   outframe = 'LSRK',
                    deconvolver='clark',
-                  interactive = F,
-                  niter = 5000,
-                  imsize = imsize,
-                  cell = cell,
-                  weighting = weighting,
-                  phasecenter = phasecenter,
-                  robust = robust,
-                  threshold = threshold,
-                  savemodel='none',
-                  )
+                   interactive = F,
+                   niter = 500000, # huge niter: forcibly go to the threshold
+                   # in principle, at least, this might help smooth over the
+                   # band-edge issues
+                   imsize = imsize,
+                   cell = cell,
+                   weighting = weighting,
+                   phasecenter = phasecenter,
+                   robust = robust,
+                   threshold = threshold,
+                   savemodel='none',
+                   )
 
-          
-        myimagebase = output
-        # I've given up on primary beam correction, at least for now
-        exportfits(imagename=myimagebase+'.image',
-                   fitsimage=myimagebase+'.image.fits',
-                   overwrite=True,
-                   dropdeg=True)
+              
+            myimagebase = output
+            exportfits(myimagebase+'.image', myimagebase+'.image.fits',
+                       dropdeg=True, overwrite=True)
+            impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
+                    outfile=myimagebase+'.image.pbcor', overwrite=True)
+            exportfits(myimagebase+'.image.pbcor',
+                       myimagebase+'.image.pbcor.fits', dropdeg=True,
+                       overwrite=True)
 
+            for suffix in ('psf', 'weight', 'sumwt', 'pb', 'model', 'residual',
+                           'mask', 'image'):
+                os.system('rm -rf {0}.{1}'.format(myimagebase, suffix))

@@ -21,7 +21,7 @@ corners = {reg.attr[1]['text']:
            for reg in regions
           }
 
-for source in ('e2','e8','north'):
+for source in ('e2','e8','north','northoutflow'):
     for cubefn in glob.glob("full*fits"):
 
         try:
