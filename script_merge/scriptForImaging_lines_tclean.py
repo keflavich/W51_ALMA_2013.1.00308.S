@@ -3,6 +3,10 @@ Joint imaging of 7m and 12m data
 """
 import os
 from line_to_image_list import line_to_image_list
+from calibrated_configuration import spws_12m, spws_7m
+
+spws = {'12m': spws_12m,
+        '7m': spws_7m}
 
 calpath = './'
 
@@ -15,7 +19,7 @@ velocity_res = 1.0
 
 # It's not clear how cvel will handle overlapping SPWs
 
-for line, restfreq, velocity_res in line_to_image_list:
+for line, restfreq, velocity_res, spw in line_to_image_list:
 
     outms_template = "{line}_W51_B6_{array}.cvel.ms"
     concatvis = "{line}_W51_B6_cvel_merge.ms".format(line=line)
@@ -31,6 +35,7 @@ for line, restfreq, velocity_res in line_to_image_list:
                   datacolumn='data',
                   field='w51',
                   mode='velocity',
+                  spw=spws[array][spw],
                   nchan=nchans,
                   start='{0}km/s'.format(velocity_range[0]),
                   width='{0}km/s'.format(velocity_res),
@@ -46,6 +51,8 @@ for line, restfreq, velocity_res in line_to_image_list:
                concatvis=concatvis)
 
     assert os.path.exists(concatvis)
+    print("{0} concatenated.".format(concatvis))
+
 
     output = 'W51_b6_7M_12M.{0}'.format(line)
 
@@ -72,8 +79,6 @@ for line, restfreq, velocity_res in line_to_image_list:
                phasecenter='',
                threshold='15mJy',
                savemodel='none',
-               uvtaper=True,
-               innteraper=['10arcsec'],
               )
         myimagebase = output
         impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb', outfile=myimagebase+'.image.pbcor', overwrite=True)
@@ -85,3 +90,50 @@ for line, restfreq, velocity_res in line_to_image_list:
                        'image', 'residual'):
             os.system('rm -rf {0}.{1}'.format(output, suffix))
 
+
+    output = 'W51_b6_7M_12M_natural.{0}'.format(line)
+
+    if not os.path.exists(output+".image.pbcor.fits"):
+        os.system('rm -rf ' + output + '*/')
+        tclean(vis=concatvis,
+               imagename=output,
+               field='w51',
+               spw='',
+               gridder='mosaic',
+               specmode='cube',
+               start='{0}km/s'.format(velocity_range[0]),
+               width='{0}km/s'.format(velocity_res), interpolation='linear',
+               nchan=nchans,
+               restfreq=restfreq,
+               deconvolver='multiscale',
+               scales=[0,3,9,27],
+               veltype='radio',
+               outframe='LSRK',
+               interactive=F,
+               niter=10000,
+               imsize=[1536,1536],
+               cell='.1arcsec',
+               weighting='briggs',
+               robust=2.0,
+               phasecenter='',
+               threshold='100mJy',
+               savemodel='none',
+              )
+        myimagebase = output
+        impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb',
+                outfile=myimagebase+'.image.pbcor', overwrite=True)
+        exportfits(imagename=myimagebase+'.image.pbcor',
+                   fitsimage=myimagebase+'.image.pbcor.fits', overwrite=True,
+                   dropdeg=True)
+        exportfits(imagename=myimagebase+'.pb',
+                   fitsimage=myimagebase+'.pb.fits', overwrite=True,
+                   dropdeg=True)
+        exportfits(imagename=myimagebase+'.residual',
+                   fitsimage=myimagebase+'.residual.fits', overwrite=True,
+                   dropdeg=True)
+
+        for suffix in ('pb', 'weight', 'sumwt', 'psf', 'model', 'mask',
+                       'image', 'residual'):
+            os.system('rm -rf {0}.{1}'.format(output, suffix))
+
+    print("Completed {0}".format(line))

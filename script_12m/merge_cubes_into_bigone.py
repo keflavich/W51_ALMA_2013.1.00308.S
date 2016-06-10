@@ -88,7 +88,11 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
         header['NAXIS3'] = nchans_total[spwnum]
         if cdelt_sign == -1:
             ind0, ind1 = getinds(header_fn)
-            header['CRPIX3'] = nchans_total[spwnum] - ind1 + 1
+            # if ind1 == cubeshape, need to add 1 more pixel
+            # but, if cropping is intended & cube is 1 pixel bigger...
+            # (does this make sense?!)
+            extra = ind1 == cube0.shape[0]
+            header['CRPIX3'] = nchans_total[spwnum] - ind1 + extra
 
         shape = (header['NAXIS3'], header['NAXIS2'], header['NAXIS1'])
 
@@ -136,6 +140,13 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
     for fn in ProgressBar(files):
         log.info("{0} {1}".format(getinds(fn), fn))
         ind0,ind1 = getinds(fn)
+
+        if ind0 > 0:
+            # this might not be exactly right... but I think it is.
+            assert ind1-ind0 == fits.getdata(fn).shape[0], "Data cube has wrong size."
+        else:
+            # only worry about the 2nd index being in range
+            assert ind1 <= fits.getdata(fn).shape[0]
 
         if 'slices' not in locals():
             if minimize:
