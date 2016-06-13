@@ -36,8 +36,10 @@ def getinds(fn):
 def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
                   overwrite_existing=False, bmaj_limits=None,
                   fnsuffix="", filesuffix='image.fits',
+                  slices=None,
                   cropends=False,
                   minimize=True,
+                  skip_failures=False,
                   add_beam_info=True):
     """
     Parameters
@@ -68,10 +70,13 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
         else:
             header_fn = header_fn[0]
 
+        log.info("Creating new large cube from {0}".format(header_fn))
+
         if minimize:
             cube0 = SpectralCube.read(header_fn)
-            slices = cube0.subcube_slices_from_mask(cube0.mask,
-                                                    spatial_only=True)
+            if slices is None:
+                slices = cube0.subcube_slices_from_mask(cube0.mask,
+                                                        spatial_only=True)
             # use the calculated 3rd dimension, plus the difference of the
             # x and y slices
             #header['NAXIS2'] = slices[1].stop-slices[1].start
@@ -137,24 +142,37 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
                                                      names=['BMAJ','BMIN','BPA','CHAN','POL'],
                                                      formats=['f4','f4','f4','i4','i4'])))
 
+    bad = {}
+
     for fn in ProgressBar(files):
         log.info("{0} {1}".format(getinds(fn), fn))
         ind0,ind1 = getinds(fn)
 
         if ind0 > 0:
-            # this might not be exactly right... but I think it is.
-            assert ind1-ind0 == fits.getdata(fn).shape[0], "Data cube has wrong size."
-        else:
-            # only worry about the 2nd index being in range
-            assert ind1 <= fits.getdata(fn).shape[0]
-
-        if 'slices' not in locals():
-            if minimize:
-                cube0 = SpectralCube.read(fn)
-                slices = cube0.subcube_slices_from_mask(cube0.mask,
-                                                        spatial_only=True)
+            if skip_failures and ind1-ind0 != fits.getdata(fn).shape[0]:
+                print("{0} has wrong size".format(fn))
+                bad[fn] = 'ind1-ind0={0}, shape0={1}'.format(ind1-ind0,
+                                                             fits.getdata(fn).shape[0])
+                continue
             else:
-                slices = (slice(None),)*3
+                # this might not be exactly right... but I think it is.
+                assert ind1-ind0 == fits.getdata(fn).shape[0], "Data cube has wrong size."
+        else:
+            if skip_failures and ind1 > fits.getdata(fn).shape[0]:
+                print("{0} has wrong spectral shape".format(fn))
+                bad[fn] = "ind1 {0} > shape {1}".format(ind1,
+                                                        fits.getdata(fn).shape[0])
+                continue
+            else:
+                # only worry about the 2nd index being in range
+                assert ind1 <= fits.getdata(fn).shape[0]
+
+        if slices is None and minimize:
+            cube0 = SpectralCube.read(fn)
+            slices = cube0.subcube_slices_from_mask(cube0.mask,
+                                                    spatial_only=True)
+        elif slices is None:
+            slices = (slice(None),)*3
 
         if cropends:
             # don't crop 1st or last pixel in full cube
@@ -204,6 +222,18 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
                 beamtable = fits.open(fn)[1]
                 hdul[1].data[ind0:ind1] = beamtable.data[dataind0:dataind1]
 
+            if data[dataind0:dataind1, slices[1], slices[2]].shape != hdul[0].data[ind0:ind1,:,:].shape:
+                if skip_failures:
+                    print("{0} has wrong shape".format(fn))
+                    bad[fn] = "bigshape {0}, inpshape {1}".format(data[dataind0:dataind1, slices[1], slices[2]].shape,
+                                                                  hdul[0].data[ind0:ind1,:,:].shape)
+                    continue
+                else:
+                    raise ValueError("{0} has wrong shape".format(fn))
+
 
             hdul[0].data[ind0:ind1,:,:] = data[dataind0:dataind1, slices[1], slices[2]]
             hdul.flush()
+
+    if skip_failures:
+        return bad

@@ -163,6 +163,8 @@ for spwnum in '2013':
             for suffix in ('psf', 'weight', 'sumwt', 'pb', 'model', 'residual',
                            'mask', 'image'):
                 os.system('rm -rf {0}.{1}'.format(myimagebase, suffix))
+        else:
+            print("Skipped {0} because it was already completed".format(output))
 
         # don't crop.  Let's do that later so we stop losing data.
         #if (os.path.exists(output+".image.fits") and

@@ -1,26 +1,69 @@
+import os
 import numpy as np
 from spectral_cube import SpectralCube
 from astropy import units as u
 import paths
 from constants import distance
+from astropy import convolution
+import radio_beam
 
-p303 = paths.dpath('w51_H2CO_303_202_contsub.image.pbcor.fits')
-p321 = paths.dpath('w51_H2CO_321_220_contsub.image.pbcor.fits')
-cube303 = SpectralCube.read(p303).with_spectral_unit(u.km/u.s,
-                                                     velocity_convention='radio')
-min_slices = cube303.subcube_slices_from_mask(cube303.mask)
-cube321 = SpectralCube.read(p321).with_spectral_unit(u.km/u.s,
-                                                     velocity_convention='radio')
-# tight cropping
-cube303 = cube303[min_slices]
-cube321 = cube321[min_slices]
+#p303 = paths.dpath('w51_H2CO_303_202_contsub.image.pbcor.fits')
+#p321 = paths.dpath('w51_H2CO_321_220_contsub.image.pbcor.fits')
+p303 = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO303_202.regrid_medsub.fits')
+p321 = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO321_220.regrid_medsub.fits')
+
+if os.path.exists(p303) and os.path.exists(p321):
+    cube303 = SpectralCube.read(p303)
+    cube321 = SpectralCube.read(p321)
+else:
+
+    p303_ = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO303_202.image.pbcor.fits')
+    p321_ = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO321_220.image.pbcor.fits')
+    cube303 = SpectralCube.read(p303_).with_spectral_unit(u.km/u.s,
+                                                         velocity_convention='radio')
+    min_slices = cube303.subcube_slices_from_mask(cube303.mask, spatial_only=True)
+    cube321 = SpectralCube.read(p321_).with_spectral_unit(u.km/u.s,
+                                                         velocity_convention='radio')
+
+    cube303.allow_huge_operations=True
+    cube321.allow_huge_operations=True
+
+    # tight cropping
+    cube303 = cube303[min_slices]
+    cube321 = cube321[min_slices]
+
+    cube303_ss = cube303.convolve_to(radio_beam.Beam(0.7*u.arcsec, 0.7*u.arcsec, 0.0*u.deg))
+    cube321_ss = cube303.convolve_to(radio_beam.Beam(0.7*u.arcsec, 0.7*u.arcsec, 0.0*u.deg))
+
+    #cube303 = cube303.reproject(cube321.header)
+    specpixscale303 = cube303_ss.spectral_axis.diff()[0]
+    smooth_scale = (cube321.spectral_axis.diff()[0]**2 - specpixscale303**2)**0.5
+    smooth_scale_pix = smooth_scale / specpixscale303
+    cube303s = cube303_ss.spectral_smooth(kernel=convolution.Gaussian1DKernel(smooth_scale_pix)) # numcores = something?
+    cube303 = cube303s.spectral_interpolate(cube321.spectral_axis,
+                                            suppress_smooth_warning=True)
+    
+
+    med303 = cube303.with_mask(((cube303.spectral_axis < 35*u.km/u.s) |
+                                (cube303.spectral_axis >
+                                 85*u.km/u.s))[:,None,None]).median(axis=0)
+    med321 = cube321_ss.with_mask(((cube321_ss.spectral_axis < 35*u.km/u.s) |
+                                   (cube321_ss.spectral_axis >
+                                    85*u.km/u.s))[:,None,None]).median(axis=0)
+    cube303 = cube303 - med303
+    cube321 = cube321 - med321
+
+    cube303.write(p303)
+    cube321.write(p321)
+
+raise
 
 std = cube303[:10].std(axis=0)
 mask = cube303 > 3*std
 
 # sad hacks: these are the same to very high but not infinite precision
-cube321._wcs = cube303._wcs
-cube321.mask._wcs = cube321.wcs
+#cube321._wcs = cube303._wcs
+#cube321.mask._wcs = cube321.wcs
 
 int303 = cube303.with_mask(mask).moment0()
 int321 = cube321.with_mask(mask).moment0()
