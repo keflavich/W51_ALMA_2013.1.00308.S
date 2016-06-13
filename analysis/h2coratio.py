@@ -20,10 +20,10 @@ else:
     p303_ = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO303_202.image.pbcor.fits')
     p321_ = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO321_220.image.pbcor.fits')
     cube303 = SpectralCube.read(p303_).with_spectral_unit(u.km/u.s,
-                                                         velocity_convention='radio')
+                                                          velocity_convention='radio')
     min_slices = cube303.subcube_slices_from_mask(cube303.mask, spatial_only=True)
     cube321 = SpectralCube.read(p321_).with_spectral_unit(u.km/u.s,
-                                                         velocity_convention='radio')
+                                                          velocity_convention='radio')
 
     cube303.allow_huge_operations=True
     cube321.allow_huge_operations=True
@@ -35,13 +35,14 @@ else:
     cube303_ss = cube303.convolve_to(radio_beam.Beam(0.7*u.arcsec, 0.7*u.arcsec, 0.0*u.deg))
     cube321_ss = cube303.convolve_to(radio_beam.Beam(0.7*u.arcsec, 0.7*u.arcsec, 0.0*u.deg))
 
-    #cube303 = cube303.reproject(cube321.header)
     specpixscale303 = cube303_ss.spectral_axis.diff()[0]
     smooth_scale = (cube321.spectral_axis.diff()[0]**2 - specpixscale303**2)**0.5
     smooth_scale_pix = smooth_scale / specpixscale303
     cube303s = cube303_ss.spectral_smooth(kernel=convolution.Gaussian1DKernel(smooth_scale_pix)) # numcores = something?
-    cube303 = cube303s.spectral_interpolate(cube321.spectral_axis,
-                                            suppress_smooth_warning=True)
+    # too slow...
+    #cube303 = cube303s.spectral_interpolate(cube321.spectral_axis,
+    #                                        suppress_smooth_warning=True)
+    cube303 = cube303s.reproject(cube321.header)
     
 
     med303 = cube303.with_mask(((cube303.spectral_axis < 35*u.km/u.s) |
@@ -55,8 +56,6 @@ else:
 
     cube303.write(p303)
     cube321.write(p321)
-
-raise
 
 std = cube303[:10].std(axis=0)
 mask = cube303 > 3*std
