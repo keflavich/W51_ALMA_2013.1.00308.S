@@ -133,9 +133,9 @@ for line, restfreq, velocity_res, spw in line_to_image_list:
                interpolation='linear',
                nchan=nchans,
                restfreq=restfreq,
-               deconvolver='multiscale',
+               deconvolver='clark',
                # natural beam is 0.7"
-               scales=[0,7,49],
+               #scales=[0,7,49],
                veltype='radio',
                outframe='LSRK',
                interactive=F,
@@ -145,7 +145,7 @@ for line, restfreq, velocity_res, spw in line_to_image_list:
                weighting='briggs',
                robust=2.0,
                phasecenter='',
-               threshold='250mJy',
+               threshold='100mJy',
                savemodel='none',
               )
         myimagebase = output
