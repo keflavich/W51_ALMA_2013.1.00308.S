@@ -33,7 +33,7 @@ else:
     cube321 = cube321[min_slices]
 
     cube303_ss = cube303.convolve_to(radio_beam.Beam(0.7*u.arcsec, 0.7*u.arcsec, 0.0*u.deg))
-    cube321_ss = cube303.convolve_to(radio_beam.Beam(0.7*u.arcsec, 0.7*u.arcsec, 0.0*u.deg))
+    cube321_ss = cube321.convolve_to(radio_beam.Beam(0.7*u.arcsec, 0.7*u.arcsec, 0.0*u.deg))
 
     specpixscale303 = cube303_ss.spectral_axis.diff()[0]
     smooth_scale = (cube321.spectral_axis.diff()[0]**2 - specpixscale303**2)**0.5
@@ -52,7 +52,7 @@ else:
                                    (cube321_ss.spectral_axis >
                                     85*u.km/u.s))[:,None,None]).median(axis=0)
     cube303 = cube303 - med303
-    cube321 = cube321 - med321
+    cube321 = cube321_ss - med321
 
     cube303.write(p303)
     cube321.write(p321)

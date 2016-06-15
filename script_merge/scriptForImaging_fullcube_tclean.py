@@ -28,11 +28,11 @@ spws_12m = {0: '0,4',
             2: '2,6',
             3: '3,7',
            }
-spws_7m =  {0: '0',
-            1: '1',
-            2: '2',
-            3: '3',
-           }
+spws_7m = {0: '0',
+           1: '1',
+           2: '2',
+           3: '3',
+          }
 nchans_total = {0: 3840, 1: 3840, 2: 3840, 3: 3840}
 frange = {0: [218136., 218575.],
           1: [218422., 220268.],
@@ -50,9 +50,8 @@ nchans_total = {ii: int(np.abs(np.diff(frange[ii])/fstep[ii]*1000.)[0])
 ncubes_per_window = 20
 
 
-for spwnum in '1320':
+for spwnum in '3201':
     spwnum = int(spwnum)
-
 
     concatvis = 'w51_concat_7m12m.spw{0}.merge'.format(spwnum)
     if not os.path.exists(concatvis):
