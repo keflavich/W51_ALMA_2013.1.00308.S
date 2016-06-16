@@ -9,16 +9,16 @@ import radio_beam
 
 #p303 = paths.dpath('w51_H2CO_303_202_contsub.image.pbcor.fits')
 #p321 = paths.dpath('w51_H2CO_321_220_contsub.image.pbcor.fits')
-p303 = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO303_202.regrid_medsub.fits')
-p321 = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO321_220.regrid_medsub.fits')
+p303 = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO303_202.regrid_medsub.southcluster_cutout.fits')
+p321 = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO321_220.regrid_medsub.southcluster_cutout.fits')
 
 if os.path.exists(p303) and os.path.exists(p321):
     cube303 = SpectralCube.read(p303)
     cube321 = SpectralCube.read(p321)
 else:
 
-    p303_ = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO303_202.image.pbcor.fits')
-    p321_ = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO321_220.image.pbcor.fits')
+    p303_ = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO303_202.image.pbcor.southcluster_cutout.fits')
+    p321_ = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO321_220.image.pbcor.southcluster_cutout.fits')
     cube303 = SpectralCube.read(p303_).with_spectral_unit(u.km/u.s,
                                                           velocity_convention='radio')
     min_slices = cube303.subcube_slices_from_mask(cube303.mask, spatial_only=True)
@@ -57,7 +57,7 @@ else:
     cube303.write(p303)
     cube321.write(p321)
 
-std = cube303[:10].std(axis=0)
+std = cube303[-10:].std(axis=0)
 mask = cube303 > 3*std
 
 # sad hacks: these are the same to very high but not infinite precision
@@ -96,17 +96,17 @@ FF.show_contour(paths.dpath('evla/W51Ku_BDarray_continuum_2048_both_uniform.hire
                 linewidth=0.5,
                 alpha=0.2, layer='black_contours')
 FF.save(paths.fpath('H2CO_321_to_303_ratiomap_withcontours.png'))
-FF.recenter(290.91644,14.518939,radius=0.15/60.)
-FF.save(paths.fpath('H2CO_321_to_303_ratiomap_withcontours_IRS2.png'))
-FF.recenter(290.93268,14.508363,radius=0.15/60.)
-FF.save(paths.fpath('H2CO_321_to_303_ratiomap_withcontours_e1e2.png'))
-FF.show_contour(paths.dpath("w51_te_continuum_best.fits"),
-                levels=[0.02, 0.04, 0.08, 0.16],
-                colors=['g'],
-                layer='almate_cont_ours')
-FF.save(paths.fpath('H2CO_321_to_303_ratiomap_withcontours_e1e2_almacont.png'))
-FF.recenter(290.91644,14.518939,radius=0.15/60.)
-FF.save(paths.fpath('H2CO_321_to_303_ratiomap_withcontours_IRS2_almacont.png'))
+#FF.recenter(290.91644,14.518939,radius=0.15/60.)
+#FF.save(paths.fpath('H2CO_321_to_303_ratiomap_withcontours_IRS2.png'))
+#FF.recenter(290.93268,14.508363,radius=0.15/60.)
+#FF.save(paths.fpath('H2CO_321_to_303_ratiomap_withcontours_e1e2.png'))
+#FF.show_contour(paths.dpath("w51_te_continuum_best.fits"),
+#                levels=[0.02, 0.04, 0.08, 0.16],
+#                colors=['g'],
+#                layer='almate_cont_ours')
+#FF.save(paths.fpath('H2CO_321_to_303_ratiomap_withcontours_e1e2_almacont.png'))
+#FF.recenter(290.91644,14.518939,radius=0.15/60.)
+#FF.save(paths.fpath('H2CO_321_to_303_ratiomap_withcontours_IRS2_almacont.png'))
 
 from h2co_modeling import lte_model
 ratio = lte_model.T_321/lte_model.T_303
