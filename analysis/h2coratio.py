@@ -11,38 +11,53 @@ import radio_beam
 #p321 = paths.dpath('w51_H2CO_321_220_contsub.image.pbcor.fits')
 p303 = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO303_202.regrid_medsub.southcluster_cutout.fits')
 p321 = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO321_220.regrid_medsub.southcluster_cutout.fits')
+p322 = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO322_221.regrid_medsub.southcluster_cutout.fits')
 
-if os.path.exists(p303) and os.path.exists(p321):
+if os.path.exists(p303) and os.path.exists(p321) and os.path.exists(p322):
     cube303 = SpectralCube.read(p303)
     cube321 = SpectralCube.read(p321)
+    cube322 = SpectralCube.read(p322)
 else:
 
     p303_ = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO303_202.image.pbcor.southcluster_cutout.fits')
     p321_ = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO321_220.image.pbcor.southcluster_cutout.fits')
+    p322_ = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO322_221.image.pbcor.southcluster_cutout.fits')
     cube303 = SpectralCube.read(p303_).with_spectral_unit(u.km/u.s,
                                                           velocity_convention='radio')
     min_slices = cube303.subcube_slices_from_mask(cube303.mask, spatial_only=True)
     cube321 = SpectralCube.read(p321_).with_spectral_unit(u.km/u.s,
                                                           velocity_convention='radio')
+    cube322 = SpectralCube.read(p322_).with_spectral_unit(u.km/u.s,
+                                                          velocity_convention='radio')
 
     cube303.allow_huge_operations=True
     cube321.allow_huge_operations=True
+    cube322.allow_huge_operations=True
 
     # tight cropping
     cube303 = cube303[min_slices]
     cube321 = cube321[min_slices]
+    cube322 = cube322[min_slices]
 
     cube303_ss = cube303.convolve_to(radio_beam.Beam(0.7*u.arcsec, 0.7*u.arcsec, 0.0*u.deg))
     cube321_ss = cube321.convolve_to(radio_beam.Beam(0.7*u.arcsec, 0.7*u.arcsec, 0.0*u.deg))
+    cube322_ss = cube322.convolve_to(radio_beam.Beam(0.7*u.arcsec, 0.7*u.arcsec, 0.0*u.deg))
 
     specpixscale303 = cube303_ss.spectral_axis.diff()[0]
     smooth_scale = (cube321.spectral_axis.diff()[0]**2 - specpixscale303**2)**0.5
     smooth_scale_pix = smooth_scale / specpixscale303
     cube303s = cube303_ss.spectral_smooth(kernel=convolution.Gaussian1DKernel(smooth_scale_pix)) # numcores = something?
+
+    specpixscale322 = cube322_ss.spectral_axis.diff()[0]
+    smooth_scale322 = (cube321.spectral_axis.diff()[0]**2 - specpixscale322**2)**0.5
+    smooth_scale322_pix = smooth_scale322 / specpixscale322
+    cube322s = cube322_ss.spectral_smooth(kernel=convolution.Gaussian1DKernel(smooth_scale322_pix))
+
     # too slow...
     #cube303 = cube303s.spectral_interpolate(cube321.spectral_axis,
     #                                        suppress_smooth_warning=True)
     cube303 = cube303s.reproject(cube321.header)
+    cube322 = cube322s.reproject(cube321.header)
     
 
     med303 = cube303.with_mask(((cube303.spectral_axis < 35*u.km/u.s) |
@@ -51,14 +66,24 @@ else:
     med321 = cube321_ss.with_mask(((cube321_ss.spectral_axis < 35*u.km/u.s) |
                                    (cube321_ss.spectral_axis >
                                     85*u.km/u.s))[:,None,None]).median(axis=0)
+    med322 = cube322.with_mask(((cube322.spectral_axis < 35*u.km/u.s) |
+                                (cube322.spectral_axis >
+                                 85*u.km/u.s))[:,None,None]).median(axis=0)
     cube303 = cube303 - med303
+    cube322 = cube322 - med322
     cube321 = cube321_ss - med321
 
+    cube322.write(p322)
     cube303.write(p303)
     cube321.write(p321)
 
 std = cube303[-10:].std(axis=0)
 mask = cube303 > 3*std
+
+rcube = cube321.filled_data[:] / cube303.filled_data[:]
+hdu = cube303.hdu
+hdu.data = rcube.value
+hdu.writeto(paths.dpath('W51_H2CO_321to303_ratio_cube.fits'), clobber=True)
 
 # sad hacks: these are the same to very high but not infinite precision
 #cube321._wcs = cube303._wcs
