@@ -13,6 +13,8 @@ p303 = paths.dpath('merge/W51_b6_7M_12M.H2CO303_202.regrid_medsub.fits')
 p321 = paths.dpath('merge/W51_b6_7M_12M.H2CO321_220.regrid_medsub.fits')
 p322 = paths.dpath('merge/W51_b6_7M_12M.H2CO322_221.regrid_medsub.fits')
 
+beam_size_goal = 0.4*u.arcsec # change to 0.7 if using natural
+
 if os.path.exists(p303) and os.path.exists(p321) and os.path.exists(p322):
     cube303 = SpectralCube.read(p303)
     cube321 = SpectralCube.read(p321)
@@ -39,10 +41,11 @@ else:
     cube321 = cube321[min_slices]
     cube322 = cube322[min_slices]
 
-    cube303_ss = cube303.convolve_to(radio_beam.Beam(0.7*u.arcsec, 0.7*u.arcsec, 0.0*u.deg))
-    cube321_ss = cube321.convolve_to(radio_beam.Beam(0.7*u.arcsec, 0.7*u.arcsec, 0.0*u.deg))
-    cube322_ss = cube322.convolve_to(radio_beam.Beam(0.7*u.arcsec, 0.7*u.arcsec, 0.0*u.deg))
+    cube303_ss = cube303.convolve_to(radio_beam.Beam(beam_size_goal, beam_size_goal, 0.0*u.deg))
+    cube321_ss = cube321.convolve_to(radio_beam.Beam(beam_size_goal, beam_size_goal, 0.0*u.deg))
+    cube322_ss = cube322.convolve_to(radio_beam.Beam(beam_size_goal, beam_size_goal, 0.0*u.deg))
 
+    # spectrally convolve 322 and 303 to 321, because it's on the coarsest grid
     specpixscale303 = cube303_ss.spectral_axis.diff()[0]
     smooth_scale = (cube321.spectral_axis.diff()[0]**2 - specpixscale303**2)**0.5
     smooth_scale_pix = smooth_scale / specpixscale303
