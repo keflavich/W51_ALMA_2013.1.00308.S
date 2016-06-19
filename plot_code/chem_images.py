@@ -95,8 +95,8 @@ def chem_plot(yslice=slice(367,467), xslice=slice(114,214), vrange=[51,60]*u.km/
 
         ax1 = fig1.add_subplot(gs1[ii])
 
-        im1 = ax1.imshow(m0.value, vmin=-1.25*jtok.value, vmax=5.0*jtok.value, cmap=pl.cm.bone_r,
-                         interpolation='nearest')
+        im1 = ax1.imshow(m0.value, vmin=-1.25*jtok.value, vmax=5.0*jtok.value,
+                         cmap=pl.cm.bone_r, interpolation='nearest')
         ax1.text(3, 0.87*m0.shape[0], label, fontsize=10)
         ax1.set_xticklabels([])
         ax1.set_yticklabels([])

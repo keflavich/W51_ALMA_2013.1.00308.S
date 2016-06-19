@@ -9,9 +9,9 @@ import radio_beam
 
 #p303 = paths.dpath('w51_H2CO_303_202_contsub.image.pbcor.fits')
 #p321 = paths.dpath('w51_H2CO_321_220_contsub.image.pbcor.fits')
-p303 = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO303_202.regrid_medsub.southcluster_cutout.fits')
-p321 = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO321_220.regrid_medsub.southcluster_cutout.fits')
-p322 = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO322_221.regrid_medsub.southcluster_cutout.fits')
+p303 = paths.dpath('merge/W51_b6_7M_12M.H2CO303_202.regrid_medsub.fits')
+p321 = paths.dpath('merge/W51_b6_7M_12M.H2CO321_220.regrid_medsub.fits')
+p322 = paths.dpath('merge/W51_b6_7M_12M.H2CO322_221.regrid_medsub.fits')
 
 if os.path.exists(p303) and os.path.exists(p321) and os.path.exists(p322):
     cube303 = SpectralCube.read(p303)
@@ -19,9 +19,9 @@ if os.path.exists(p303) and os.path.exists(p321) and os.path.exists(p322):
     cube322 = SpectralCube.read(p322)
 else:
 
-    p303_ = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO303_202.image.pbcor.southcluster_cutout.fits')
-    p321_ = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO321_220.image.pbcor.southcluster_cutout.fits')
-    p322_ = paths.dpath('merge/W51_b6_7M_12M_natural.H2CO322_221.image.pbcor.southcluster_cutout.fits')
+    p303_ = paths.dpath('merge/W51_b6_7M_12M.H2CO303_202.image.pbcor.fits')
+    p321_ = paths.dpath('merge/W51_b6_7M_12M.H2CO321_220.image.pbcor.fits')
+    p322_ = paths.dpath('merge/W51_b6_7M_12M.H2CO322_221.image.pbcor.fits')
     cube303 = SpectralCube.read(p303_).with_spectral_unit(u.km/u.s,
                                                           velocity_convention='radio')
     min_slices = cube303.subcube_slices_from_mask(cube303.mask, spatial_only=True)
@@ -73,9 +73,9 @@ else:
     cube322 = cube322 - med322
     cube321 = cube321_ss - med321
 
-    cube322.write(p322)
-    cube303.write(p303)
-    cube321.write(p321)
+    cube322.write(p322, overwrite=True)
+    cube303.write(p303, overwrite=True)
+    cube321.write(p321, overwrite=True)
 
 std = cube303[-10:].std(axis=0)
 mask = cube303 > 3*std
