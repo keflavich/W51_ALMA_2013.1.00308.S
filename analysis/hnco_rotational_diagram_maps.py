@@ -23,8 +23,6 @@ frequencies = u.Quantity([float(row[1].strip('GHz'))
 name_to_freq = {row[0]:frq for frq, row in zip(frequencies, line_to_image_list)}
 freq_to_name = {frq:row[0] for frq, row in zip(frequencies, line_to_image_list)}
 
-linere = re.compile("W51_b6_12M.(.*).image.pbcor")
-
 hnco = Vamdc.query_molecule('Isocyanic acid HNCO')
 rt = hnco.data['RadiativeTransitions']
 frqs = u.Quantity([(float(rt[key].FrequencyValue)*u.MHz).to(u.GHz,
@@ -48,7 +46,8 @@ line_strengths_smu2 = u.Quantity([(frq**-3 * deg / 1.16395e-20 * Aij).value
 
 def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
                        vrange=[51,60]*u.km/u.s, sourcename='e2',
-                       filelist=glob.glob(paths.dpath('12m/cutouts/*e2e8*fits')),
+                       filelist=glob.glob(paths.dpath('merge/cutouts/*natural*e2e8*fits')),
+                       linere=re.compile("W51_b6_7M_12M_natural.(.*).image.pbcor"),
                        chem_name='HNCO',
                       ):
 
@@ -58,6 +57,7 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
     frequencies = {}
     indices = {}
 
+    assert len(filelist) > 1
 
     for ii,fn in enumerate(ProgressBar(filelist)):
         if chem_name not in fn:
@@ -67,6 +67,8 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
             continue
 
         cube = SpectralCube.read(fn)[:,yslice,xslice]
+        print(yslice, xslice)
+        print(cube)
         bm = cube.beams[0]
         #jtok = bm.jtok(cube.wcs.wcs.restfrq*u.Hz)
         cube = cube.to(u.K, bm.jtok_equiv(cube.wcs.wcs.restfrq*u.Hz))
@@ -323,6 +325,7 @@ if __name__ == "__main__":
 
     for sourcename, region, xslice, yslice, vrange, rdposns in (
         ('e2','e2e8',(114,214),(367,467),(51,60),[(10,10),(60,84),]),
+        #natural ('e2','e2e8',(42,118),(168,249),(51,60),[(10,10),(60,84),]),
         ('e8','e2e8',(119,239),(227,347),(52,63),[(10,60),(65,45),]),
         ('north','north',(152,350),(31,231),(54,64),[(100,80),(75,80),]),
         ('ALMAmm14','ALMAmm14',(80,180),(50,150),(58,67),[(65,40),(45,40),]),
@@ -330,7 +333,8 @@ if __name__ == "__main__":
 
         _ = cutout_id_chem_map(yslice=slice(*yslice), xslice=slice(*xslice),
                                vrange=vrange*u.km/u.s, sourcename=sourcename,
-                               filelist=glob.glob(paths.dpath('12m/cutouts/*{0}*fits').format(region)),
+                               filelist=glob.glob(paths.dpath('merge/cutouts/W51_b6_7M_12M.*{0}*fits'.format(region))),
+                               linere=re.compile("W51_b6_7M_12M.(.*).image.pbcor"),
                                chem_name='HNCO',
                               )
         xaxis,cube,maps,energies,cubefrequencies,indices,degeneracies,header = _
@@ -351,18 +355,18 @@ if __name__ == "__main__":
         tmap,Nmap = fit_all_tex(xaxis, cube, cubefrequencies, indices, degeneracies)
 
         pl.figure(1).clf()
-        pl.imshow(tmap, vmin=0, vmax=1000, cmap='hot')
+        pl.imshow(tmap, vmin=0, vmax=2000, cmap='hot')
         cb = pl.colorbar()
         cb.set_label("Temperature (K)")
         pl.savefig(paths.fpath("chemistry/hnco_temperature_map_{0}.png".format(sourcename)))
         pl.figure(3).clf()
-        pl.imshow(np.log10(Nmap), vmin=14.5, vmax=21, cmap='viridis')
+        pl.imshow(np.log10(Nmap), vmin=14.5, vmax=19, cmap='viridis')
         cb = pl.colorbar()
         cb.set_label("log N(HNCO)")
         pl.savefig(paths.fpath("chemistry/hnco_column_map_{0}.png".format(sourcename)))
 
         hdu = fits.PrimaryHDU(data=tmap, header=header)
-        hdu.writeto(paths.dpath('12m/cutouts/HNCO_{0}_cutout_temperaturemap.fits'.format(sourcename)), clobber=True)
+        hdu.writeto(paths.dpath('merge/cutouts/HNCO_{0}_cutout_temperaturemap.fits'.format(sourcename)), clobber=True)
 
         hdu = fits.PrimaryHDU(data=Nmap, header=header)
-        hdu.writeto(paths.dpath('12m/cutouts/HNCO_{0}_cutout_columnmap.fits'.format(sourcename)), clobber=True)
+        hdu.writeto(paths.dpath('merge/cutouts/HNCO_{0}_cutout_columnmap.fits'.format(sourcename)), clobber=True)

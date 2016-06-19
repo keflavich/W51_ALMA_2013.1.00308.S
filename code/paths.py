@@ -19,6 +19,7 @@ spectrum_path = os.path.join(root, 'FITS/12m/spectra')
 merge_spectrum_path = os.path.join(root, 'FITS/merge/spectra')
 perseus_synpath = os.path.join(root, 'perseus_synth')
 simulation_path = os.path.join(root, 'simulations')
+h2comodelpath = os.path.join(root, 'analysis/h2co')
 
 def path(x, basepath):
     return os.path.join(basepath, x)
@@ -64,3 +65,6 @@ def pspath(x):
 
 def simpath(x):
     return path(x, simulation_path)
+
+def gpath(x):
+    return path(x, h2comodelpath)
