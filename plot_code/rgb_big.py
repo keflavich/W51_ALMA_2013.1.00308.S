@@ -26,9 +26,9 @@ fnku = paths.dpath('evla/W51Ku_BDarray_continuum_2048_both_uniform.hires.clean.i
 #fits322 = fits.open(fn322)
 
 fitsKu = fits.open(fnku)
-cutout_Ku = Cutout2D(fitsKu[0].data,
+cutout_Ku = Cutout2D(fitsKu[0].data.squeeze(),
                      coordinates.SkyCoord('19:23:41.495','+14:30:40.48',unit=(u.hour,u.deg)),
-                     1.11*u.arcmin, wcs=wcs.WCS(fitsKu[0].header))
+                     2.22*u.arcmin, wcs=wcs.WCS(fitsKu[0].header).celestial)
 fitsKu_cutout = fits.PrimaryHDU(data=cutout_Ku.data, header=cutout_Ku.wcs.to_header())
 fitsKu_fn = "rgb/Kuband_e2e_cutout.fits"
 fitsKu_cutout.writeto(fitsKu_fn, clobber=True)
@@ -69,4 +69,15 @@ rgb_im = aplpy.make_rgb_image(data=rgb_cube_fits, output=rgb_cube_png,
                               vmax_g=0.4,
                               vmin_r=-0.0005,
                               vmax_r=0.1,
+                              embed_avm_tags=True)
+
+rgb_cube_png = rgb_cube_fits[:-5]+"_logred.png"
+rgb_im = aplpy.make_rgb_image(data=rgb_cube_fits, output=rgb_cube_png,
+                              vmin_b=-0.05,
+                              vmax_b=0.65,
+                              vmin_g=-0.005,
+                              vmax_g=0.4,
+                              vmin_r=-0.0005,
+                              vmax_r=0.01,
+                              stretch_r='log',
                               embed_avm_tags=True)
