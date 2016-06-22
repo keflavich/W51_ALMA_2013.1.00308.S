@@ -3,6 +3,8 @@ import socket
 
 if socket.gethostname() == 'cleese':
     root = '/scratch/aginsbur/w51/alma/'
+elif socket.gethostname() == 'orion':
+    root = '/diskb//aginsbur/w51/merge/'
 else:
     root = os.path.expanduser('~/work/w51/alma/')
 

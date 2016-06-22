@@ -8,7 +8,7 @@ from astropy import units as u
 import re
 import glob
 
-linere = re.compile("W51_b6_12M.(.*).image.pbcor")
+linere = re.compile("W51_b6_7M_12M.(.*).image.pbcor")
 
 for fignum,(region,xslc,yslc,velo) in enumerate((('north',209,slice(65,175),60),
                                                  ('e2e8',slice(95,220),411,57.4),
@@ -19,7 +19,7 @@ for fignum,(region,xslc,yslc,velo) in enumerate((('north',209,slice(65,175),60),
     fig.clf()
     ax = pl.gca()
     ax.set_title(region)
-    for fn in glob.glob(paths.dpath("12m/cutouts/*{0}*fits".format(region))):
+    for fn in glob.glob(paths.dpath("merge/cutouts/W51_b6_7M_12M.*{0}*cutout.fits".format(region))):
         cube = SpectralCube.read(fn)
         slc = cube.filled_data[cube.closest_spectral_channel(velo*u.km/u.s), yslc, xslc]
 

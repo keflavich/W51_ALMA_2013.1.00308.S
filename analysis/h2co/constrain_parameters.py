@@ -16,7 +16,7 @@ import pylab as pl
 import matplotlib
 
 from h2co_modeling import grid_fitter
-from paraH2COmodel import generic_paraH2COmodel
+from .paraH2COmodel import generic_paraH2COmodel
 
 short_mapping = {'dens': 'density',
                  'col': 'column',
@@ -35,8 +35,8 @@ class paraH2COmodel(generic_paraH2COmodel):
 
     def __init__(self, tbackground=2.73, gridsize=[250.,101.,100.]):
         t0 = time.time()
-        from pyspeckit_fitting import (texgrid303, taugrid303, texgrid321, taugrid321,
-                                       texgrid322, taugrid322, hdr)
+        from .pyspeckit_fitting import (texgrid303, taugrid303, texgrid321, taugrid321,
+                                        texgrid322, taugrid322, hdr)
         # The grid was computed with a linewidth (or gradient) 5 km/s/pc
         self.grid_linewidth = 5.0
         t1 = time.time()

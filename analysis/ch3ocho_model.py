@@ -174,14 +174,35 @@ if __name__ == "__main__" and False:
     # "baseline"
     spectra.data -= 0.15
     spectra.data *= beam.jtok(spectra.xarr)
+    spectra.unit = u.K
 
+    spectra.xarr.convert_to_unit(u.GHz)
     spectra.plotter()
 
     spectra.specfit.Registry.add_fitter('ch3ocho', ch3ocho_fitter(), 4)
-    spectra.specfit(fittype='ch3ocho', guesses=[55, 4, 200, 5e15],
-                    limitedmin=[True]*4, limitedmax=[True]*4, limits=[(50,70),
-                                                                      (1,8),
-                                                                      (20,
-                                                                       1000),
-                                                                      (1e13,
-                                                                       1e18)])
+    spectra.specfit(fittype='ch3ocho', guesses=[55.6, 2.9, 200, 5e15],
+                    limitedmin=[True]*4, limitedmax=[True]*4,
+                    limits=[(50,70), (1,8), (20, 1000), (1e13, 1e18)])
+
+    # advanced craziness: free-fit each CH3OH line
+    sp = spectra[3][:1700]
+    sp.xarr.convert_to_unit(u.GHz)
+    sp.data -= 0.15
+    sp.data *= beam.jtok(sp.xarr)
+    sp.unit = u.K
+    okfreqs = np.array([sp.xarr.in_range(nu) and
+                        np.isfinite(sp.data[sp.xarr.x_to_pix(nu)])
+                        for nu in freqs], dtype='bool')
+    okfreqs &= aij > -4.5
+    guesses = [x for nu in freqs[okfreqs]
+               for x in (20, nu.value*(1-55.626/constants.c.to(u.km/u.s).value),
+                         2.79/constants.c.to(u.km/u.s).value*nu.value)]
+    tied = ['','','']+[x for nu in freqs[okfreqs][1:] for x in
+                       ('',
+                        'p[1]+{0}'.format(nu.value-freqs[okfreqs][0].value),
+                        'p[2]')]
+    fixed = [False,True,True] * int((len(guesses)/3))
+    assert len(fixed) == len(guesses) == len(tied)
+    sp.plotter()
+    sp.specfit(fittype='gaussian', guesses=guesses, tied=tied, fixed=fixed,
+               annotate=False, verbose=True, renormalize=False)

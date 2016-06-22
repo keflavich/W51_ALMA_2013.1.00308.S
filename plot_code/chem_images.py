@@ -10,8 +10,6 @@ from astropy.utils.console import ProgressBar
 import re
 import glob
 
-linere = re.compile("W51_b6_12M.(.*).image.pbcor")
-
 labeldict = {
                'H2CO303_202':'H$_2$CO $3_{0,3}-2_{0,2}$',
                'H2CO321_220':'H$_2$CO $3_{2,1}-2_{2,0}$',
@@ -23,6 +21,9 @@ labeldict = {
                'HNCO10110-919':'HNCO $10_{1,10}-9_{1,9}$',
                'HNCO10010-909':'HNCO $10_{0,10}-9_{0,9}$',
                'HNCO1028-927': 'HNCO $10_{2,8}-9_{2,7}$',
+               'HNCO1055-954':'HNCO $10_{5,5}-9_{5,4}$',
+               'HNCO1046-945':'HNCO $10_{4,6}-9_{4,5}$',
+               'HNCO1038-937':'HNCO $10_{3,8}-9_{3,7}$',
                'CH3OH423-514':  'CH$_3$OH $4_{2,3}-5_{1,4}$',
                'CH3OH5m42-6m43':'CH$_3$OH $5_{-4,2}-6_{-4,3}$',
                'CH3OH808-716':'CH$_3$OH $8_{0,8}-7_{1,6}$',
@@ -53,28 +54,36 @@ labeldict = {
                'CH3OCH323321-23222AA':'CH$_3$OCH$_3$ $23_{3,21}-23_{2,22}$AA',
                'CH3OCH313013-12112AA':'CH$_3$OCH$_3$ $13_{0,13}-12_{1,12}$AA',
                'CH3OCH323321-23222EE':'CH$_3$OCH$_3$ $23_{3,21}-23_{2,22}$EE',
+               'CH3OCH3_13013-12112':'CH$_3$OCH$_3$ $13_{0,13}-12_{1,12}$',
                'O13CS18-17':'O$^{13}$CS 18-17',
                'N2D+_3-2': 'N$_2$D+ 3-2',
 }
 
-def chem_plot(yslice=slice(367,467), xslice=slice(114,214), vrange=[51,60]*u.km/u.s,
-              sourcename='e2', filelist=glob.glob(paths.dpath('12m/cutouts/*e2e8*fits'))
+def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,60]*u.km/u.s,
+              sourcename='e2', filelist=glob.glob(paths.dpath('12m/cutouts/*e2e8*fits')),
+              suffix="", plotgrid=(5,8),
              ):
+    nplots = np.product(plotgrid)
+
     for ii in (1,2):
         if not all(pl.figure(ii, figsize=(12.8,8)).get_size_inches() == (12.8,8)):
             pl.close(ii)
 
     fig1 = pl.figure(1, figsize=(12.8,8))
     fig1.clf()
-    gs1 = gridspec.GridSpec(5,8)
+    gs1 = gridspec.GridSpec(*plotgrid)
     gs1.update(wspace=0.0, hspace=0.0)
 
     fig2 = pl.figure(2, figsize=(12.8,8))
     fig2.clf()
-    gs2 = gridspec.GridSpec(5,8)
+    gs2 = gridspec.GridSpec(*plotgrid)
     gs2.update(wspace=0.0, hspace=0.0)
 
     for ii,fn in enumerate(ProgressBar(filelist)):
+
+        if ii>=nplots:
+            print("Skipping {0}".format(fn))
+            break
 
         cube = SpectralCube.read(fn)[:,yslice,xslice]
         bm = cube.beams[0]
@@ -86,9 +95,14 @@ def chem_plot(yslice=slice(367,467), xslice=slice(114,214), vrange=[51,60]*u.km/
         #contguess = cube.spectral_slab(0*u.km/u.s, 40*u.km/u.s).percentile(50, axis=0)
         #contguess = cube.spectral_slab(70*u.km/u.s, 100*u.km/u.s).percentile(50, axis=0)
         mask = (cube.spectral_axis<40*u.km/u.s) | (cube.spectral_axis > 75*u.km/u.s)
-        contguess = cube.with_mask(mask[:,None,None]).percentile(30, axis=0)
+        try:
+            contguess = cube.with_mask(mask[:,None,None]).percentile(30, axis=0)
+        except ValueError as ex:
+            print("skipping {0}".format(fn))
+            print(ex)
+            continue
         slabsub = (slab-contguess)
-        slabsub.beam_threshold = 0.15
+        slabsub.beam_threshold = 0.25
         m0 = slabsub.moment0()
 
         label = labeldict[linere.search(fn).groups()[0]]
@@ -122,27 +136,53 @@ def chem_plot(yslice=slice(367,467), xslice=slice(114,214), vrange=[51,60]*u.km/
     cbs[1].set_label("Flux Density (K km s$^{-1}$)", fontsize=12)
     cbs[2].set_label("Velocity (km s$^{-1}$)", fontsize=12)
 
-    fig1.savefig(paths.fpath("chemical_m0_slabs_{0}.png".format(sourcename)), bbox_inches='tight', dpi=150)
+    fig1.savefig(paths.fpath("chemical_m0_slabs_{0}{1}.png".format(sourcename, suffix)), bbox_inches='tight', dpi=150)
 
-    fig2.savefig(paths.fpath("chemical_m1_slabs_{0}.png".format(sourcename)), bbox_inches='tight', dpi=150)
+    fig2.savefig(paths.fpath("chemical_m1_slabs_{0}{1}.png".format(sourcename, suffix)), bbox_inches='tight', dpi=150)
 
     pl.draw()
     pl.show()
 
 
 if __name__ == "__main__":
-    chem_plot(yslice=slice(367,467), xslice=slice(114,214),
+    linere = re.compile("W51_b6_7M_12M.(.*).image.pbcor")
+
+    chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214),
               vrange=[51,60]*u.km/u.s, sourcename='e2',
-              filelist=glob.glob(paths.dpath('12m/cutouts/*e2e8*fits')))
+              filelist=glob.glob(paths.dpath('merge/cutouts/W51_b6_7M_12M.*e2e8*fits')),
+              suffix="_merge")
+    chem_plot(re.compile("W51_b6_7M_12M_natural.(.*).image.pbcor"), yslice=slice(168,249), xslice=slice(42,118),
+              vrange=[51,60]*u.km/u.s, sourcename='e2',
+              filelist=glob.glob(paths.dpath('merge/cutouts/W51_b6_7M_12M_natural.*e2e8*fits')),
+              suffix="_merge_natural")
 
-    chem_plot(yslice=slice(227,347), xslice=slice(119,239),
+    chem_plot(linere, yslice=slice(227,347), xslice=slice(119,239),
               vrange=[52,63]*u.km/u.s, sourcename='e8',
-              filelist=glob.glob(paths.dpath('12m/cutouts/*e2e8*fits')))
+              filelist=glob.glob(paths.dpath('merge/cutouts/W51_b6_7M_12M.*e2e8*fits')), suffix="_merge")
 
-    chem_plot(yslice=slice(31,231), xslice=slice(152,350),
+    chem_plot(linere, yslice=slice(31,231), xslice=slice(152,350),
               vrange=[54,64]*u.km/u.s, sourcename='north',
-              filelist=glob.glob(paths.dpath('12m/cutouts/*north*fits')))
+              filelist=glob.glob(paths.dpath('merge/cutouts/W51_b6_7M_12M.*north*fits')), suffix="_merge")
 
-    chem_plot(yslice=slice(50,150), xslice=slice(80,180),
+    chem_plot(linere, yslice=slice(50,150), xslice=slice(80,180),
               vrange=[58,67]*u.km/u.s, sourcename='ALMAmm14',
-              filelist=glob.glob(paths.dpath('12m/cutouts/*ALMAmm14*fits')))
+              filelist=glob.glob(paths.dpath('merge/cutouts/W51_b6_7M_12M.*ALMAmm14*fits')), suffix="_merge")
+
+    linere = re.compile("W51_b6_12M.(.*).image.pbcor")
+
+    chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214),
+              vrange=[51,60]*u.km/u.s, sourcename='e2',
+              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*e2e8*fits')))
+
+    chem_plot(linere, yslice=slice(227,347), xslice=slice(119,239),
+              vrange=[52,63]*u.km/u.s, sourcename='e8',
+              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*e2e8*fits')))
+
+    chem_plot(linere, yslice=slice(31,231), xslice=slice(152,350),
+              vrange=[54,64]*u.km/u.s, sourcename='north',
+              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*north*fits')))
+
+    chem_plot(linere, yslice=slice(50,150), xslice=slice(80,180),
+              vrange=[58,67]*u.km/u.s, sourcename='ALMAmm14',
+              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*ALMAmm14*fits')))
+

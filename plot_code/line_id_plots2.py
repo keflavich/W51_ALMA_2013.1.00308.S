@@ -23,7 +23,7 @@ velo = {'e8mm': 61*u.km/u.s,
         'e2e': 56*u.km/u.s,
         'ALMAmm14': 62*u.km/u.s,
         'ALMAmm41': 55*u.km/u.s,
-        'e2nw': 55*u.km/u.s,
+        'e2nw': 55.626*u.km/u.s,
         'e2se': 54*u.km/u.s,
         'north': 58*u.km/u.s,
        }

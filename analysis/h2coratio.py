@@ -1,3 +1,4 @@
+raise ValueError("Might crash horribly.")
 import os
 import numpy as np
 from spectral_cube import SpectralCube
@@ -25,12 +26,12 @@ else:
     p321_ = paths.dpath('merge/W51_b6_7M_12M.H2CO321_220.image.pbcor.fits')
     p322_ = paths.dpath('merge/W51_b6_7M_12M.H2CO322_221.image.pbcor.fits')
     cube303 = SpectralCube.read(p303_).with_spectral_unit(u.km/u.s,
-                                                          velocity_convention='radio')
+                                                          velocity_convention='radio').spectral_slab(25*u.km/u.s, 90*u.km/u.s)
     min_slices = cube303.subcube_slices_from_mask(cube303.mask, spatial_only=True)
     cube321 = SpectralCube.read(p321_).with_spectral_unit(u.km/u.s,
-                                                          velocity_convention='radio')
+                                                          velocity_convention='radio').spectral_slab(25*u.km/u.s, 90*u.km/u.s)
     cube322 = SpectralCube.read(p322_).with_spectral_unit(u.km/u.s,
-                                                          velocity_convention='radio')
+                                                          velocity_convention='radio').spectral_slab(25*u.km/u.s, 90*u.km/u.s)
 
     cube303.allow_huge_operations=True
     cube321.allow_huge_operations=True
@@ -38,8 +39,9 @@ else:
 
     # tight cropping
     cube303 = cube303[min_slices]
-    cube321 = cube321[min_slices]
-    cube322 = cube322[min_slices]
+    # can't assume these are on the same grid!!
+    # cube321 = cube321[min_slices]
+    # cube322 = cube322[min_slices]
 
     cube303_ss = cube303.convolve_to(radio_beam.Beam(beam_size_goal, beam_size_goal, 0.0*u.deg))
     cube321_ss = cube321.convolve_to(radio_beam.Beam(beam_size_goal, beam_size_goal, 0.0*u.deg))
