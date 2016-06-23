@@ -56,6 +56,9 @@ except ImportError:
     dpath = lambda x: x
     fpath = lambda x: os.path.join('moments',x)
 
+def dpath(x):
+    return os.path.join("./",x)
+
 def load_projection(filename):
     from astropy import wcs
     from astropy.io import fits

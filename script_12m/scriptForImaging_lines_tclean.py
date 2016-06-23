@@ -38,10 +38,12 @@ for line, restfreq, velocity_res in line_to_image_list:
               hanning=False,)
 
     assert os.path.exists(outms)
+    print("{0} concatenated.".format(outms))
 
     output = 'W51_b6_12M.{0}'.format(line)
 
     if not os.path.exists(output+".image.pbcor.fits"):
+        print("Imaging {0}".format(line))
         os.system('rm -rf ' + output + '*/')
         tclean(vis=outms,
                imagename=output,
@@ -73,4 +75,6 @@ for line, restfreq, velocity_res in line_to_image_list:
         for suffix in ('pb', 'weight', 'sumwt', 'psf', 'model', 'mask',
                        'image', 'residual'):
             os.system('rm -rf {0}.{1}'.format(output, suffix))
+
+    print("Completed {0}".format(line))
 

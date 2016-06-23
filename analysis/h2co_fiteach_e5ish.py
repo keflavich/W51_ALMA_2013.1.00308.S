@@ -11,6 +11,8 @@ p303 = paths.dpath('merge/W51_b6_7M_12M.H2CO303_202.image.pbcor.fits')
 p321 = paths.dpath('merge/W51_b6_7M_12M.H2CO321_220.image.pbcor.fits')
 p322 = paths.dpath('merge/W51_b6_7M_12M.H2CO322_221.image.pbcor.fits')
 
+### POSSIBLE OFFSET BY 1-2 PIXELS: no guarantee the 3 cubes are on identical grids
+
 cube303 = SpectralCube.read(p303)[:,1411:1620,968:1202]
 cube303.beam_threshold=0.1
 beam303 = cube303._average_beams(1)
