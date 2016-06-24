@@ -113,12 +113,14 @@ for fn in files:
     m1fn = dpath("moments/{0}_medsub_moment1.fits".format(fname))
     m2fn = dpath("moments/{0}_medsub_moment2.fits".format(fname))
     maxfn = dpath("moments/{0}_medsub_max.fits".format(fname))
+    argmaxfn = dpath("moments/{0}_medsub_argmax.fits".format(fname))
 
-    if os.path.exists(m0fn):
+    if os.path.exists(m0fn):# and os.path.exists(argmaxfn):
         m0 = load_projection(m0fn)
         m1 = load_projection(m1fn)
         m2 = load_projection(m2fn)
-        max = load_projection(maxfn)
+        pmax = load_projection(maxfn)
+#        argmax = load_projection(argmaxfn)
     else:
         cube = SpectralCube.read(dpath(fn)).minimal_subcube()
         vcube = cube.with_spectral_unit(u.km/u.s, velocity_convention='radio')
@@ -134,7 +136,8 @@ for fn in files:
         m0 = vcube_msub.moment0(axis=0)
         m1 = vcube_msub.moment1(axis=0)
         m2 = vcube_msub.moment2(axis=0)
-        max = vcube_msub.max(axis=0)
+        pmax = vcube_msub.max(axis=0)
+#        argmax = vcube.spectral_axis[vcube_msub.argmax(axis=0)]
 
 
     m0.quicklook()
@@ -146,8 +149,11 @@ for fn in files:
     m2.quicklook()
     m2.hdu.writeto(m2fn, clobber=True)
 
-    max.quicklook()
-    max.hdu.writeto(maxfn, clobber=True)
+    pmax.quicklook()
+    pmax.hdu.writeto(maxfn, clobber=True)
+
+#    argmax.quicklook()
+#    argmax.hdu.writeto(argmaxfn, clobber=True)
 
     try:
         m0.FITSFigure.save(fpath("moments/{0}_moment0.png".format(fname)))
@@ -160,6 +166,8 @@ for fn in files:
         max.FITSFigure.show_colorscale(cmap='viridis')
         max.FITSFigure.show_contour(m0.hdu, levels=[4], colors=['k'])
         max.FITSFigure.save(fpath("moments/{0}_max.png".format(fname)))
+#        argmax.FITSFigure.show_colorscale(cmap='RdYlBu_r', vmin=45, vmax=68)
+#        argmax.FITSFigure.save(fpath("moments/{0}_argmax.png".format(fname)))
 
         for ra,dec,rad,name in ((290.93253, 14.508016, 0.00311407, 'e2e8'),
                                 (290.9118, 14.512366, 0.00311407, 'southeast'),
@@ -173,10 +181,13 @@ for fn in files:
             m2.FITSFigure.save(fpath("moments/{0}_{1}zoom_moment2.png".format(fname,name)))
             max.FITSFigure.recenter(ra, dec, rad)
             max.FITSFigure.save(fpath("moments/{0}_{1}zoom_max.png".format(fname,name)))
+#            argmax.FITSFigure.recenter(ra, dec, rad)
+#            argmax.FITSFigure.save(fpath("moments/{0}_{1}zoom_argmax.png".format(fname,name)))
 
         m0.FITSFigure.close()
         m1.FITSFigure.close()
         m2.FITSFigure.close()
         max.FITSFigure.close()
+#        argmax.FITSFigure.close()
     except AttributeError:
         continue
