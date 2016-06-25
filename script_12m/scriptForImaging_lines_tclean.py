@@ -13,7 +13,7 @@ velocity_res = 1.0
 
 # It's not clear how cvel will handle overlapping SPWs
 
-for line, restfreq, velocity_res in line_to_image_list:
+for line, restfreq, velocity_res, spw in line_to_image_list:
 
     outms_template = "{line}_W51_B6_{array}.cvel.ms"
     outms = outms_template.format(line=line, array='12m')

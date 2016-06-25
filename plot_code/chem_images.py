@@ -79,9 +79,11 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
     gs2 = gridspec.GridSpec(*plotgrid)
     gs2.update(wspace=0.0, hspace=0.0)
 
+    figcounter = 0
+
     for ii,fn in enumerate(ProgressBar(filelist)):
 
-        if ii>=nplots:
+        if figcounter>=nplots:
             print("Skipping {0}".format(fn))
             break
 
@@ -107,7 +109,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
 
         label = labeldict[linere.search(fn).groups()[0]]
 
-        ax1 = fig1.add_subplot(gs1[ii])
+        ax1 = fig1.add_subplot(gs1[figcounter])
 
         im1 = ax1.imshow(m0.value, vmin=-1.25*jtok.value, vmax=5.0*jtok.value,
                          cmap=pl.cm.bone_r, interpolation='nearest')
@@ -117,7 +119,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         ax1.set_aspect('equal')
 
         m1 = slabsub.moment1()
-        ax2 = fig2.add_subplot(gs2[ii])
+        ax2 = fig2.add_subplot(gs2[figcounter])
 
         im2 = ax2.imshow(m1.value, vmin=vrange[0].value, vmax=vrange[1].value,
                          cmap=pl.cm.viridis, interpolation='nearest')
@@ -125,6 +127,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         ax2.set_xticklabels([])
         ax2.set_yticklabels([])
         ax2.set_aspect('equal')
+        figcounter += 1
 
     cbs = {}
     for ii,fig, im, gs in ((1,fig1,im1,gs1), (2,fig2,im2,gs2)):

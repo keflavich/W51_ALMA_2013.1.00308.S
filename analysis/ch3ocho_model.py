@@ -10,6 +10,12 @@ from astropy import units as u
 from astropy import constants
 from astropy.io import fits
 from astroquery.splatalogue import Splatalogue, utils
+from astropy import modeling
+
+try:
+    from .rotational_diagram_maps import nupper_of_kkms
+except SystemError:
+    from rotational_diagram_maps import nupper_of_kkms
 
 from vamdclib import nodes
 from vamdclib import request
@@ -123,6 +129,35 @@ def ch3ocho_model(xarr, vcen, width, tex, column, background=None, tbg=2.73):
         return background-model
     return model
 
+def fit_tex(eupper, nupperoverg, verbose=False, plot=False):
+    """
+    Fit the Boltzmann diagram
+    """
+    model = modeling.models.Linear1D()
+    #fitter = modeling.fitting.LevMarLSQFitter()
+    fitter = modeling.fitting.LinearLSQFitter()
+    ok_to_fit = nupperoverg > 0
+    result = fitter(model, eupper[ok_to_fit], np.log(nupperoverg[ok_to_fit]))
+    tex = -1./result.slope*u.K
+
+    Q_rot = (deg * np.exp(-EU*u.erg / (constants.k_B * tex))).sum()
+
+    Ntot = np.exp(result.intercept + np.log(Q_rot)) * u.cm**-2
+
+    if verbose:
+        print(("Tex={0}, Ntot={1}, Q_rot={2}".format(tex, Ntot, Q_rot)))
+
+    if plot:
+        import pylab as pl
+        L, = pl.plot(eupper, np.log10(nupperoverg), 'o')
+        xax = np.array([0, eupper.max().value])
+        line = (xax*result.slope.value +
+                result.intercept.value)
+        pl.plot(xax, np.log10(np.exp(line)), '-', color=L.get_color(),
+                label='$T={0:0.1f} \log(N)={1:0.1f}$'.format(tex, np.log10(Ntot.value)))
+
+    return Ntot, tex, result.slope, result.intercept
+
 def ch3ocho_fitter():
     """
     Generator for ch3ocho fitter class
@@ -166,6 +201,7 @@ if __name__ == "__main__" and False:
     import pyspeckit
     import paths
     import radio_beam
+    import pylab as pl
 
     target = 'e2nw'
 
@@ -193,7 +229,7 @@ if __name__ == "__main__" and False:
     okfreqs = np.array([sp.xarr.in_range(nu) and
                         np.isfinite(sp.data[sp.xarr.x_to_pix(nu)])
                         for nu in freqs], dtype='bool')
-    okfreqs &= aij > -4.5
+    okfreqs &= aij > -5
     guesses = [x for nu in freqs[okfreqs]
                for x in (20, nu.value*(1-55.626/constants.c.to(u.km/u.s).value),
                          2.79/constants.c.to(u.km/u.s).value*nu.value)]
@@ -202,7 +238,38 @@ if __name__ == "__main__" and False:
                         'p[1]+{0}'.format(nu.value-freqs[okfreqs][0].value),
                         'p[2]')]
     fixed = [False,True,True] * int((len(guesses)/3))
+    limited=[(True,True)]*len(guesses)
+    limits=[(0,1000), (200, 250), (0,0.05)]*int(len(guesses)/3)
     assert len(fixed) == len(guesses) == len(tied)
-    sp.plotter()
+    sp.plotter(figure=pl.figure(3))
     sp.specfit(fittype='gaussian', guesses=guesses, tied=tied, fixed=fixed,
+               limited=limited, limits=limits,
                annotate=False, verbose=True, renormalize=False)
+    sp.plotter.line_ids(line_names=[str(x) for x in slaim['Resolved QNs']],
+                        line_xvals=freqs, velocity_offset=55.626*u.km/u.s)
+
+    qn_to_amp = {}
+
+    for (amp, freq, width) in zip(sp.specfit.parinfo[::3],
+                                  sp.specfit.parinfo[1::3],
+                                  sp.specfit.parinfo[2::3]):
+        rfreq = freq * (1+55.626/constants.c.to(u.km/u.s).value)
+        closestind = np.argmin(np.abs(rfreq*u.GHz-freqs))
+        closest = slaim[closestind]
+        qn_to_amp[closest['Resolved QNs']] = (amp, width, closest['Freq-GHz'],
+                                              closest['Log<sub>10</sub> (A<sub>ij</sub>)'],
+                                              closest['E_U (K)'],
+                                              closest['Upper State Degeneracy'],
+                                             )
+
+    pl.figure(4).clf()
+    amps = u.Quantity([x[0].value for x in qn_to_amp.values()], u.K)
+    widths = u.Quantity([x[1]/x[2]*constants.c for x in qn_to_amp.values()])
+    thesefreqs = u.Quantity([x[2] for x in qn_to_amp.values()], u.GHz)
+    aij = u.Quantity([10**x[3] for x in qn_to_amp.values()], u.s**-1)
+    xaxis = u.Quantity([x[4] for x in qn_to_amp.values()], u.K)
+    deg = [x[5] for x in qn_to_amp.values()]
+    nupper = nupper_of_kkms(amps*widths*np.sqrt(2*np.pi), thesefreqs, aij, deg).value
+    fit_tex(xaxis, nupper, plot=True)
+
+    pl.savefig(paths.fpath('CH3OH_rotational_fit_notsogood.png'))

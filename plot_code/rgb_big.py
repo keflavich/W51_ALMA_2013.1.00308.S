@@ -18,9 +18,11 @@ from spectral_cube import SpectralCube
 
 fn303 = paths.dpath('merge/moments/W51_b6_7M_12M.H2CO303_202.image.pbcor_medsub_max.fits')
 fn321 = paths.dpath('merge/moments/W51_b6_7M_12M.H2CO321_220.image.pbcor_medsub_max.fits')
-fn322 = paths.dpath('merge/moments/W51_b6_7M_12M.H2CO322_221.image.pbcor_medsub_max.fits')
+fn322 = paths.dpath('merge/moments/W51_b6_7M_12M.H2CO322_221.coarser.image.pbcor_medsub_max.fits')
 fnc18o = paths.dpath('merge/moments/W51_b6_7M_12M.C18O2-1.image.pbcor_medsub_max.fits')
 fnku = paths.dpath('evla/W51Ku_BDarray_continuum_2048_both_uniform.hires.clean.image.fits')
+fnhc3n = paths.dpath('merge/moments/W51_b6_7M_12M.HC3N24-23.image.pbcor_medsub_max.fits')
+fnch3oh422 = paths.dpath('merge/moments/W51_b6_7M_12M.CH3OH422-312.image.pbcor_medsub_max.fits')
 #fits303 = fits.open(fn303)
 #fits321 = fits.open(fn321)
 #fits322 = fits.open(fn322)
@@ -32,6 +34,39 @@ cutout_Ku = Cutout2D(fitsKu[0].data.squeeze(),
 fitsKu_cutout = fits.PrimaryHDU(data=cutout_Ku.data, header=cutout_Ku.wcs.to_header())
 fitsKu_fn = "rgb/Kuband_e2e_cutout.fits"
 fitsKu_cutout.writeto(fitsKu_fn, clobber=True)
+
+
+def make_rgb(outname, redline='H2CO303_202', greenline='H2CO321_220', blueline='H2CO322_221',
+             fntemplate=paths.dpath('merge/moments/W51_b6_7M_12M.{0}.image.pbcor_medsub_max.fits'),
+             **kwargs):
+
+    rgb_cube_fits = outname
+    if not os.path.exists(rgb_cube_fits):
+        # does not return anything
+        aplpy.make_rgb_cube([fntemplate.format(redline) if 'fits' not in redline else redline,
+                             fntemplate.format(greenline) if 'fits' not in greenline else greenline,
+                             fntemplate.format(blueline) if 'fits' not in blueline else blueline,],
+                            rgb_cube_fits)
+
+    rgb_cube_png = rgb_cube_fits[:-5]+"_auto.png"
+    rgb_im = aplpy.make_rgb_image(data=rgb_cube_fits, output=rgb_cube_png,
+                                  embed_avm_tags=True)
+    return rgb_im
+
+make_rgb('full_h2co_12monly_rgb.fits',
+         fntemplate=paths.dpath('12m/moments/W51_b6_12M.{0}.image.pbcor_medsub_max.fits'),
+        )
+make_rgb('h2co_hc3n_ch3oh_rgb.fits',
+         blueline='HC3N24-23',
+         greenline='CH3OH422-312')
+make_rgb('c18o_hc3n_ch3oh_rgb.fits',
+         redline='C18O2-1',
+         blueline='HC3N24-23',
+         greenline='CH3OH422-312')
+make_rgb('ku_hc3n_ch3oh_rgb.fits',
+         redline=fnku,
+         blueline='HC3N24-23',
+         greenline='CH3OH422-312')
 
 rgb_cube_fits = 'full_h2co_rgb.fits'
 if not os.path.exists(rgb_cube_fits):

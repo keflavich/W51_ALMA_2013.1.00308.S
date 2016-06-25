@@ -72,16 +72,16 @@ hdutem322_12m = fits.PrimaryHDU(data=t322303_12m, header=ratio322_12m_fh.header)
 hdutem321merge = fits.PrimaryHDU(data=t321303merge, header=ratio321merge_fh.header)
 hdutem322merge = fits.PrimaryHDU(data=t322303merge, header=ratio322merge_fh.header)
 
-hdutem321_12m.writeto(paths.dpath('12m/moments/temperature_LTE_321to303_mom0.fits'), clobber=True)
-hdutem322_12m.writeto(paths.dpath('12m/moments/temperature_LTE_322to303_mom0.fits'), clobber=True)
-hdutem321merge.writeto(paths.dpath('merge/moments/temperature_LTE_321to303_mom0.fits'), clobber=True)
-hdutem322merge.writeto(paths.dpath('merge/moments/temperature_LTE_322to303_mom0.fits'), clobber=True)
+hdutem321_12m.writeto(paths.dpath('12m/moments/temperature_LTE_321to303_max.fits'), clobber=True)
+hdutem322_12m.writeto(paths.dpath('12m/moments/temperature_LTE_322to303_max.fits'), clobber=True)
+hdutem321merge.writeto(paths.dpath('merge/moments/temperature_LTE_321to303_max.fits'), clobber=True)
+hdutem322merge.writeto(paths.dpath('merge/moments/temperature_LTE_322to303_max.fits'), clobber=True)
 
-for hdu, rhdu, label in ((hdutem321_12m, ratio321_12m_fh, '321_to_303_max_12m'),
-                         (hdutem322_12m, ratio322_12m_fh, '322_to_303_max_12m'),
-                         (hdutem321merge, ratio321merge_fh, '321_to_303_max_merge'),
-                         (hdutem322merge, ratio322merge_fh, '322_to_303_max_merge'),
-                        ):
+for hdu, rhdu, label, vmax in ((hdutem321_12m, ratio321_12m_fh, '321_to_303_max_12m', 120),
+                               (hdutem322_12m, ratio322_12m_fh, '322_to_303_max_12m', 120),
+                               (hdutem321merge, ratio321merge_fh, '321_to_303_max_merge', 200),
+                               (hdutem322merge, ratio322merge_fh, '322_to_303_max_merge', 200),
+                              ):
         
     fig1 = pl.figure(1)
     fig1.clf()
@@ -97,7 +97,7 @@ for hdu, rhdu, label in ((hdutem321_12m, ratio321_12m_fh, '321_to_303_max_12m'),
     fig2 = pl.figure(2)
     pl.clf()
     FF2 = aplpy.FITSFigure(hdu, figure=fig2)
-    FF2.show_colorscale(cmap=cm, vmin=10, vmax=120, stretch='log', vmid=-50)
+    FF2.show_colorscale(cmap=cm, vmin=10, vmax=vmax, stretch='log', vmid=-50)
     FF2.show_colorbar()
     FF2.colorbar.set_axis_label_text("Temperature [K]")
     FF2.add_scalebar((1*u.pc/distance).to(u.deg, u.dimensionless_angles()).value,)
