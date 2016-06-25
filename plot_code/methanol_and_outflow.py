@@ -10,29 +10,13 @@ from astropy import units as u
 from outflow_meta import e2e, between_e2e_and_e8, e8fil, north
 import aplpy
 
+from get_m0 import get_mom0
 
 #'CH3OH808-716':'CH$_3$OH $8_{0,8}-7_{1,6}$',
 
 fn = paths.dpath('merge/W51_b6_7M_12M.CH3OH808-716.image.pbcor.fits')
 cube = SpectralCube.read(fn)
-bm = cube.beams[0]
-jtok = bm.jtok(cube.wcs.wcs.restfrq*u.Hz)
-
-vrange=[51,60]*u.km/u.s
-slab = cube.spectral_slab(*vrange)
-cube.beam_threshold = 1
-#contguess = cube.spectral_slab(0*u.km/u.s, 40*u.km/u.s).percentile(50, axis=0)
-#contguess = cube.spectral_slab(70*u.km/u.s, 100*u.km/u.s).percentile(50, axis=0)
-mask = (cube.spectral_axis<40*u.km/u.s) | (cube.spectral_axis > 75*u.km/u.s)
-try:
-    contguess = cube.with_mask(mask[:,None,None]).percentile(30, axis=0)
-except ValueError as ex:
-    print("skipping {0}".format(fn))
-    print(ex)
-    raise
-slabsub = (slab-contguess)
-slabsub.beam_threshold = 0.25
-m0 = slabsub.moment0()
+m0 = get_mom0(fn)
 
 blue_fits_fn = paths.dpath('moments/w51_12co2-1_blue0to45_masked.fits')
 red_fits_fn = paths.dpath('moments/w51_12co2-1_red73to130_masked.fits')

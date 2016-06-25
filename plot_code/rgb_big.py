@@ -38,8 +38,10 @@ fitsKu_cutout.writeto(fitsKu_fn, clobber=True)
 
 def make_rgb(outname, redline='H2CO303_202', greenline='H2CO321_220', blueline='H2CO322_221',
              fntemplate=paths.dpath('merge/moments/W51_b6_7M_12M.{0}.image.pbcor_medsub_max.fits'),
+             suffix="_auto",
              **kwargs):
 
+    print(outname, suffix)
     rgb_cube_fits = outname
     if not os.path.exists(rgb_cube_fits):
         # does not return anything
@@ -48,9 +50,9 @@ def make_rgb(outname, redline='H2CO303_202', greenline='H2CO321_220', blueline='
                              fntemplate.format(blueline) if 'fits' not in blueline else blueline,],
                             rgb_cube_fits)
 
-    rgb_cube_png = rgb_cube_fits[:-5]+"_auto.png"
+    rgb_cube_png = rgb_cube_fits[:-5]+suffix+".png"
     rgb_im = aplpy.make_rgb_image(data=rgb_cube_fits, output=rgb_cube_png,
-                                  embed_avm_tags=True)
+                                  embed_avm_tags=True, **kwargs)
     return rgb_im
 
 make_rgb('full_h2co_12monly_rgb.fits',
@@ -67,6 +69,18 @@ make_rgb('ku_hc3n_ch3oh_rgb.fits',
          redline=fnku,
          blueline='HC3N24-23',
          greenline='CH3OH422-312')
+make_rgb('ku_hc3n_ch3oh_rgb.fits',
+         suffix="_max",
+         pmax_r=99.75,
+         pmax_b=99.9,
+         pmax_g=99.9999,
+         redline=fnku,
+         blueline='HC3N24-23',
+         greenline='CH3OH422-312')
+make_rgb('hc3n_ch3oh_ocs_rgb.fits',
+         greenline='OCS18-17',
+         redline='HC3N24-23',
+         blueline='CH3OH422-312')
 
 rgb_cube_fits = 'full_h2co_rgb.fits'
 if not os.path.exists(rgb_cube_fits):

@@ -11,7 +11,10 @@ for (rgb_cube_fits, rgb_cube_png, star_color, core_color, rlabel, glabel,
                   'H$_2$CO $3_{2,2}-2_{2,1}$',),
                  ('c18o_h2co_ku_rgb.fits', 'c18o_h2co_ku_rgb_logred.png', 'w',
                   'y', "14.5 GHz Continuum", "H$_2$CO", "C$^{18}$O",
-                 )):
+                 ),
+                 ('hc3n_ch3oh_ocs_rgb.fits', 'hc3n_ch3oh_ocs_rgb_auto.png', 'y', 'b',
+                  'HC$_3$N', 'CH$_3$OH', 'OCS')
+                ):
     name = rgb_cube_fits[:-9]
 
     pl.rcParams['font.size'] = 18
