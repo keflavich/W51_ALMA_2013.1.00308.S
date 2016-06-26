@@ -10,7 +10,7 @@ import paths
 from astropy.io import fits
 from astropy.nddata import Cutout2D
 from astropy import wcs
-from outflow_meta import e2e, e8fil, north, e8, e8south
+from outflow_meta import e2e, e8fil, north, e8, e8south, d2
 
 from get_m0 import get_mom0
 
@@ -20,7 +20,8 @@ m0ch3oh = get_mom0(fn, iterate=False) # iteration takes longer but doesn't risk 
 cont_fits = fits.open(paths.dpath('w51_te_continuum_best.fits'))
 
 
-def zoomfigure(target=e2e, targetname='e2e', radius=7.5*u.arcsec, cutout='e2e8'):
+def zoomfigure(target=e2e, targetname='e2e', radius=7.5*u.arcsec, cutout='e2e8',
+               zoom_radius=3*u.arcsec, tick_spacing=1.8*u.arcsec):
 
     fn = paths.dpath('merge/cutouts/W51_b6_7M_12M.HNCO10010-909.image.pbcor_{0}cutout.fits'.format(cutout))
     m0hnco = get_mom0(fn, iterate=False)
@@ -70,11 +71,11 @@ def zoomfigure(target=e2e, targetname='e2e', radius=7.5*u.arcsec, cutout='e2e8')
     F = aplpy.FITSFigure(rgb_cube_png, figure=fig1)
     F.show_rgb(rgb_cube_png)
     #F.recenter(290.93315, 14.509584, radius=0.00075)
-    F.recenter(target.ra.deg, target.dec.deg, radius=0.00075)
+    F.recenter(target.ra.deg, target.dec.deg, radius=zoom_radius.to(u.deg).value)
     F.add_scalebar((0.025*u.pc / (5400*u.pc)).to(u.deg,u.dimensionless_angles()))
     F.scalebar.set_label('5000 au / 0.025 pc')
     F.scalebar.set_color('w')
-    F.set_tick_xspacing(0.0005)
+    F.set_tick_xspacing(tick_spacing.to(u.deg).value)
     F.add_label(0.05, 0.95, "CH$_3$OH", relative=True, color='r', horizontalalignment='left')
     F.add_label(0.05, 0.91, "HNCO", relative=True, color='g', horizontalalignment='left')
     F.add_label(0.05, 0.87, "Continuum", relative=True, color='b', horizontalalignment='left')
@@ -87,81 +88,15 @@ def zoomfigure(target=e2e, targetname='e2e', radius=7.5*u.arcsec, cutout='e2e8')
     F.save(paths.fpath("W51{0}_ch3oh_hnco_continuum_aplpy_kucontours.png".format(targetname)))
     F.save(paths.fpath("W51{0}_ch3oh_hnco_continuum_aplpy_kucontours.pdf".format(targetname)))
 
-zoomfigure(target=e2e, targetname='e2e', radius=7.5*u.arcsec, cutout='e2e8')
-zoomfigure(target=e8fil, targetname='e8fil', radius=15*u.arcsec, cutout='e2e8')
-zoomfigure(target=e8, targetname='e8', radius=8.5*u.arcsec, cutout='e2e8')
-zoomfigure(target=e8south, targetname='e8south', radius=10*u.arcsec, cutout='e2e8')
-zoomfigure(target=north, targetname='north', radius=10*u.arcsec, cutout='north')
-
-#F.recenter(e8fil.ra.deg, e8fil.dec.deg, radius=0.001)
-#F.save(paths.fpath("W51e8_ch3oh_hnco_continuum_aplpy_kucontours.png"))
-#F.save(paths.fpath("W51e8_ch3oh_hnco_continuum_aplpy_kucontours.pdf"))
-#
-#F.recenter(north.ra.deg, north.dec.deg, radius=0.001)
-#F.save(paths.fpath("W51north_ch3oh_hnco_continuum_aplpy_kucontours.png"))
-#F.save(paths.fpath("W51north_ch3oh_hnco_continuum_aplpy_kucontours.pdf"))
-
-#F.save(paths.fpath("W51e8_cycle3green_outflows_aplpy_cmcontours.png"))
-#F.save(paths.fpath("W51e8_cycle3green_outflows_aplpy_cmcontours.pdf"))
-#
-## zoom-in figures
-#rgb_cube_naco_fits = 'outflow_co_redblue_naco_green.fits'
-#rgb_cube_naco_png_fullstretch = rgb_cube_naco_fits[:-5]+"_asinhgreen_fullstretch.png"
-#rgb_im = aplpy.make_rgb_image(data=rgb_cube_naco_fits,
-#                              output=rgb_cube_naco_png_fullstretch, stretch_g='arcsinh',
-#                              vmin_g=-0.1,
-#                              vmax_g=200,
-#                              vmin_r=0.0,
-#                              vmax_r=9,
-#                              vmax_b=7,
-#                              vmin_b=0.0,
-#                              embed_avm_tags=True)
-#fig1 = pl.figure(1)
-#fig1.clf()
-#F = aplpy.FITSFigure(rgb_cube_naco_png_fullstretch, figure=fig1)
-#F.recenter(290.91689, 14.518196, radius=0.0005)
-#F.show_rgb(rgb_cube_naco_png_fullstretch)
-#F.add_scalebar((5000*u.au / (5400*u.pc)).to(u.deg,u.dimensionless_angles()))
-#F.scalebar.set_label('5000 au / 0.025 pc')
-#F.scalebar.set_color('w')
-#F.show_contour('../../alma/cycle3goddi/W51n.cont.image.pbcor.fits', levels=[0.001,
-#                                                                            0.0020,
-#                                                                            0.004,
-#                                                                            0.008,
-#                                                                            0.012],
-#               colors=['w']*6, layer='alma_cont_cycle3hires')
-#F.save(paths.fpath("NACO_green_outflows_aplpy_zoomNorth_cycle3hires.png"))
-#F.save(paths.fpath("NACO_green_outflows_aplpy_zoomNorth_cycle3hires.pdf"))
-#F.show_contour(h77a_green, levels=[0.0075, 0.015], colors=['b']*6,
-#               layer='h77a_outflow')
-#F.save(paths.fpath("NACO_green_outflows_aplpy_zoomNorth_cycle3hires_h77acontour.png"))
-#F.save(paths.fpath("NACO_green_outflows_aplpy_zoomNorth_cycle3hires_h77acontour.pdf"))
-#F.remove_layer('h77a_outflow')
-#
-#rgb_cube_naco_png_fullstretch = rgb_cube_naco_fits[:-5]+"_asinhgreen_fullstretch_ALMAmm31.png"
-#rgb_im = aplpy.make_rgb_image(data=rgb_cube_naco_fits,
-#                              output=rgb_cube_naco_png_fullstretch, stretch_g='arcsinh',
-#                              vmin_g=-0.1,
-#                              vmax_g=50,
-#                              vmin_r=-0.1,
-#                              vmax_r=5.5,
-#                              vmax_b=3,
-#                              vmin_b=-0.1,
-#                              embed_avm_tags=True)
-#fig1.clf()
-#F = aplpy.FITSFigure(rgb_cube_naco_png_fullstretch, figure=fig1)
-#F.recenter(290.91689, 14.518196, radius=0.0005)
-#F.show_rgb(rgb_cube_naco_png_fullstretch)
-#F.add_scalebar((5000*u.au / (5400*u.pc)).to(u.deg,u.dimensionless_angles()))
-#F.scalebar.set_label('5000 au / 0.025 pc')
-#F.scalebar.set_color('w')
-#F.show_contour('../../alma/cycle3goddi/W51n.cont.image.pbcor.fits', levels=[0.001,
-#                                                                            0.0020,
-#                                                                            0.004,
-#                                                                            0.008,
-#                                                                            0.012],
-#               colors=['w']*6, layer='alma_cont_cycle3hires')
-#F.recenter(290.91564, 14.518128, radius=0.0005)
-#F.save(paths.fpath("NACO_green_outflows_aplpy_zoomALMAmm31_cycle3hires.png"))
-#F.save(paths.fpath("NACO_green_outflows_aplpy_zoomALMAmm31_cycle3hires.pdf"))
-#
+zoomfigure(target=e2e, targetname='e2e', radius=7.5*u.arcsec, cutout='e2e8',
+           zoom_radius=3*u.arcsec, tick_spacing=1.8*u.arcsec)
+zoomfigure(target=e8fil, targetname='e8fil', radius=15*u.arcsec, cutout='e2e8',
+           zoom_radius=10*u.arcsec, tick_spacing=5*u.arcsec)
+zoomfigure(target=e8, targetname='e8', radius=8.5*u.arcsec, cutout='e2e8',
+           zoom_radius=4*u.arcsec, tick_spacing=2*u.arcsec)
+zoomfigure(target=e8south, targetname='e8south', radius=15*u.arcsec,
+           cutout='e2e8', zoom_radius=5*u.arcsec, tick_spacing=2*u.arcsec)
+zoomfigure(target=north, targetname='north', radius=10*u.arcsec,
+           cutout='north', zoom_radius=4*u.arcsec, tick_spacing=2*u.arcsec)
+zoomfigure(target=d2, targetname='d2', radius=10*u.arcsec,
+           cutout='north', zoom_radius=4*u.arcsec, tick_spacing=2*u.arcsec)
