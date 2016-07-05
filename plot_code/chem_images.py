@@ -6,6 +6,10 @@ import numpy as np
 from astropy import units as u
 import matplotlib.gridspec as gridspec
 from astropy.utils.console import ProgressBar
+import radio_beam
+from spectral_cube.lower_dimensional_structures import Projection
+from astropy.io import fits
+from astropy import wcs
 
 import re
 import glob
@@ -83,31 +87,58 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
 
     for ii,fn in enumerate(ProgressBar(filelist)):
 
+        linename = linere.search(fn).groups()[0]
+        if linename not in labeldict:
+            print("Skipping {0} because it's not in the label dict".format(linename))
+            continue
+        label = labeldict[linename]
+
+        # cache the results for use in other work, later use, ...
+        m0fitsfn = paths.dpath("chemslices/chemical_m0_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
+        m1fitsfn = paths.dpath("chemslices/chemical_m1_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
+        if not os.path.exists(m0fitsfn):
+            cube = SpectralCube.read(fn)[:,yslice,xslice]
+            bm = cube.beams[0]
+            restfreq = cube.wcs.wcs.restfrq
+            cube = cube.to(u.K, bm.jtok_equiv(restfreq*u.Hz))
+
+            slab = cube.spectral_slab(*vrange)
+            cube.beam_threshold = 1
+            #contguess = cube.spectral_slab(0*u.km/u.s, 40*u.km/u.s).percentile(50, axis=0)
+            #contguess = cube.spectral_slab(70*u.km/u.s, 100*u.km/u.s).percentile(50, axis=0)
+            mask = (cube.spectral_axis<40*u.km/u.s) | (cube.spectral_axis > 75*u.km/u.s)
+            try:
+                contguess = cube.with_mask(mask[:,None,None]).percentile(30, axis=0)
+            except ValueError as ex:
+                print("skipping {0}".format(fn))
+                print(ex)
+                continue
+            slabsub = (slab-contguess)
+            slabsub.beam_threshold = 0.25
+            m0 = slabsub.moment0()
+            m1 = slabsub.moment1()
+
+            m0.write(m0fitsfn, overwrite=True)
+            m1.write(m1fitsfn, overwrite=True)
+        else:
+            m0fh = fits.open(m0fitsfn)
+            m1fh = fits.open(m1fitsfn)
+
+            m0 = Projection(value=m0fh[0].data, header=m0fh[0].header,
+                            wcs=wcs.WCS(m0fh[0].header),
+                            unit=u.Unit(m0fh[0].header['BUNIT']),)
+            m1 = Projection(value=m1fh[0].data, header=m1fh[0].header,
+                            wcs=wcs.WCS(m1fh[0].header),
+                            unit=u.Unit(m1fh[0].header['BUNIT']),)
+
+            bm = radio_beam.Beam.from_fits_header(m0fh[0].header)
+            restfreq = m0fh[0].header['RESTFRQ']
+
+        jtok = bm.jtok(restfreq*u.Hz)
+
         if figcounter>=nplots:
             print("Skipping {0}".format(fn))
             break
-
-        cube = SpectralCube.read(fn)[:,yslice,xslice]
-        bm = cube.beams[0]
-        jtok = bm.jtok(cube.wcs.wcs.restfrq*u.Hz)
-        cube = cube.to(u.K, bm.jtok_equiv(cube.wcs.wcs.restfrq*u.Hz))
-
-        slab = cube.spectral_slab(*vrange)
-        cube.beam_threshold = 1
-        #contguess = cube.spectral_slab(0*u.km/u.s, 40*u.km/u.s).percentile(50, axis=0)
-        #contguess = cube.spectral_slab(70*u.km/u.s, 100*u.km/u.s).percentile(50, axis=0)
-        mask = (cube.spectral_axis<40*u.km/u.s) | (cube.spectral_axis > 75*u.km/u.s)
-        try:
-            contguess = cube.with_mask(mask[:,None,None]).percentile(30, axis=0)
-        except ValueError as ex:
-            print("skipping {0}".format(fn))
-            print(ex)
-            continue
-        slabsub = (slab-contguess)
-        slabsub.beam_threshold = 0.25
-        m0 = slabsub.moment0()
-
-        label = labeldict[linere.search(fn).groups()[0]]
 
         ax1 = fig1.add_subplot(gs1[figcounter])
 
@@ -118,7 +149,6 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         ax1.set_yticklabels([])
         ax1.set_aspect('equal')
 
-        m1 = slabsub.moment1()
         ax2 = fig2.add_subplot(gs2[figcounter])
 
         im2 = ax2.imshow(m1.value, vmin=vrange[0].value, vmax=vrange[1].value,
