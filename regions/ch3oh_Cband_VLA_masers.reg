@@ -1,0 +1,60 @@
+# Region file format: DS9 version 4.1
+global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1
+fk5
+# text(19:23:42.115,+14:31:27.51) color=blue text={Blue: No Known Masers}
+# text(19:23:42.115,+14:31:32.51) color=red text={Red: Known Masers}
+point(19:23:37.671,+14:30:21.66) # point=x color=blue
+point(19:23:37.318,+14:30:10.51) # point=x color=red
+point(19:23:37.898,+14:29:59.23) # point=x color=red
+point(19:23:37.602,+14:30:04.94) # point=x color=red
+point(19:23:37.876,+14:29:59.38) # point=x color=red
+point(19:23:46.182,+14:29:46.89) # point=x color=red
+point(19:23:46.109,+14:29:46.27) # point=x color=red
+point(19:23:43.965,+14:30:35.08) # point=x color=red text={average e2 maser position}
+point(19:23:43.885,+14:30:27.24) # point=x color=red
+point(19:23:43.840,+14:30:24.76) # point=x color=red
+point(19:23:43.193,+14:30:50.08) # point=x color=red
+point(19:23:39.826,+14:31:04.85) # point=x color=red
+point(19:23:38.170,+14:30:05.00) # point=circle text={Val'tts 2007}
+point(19:23:38.080,+14:30:04.90) # point=circle text={Bayandina 2012}
+point(19:23:38.300,+14:30:09.00) # point=circle text={Xu 2003}
+point(19:23:46.390,+14:29:40.50) # point=circle text={Bayandina 2012}
+point(19:23:45.090,+14:29:45.40) # point=circle text={Bayandina 2012}
+point(19:23:38.606,+14:30:41.51) # point=x color=blue
+point(19:23:43.190,+14:30:24.42) # point=x text={46->64.25 km/s}
+point(19:23:43.838,+14:30:24.78) # point=x text={48->63.55 km/s}
+point(19:23:44.018,+14:30:35.41) # point=x text={53->61.80 km/s}
+point(19:23:43.963,+14:30:34.52) # point=x text={56->60.74 km/s}
+point(19:23:44.006,+14:30:34.55) # point=x text={56->60.74 km/s}
+point(19:23:44.009,+14:30:34.83) # point=x text={58->60.04 km/s}
+point(19:23:43.949,+14:30:34.40) # point=x text={58->60.04 km/s}
+point(19:23:43.994,+14:30:34.77) # point=x text={65->57.58 km/s}
+point(19:23:43.920,+14:30:36.63) # point=x text={68->56.53 km/s}
+point(19:23:43.922,+14:30:34.38) # point=x text={69->56.18 km/s}
+point(19:23:43.918,+14:30:34.29) # point=x text={71->55.47 km/s}
+point(19:23:43.913,+14:30:34.23) # point=x text={73->54.77 km/s}
+point(19:23:43.985,+14:30:35.37) # point=x text={75->54.07 km/s}
+point(19:23:43.925,+14:30:34.04) # point=x text={77->53.37 km/s}
+point(19:23:43.894,+14:30:34.18) # point=x text={77->53.37 km/s}
+point(19:23:43.927,+14:30:36.67) # point=x text={77->53.37 km/s}
+point(19:23:43.992,+14:30:35.40) # point=x text={77->53.37 km/s}
+point(19:23:43.999,+14:30:35.65) # point=x text={78->53.02 km/s}
+point(19:23:43.896,+14:30:34.74) # point=x text={78->53.02 km/s}
+point(19:23:43.877,+14:30:34.38) # point=x text={79->52.66 km/s}
+point(19:23:43.999,+14:30:35.54) # point=x text={81->51.96 km/s}
+point(19:23:43.997,+14:30:35.45) # point=x text={82->51.61 km/s}
+point(19:23:43.990,+14:30:35.39) # point=x text={83->51.26 km/s}
+point(19:23:43.882,+14:30:34.61) # point=x text={83->51.26 km/s}
+point(19:23:43.934,+14:30:34.09) # point=x text={83->51.26 km/s}
+point(19:23:43.918,+14:30:33.88) # point=x text={84->50.91 km/s}
+point(19:23:43.889,+14:30:34.08) # point=x text={84->50.91 km/s}
+point(19:23:43.990,+14:30:35.31) # point=x text={88->49.50 km/s}
+point(19:23:43.884,+14:30:27.22) # point=x text={73->54.77 km/s}
+point(19:23:44.014,+14:30:34.50) # point=x text={63->58.28 km/s}
+point(19:23:43.980,+14:30:34.30) # point=x text={81->51.96 km/s}
+point(19:23:38.704,+14:30:35.39) # point=x color=blue
+point(19:23:38.644,+14:30:34.08) # point=x color=blue
+point(19:23:38.631,+14:30:33.89) # point=x color=blue
+point(19:23:38.659,+14:30:34.35) # point=x color=blue
+point(19:23:38.422,+14:30:36.66) # point=x color=blue
+point(19:23:38.060,+14:30:39.29) # point=x color=blue
