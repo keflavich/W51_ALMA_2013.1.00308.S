@@ -4,6 +4,7 @@ Given the chemical maps made from chem_images, perform radial profile calculatio
 import paths
 import pylab as pl
 import os
+from scipy import ndimage
 import itertools
 from astropy.io import fits
 import radio_beam
@@ -45,8 +46,11 @@ for regfn,region,fignum,imtype,suffix in (
     linere = re.compile("chemical_{0}_slabs_[^_]*_(.*?)(_merge.fits|.fits)"
                         .format(imtype))
 
+    # start with continuum
+    files = [paths.dpath('W51_te_continuum_best.fits')] + files
 
-    for fn in files:
+
+    for ii,fn in enumerate(files):
         if 'merge' in fn and 'merge' not in suffix:
             # this is a way to skip _merge when looking for chemname.fits
             continue
@@ -65,11 +69,17 @@ for regfn,region,fignum,imtype,suffix in (
 
         mywcs = wcs.WCS(fh[0].header)
         pixscale = (mywcs.pixel_scale_matrix.diagonal()**2).sum()**0.5
-        ppbeam = (beam.sr/(pixscale**2*u.deg**2)).decompose().value / u.beam
-        print("fn  {0} ppbeam={1:0.2f}".format(fn, ppbeam))
+        #ppbeam = (beam.sr/(pixscale**2*u.deg**2)).decompose().value / u.beam
+        #print("fn  {0} ppbeam={1:0.2f}".format(fn, ppbeam))
 
         data = fh[0].data
         mask = reg.get_mask(fh[0]) & np.isfinite(data)
+
+        # crop to fit
+        slices = ndimage.find_objects(mask)[0]
+        mywcs = mywcs[slices]
+        data = data[slices]
+        mask = mask[slices]
 
         center = mywcs.wcs_world2pix(reg[0].coord_list[0], reg[0].coord_list[1], 0)
 
@@ -79,18 +89,26 @@ for regfn,region,fignum,imtype,suffix in (
                                                                      binsize=1.0,
                                                                      return_nr=True)
 
-        species = linere.search(fn).groups()[0]
+        if ii==0:
+            ax.plot(bins*pixscale*3600., rprof * beam.jtok(225*u.GHz),
+                    label='Continuum', linestyle='-', alpha=0.25, zorder=-10,
+                    linewidth=4, color='k')
+        else:
+            species = linere.search(fn).groups()[0]
+            ax.plot(bins*pixscale*3600., rprof,
+                    label=species, linestyle=linestyle)
 
-        ax.plot(bins*pixscale*3600., rprof/ppbeam,
-                label=species, linestyle=linestyle)
-        ax.set_ylabel("Azimuthally Averaged Flux (Jy)")
-        ax.set_xlabel("Radius (arcsec)")
+    if imtype == 'max':
+        ax.set_ylabel("Azimuthally Averaged Brightness (K)")
+    elif imtype == 'm0':
+        ax.set_ylabel("Azimuthally Averaged Flux (K km/s)")
+    ax.set_xlabel("Radius (arcsec)")
 
-        #box = ax.get_position()
-        #ax.set_position([box.x0, box.y0, box.width * 0.6, box.height])
+    #box = ax.get_position()
+    #ax.set_position([box.x0, box.y0, box.width * 0.6, box.height])
 
-        # Put a legend to the right of the current axis
-        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    # Put a legend to the right of the current axis
+    ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
     fig.savefig(paths.fpath("chemslices/radialprofile_{2}_{0}{1}.png"
                             .format(region, suffix, imtype)),
