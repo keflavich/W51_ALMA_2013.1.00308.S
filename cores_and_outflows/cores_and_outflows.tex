@@ -473,12 +473,17 @@ density is 0.38 Jy, which corresponds to a brightness temperature $T=228$ K.
 This is a lower limit to the surface brightness of the millimeter core, since
 an optical depth $\tau<1$ or a filling factor of the emission $ff<1$ would both
 imply higher intrinsic temperatures.  The implied luminosity, assuming a pure
-blackbody, is $L = 4\pi r^2 \sigma_{sb} T^4 = 2.4\ee{4} \lsun$.  If we assume
+blackbody, is $L = 4\pi r^2 \sigma_{sb} T^4 = 2.4\ee{4} \lsun$.  Since any systematic
+uncertainties imply a higher temperature, this estimate is a lower limit on the source
+luminosity.
+
+If we assume
 that $T_{dust} = T_{peak}$ and that the dust is optically thin, we derive a dust
 mass $M_{dust}\sim20$ \msun.  However, this final mass is not a strict limit in
 either direction: if the dust is optically thick, there may be substantial
 hidden or undetected gas, while if the filling factor is low, it may be much
 hotter and therefore lower in mass.
+
 
 \subsection{The most massive protostellar cores in W51}
 In Figure \ref{fig:hmradprof}, we show the radial profiles extracted from the
@@ -762,7 +767,18 @@ connects the northwest and southeast extrema of the flow.
 \section{Feedback in W51}
 \subsection{Ionizing Radiation}
 This was covered in \citep{Ginsburg2016b}.  Ionizing radiation affects much
-of the cloud, but little of the prestellar material.
+of the cloud, but little of the prestellar material.  There is no evidence
+of increased gas temperatures in the vicinity of \hii regions.  While in
+Section \ref{sec:nonionizingradiation} we identify chemically enhanced
+regions as those where radiative feedback has heated the dust and released
+ices into the gas phase, no such regions are observed surrounding the most
+luminous compact \hii regions.
+
+\todo{What direct tests can be used to show that \hii regions aren't heating
+their surroundings?  \formaldehyde is good, in principle, but maybe not in
+practice because of the possible optical depth issues.  Radio \ammonia might be
+OK, but it might also be affected by imaging artifacts from the bright radio
+sources.}
 
 \subsection{Outflows}
 While the outflows described in Section \ref{sec:outflows} are impressive and
@@ -774,9 +790,11 @@ these outflows likely do punch holes through protostellar envelopes and the
 surrounding cloud material, allowing radiation to escape.
 
 \subsection{Non-ionizing Radiation}
-The formed and forming protostars are producing a total $\gtrsim10^6$ \lsun of
-far infrared illumination.  This radiation heats the cloud's molecular gas,
-affecting the initial conditions of future star formation.
+\label{sec:nonionizingradiation}
+The formed and forming protostars are producing a total $\gtrsim10^7$ \lsun of
+far infrared illumination \citep{Ginsburg2016b}.  This radiation heats the
+cloud's molecular gas, affecting the initial conditions of future star
+formation.
 
 The chemical maps shown in Section \ref{sec:chemistrymaps} show the volumes of
 gas clearly affected by newly-forming high-luminosity stars.  The
@@ -794,9 +812,12 @@ rotational diagram fits are reasonable lower-limits on the column, and they
 exceed $N(\methanol)\gtrsim10^{20}$ \persc.
 \todo{Is this worth expanding upon or is it better to defer to another work?}
 
+\todo{How does the \methanol brightness/column profile compare with the dust
+brightness/column?  Is it going up faster?  By how much?}
+
 \Figure{figures/W51e2_ch3oh_hnco_continuum_aplpy_kucontours.pdf}
-{Image of \methanol 8-... (red), HCNO 10-... (green), and continuum
-(blue) toward W51e2.  The contours show Ku-band radio continuum
+{Image of \methanol $8_{0,8}-7_{1,6}$ (red), HCNO 10-... (green), and 225 GHz
+continuum (blue) toward W51e2.  The contours show Ku-band radio continuum
 emission tracing the \hii region W51 e2w.  The \methanol emission is
 symmetric around the high-mass protostar W51 e2e, suggesting that
 this forming star is responsible for heating its surroundings.}

@@ -83,6 +83,11 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
     gs2 = gridspec.GridSpec(*plotgrid)
     gs2.update(wspace=0.0, hspace=0.0)
 
+    fig3 = pl.figure(3, figsize=(12.8,8))
+    fig3.clf()
+    gs3 = gridspec.GridSpec(*plotgrid)
+    gs3.update(wspace=0.0, hspace=0.0)
+
     figcounter = 0
 
     for ii,fn in enumerate(ProgressBar(filelist)):
@@ -96,7 +101,8 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         # cache the results for use in other work, later use, ...
         m0fitsfn = paths.dpath("chemslices/chemical_m0_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
         m1fitsfn = paths.dpath("chemslices/chemical_m1_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
-        if not os.path.exists(m0fitsfn):
+        maxfitsfn = paths.dpath("chemslices/chemical_max_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
+        if not (os.path.exists(m0fitsfn) and os.path.exists(maxfitsfn)):
             cube = SpectralCube.read(fn)[:,yslice,xslice]
             bm = cube.beams[0]
             restfreq = cube.wcs.wcs.restfrq
@@ -117,12 +123,15 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
             slabsub.beam_threshold = 0.25
             m0 = slabsub.moment0()
             m1 = slabsub.moment1()
+            max = slabsub.max(axis=0)
 
             m0.write(m0fitsfn, overwrite=True)
             m1.write(m1fitsfn, overwrite=True)
+            max.write(maxfitsfn, overwrite=True)
         else:
             m0fh = fits.open(m0fitsfn)
             m1fh = fits.open(m1fitsfn)
+            maxfh = fits.open(maxfitsfn)
 
             m0 = Projection(value=m0fh[0].data, header=m0fh[0].header,
                             wcs=wcs.WCS(m0fh[0].header),
@@ -130,6 +139,9 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
             m1 = Projection(value=m1fh[0].data, header=m1fh[0].header,
                             wcs=wcs.WCS(m1fh[0].header),
                             unit=u.Unit(m1fh[0].header['BUNIT']),)
+            max = Projection(value=maxfh[0].data, header=maxfh[0].header,
+                             wcs=wcs.WCS(maxfh[0].header),
+                             unit=u.Unit(maxfh[0].header['BUNIT']),)
 
             bm = radio_beam.Beam.from_fits_header(m0fh[0].header)
             restfreq = m0fh[0].header['RESTFRQ']
@@ -157,10 +169,21 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         ax2.set_xticklabels([])
         ax2.set_yticklabels([])
         ax2.set_aspect('equal')
+
+        ax3 = fig3.add_subplot(gs2[figcounter])
+
+        im3 = ax3.imshow(max.value, vmin=-10, vmax=150,
+                         cmap=pl.cm.bone_r, interpolation='nearest')
+        ax3.text(3, 0.87*m0.shape[0], label, fontsize=10, color='r')
+        ax3.set_xticklabels([])
+        ax3.set_yticklabels([])
+        ax3.set_aspect('equal')
+
         figcounter += 1
 
     cbs = {}
-    for ii,fig, im, gs in ((1,fig1,im1,gs1), (2,fig2,im2,gs2)):
+    for ii,fig, im, gs in ((1,fig1,im1,gs1), (2,fig2,im2,gs2),
+                           (3,fig3,im3,gs3),):
         bottom,top,left,right = gs.get_grid_positions(fig)
         cbar_ax = fig.add_axes([np.max(right)+0.01, np.min(bottom), 0.05, np.max(top)-np.min(bottom)])
         cbs[ii] = pl.colorbar(mappable=im, cax=cbar_ax)
@@ -168,10 +191,19 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
 
     cbs[1].set_label("Flux Density (K km s$^{-1}$)", fontsize=12)
     cbs[2].set_label("Velocity (km s$^{-1}$)", fontsize=12)
+    cbs[3].set_label("Peak Brightness (K)", fontsize=12)
 
-    fig1.savefig(paths.fpath("chemical_m0_slabs_{0}{1}.png".format(sourcename, suffix)), bbox_inches='tight', dpi=150)
+    fig1.savefig(paths.fpath("chemical_m0_slabs_{0}{1}.png".format(sourcename,
+                                                                   suffix)),
+                 bbox_inches='tight', dpi=150)
 
-    fig2.savefig(paths.fpath("chemical_m1_slabs_{0}{1}.png".format(sourcename, suffix)), bbox_inches='tight', dpi=150)
+    fig2.savefig(paths.fpath("chemical_m1_slabs_{0}{1}.png".format(sourcename,
+                                                                   suffix)),
+                 bbox_inches='tight', dpi=150)
+
+    fig3.savefig(paths.fpath("chemical_max_slabs_{0}{1}.png".format(sourcename,
+                                                                    suffix)),
+                 bbox_inches='tight', dpi=150)
 
     pl.draw()
     pl.show()

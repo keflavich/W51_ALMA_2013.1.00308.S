@@ -1,3 +1,4 @@
+import numpy as np
 import os
 import glob
 import pyspeckit
@@ -22,6 +23,8 @@ for target in velo:
     files = glob.glob(paths.dpath("longbaseline/spectra/{0}*.fits".format(target)))
     for fn in files:
         sp = pyspeckit.Spectrum(fn)
+        sp.xarr.convert_to_unit(u.GHz)
+        print(fn, sp.xarr.min(), sp.xarr.max())
 
         fpre = os.path.splitext(os.path.split(fn)[-1])[0]
 
@@ -30,12 +33,18 @@ for target in velo:
                                  unit=u.GHz)
 
         sp.plotter(figure=pl.figure(1))
+        sp.plotter(figure=pl.figure(1))
 
-        sp.plotter.line_ids(species_names, u.Quantity(frequencies),
+        okfreqs = (frequencies > sp.xarr.min()) & (frequencies < sp.xarr.max())
+        print(frequencies)
+        print(okfreqs)
+
+        sp.plotter.line_ids(np.array(species_names)[okfreqs],
+                            u.Quantity(frequencies)[okfreqs],
                             velocity_offset=velo[target],
                             plot_kwargs=plot_kwargs,
                             annotate_kwargs=annotate_kwargs)
-        outname = paths.dpath('longbaseline/spectra/pngs/{target}_{0}.png'.format(fpre,
-                                                                                  target=target)
+        outname = paths.dpath('longbaseline/spectra/pngs/labeled_{target}_{0}.png'
+                              .format(fpre, target=target)
                                                                                                                      )
         sp.plotter.savefig(outname, bbox_extra_artists=[])
