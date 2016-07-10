@@ -1,5 +1,6 @@
 import os
 import glob
+import collections
 from astropy import units as u
 from spectral_cube import SpectralCube
 
@@ -64,6 +65,19 @@ try:
         'W51_b6_7M_12M.CH3OH423-514.image.pbcor.fits',
         'W51_b6_7M_12M.CH3OH5m42-6m43.image.pbcor.fits',
         'W51_b6_7M_12M.CH3OH808-716.image.pbcor.fits',
+        'W51_b6_7M_12M.CH3OH18315-17414.image.pbcor.fits',
+        'W51_b6_7M_12M.CH3OH23519-22617.image.pbcor.fits',
+        'W51_b6_7M_12M.CH3OH25322-24420.image.pbcor.fits',
+        #I don't know why I've never made the natural weight moments...
+        # 'W51_b6_7M_12M_natural.13CH3OH515-414.image.pbcor.fits',
+        # 'W51_b6_7M_12M_natural.CH3OH1029-936.image.pbcor.fits',
+        # 'W51_b6_7M_12M_natural.CH3OH18315-17414.image.pbcor.fits',
+        # 'W51_b6_7M_12M_natural.CH3OH23519-22617.image.pbcor.fits',
+        # 'W51_b6_7M_12M_natural.CH3OH25322-24420.image.pbcor.fits',
+        # 'W51_b6_7M_12M_natural.CH3OH422-312.image.pbcor.fits',
+        # 'W51_b6_7M_12M_natural.CH3OH423-514.image.pbcor.fits',
+        # 'W51_b6_7M_12M_natural.CH3OH5m42-6m43.image.pbcor.fits',
+        # 'W51_b6_7M_12M_natural.CH3OH808-716.image.pbcor.fits',
         'W51_b6_7M_12M.H213CO312-211.image.pbcor.fits',
         'W51_b6_7M_12M.H2CCO11-10.image.pbcor.fits',
         'W51_b6_7M_12M.H2CN303-202_F3_2.image.pbcor.fits',
@@ -96,6 +110,11 @@ except ImportError:
     files = glob.glob("W51_b6*.image.pbcor.fits")
     dpath = lambda x: x
     fpath = lambda x: os.path.join('moments',x)
+
+cont_percentiles = collections.defaultdict(lambda: 50)
+# these lines almost intersect with SO, causing problems near outflows
+cont_percentiles['CH3OH23519-22617'] = 10
+cont_percentiles['CH3OH25322-24420'] = 10
 
 def load_projection(filename):
     from astropy import wcs
@@ -131,9 +150,16 @@ for fn in files:
         cube = SpectralCube.read(dpath(fn)).minimal_subcube()
         vcube = cube.with_spectral_unit(u.km/u.s, velocity_convention='radio')
         vcube.beam_threshold = 100
+
+        pct = 50
+        for key in cont_percentiles:
+            if key in fname:
+                pct = cont_percentiles[key]
+
         med = vcube.with_mask(((vcube.spectral_axis < 35*u.km/u.s) |
                                (vcube.spectral_axis >
-                                80*u.km/u.s))[:,None,None]).median(axis=0)
+                                80*u.km/u.s))[:,None,None]).percentile(pct,
+                                                                       axis=0)
         vcube = vcube.spectral_slab(50*u.km/u.s, 65*u.km/u.s)
         # I hope this isn't needed....
         vcube.allow_huge_operations=True

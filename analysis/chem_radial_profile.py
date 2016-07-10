@@ -13,7 +13,6 @@ from astropy import units as u
 import pyregion
 import image_tools
 from astropy import wcs
-from astropy.nddata import Cutout2D
 
 import re
 import glob
@@ -31,10 +30,6 @@ for regfn,region,fignum,imtype,suffix in (
 
     reg = pyregion.open(paths.rpath(regfn))
 
-    fig = pl.figure(fignum)
-    fig.clf()
-    ax = pl.gca()
-    ax.set_title(region+suffix+" "+imtype)
     path_template = paths.dpath("chemslices/chemical_{2}_slabs*_{0}*{1}.fits"
                                 .format(region, suffix, imtype))
 
@@ -49,67 +44,74 @@ for regfn,region,fignum,imtype,suffix in (
     # start with continuum
     files = [paths.dpath('W51_te_continuum_best.fits')] + files
 
+    for plotspecies in ("CH3OH", "CH3OCHO", "HNCO", "NH2CHO"):
+        fig = pl.figure(fignum)
+        fig.clf()
+        ax = pl.gca()
+        #ax.set_title(region+suffix+" "+imtype)
 
-    for ii,fn in enumerate(files):
-        if 'merge' in fn and 'merge' not in suffix:
-            # this is a way to skip _merge when looking for chemname.fits
-            continue
-        fh = fits.open(fn)
+        for ii,fn in enumerate(files):
+            if 'merge' in fn and 'merge' not in suffix:
+                # this is a way to skip _merge when looking for chemname.fits
+                continue
+            if plotspecies not in fn and ii>0:
+                continue
+            fh = fits.open(fn)
 
-        linestyle = next(linestyles[region])
+            linestyle = next(linestyles[region])
 
-        if 'BMAJ' not in fh[0].header:
-            print("File {0} does not have BMAJ".format(fn))
-            continue
-        try:
-            beam = radio_beam.Beam.from_fits_header(fh[0].header)
-        except KeyError:
-            print("File {0} doesn't have beam info in the header".format(fn))
-            continue
+            if 'BMAJ' not in fh[0].header:
+                print("File {0} does not have BMAJ".format(fn))
+                continue
+            try:
+                beam = radio_beam.Beam.from_fits_header(fh[0].header)
+            except KeyError:
+                print("File {0} doesn't have beam info in the header".format(fn))
+                continue
 
-        mywcs = wcs.WCS(fh[0].header)
-        pixscale = (mywcs.pixel_scale_matrix.diagonal()**2).sum()**0.5
-        #ppbeam = (beam.sr/(pixscale**2*u.deg**2)).decompose().value / u.beam
-        #print("fn  {0} ppbeam={1:0.2f}".format(fn, ppbeam))
+            mywcs = wcs.WCS(fh[0].header)
+            pixscale = (mywcs.pixel_scale_matrix.diagonal()**2).sum()**0.5
+            #ppbeam = (beam.sr/(pixscale**2*u.deg**2)).decompose().value / u.beam
+            #print("fn  {0} ppbeam={1:0.2f}".format(fn, ppbeam))
 
-        data = fh[0].data
-        mask = reg.get_mask(fh[0]) & np.isfinite(data)
+            data = fh[0].data
+            mask = reg.get_mask(fh[0]) & np.isfinite(data)
 
-        # crop to fit
-        slices = ndimage.find_objects(mask)[0]
-        mywcs = mywcs[slices]
-        data = data[slices]
-        mask = mask[slices]
+            # crop to fit
+            slices = ndimage.find_objects(mask)[0]
+            mywcs = mywcs[slices]
+            data = data[slices]
+            mask = mask[slices]
 
-        center = mywcs.wcs_world2pix(reg[0].coord_list[0], reg[0].coord_list[1], 0)
+            center = mywcs.wcs_world2pix(reg[0].coord_list[0], reg[0].coord_list[1], 0)
 
-        nr, bins, rprof = image_tools.radialprofile.azimuthalAverage(data,
-                                                                     mask=mask,
-                                                                     center=center,
-                                                                     binsize=1.0,
-                                                                     return_nr=True)
+            nr, bins, rprof = image_tools.radialprofile.azimuthalAverage(data,
+                                                                         mask=mask,
+                                                                         center=center,
+                                                                         binsize=1.0,
+                                                                         return_nr=True)
 
-        if ii==0:
-            ax.plot(bins*pixscale*3600., rprof * beam.jtok(225*u.GHz),
-                    label='Continuum', linestyle='-', alpha=0.25, zorder=-10,
-                    linewidth=4, color='k')
-        else:
-            species = linere.search(fn).groups()[0]
-            ax.plot(bins*pixscale*3600., rprof,
-                    label=species, linestyle=linestyle)
+            if ii==0:
+                ax.plot(bins*pixscale*3600., rprof * beam.jtok(225*u.GHz),
+                        label='Continuum', linestyle='-', alpha=0.25, zorder=-10,
+                        linewidth=4, color='k')
+            else:
+                species = linere.search(fn).groups()[0]
+                ax.plot(bins*pixscale*3600., rprof,
+                        label=species, linestyle=linestyle)
 
-    if imtype == 'max':
-        ax.set_ylabel("Azimuthally Averaged Brightness (K)")
-    elif imtype == 'm0':
-        ax.set_ylabel("Azimuthally Averaged Flux (K km/s)")
-    ax.set_xlabel("Radius (arcsec)")
+        if imtype == 'max':
+            ax.set_ylabel("Azimuthally Averaged Peak Brightness (K)")
+        elif imtype == 'm0':
+            ax.set_ylabel("Azimuthally Averaged Flux (K km/s)")
+        ax.set_xlabel("Radius (arcsec)")
 
-    #box = ax.get_position()
-    #ax.set_position([box.x0, box.y0, box.width * 0.6, box.height])
+        #box = ax.get_position()
+        #ax.set_position([box.x0, box.y0, box.width * 0.6, box.height])
 
-    # Put a legend to the right of the current axis
-    ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+        # Put a legend to the right of the current axis
+        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
-    fig.savefig(paths.fpath("chemslices/radialprofile_{2}_{0}{1}.png"
-                            .format(region, suffix, imtype)),
-                bbox_inches='tight')
+        fig.savefig(paths.fpath("chemslices/radialprofile_{2}_{3}_{0}{1}.png"
+                                .format(region, suffix, imtype, plotspecies)),
+                    bbox_inches='tight')

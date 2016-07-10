@@ -170,3 +170,10 @@ if __name__ == "__main__" and False:
                                                                        1000),
                                                                       (1e13,
                                                                        1e18)])
+
+    ok = slaim['Species'] =='CH3OHvt=0'
+    spectra.xarr.refX = 225*u.GHz
+    spectra.plotter.line_ids(line_names=[str(x)
+                                         for x in slaim['Resolved QNs'][ok]],
+                             line_xvals=freqs[ok],
+                             velocity_offset=55.626*u.km/u.s)

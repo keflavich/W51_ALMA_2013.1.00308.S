@@ -24,25 +24,35 @@ corners = {reg.attr[1]['text']: {'lowerleft': coordinates.SkyCoord([reg.coord_li
 #          }
 repl = re.compile("W51[en]2?cax")
 
-for source,cubefn in [('e2', "W51e2cax.CH3CN_K3_nat.image.fits"),
-                      ('e2', "W51e2cax.CH3CN_K3_nat_all.image.fits"),
+for source,cubefn in [#('e2', "W51e2cax.CH3CN_K3_nat.image.fits"),
+                      #('e2', "W51e2cax.CH3CN_K3_nat_all.image.fits"),
                       ('e2', "W51e2cax.CH3CN_K8.image.pbcor.fits"),
                       ('e2', "W51e2cax.H30alpha.image.pbcor.fits"),
-                      ('e8', "W51e2cax.CH3CN_K3_nat.image.fits"),
-                      ('e8', "W51e2cax.CH3CN_K3_nat_all.image.fits"),
+                      ('e2', "W51e2cax.SPW2_ALL.image.fits"),
+                      ('e2', "W51e2cax.SPW4_ALL.image.fits"),
+                      ('e2', "W51e2cax.SPW6_ALL.image.fits"),
+                      #('e8', "W51e2cax.CH3CN_K3_nat.image.fits"),
+                      #('e8', "W51e2cax.CH3CN_K3_nat_all.image.fits"),
                       ('e8', "W51e2cax.CH3CN_K8.image.pbcor.fits"),
                       ('e8', "W51e2cax.H30alpha.image.pbcor.fits"),
+                      ('e8', "W51e2cax.SPW2_ALL.image.fits"),
+                      ('e8', "W51e2cax.SPW4_ALL.image.fits"),
+                      ('e8', "W51e2cax.SPW6_ALL.image.fits"),
                       ('north', "W51ncax.H30alpha.image.pbcor.fits"),
                       ('north', "W51ncax.CH3CN_K8.image.pbcor.fits"),
+                      ('north', "W51ncax.SPW2_ALL.image.fits"),
+                      ('north', "W51ncax.SPW4_ALL.image.fits"),
+                      ('north', "W51ncax.SPW6_ALL.image.fits"),
                       ]:
     suffix = ".image.fits" if ".image.fits" in cubefn else ".image.pbcor.fits"
+    print("Cube {0} cutout {1} beginning".format(cubefn, source))
 
     try:
         cube = SpectralCube.read(cubefn)
     except Exception as ex:
         print(cubefn, ex)
-        raise ex
         continue
+        raise ex
 
     outfn = repl.sub("W51{0}cax".format(source), cubefn)
 
