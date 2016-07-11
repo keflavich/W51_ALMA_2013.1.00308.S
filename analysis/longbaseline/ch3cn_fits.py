@@ -8,6 +8,7 @@ from pyspeckit.spectrum.models import lte_molecule
 from spectral_cube import SpectralCube
 from astropy import units as u
 from astropy import constants
+from astropy import log
 from astropy.io import fits
 from astroquery.splatalogue import Splatalogue
 
@@ -101,6 +102,60 @@ def ch3cn_model(xarr, vcen, width, tex, column, background=None, tbg=2.73):
         return background-model
     return model
 
+def multigaussian_model(xarr, vcen, width, amp1, amp2, amp3, amp4, amp5, amp6,
+                        amp7, amp8, amp9, amp10, amp11, amp12, amp13, amp14,
+                        background=0.0):
+    line_names = ["HNCO 1019_918", "CH3CN 12_7", "CH3CN 12_6", "CH13CN 12_3",
+                  "CH13CN 12_2", "CH3CN 12_5", "unknown",
+                  "CH13CN 12_1", "CH13CN 12_0",
+                  "CH3CN 12_4",
+                  "CH3CN 12_3", "CH3CN 12_2", "CH3CN 12_1", "CH3CN 12_0"]
+    frequencies = [220.58476, 220.53933,  220.59443, 220.59999, 220.62114,
+                   220.64109, 220.619030262,
+                   220.63384,
+                   220.63807,
+                   220.67929, 220.70902, 220.73026,
+                   220.74301, 220.74726]
+    log.debug("lines = {0}".format(zip(line_names, frequencies)))
+
+    xarr_frq = xarr.as_unit(u.GHz).value
+
+    model = np.zeros(xarr.shape) + background
+    for freq,amp in zip(frequencies, (amp1, amp2, amp3, amp4, amp5, amp6, amp7,
+                                      amp8, amp9, amp10, amp11, amp12, amp13,
+                                      amp14)):
+        fcen = freq*(1-u.Quantity(vcen, u.km/u.s) / constants.c).decompose().value
+        fwidth = (u.Quantity(width,u.km/u.s)/constants.c).decompose().value * fcen
+        model += amp * np.exp(-(xarr_frq-fcen)**2 / (2*fwidth**2))
+
+    return model
+
+def ch3cn_spw_fitter():
+    """
+    Generator for a multigaussian fitter covering the target spw
+    """
+
+    myclass = model.SpectralModel(multigaussian_model, 17,
+            parnames=['shift','width', "HNCO 1019_918", "CH3CN 12_7",
+                      "CH3CN 12_6", "CH13CN 12_3", "CH13CN 12_2", "CH3CN 12_5",
+                      "unknown", "CH13CN 12_1", "CH13CN 12_0", "CH3CN 12_4",
+                      "CH3CN 12_3", "CH3CN 12_2", "CH3CN 12_1", "CH3CN 12_0",
+                      'background'],
+            parlimited=[(False,False),(True,False)]+[(False,False)]*14+[(True,False)],
+            parlimits=[(0,0),]*17,
+            shortvarnames=(r'\Delta x',r'\sigma',
+                           "HNCO 1019_918", "CH3CN 12_7",
+                           "CH3CN 12_6", "CH_3^{13}CN 12_3", "CH_3^{13}CN 12_2", "CH3CN 12_5",
+                           "unknown", "CH_3^{13}CN 12_1", "CH_3^{13}CN 12_0", "CH3CN 12_4",
+                           "CH3CN 12_3", "CH3CN 12_2", "CH3CN 12_1", "CH3CN 12_0",
+                           'T_{BG}'),
+            centroid_par='shift',)
+    myclass.__name__ = "multigauss"
+    
+    return myclass
+
+pyspeckit.spectrum.fitters.default_Registry.add_fitter('ch3cn_spw',ch3cn_spw_fitter(),17)
+
 def ch3cn_fitter():
     """
     Generator for CH3CN fitter class
@@ -139,7 +194,8 @@ pyspeckit.spectrum.fitters.default_Registry.add_fitter('ch3cn_absorption',ch3cn_
 
 
 if __name__ == "__main__" and False:
-    cube = SpectralCube.read('../FITS/longbaseline/W51e2e_CH3CN_cutout.fits')
+    import paths
+    cube = SpectralCube.read(paths.dpath('longbaseline/W51e2e_CH3CN_cutout.fits'))
     sp_ = cube[:,43,43]
     hdr = sp_.header
     hdr['BUNIT'] = 'K'
@@ -155,3 +211,9 @@ if __name__ == "__main__" and False:
     sp2 = sp[:400]
     sp2.plotter()
     sp2.specfit(fittype='ch3cn', guesses=[62, 2, 500, 1e16])
+
+    F = False
+    T = True
+
+    sp.specfit(fittype='ch3cn_spw', guesses=[62, 2,]+[100]*14 + [0],
+               fixed=[F]*16+[T])
