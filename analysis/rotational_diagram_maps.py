@@ -181,8 +181,15 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
 #    term6 = 1 if tau is None else tau/(1-np.exp(-tau))
 #    return (term1*term3*term4*term5*term6).to(u.cm**-2)
 
-def nupper_of_kkms(kkms, freq, Aul, degeneracies, Tex=100*u.K):
+def nupper_of_kkms(kkms, freq, Aul, degeneracies, Tex=100*u.K,
+                   replace_bad=None):
     """ Derived directly from pyspeckit eqns..."""
+
+    if replace_bad:
+        neg = kkms <= 0
+        kkms[neg] = replace_bad
+
+
     freq = u.Quantity(freq, u.GHz)
     Aul = u.Quantity(Aul, u.Hz)
     kkms = u.Quantity(kkms, u.K*u.km/u.s)
@@ -206,18 +213,30 @@ def nupper_of_kkms(kkms, freq, Aul, degeneracies, Tex=100*u.K):
 #    return nline.value / degeneracies *u.cm**-2 # because... something wrong.
 #    return nline.value * u.cm**-2
 #
-def fit_tex(eupper, nupperoverg, verbose=False, plot=False):
+def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None):
     """
     Fit the Boltzmann diagram
     """
     model = modeling.models.Linear1D()
     #fitter = modeling.fitting.LevMarLSQFitter()
     fitter = modeling.fitting.LinearLSQFitter()
-    # ignore negatives
-    good = nupperoverg > 0
-    if good.sum() < len(nupperoverg)/2.:
+
+    nupperoverg_tofit = nupperoverg.copy()
+
+    if uplims is not None:
+        upperlim_mask = nupperoverg < uplims
+        if upperlim_mask.sum() > len(nupperoverg)/2.:
+            # too many upper limits = bad idea to fit.
+            return 0*u.cm**-2, 0*u.K, 0, 0
+        nupperoverg_tofit[upperlim_mask] = uplims[upperlim_mask]
+
+    # always ignore negatives
+    good = nupperoverg_tofit > 0
+    # skip any fits that have fewer than 50% good values
+    if good.sum() < len(nupperoverg_tofit)/2.:
         return 0*u.cm**-2, 0*u.K, 0, 0
-    result = fitter(model, eupper[good], np.log(nupperoverg[good]))
+
+    result = fitter(model, eupper[good], np.log(nupperoverg_tofit[good]))
     tex = -1./result.slope*u.K
 
     partition_func = specmodel.calculate_partitionfunction(ch3oh.data['States'],
@@ -238,6 +257,10 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False):
                 result.intercept.value)
         pl.plot(xax, np.log10(np.exp(line)), '-', color=L.get_color(),
                 label='$T={0:0.1f} \log(N)={1:0.1f}$'.format(tex, np.log10(Ntot.value)))
+
+        if uplims:
+            pl.plot(eupper, np.log10(uplims), marker='_', alpha=0.5,
+                    linestyle='none', color='k')
 
     return Ntot, tex, result.slope, result.intercept
 
@@ -343,11 +366,15 @@ def fit_all_tex(xaxis, cube, cubefrequencies, indices, degeneracies,
             tmap[ii,jj] = np.nan
         else:
             if replace_bad:
-                neg = cube[:,ii,jj] <= 0
-                cube[neg,ii,jj] = replace_bad
+                uplims = nupper_of_kkms(replace_bad, cubefrequencies,
+                                        einsteinAij[indices], degeneracies,)
+            else:
+                uplims = None
+
             nuppers = nupper_of_kkms(cube[:,ii,jj], cubefrequencies,
-                                     einsteinAij[indices], degeneracies)
-            fit_result = fit_tex(xaxis, nuppers.value)
+                                     einsteinAij[indices], degeneracies,
+                                    )
+            fit_result = fit_tex(xaxis, nuppers.value, uplims=uplims.value)
             tmap[ii,jj] = fit_result[1].value
             Nmap[ii,jj] = fit_result[0].value
         pb.update(count)
@@ -451,25 +478,26 @@ if __name__ == "__main__":
         pl.subplots_adjust(hspace=0, wspace=0)
         pl.savefig(paths.fpath("chemistry/ch3oh_rotation_diagrams_{0}.png".format(sourcename)))
 
-        tmap,Nmap = fit_all_tex(xaxis, cube, cubefrequencies, indices, degeneracies,
-                                replace_bad=detection_threshold_jykms*approximate_jytok)
+        if True:
+            tmap,Nmap = fit_all_tex(xaxis, cube, cubefrequencies, indices, degeneracies,
+                                    replace_bad=detection_threshold_jykms*approximate_jytok)
 
-        pl.figure(1).clf()
-        pl.imshow(tmap, vmin=0, vmax=600, cmap='hot')
-        cb = pl.colorbar()
-        cb.set_label("Temperature (K)")
-        pl.savefig(paths.fpath("chemistry/ch3oh_temperature_map_{0}.png".format(sourcename)))
-        pl.figure(3).clf()
-        pl.imshow(np.log10(Nmap), vmin=16, vmax=19, cmap='viridis')
-        cb = pl.colorbar()
-        cb.set_label("log N(CH$_3$OH)")
-        pl.savefig(paths.fpath("chemistry/ch3oh_column_map_{0}.png".format(sourcename)))
+            pl.figure(1).clf()
+            pl.imshow(tmap, vmin=0, vmax=600, cmap='hot')
+            cb = pl.colorbar()
+            cb.set_label("Temperature (K)")
+            pl.savefig(paths.fpath("chemistry/ch3oh_temperature_map_{0}.png".format(sourcename)))
+            pl.figure(3).clf()
+            pl.imshow(np.log10(Nmap), vmin=16, vmax=19, cmap='viridis')
+            cb = pl.colorbar()
+            cb.set_label("log N(CH$_3$OH)")
+            pl.savefig(paths.fpath("chemistry/ch3oh_column_map_{0}.png".format(sourcename)))
 
-        hdu = fits.PrimaryHDU(data=tmap, header=header)
-        hdu.writeto(paths.dpath('12m/moments/CH3OH_{0}_cutout_temperaturemap.fits'.format(sourcename)), clobber=True)
+            hdu = fits.PrimaryHDU(data=tmap, header=header)
+            hdu.writeto(paths.dpath('12m/moments/CH3OH_{0}_cutout_temperaturemap.fits'.format(sourcename)), clobber=True)
 
-        hdu = fits.PrimaryHDU(data=Nmap, header=header)
-        hdu.writeto(paths.dpath('12m/moments/CH3OH_{0}_cutout_columnmap.fits'.format(sourcename)), clobber=True)
+            hdu = fits.PrimaryHDU(data=Nmap, header=header)
+            hdu.writeto(paths.dpath('12m/moments/CH3OH_{0}_cutout_columnmap.fits'.format(sourcename)), clobber=True)
 
 
 

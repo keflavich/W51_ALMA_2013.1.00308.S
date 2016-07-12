@@ -8,9 +8,9 @@ preliminary analysis that will make it in to one or more papers.
 
 Data summary: the 7m and 12m data have all been delivered, but the UV coverage
 is non-optimal.  Importantly and unfortunately, no single-dish (total power)
-data were ever acquired.  I have requested APEX observations using the new
-PI230 instrument to recover the spectral line zero spacings, but that data may
-not be received for quite some time.  The original proposed project connecting
+data were ever acquired.  I have been granted APEX time using the new
+PI230 instrument to recover the spectral line zero spacings, and that data is likely
+to be acquired in October or December.  The original proposed project connecting
 cloud scales to core scales will not be possible until the single dish data are
 acquired.
 
@@ -466,7 +466,7 @@ impossible for any point to be below the line.
 {fig:peaktb}{1}{10cm}
 
 \subsubsection{W51e2e Mass and Temperature Estimates}
-W51e2e
+\label{sec:W51e2e}
 
 In a $0.21\arcsec\times0.19\arcsec$ beam ($1100\times1000$ au), the peak flux
 density is 0.38 Jy, which corresponds to a brightness temperature $T=228$ K.
@@ -483,6 +483,10 @@ strict limit in either direction: if the dust is optically thick, there may be
 substantial hidden or undetected gas, while if the filling factor is low, it
 may be much hotter and therefore lower in mass.
 
+In the broader region surrounding W51e2e, out to a radius $\sim8000$ au,
+the total mass is $M\approx1400 (T / 100 \mathrm{K})^{-1}$.  The mass
+heated by e2e is therefore enormous, constituting an entire star cluster's
+worth of material.
 
 \subsection{The most massive protostellar cores in W51}
 In Figure \ref{fig:hmradprof}, we show the radial profiles extracted from the
@@ -500,6 +504,8 @@ all at 600 K, the mass would be $\sim17\times$ lower, 100 \msun, which we treat
 as a strict lower bound as it is unlikely that the dust more than $\gtrsim1000$
 au is so warm.  Additionally, it is very likely that a substantial mass of cold
 dust is also present but undetectable because it is hidden by the hotter dust.
+\todo{This paragraph is somewhat redundant with Section \ref{sec:W51e2e}, but
+still useful.  Perhaps blend these?}
 
 \Figure{figures/cumulative_radial_flux_massivecores.png}
 {The cumulative flux density radial profiles centered on three
@@ -555,6 +561,10 @@ using the simulations.}
 \subsection{Chemically Distinct Regions}
 \label{sec:chemistrymaps}
 The ``hot cores'' in W51 are resolved and multi-layered.
+
+\todo{Discuss with Victor \& Alvaro: Can the moderate-mass cores be
+chemically distinguished from the high-mass?  Do we know their masses well enough
+now to do this?}
 
 Surrounding W51e2e, we noted the presence of sharp-edged uniform-brightness
 regions in a few spectral lines over the range 51-60 \kms (Figure
@@ -648,7 +658,14 @@ because it is clearly optically thick (self-absorbed) in the regions of
 greatest interest.
 
 We produce rotational diagrams for each spatial pixel covering all \methanol lines
-detected at high significance toward at least one position.
+detected at high significance toward at least one position.  The detected lines
+span a range $45 < E_U < 800$ K, allowing robust measurements of the temperature
+assuming the lines are optically thin, in LTE, and the gas temperature is high
+enough to excite the lines.  These conditions are likely to be satisfied in the
+e2e, e8, and North cores, except for the optically thin requirement.  Luckily,
+there are some lines in band that have much lower Einstein $A_{i,j}$ values
+but comparable upper-state energy levels, allowing us to probe higher column
+densities than would otherwise be possible.
 
 \FigureTwo{figures/ch3oh_temperature_map_e2.png}{figures/ch3oh_column_map_e2.png}
 {Methanol temperature and column density maps around e2.  The temperature goes
@@ -663,7 +680,7 @@ derived and shown in Figure \ref{fig:ch3ohe2}.  The lower-left corner shows
 the position from which the data were extracted in that figure in units of
 figure fraction.  The horizontal black lines show the detection threshold of each
 of the transitions; points below these lines are ignored when fitting, and instead
-the threshold itself is used \todo{CONFIRM / DO THIS}.  The fitted temperature and
+the threshold itself is used.  The fitted temperature and
 column are shown in the top right of each plot.
 }{fig:ch3ohe2rot}{1}{18cm}
  
@@ -798,6 +815,13 @@ feedback.  A low area filling factor implies a substantially smaller volume
 filling factor and therefore a lower overall effect on the cloud.  However,
 these outflows likely do punch holes through protostellar envelopes and the
 surrounding cloud material, allowing radiation to escape.
+
+The detection of widespread high-J \methanol emission around the highest-mass
+protostars suggests that the use of \methanol as a bulk outflow tracer as
+suggested by \citet{Kristensen2015a} is not viable.  While mid-J \methanol
+emission is detected associated with the outflow (e.g., the J=10-9 transition),
+it is completely dominated by the general `extended hot core' emission
+described in Section \ref{sec:chemistrymaps}.
 
 \subsection{Non-ionizing Radiation}
 \label{sec:nonionizingradiation}

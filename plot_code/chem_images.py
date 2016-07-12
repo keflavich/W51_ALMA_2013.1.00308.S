@@ -19,6 +19,8 @@ labeldict = {
                'H2CO321_220':'H$_2$CO $3_{2,1}-2_{2,0}$',
                'H2CO322_221':'H$_2$CO $3_{2,2}-2_{2,1}$',
                'HC3N24-23':'HC$_3$N 24-23',
+               'HC3Nv7=124-23':'HC$_3$Nv$_7$=1 24-23a',
+               #'HC3Nv7=1_24-23':'HC$_3$Nv$_7$=1 24-23b',
                'OCS18-17':'OCS 18-17',
                'OCS19-18':'OCS 19-18',
                'SO65-54':'SO $6_5-5_4$',
@@ -34,23 +36,23 @@ labeldict = {
                'CH3OH1029-936':'CH$_3$OH $10_{2,9}-9_{3,6}$',
                'CH3OH1028-937':'CH$_3$OH $10_{2,8}-9_{3,7}$',
                'CH3OH422-312':'CH$_3$OH $4_{2,2}-3_{1,2}$',
+               'CH3OH18315-17414':'CH$_3$OH $18_{3,15}-17_{4,14}$',
+               'CH3OH25322-24420':'CH$_3$OH $25_{3,22}-24_{4,20}$',
+               'CH3OH23519-22617':'CH$_3$OH $23_{5,19}-22_{6,17}$',
+               #'13CH3OH515-414':'$^{13}$CH$_3$OH $5_{1,5}-4_{1,4}$',
                'CH3OHvt=01028-937++': 'CH$_3$OH $10_{2,8}-9_{3,7}$',
                '13CS5-4':'$^{13}$CS 5-4',
                'NH2CHO11210-1029':'NH$_2$CHO $11_{2,10}-10_{2,9}$',
                'NH2CHO1156-1055': 'NH$_2$CHO $11_{5,6}-10_{5,5}$',
-               'HC3Nv7=124-23':'HC$_3$Nv$_7$=1 24-23a',
                'H30alpha':'H30$\\alpha$',
                'C18O2-1':'C$^{18}$O 2-1',
                'H2CCO11-10':'H$_2$CCO 11-10',
                'HCOOH431-524':'HCOOH $4_{3,1}-5_{2,4}$',
                'CH3CH2CN24321-23320':'CH$_3$CH$_2$CN $24_{3,21}-23_{3,20}$',
-               'HC3Nv7=1_24-23':'HC$_3$Nv$_7$=1 24-23b',
-               'Acetone21120-20219AE':'Acetone $21_{1,20}-20_{2,19}$AE',
-               'Acetone21120-20119EE':'Acetone $21_{1,20}-20_{1,19}$EE',
+               #'Acetone21120-20219AE':'Acetone $21_{1,20}-20_{2,19}$AE',
+               #'Acetone21120-20119EE':'Acetone $21_{1,20}-20_{1,19}$EE',
                'CH3CH2CN24222-23221':'CH$_3$CH$_2$CN $24_{2,22}-23_{2,21}$',
                'H213CO312-211':'H$_2$$^{13}$CO $3_{1,2}-2_{1,1}$',
-               'H2CN303-202_F3_2':'H$_2$CN $3_{0,3}-2{0,2}$ F$_{3/2-3/2}$',
-               'H2CN322-221_F5_2':'H$_2$CN $3_{2,2}-2{2,1}$ F$_{5/2-3/2}$',
                'CH3OCHO17413-16412A':'CH$_3$OCHO $17_{4,13}-16_{4,12}$A',
                'CH3OCHO17314-16313E':'CH$_3$OCHO $17_{3,14}-16_{3,13}$E',
                'CH3OCHO17314-16313A':'CH$_3$OCHO $17_{3,14}-16_{3,13}$A',
@@ -60,30 +62,30 @@ labeldict = {
                'CH3OCH323321-23222EE':'CH$_3$OCH$_3$ $23_{3,21}-23_{2,22}$EE',
                'CH3OCH3_13013-12112':'CH$_3$OCH$_3$ $13_{0,13}-12_{1,12}$',
                'O13CS18-17':'O$^{13}$CS 18-17',
-               'N2D+_3-2': 'N$_2$D+ 3-2',
+               #'N2D+_3-2': 'N$_2$D+ 3-2',
 }
 
 def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,60]*u.km/u.s,
               sourcename='e2', filelist=glob.glob(paths.dpath('12m/cutouts/*e2e8*fits')),
-              suffix="", plotgrid=(5,8),
+              suffix="", plotgrid=(5,8), figsize=(12.8,8),
              ):
     nplots = np.product(plotgrid)
 
     for ii in (1,2):
-        if not all(pl.figure(ii, figsize=(12.8,8)).get_size_inches() == (12.8,8)):
+        if not all(pl.figure(ii, figsize=figsize).get_size_inches() == figsize):
             pl.close(ii)
 
-    fig1 = pl.figure(1, figsize=(12.8,8))
+    fig1 = pl.figure(1, figsize=figsize)
     fig1.clf()
     gs1 = gridspec.GridSpec(*plotgrid)
     gs1.update(wspace=0.0, hspace=0.0)
 
-    fig2 = pl.figure(2, figsize=(12.8,8))
+    fig2 = pl.figure(2, figsize=figsize)
     fig2.clf()
     gs2 = gridspec.GridSpec(*plotgrid)
     gs2.update(wspace=0.0, hspace=0.0)
 
-    fig3 = pl.figure(3, figsize=(12.8,8))
+    fig3 = pl.figure(3, figsize=figsize)
     fig3.clf()
     gs3 = gridspec.GridSpec(*plotgrid)
     gs3.update(wspace=0.0, hspace=0.0)
@@ -156,7 +158,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
 
         im1 = ax1.imshow(m0.value, vmin=-1.25*jtok.value, vmax=5.0*jtok.value,
                          cmap=pl.cm.bone_r, interpolation='nearest')
-        ax1.text(3, 0.87*m0.shape[0], label, fontsize=10)
+        ax1.text(3, 0.87*m0.shape[0], label, fontsize=9)
         ax1.set_xticklabels([])
         ax1.set_yticklabels([])
         ax1.set_aspect('equal')
@@ -165,7 +167,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
 
         im2 = ax2.imshow(m1.value, vmin=vrange[0].value, vmax=vrange[1].value,
                          cmap=pl.cm.viridis, interpolation='nearest')
-        ax2.text(3, 0.87*m0.shape[0], label, fontsize=10, color='w')
+        ax2.text(3, 0.87*m0.shape[0], label, fontsize=9, color='w')
         ax2.set_xticklabels([])
         ax2.set_yticklabels([])
         ax2.set_aspect('equal')
@@ -174,7 +176,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
 
         im3 = ax3.imshow(max.value, vmin=-10, vmax=150,
                          cmap=pl.cm.bone_r, interpolation='nearest')
-        ax3.text(3, 0.87*m0.shape[0], label, fontsize=10, color='r')
+        ax3.text(3, 0.87*m0.shape[0], label, fontsize=9, color='r')
         ax3.set_xticklabels([])
         ax3.set_yticklabels([])
         ax3.set_aspect('equal')
