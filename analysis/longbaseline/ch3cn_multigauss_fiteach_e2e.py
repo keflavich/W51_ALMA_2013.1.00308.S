@@ -1,4 +1,8 @@
-from ch3cn_fits import SpectralCube, pyspeckit, fits, u, np
+from ch3cn_fits import (SpectralCube, pyspeckit, fits, u, np, line_name_dict,
+                        line_aij, line_deg, frequencies, line_names, line_eu,
+                        fit_tex, nupper_of_kkms,
+                        fit_all_tex)
+from astropy import constants
 import scipy.stats
 import os
 import paths
@@ -41,7 +45,7 @@ else:
     guesses[1,:,:] = 2.0
     guesses[2:,absorption_mask] = -100
     guesses[2:,~absorption_mask] = 100
-    guesses[16,:,:] = med
+    guesses[16,:,:] = med * (med > 0)
 
     # For laptop
     mask = ((peak>(200*u.K+med)) & (skew > 0.1)) | ((nadir < (med-200*u.K)) & (skew < -0.1))
@@ -59,8 +63,52 @@ else:
     pcube.fiteach(fittype='ch3cn_spw', guesses=guesses, integral=False,
                   verbose_level=0, start_from_point=start_point,
                   use_neighbor_as_guess=True, position_order=position_order,
+                  limited=[(T,T)]*17,
+                  maxpars=[70,6]+[600]*15,
+                  minpars=[50,0.1]+[-600]*14+[0],
                   fixed=[F]*17,
                   signal_cut=0,
                   maskmap=mask,
                   errmap=err.value, multicore=4)
     pcube.write_fit('e2e_multigauss_fits.fits', clobber=True)
+
+
+# do some rotational diagram things...
+ch3cn_inds = [ii for ii, name in enumerate(line_names)
+              if 'CH3CN' in name]
+ch3cn_freqs = np.array(frequencies)[ch3cn_inds]
+ch3cn_energy = ([line_eu[name] for name in line_names if 'CH3CN' in name]*u.erg).to(u.K, u.temperature_energy())
+ch3cn_degs = [line_deg[name] for name in line_names if 'CH3CN' in name]
+ch3cn_aij = [10**line_aij[name] for name in line_names if 'CH3CN' in name]
+
+# CH3CN cube is in K km/s
+ch3cn_cube = pcube.parcube[np.array(ch3cn_inds)+2,:,:] * np.sqrt(2*np.pi) * pcube.parcube[1,:,:]
+# but for absorption lines, we want the positive component, so we subtract the
+# (negative) flux from the background
+background_integral = pcube.parcube[-1,:,:] * np.sqrt(2*np.pi) * pcube.parcube[1,:,:]
+absorption_mask = ch3cn_cube[0,:,:] < 0
+ch3cn_cube[:,absorption_mask] = background_integral[absorption_mask] - ch3cn_cube[:,absorption_mask]
+
+amp_errs = pcube.errcube[np.array(ch3cn_inds)+2,:,:]
+sigma_err = pcube.errcube[1,:,:]
+amps = pcube.parcube[np.array(ch3cn_inds)+2,:,:]
+sigma = pcube.parcube[1,:,:]
+ch3cn_errs = (2*np.pi*(sigma*np.abs(amps))**2*((amp_errs/amps)**2 + (sigma_err/sigma)**2))**0.5
+ch3cn_pcube = pyspeckit.Cube(cube=ch3cn_cube, error=ch3cn_errs,
+                             xarr=ch3cn_energy)
+
+# single spec example
+ii = 75
+jj = 75
+fit_tex(ch3cn_energy, nupper_of_kkms(ch3cn_cube[:,ii,jj], ch3cn_freqs,
+                                     ch3cn_aij, ch3cn_degs).value,
+        errors=nupper_of_kkms(ch3cn_errs[:,ii,jj], ch3cn_freqs, ch3cn_aij,
+                              ch3cn_degs).value,
+        plot=True
+       )
+
+tmap,Nmap = fit_all_tex(xaxis=ch3cn_energy, cube=ch3cn_cube,
+                        cubefrequencies=ch3cn_freqs,
+                        degeneracies=ch3cn_degs,
+                        einsteinAij=ch3cn_aij,
+                        errorcube=ch3cn_errs,)

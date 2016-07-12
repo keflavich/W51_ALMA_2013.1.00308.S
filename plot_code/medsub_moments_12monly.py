@@ -70,6 +70,7 @@ cont_percentiles = collections.defaultdict(lambda: 50)
 # these lines almost intersect with SO, causing problems near outflows
 cont_percentiles['CH3OH23519-22617'] = 10
 cont_percentiles['CH3OH25322-24420'] = 10
+cont_percentiles['CH3OH18315-17414'] = 10
 
 def dpath(x):
     return os.path.join("./",x)

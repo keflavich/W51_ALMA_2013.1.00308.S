@@ -3,6 +3,7 @@ copied from Sgr B2
 """
 import numpy as np
 import pyspeckit
+from astropy.utils.console import ProgressBar
 from pyspeckit.spectrum.models import model
 from pyspeckit.spectrum.models import lte_molecule
 from spectral_cube import SpectralCube
@@ -11,10 +12,12 @@ from astropy import constants
 from astropy import log
 from astropy.io import fits
 from astroquery.splatalogue import Splatalogue
+from astropy import modeling
 
 from vamdclib import nodes
 from vamdclib import request as r
 from vamdclib import specmodel as m
+from vamdclib import specmodel
 
 tbl = Splatalogue.query_lines(210*u.GHz, 235*u.GHz, chemical_name='CH3CN',
                               energy_max=1840, energy_type='eu_k')
@@ -55,6 +58,7 @@ ch3cn_inchikey = ch3cn.InChIKey
 query_string = "SELECT ALL WHERE VAMDCSpeciesID='%s'" % ch3cn.VAMDCSpeciesID
 request.setquery(query_string)
 result = request.dorequest()
+vamdc_result = result
 
 
 
@@ -102,20 +106,162 @@ def ch3cn_model(xarr, vcen, width, tex, column, background=None, tbg=2.73):
         return background-model
     return model
 
+def nupper_of_kkms(kkms, freq, Aul, degeneracies):
+    """ Derived directly from pyspeckit eqns..."""
+    freq = u.Quantity(freq, u.GHz)
+    Aul = u.Quantity(Aul, u.Hz)
+    kkms = u.Quantity(kkms, u.K*u.km/u.s)
+    #nline = 1.95e3 * freq**2 / Aul * kkms
+    nline = 8 * np.pi * freq * constants.k_B / constants.h / Aul / constants.c**2
+    # term2 = np.exp(-constants.h*freq/(constants.k_B*Tex)) -1
+    # term2 -> kt / hnu
+    # kelvin-hertz
+    Khz = (kkms * (freq/constants.c)).to(u.K * u.MHz)
+    return (nline * Khz / degeneracies).to(u.cm**-2)
+
+def fit_tex(eupper, nupperoverg, errors=None, verbose=False, plot=False):
+    """
+    Fit the Boltzmann diagram
+    """
+    model = modeling.models.Linear1D()
+    #fitter = modeling.fitting.LevMarLSQFitter()
+    fitter = modeling.fitting.LinearLSQFitter()
+    # ignore negatives
+    good = nupperoverg > 0
+    if good.sum() < len(nupperoverg)/2.:
+        return 0*u.cm**-2, 0*u.K, 0, 0
+    if errors is not None:
+        weights = 1/errors**2
+    else:
+        weights=None
+    result = fitter(model, eupper[good], np.log(nupperoverg[good]),
+                    weights=weights[good])
+    tex = -1./result.slope*u.K
+
+    assert not np.isnan(tex)
+
+    partition_func = specmodel.calculate_partitionfunction(vamdc_result.data['States'],
+                                                           temperature=tex.value)[ch3cn.Id]
+    Q_rot = partition_func
+
+    Ntot = np.exp(result.intercept + np.log(Q_rot)) * u.cm**-2
+
+    if verbose:
+        print(("Tex={0}, Ntot={1}, Q_rot={2}".format(tex, Ntot, Q_rot)))
+
+    if plot:
+        import pylab as pl
+        L, = pl.plot(eupper, np.log10(nupperoverg), 'o')
+        xax = np.array([0, eupper.max().value])
+        line = (xax*result.slope.value +
+                result.intercept.value)
+        pl.plot(xax, np.log10(np.exp(line)), '-', color=L.get_color(),
+                label='$T={0:0.1f} \log(N)={1:0.1f}$'.format(tex, np.log10(Ntot.value)))
+
+    return Ntot, tex, result.slope, result.intercept
+
+def fit_all_tex(xaxis, cube, cubefrequencies, degeneracies,
+                einsteinAij,
+                errorcube=None,
+                replace_bad=False):
+    """
+    Parameters
+    ----------
+    replace_bad : bool
+        Attempt to replace bad (negative) values with their upper limits?
+    """
+
+    tmap = np.empty(cube.shape[1:])
+    Nmap = np.empty(cube.shape[1:])
+
+    yy,xx = np.indices(cube.shape[1:])
+    pb = ProgressBar(xx.size)
+    count=0
+
+    for ii,jj in (zip(yy.flat, xx.flat)):
+        if any(np.isnan(cube[:,ii,jj])):
+            tmap[ii,jj] = np.nan
+        else:
+            if replace_bad:
+                neg = cube[:,ii,jj] <= 0
+                cube[neg,ii,jj] = replace_bad
+            nuppers = nupper_of_kkms(cube[:,ii,jj], cubefrequencies,
+                                     einsteinAij, degeneracies)
+            if errorcube is not None:
+                enuppers = nupper_of_kkms(errorcube[:,ii,jj], cubefrequencies,
+                                          einsteinAij, degeneracies)
+            fit_result = fit_tex(xaxis, nuppers.value, errors=enuppers.value)
+            tmap[ii,jj] = fit_result[1].value
+            Nmap[ii,jj] = fit_result[0].value
+        pb.update(count)
+        count+=1
+
+    return tmap,Nmap
+
+#def ch3cn_noline_model(xarr, tex, column, width=1*u.km/u.s, tbg=2.73):
+#    """
+#    Model for the integrated CH3CN line parameters
+#    (fitting the integrated lines independently from the gaussians
+#    prevents the model from underestimating line profiles)
+#    """
+#
+#    if hasattr(tex,'unit'):
+#        tex = tex.value
+#    if hasattr(tbg,'unit'):
+#        tbg = tbg.value
+#    if hasattr(column, 'unit'):
+#        column = column.value
+#    if column < 25:
+#        column = 10**column
+#
+#    model = np.zeros_like(xarr).value
+#
+#    freqs_ = freqs.to(u.Hz).value
+#
+#    Q = m.calculate_partitionfunction(result.data['States'],
+#                                      temperature=tex)[ch3cn.Id]
+#
+#    for voff, A, g, nu, eu in zip(vdiff, aij, deg, freqs_, EU):
+#        tau_per_dnu = lte_molecule.line_tau_cgs(tex,
+#                                                column,
+#                                                Q,
+#                                                g,
+#                                                nu,
+#                                                eu,
+#                                                10**A)
+#
+#        # jnu in kelvin
+#        jnu_tex = lte_molecule.Jnu_cgs(nu, tex)
+#        jnu_tbg = lte_molecule.Jnu_cgs(nu, tbg)
+#
+#        # ii...
+#        model[ii] = (jnu_tex-jnu_tbg)*(1-np.exp(-tau_per_dnu))
+#
+#    return model
+
+line_names = ["HNCO 1019_918", "CH3CN 12_7", "CH3CN 12_6", "CH13CN 12_3",
+              "CH13CN 12_2", "CH3CN 12_5", "unknown",
+              "CH13CN 12_1", "CH13CN 12_0",
+              "CH3CN 12_4",
+              "CH3CN 12_3", "CH3CN 12_2", "CH3CN 12_1", "CH3CN 12_0"]
+frequencies = [220.58476, 220.53933,  220.59443, 220.59999, 220.62114,
+               220.64109, 220.619030262,
+               220.63384,
+               220.63807,
+               220.67929, 220.70902, 220.73026,
+               220.74301, 220.74726]
+line_name_dict = dict(zip(line_names, frequencies))
+
+line_eu = {line: EU[np.argmin(np.abs(freqs-line_name_dict[line]*u.GHz))]
+           for line in line_name_dict if 'CH3CN' in line}
+line_deg = {line: deg[np.argmin(np.abs(freqs-line_name_dict[line]*u.GHz))]
+            for line in line_name_dict if 'CH3CN' in line}
+line_aij = {line: aij[np.argmin(np.abs(freqs-line_name_dict[line]*u.GHz))]
+            for line in line_name_dict if 'CH3CN' in line}
+
 def multigaussian_model(xarr, vcen, width, amp1, amp2, amp3, amp4, amp5, amp6,
                         amp7, amp8, amp9, amp10, amp11, amp12, amp13, amp14,
                         background=0.0):
-    line_names = ["HNCO 1019_918", "CH3CN 12_7", "CH3CN 12_6", "CH13CN 12_3",
-                  "CH13CN 12_2", "CH3CN 12_5", "unknown",
-                  "CH13CN 12_1", "CH13CN 12_0",
-                  "CH3CN 12_4",
-                  "CH3CN 12_3", "CH3CN 12_2", "CH3CN 12_1", "CH3CN 12_0"]
-    frequencies = [220.58476, 220.53933,  220.59443, 220.59999, 220.62114,
-                   220.64109, 220.619030262,
-                   220.63384,
-                   220.63807,
-                   220.67929, 220.70902, 220.73026,
-                   220.74301, 220.74726]
     log.debug("lines = {0}".format(zip(line_names, frequencies)))
 
     xarr_frq = xarr.as_unit(u.GHz).value

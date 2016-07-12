@@ -1,11 +1,16 @@
 import paths
+import itertools
 from spectral_cube import SpectralCube
 import numpy as np
+import radio_beam
+from astropy import coordinates
 from astropy import units as u
 from astropy import constants
 from astropy.utils.console import ProgressBar
+from astropy import wcs
 from astropy import log
 from astropy.io import fits
+from astropy.nddata import Cutout2D
 
 from pyspeckit.spectrum.models import lte_molecule
 
@@ -49,8 +54,10 @@ line_strengths_smu2 = u.Quantity([(frq**-3 * deg / 1.16395e-20 * Aij).value
 def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
                        vrange=[51,60]*u.km/u.s, sourcename='e2',
                        filelist=glob.glob(paths.dpath('12m/cutouts/*e2e8*fits')),
+                       source=None, radius=None,
                        chem_name='CH3OH',
                       ):
+    assert filelist
 
     maps = {}
     energies = {}
@@ -66,20 +73,34 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
         if 'temperature' in fn or 'column' in fn:
             continue
 
-        cube = SpectralCube.read(fn)[:,yslice,xslice]
-        bm = cube.beams[0]
-        #jtok = bm.jtok(cube.wcs.wcs.restfrq*u.Hz)
-        cube = cube.to(u.K, bm.jtok_equiv(cube.wcs.wcs.restfrq*u.Hz))
+        if 'moment0' in fn:
+            m0 = fits.getdata(fn)
+            header = fits.getheader(fn)
+            cutout = Cutout2D(m0, source, 2*radius, wcs=wcs.WCS(header)).data
+            m0 = cutout
+            try:
+                beam = radio_beam.Beam.from_fits_header(header)
+                jtok = beam.jtok(header['RESTFRQ']*u.Hz).value
+            except:
+                jtok = 222. # approximated 0.32x0.34 at 225 GHz
 
-        slab = cube.spectral_slab(*vrange)
-        cube.beam_threshold = 1
-        #contguess = cube.spectral_slab(0*u.km/u.s, 40*u.km/u.s).percentile(50, axis=0)
-        #contguess = cube.spectral_slab(70*u.km/u.s, 100*u.km/u.s).percentile(50, axis=0)
-        mask = (cube.spectral_axis<40*u.km/u.s) | (cube.spectral_axis > 75*u.km/u.s)
-        contguess = cube.with_mask(mask[:,None,None]).percentile(30, axis=0)
-        slabsub = (slab-contguess)
-        slabsub.beam_threshold = 0.15
-        m0 = slabsub.moment0()
+            m0 = m0 * jtok
+        else:
+            cube = SpectralCube.read(fn)[:,yslice,xslice]
+            bm = cube.beams[0]
+            #jtok = bm.jtok(cube.wcs.wcs.restfrq*u.Hz)
+            cube = cube.to(u.K, bm.jtok_equiv(cube.wcs.wcs.restfrq*u.Hz))
+
+            slab = cube.spectral_slab(*vrange)
+            cube.beam_threshold = 1
+            #contguess = cube.spectral_slab(0*u.km/u.s, 40*u.km/u.s).percentile(50, axis=0)
+            #contguess = cube.spectral_slab(70*u.km/u.s, 100*u.km/u.s).percentile(50, axis=0)
+            mask = (cube.spectral_axis<40*u.km/u.s) | (cube.spectral_axis > 75*u.km/u.s)
+            contguess = cube.with_mask(mask[:,None,None]).percentile(30, axis=0)
+            slabsub = (slab-contguess)
+            slabsub.beam_threshold = 0.15
+            m0 = slabsub.moment0()
+            header = m0.hdu.header
 
         label = linere.search(fn).groups()[0]
         frq = name_to_freq[label]
@@ -113,7 +134,9 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
     indices = [indices[k] for k in keys]
     degeneracies = [degeneracies[k] for k in keys]
 
-    return xaxis,cube,maps,energies,frequencies,indices,degeneracies,m0.hdu.header
+    assert xaxis.size == cube.shape[0]
+
+    return xaxis,cube,maps,energies,frequencies,indices,degeneracies,header
 
 
 #def Nu_thin_hightex(flux, line_strength, freq, fillingfactor=1.0, tau=None):
@@ -190,7 +213,11 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False):
     model = modeling.models.Linear1D()
     #fitter = modeling.fitting.LevMarLSQFitter()
     fitter = modeling.fitting.LinearLSQFitter()
-    result = fitter(model, eupper, np.log(nupperoverg))
+    # ignore negatives
+    good = nupperoverg > 0
+    if good.sum() < len(nupperoverg)/2.:
+        return 0*u.cm**-2, 0*u.K, 0, 0
+    result = fitter(model, eupper[good], np.log(nupperoverg[good]))
     tex = -1./result.slope*u.K
 
     partition_func = specmodel.calculate_partitionfunction(ch3oh.data['States'],
@@ -295,7 +322,14 @@ def test_roundtrip(cubefrequencies=[218.44005, 234.68345, 220.07849, 234.69847, 
     print("column = {0} (input was 1e15)".format(np.log10(col.value)))
 
 
-def fit_all_tex(xaxis, cube, cubefrequencies, indices, degeneracies):
+def fit_all_tex(xaxis, cube, cubefrequencies, indices, degeneracies,
+                replace_bad=False):
+    """
+    Parameters
+    ----------
+    replace_bad : bool
+        Attempt to replace bad (negative) values with their upper limits?
+    """
 
     tmap = np.empty(cube.shape[1:])
     Nmap = np.empty(cube.shape[1:])
@@ -308,6 +342,9 @@ def fit_all_tex(xaxis, cube, cubefrequencies, indices, degeneracies):
         if any(np.isnan(cube[:,ii,jj])):
             tmap[ii,jj] = np.nan
         else:
+            if replace_bad:
+                neg = cube[:,ii,jj] <= 0
+                cube[neg,ii,jj] = replace_bad
             nuppers = nupper_of_kkms(cube[:,ii,jj], cubefrequencies,
                                      einsteinAij[indices], degeneracies)
             fit_result = fit_tex(xaxis, nuppers.value)
@@ -319,13 +356,97 @@ def fit_all_tex(xaxis, cube, cubefrequencies, indices, degeneracies):
     return tmap,Nmap
 
 if __name__ == "__main__":
+    import pylab as pl
+    pl.matplotlib.rc_file('pubfiguresrc')
+
+    sources = {'e2': coordinates.SkyCoord('19:23:43.963', '+14:30:34.53',
+                                          frame='fk5', unit=(u.hour, u.deg)),
+               'e8': coordinates.SkyCoord('19:23:43.891', '+14:30:28.13',
+                                          frame='fk5', unit=(u.hour, u.deg)),
+               'ALMAmm14': coordinates.SkyCoord('19:23:38.571', '+14:30:41.80',
+                                                frame='fk5', unit=(u.hour,
+                                                                   u.deg)),
+               'north': coordinates.SkyCoord('19:23:39.906', '+14:31:05.33',
+                                             frame='fk5', unit=(u.hour,
+                                                                u.deg)),
+              }
+    radii = {'e2':2.5*u.arcsec,
+             'e8':3.0*u.arcsec,
+             'ALMAmm14':2.1*u.arcsec,
+             'north':4.0*u.arcsec,
+            }
+
+    # use precomputed moments
+    for sourcename, region in (('e2','e2e8'), ('e8','e2e8'), ('north','north'),
+                               ('ALMAmm14','ALMAmm14'),):
+                                
+        _ = cutout_id_chem_map(source=sources[sourcename],
+                               radius=radii[sourcename],
+                               sourcename=sourcename,
+                               filelist=glob.glob(paths.dpath('12m/moments/*medsub_moment0.fits')),
+                               chem_name='.CH3OH', # use dot to exclude 13CH3OH
+                              )
+        xaxis,cube,maps,energies,cubefrequencies,indices,degeneracies,header = _
+
+        pl.figure(2).clf()
+        for ii,(rdx,rdy) in enumerate(itertools.product((.25,.50,.75),(.25,.50,.75))):
+            rdx = int(rdx*cube.shape[2])
+            rdy = int(rdy*cube.shape[1])
+            pl.subplot(3,3,ii+1)
+            fit_tex(xaxis, nupper_of_kkms(cube[:,rdy,rdx], cubefrequencies,
+                                          einsteinAij[indices],
+                                          degeneracies).value, plot=True)
+            pl.ylim(11, 15)
+            #pl.annotate("{0:d},{1:d}".format(rdx,rdy), (0.5, 0.85), xycoords='axes fraction',
+            #            horizontalalignment='center')
+            if ii % 3 == 0:
+                pl.ylabel("log($N_u / g_u$)")
+                if ii != 6:
+                    ticks = pl.gca().get_yaxis().get_ticklocs()
+                    pl.gca().get_yaxis().set_ticks(ticks[1:])
+            else:
+                pl.gca().get_yaxis().set_ticklabels([])
+            if ii >= 6:
+                pl.xlabel("$E_u$ [K]")
+                tl = pl.gca().get_yaxis().get_ticklabels()
+                if ii == 8:
+                    pl.gca().get_xaxis().set_ticks((0,200,400,600,800))
+                else:
+                    pl.gca().get_xaxis().set_ticks((0,200,400,600))
+            else:
+                pl.gca().get_xaxis().set_ticklabels([])
+            pl.legend(loc='best', fontsize='small')
+        pl.subplots_adjust(hspace=0, wspace=0)
+        pl.savefig(paths.fpath("chemistry/ch3oh_rotation_diagrams_{0}.png".format(sourcename)))
+
+        tmap,Nmap = fit_all_tex(xaxis, cube, cubefrequencies, indices, degeneracies,
+                                replace_bad=0.065*221)
+
+        pl.figure(1).clf()
+        pl.imshow(tmap, vmin=0, vmax=600, cmap='hot')
+        cb = pl.colorbar()
+        cb.set_label("Temperature (K)")
+        pl.savefig(paths.fpath("chemistry/ch3oh_temperature_map_{0}.png".format(sourcename)))
+        pl.figure(3).clf()
+        pl.imshow(np.log10(Nmap), vmin=16, vmax=19, cmap='viridis')
+        cb = pl.colorbar()
+        cb.set_label("log N(CH$_3$OH)")
+        pl.savefig(paths.fpath("chemistry/ch3oh_column_map_{0}.png".format(sourcename)))
+
+        hdu = fits.PrimaryHDU(data=tmap, header=header)
+        hdu.writeto(paths.dpath('12m/moments/CH3OH_{0}_cutout_temperaturemap.fits'.format(sourcename)), clobber=True)
+
+        hdu = fits.PrimaryHDU(data=Nmap, header=header)
+        hdu.writeto(paths.dpath('12m/moments/CH3OH_{0}_cutout_columnmap.fits'.format(sourcename)), clobber=True)
+
+
 
 
     for sourcename, region, xslice, yslice, vrange, rdposns in (
-        ('e2','e2e8',(114,214),(367,467),(51,60),[(10,10),(60,84),]),
-        ('e8','e2e8',(119,239),(227,347),(52,63),[(10,60),(65,45),]),
-        ('north','north',(152,350),(31,231),(54,64),[(100,80),(75,80),]),
-        ('ALMAmm14','ALMAmm14',(80,180),(50,150),(58,67),[(65,40),(45,40),]),
+        #('e2','e2e8',(114,214),(367,467),(51,60),[(10,10),(60,84),]),
+        #('e8','e2e8',(119,239),(227,347),(52,63),[(10,60),(65,45),]),
+        #('north','north',(152,350),(31,231),(54,64),[(100,80),(75,80),]),
+        #('ALMAmm14','ALMAmm14',(80,180),(50,150),(58,67),[(65,40),(45,40),]),
     ):
 
         _ = cutout_id_chem_map(yslice=slice(*yslice), xslice=slice(*xslice),
@@ -335,8 +456,6 @@ if __name__ == "__main__":
                               )
         xaxis,cube,maps,energies,cubefrequencies,indices,degeneracies,header = _
 
-        import pylab as pl
-        pl.matplotlib.rc_file('pubfiguresrc')
 
         pl.figure(2).clf()
         for rdx,rdy in rdposns:
