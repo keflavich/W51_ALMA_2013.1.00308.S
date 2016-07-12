@@ -98,8 +98,8 @@ ch3cn_pcube = pyspeckit.Cube(cube=ch3cn_cube, error=ch3cn_errs,
                              xarr=ch3cn_energy)
 
 # single spec example
-ii = 75
-jj = 75
+ii = 70
+jj = 70
 fit_tex(ch3cn_energy, nupper_of_kkms(ch3cn_cube[:,ii,jj], ch3cn_freqs,
                                      ch3cn_aij, ch3cn_degs).value,
         errors=nupper_of_kkms(ch3cn_errs[:,ii,jj], ch3cn_freqs, ch3cn_aij,

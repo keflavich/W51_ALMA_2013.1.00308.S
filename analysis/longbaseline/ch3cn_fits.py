@@ -151,7 +151,13 @@ def fit_tex(eupper, nupperoverg, errors=None, verbose=False, plot=False):
 
     if plot:
         import pylab as pl
-        L, = pl.plot(eupper, np.log10(nupperoverg), 'o')
+        if errors is not None:
+            L,_,_ = pl.errorbar(x=eupper.value, y=np.log10(nupperoverg),
+                                marker='o', linestyle='none',
+                                yerr=np.array([np.log10(nupperoverg)-np.log10(nupperoverg-errors),
+                                               np.log10(nupperoverg+errors)-np.log10(nupperoverg)]))
+        else:
+            L, = pl.plot(eupper, np.log10(nupperoverg), 'o')
         xax = np.array([0, eupper.max().value])
         line = (xax*result.slope.value +
                 result.intercept.value)

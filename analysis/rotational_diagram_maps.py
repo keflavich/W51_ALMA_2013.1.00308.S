@@ -359,6 +359,9 @@ if __name__ == "__main__":
     import pylab as pl
     pl.matplotlib.rc_file('pubfiguresrc')
 
+    detection_threshold_jykms = 0.065
+    approximate_jytok = 221
+
     sources = {'e2': coordinates.SkyCoord('19:23:43.963', '+14:30:34.53',
                                           frame='fk5', unit=(u.hour, u.deg)),
                'e8': coordinates.SkyCoord('19:23:43.891', '+14:30:28.13',
@@ -388,39 +391,68 @@ if __name__ == "__main__":
                               )
         xaxis,cube,maps,energies,cubefrequencies,indices,degeneracies,header = _
 
-        pl.figure(2).clf()
-        for ii,(rdx,rdy) in enumerate(itertools.product((.25,.50,.75),(.25,.50,.75))):
-            rdx = int(rdx*cube.shape[2])
-            rdy = int(rdy*cube.shape[1])
-            pl.subplot(3,3,ii+1)
-            fit_tex(xaxis, nupper_of_kkms(cube[:,rdy,rdx], cubefrequencies,
-                                          einsteinAij[indices],
-                                          degeneracies).value, plot=True)
+        pl.figure(2, figsize=(12,12)).clf()
+        sample_pos = np.linspace(0,1,7)[1:-1]
+        nx = len(sample_pos)
+        ny = len(sample_pos)
+        for ii,(spy,spx) in enumerate(itertools.product(sample_pos,sample_pos)):
+            rdx = int(spx*cube.shape[2])
+            rdy = int(spy*cube.shape[1])
+            plotnum = (nx*ny-(2*(ii//ny)*ny)+ii-ny)+1
+            pl.subplot(nx,ny,plotnum)
+            Ntot, tex, slope, intcpt = fit_tex(xaxis,
+                                               nupper_of_kkms(cube[:,rdy,rdx],
+                                                              cubefrequencies,
+                                                              einsteinAij[indices],
+                                                              degeneracies).value,
+                                               plot=True)
             pl.ylim(11, 15)
+            pl.xlim(0, 850)
             #pl.annotate("{0:d},{1:d}".format(rdx,rdy), (0.5, 0.85), xycoords='axes fraction',
             #            horizontalalignment='center')
-            if ii % 3 == 0:
+            pl.annotate("T={0:d}".format(int(tex.value)),
+                        (0.65, 0.85), xycoords='axes fraction',
+                        horizontalalignment='left', fontsize=12)
+            pl.annotate("N={0:0.1f}".format(np.log10(Ntot.value)),
+                        (0.65, 0.75), xycoords='axes fraction',
+                        horizontalalignment='left', fontsize=12)
+            pl.annotate("{0:0.2f},{1:0.2f}".format(spx,spy),
+                        (0.05, 0.05), xycoords='axes fraction',
+                        horizontalalignment='left', fontsize=12)
+
+            # show upper limits
+            pl.plot(xaxis,
+                    np.log10(nupper_of_kkms(detection_threshold_jykms*approximate_jytok,
+                                            cubefrequencies,
+                                            einsteinAij[indices],
+                                            degeneracies,).value),
+                    linestyle='none', marker='_', color='k',
+                    markeredgewidth=2, alpha=0.5)
+
+            if (plotnum-1) % ny == 0:
                 pl.ylabel("log($N_u / g_u$)")
-                if ii != 6:
+                if (plotnum-1) != (ny*(nx-1)):
                     ticks = pl.gca().get_yaxis().get_ticklocs()
                     pl.gca().get_yaxis().set_ticks(ticks[1:])
             else:
                 pl.gca().get_yaxis().set_ticklabels([])
-            if ii >= 6:
+            if (plotnum-1) >= (ny*(nx-1)):
                 pl.xlabel("$E_u$ [K]")
                 tl = pl.gca().get_yaxis().get_ticklabels()
-                if ii == 8:
-                    pl.gca().get_xaxis().set_ticks((0,200,400,600,800))
+                xax = pl.gca().get_xaxis()
+                if (plotnum-1) == (nx*ny-1):
+                    xax.set_ticks((0,200,400,600,800))
                 else:
-                    pl.gca().get_xaxis().set_ticks((0,200,400,600))
+                    xax.set_ticks((0,200,400,600))
+                xax.set_tick_params(labelsize=14)
             else:
                 pl.gca().get_xaxis().set_ticklabels([])
-            pl.legend(loc='best', fontsize='small')
+            #pl.legend(loc='best', fontsize='small')
         pl.subplots_adjust(hspace=0, wspace=0)
         pl.savefig(paths.fpath("chemistry/ch3oh_rotation_diagrams_{0}.png".format(sourcename)))
 
         tmap,Nmap = fit_all_tex(xaxis, cube, cubefrequencies, indices, degeneracies,
-                                replace_bad=0.065*221)
+                                replace_bad=detection_threshold_jykms*approximate_jytok)
 
         pl.figure(1).clf()
         pl.imshow(tmap, vmin=0, vmax=600, cmap='hot')
