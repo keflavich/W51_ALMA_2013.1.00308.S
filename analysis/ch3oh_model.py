@@ -185,11 +185,12 @@ if __name__ == "__main__":
     import pylab as pl
     import line_to_image_list
     target = 'SelectedPixel{0}'
-    for selreg, tem, col, vel, width in ((1, 401, 5.1e18, 55.6, 5.3),
-                                         (2, 220, 1.3e18, 55.6, 5.3),
-                                         (3, 167, 5.7e17, 53, 5.3),
-                                         (4, 127, 1.7e17, 53, 5.3),
-                                        ):
+    for selreg, tem, col, vel, width, ylim in (
+        (1, 401, 5.1e18, 55.6, 5.3, (-5,100)),
+        (2, 220, 1.3e18, 55.6, 5.3, (-5,100)),
+        (3, 167, 5.7e17, 53.0, 5.3, (-5,100)),
+        (4, 127, 1.7e17, 54.0, 5.3, (-5,60)),
+       ):
 
         speclist = [pyspeckit.Spectrum(fn) for fn in
                     glob.glob(paths.spath("*{0}_spw*fits".format(target.format(selreg))))]
@@ -221,9 +222,28 @@ if __name__ == "__main__":
             spectra.plotter(xmin=fcen-dx, xmax=fcen+dx,
                             axis=ax)
             spectra.specfit.plot_model([vel, width/2.35, tem, col])
-            ax.set_ylim(0, 100)
+            ax.set_ylim(*ylim)
             ax.annotate(linename, (0.7, 0.85), horizontalalignment='left',
                         xycoords='axes fraction')
 
             pl.savefig(paths.fpath("chemistry/ch3oh_rotdiagram_fits_SelectedPixel{0}.png"
                                    .format(selreg)))
+
+        speclist = [pyspeckit.Spectrum(fn) for fn in
+                    glob.glob(paths.merge_spath("*{0}_spw*7m12m_hires*fits".format(target.format(selreg))))]
+        for sp in speclist:
+            sp.data -= np.nanpercentile(sp.data, 10)
+        spectra = pyspeckit.Spectra(speclist)
+        beam = radio_beam.Beam.from_fits_header(spectra.header)
+        # "baseline"
+        #spectra.data -= np.nanpercentile(spectra.data, 10)
+        spectra.data *= beam.jtok(spectra.xarr)
+        spectra.unit='K'
+
+        spectra.plotter(figure=selreg+8)
+
+        del spectra.specfit.Registry.multifitters['ch3oh']
+        spectra.specfit.Registry.add_fitter('ch3oh', ch3oh_fitter(), 4)
+        spectra.specfit.fitter = spectra.specfit.Registry.multifitters['ch3oh']
+
+        spectra.specfit.plot_model([vel, width/2.35, tem, col])

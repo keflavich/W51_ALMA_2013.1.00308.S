@@ -63,13 +63,14 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
 
     big_filename = '{1}_{0}{2}_lines.fits'.format(spw, fntemplate, fnsuffix)
 
+    header_fn = glob.glob('piece_of_{1}_cube{2}.{0}.channels0to*.{3}'.format(spw, fntemplate, fnsuffix, filesuffix))
+    if len(header_fn) != 1:
+        raise ValueError("Found too many or too few matches: {0}".format(header_fn))
+    else:
+        header_fn = header_fn[0]
+
     # First set up an empty file
     if not os.path.exists(big_filename):
-        header_fn = glob.glob('piece_of_{1}_cube{2}.{0}.channels0to*.{3}'.format(spw, fntemplate, fnsuffix, filesuffix))
-        if len(header_fn) != 1:
-            raise ValueError("Found too many or too few matches: {0}".format(header_fn))
-        else:
-            header_fn = header_fn[0]
 
         log.info("Creating new large cube from {0}".format(header_fn))
 
@@ -173,7 +174,12 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
                 assert ind1 <= fits.getdata(fn).shape[0]
 
         if slices is None and minimize:
-            cube0 = SpectralCube.read(fn)
+            # this is wrong, but I'm not ready to delete it yet
+            #cube0 = SpectralCube.read(fn)
+            #slices = cube0.subcube_slices_from_mask(cube0.mask,
+            #                                        spatial_only=True)
+
+            cube0 = SpectralCube.read(header_fn)
             slices = cube0.subcube_slices_from_mask(cube0.mask,
                                                     spatial_only=True)
         elif slices is None:
@@ -228,10 +234,10 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
                 hdul[1].data[ind0:ind1] = beamtable.data[dataind0:dataind1]
 
             if data[dataind0:dataind1, slices[1], slices[2]].shape != hdul[0].data[ind0:ind1,:,:].shape:
+                bad[fn] = "bigshape {0}, inpshape {1}".format(data[dataind0:dataind1, slices[1], slices[2]].shape,
+                                                              hdul[0].data[ind0:ind1,:,:].shape)
                 if skip_failures:
                     print("{0} has wrong shape".format(fn))
-                    bad[fn] = "bigshape {0}, inpshape {1}".format(data[dataind0:dataind1, slices[1], slices[2]].shape,
-                                                                  hdul[0].data[ind0:ind1,:,:].shape)
                     continue
                 else:
                     raise ValueError("{0} has wrong shape".format(fn))
