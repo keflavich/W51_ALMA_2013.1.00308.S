@@ -80,7 +80,8 @@ def ch3oh_model(xarr, vcen, width, tex, column, background=None, tbg=2.73):
     # assume equal-width channels
     #kwargs = dict(rest=ref_freq)
     #equiv = u.doppler_radio(**kwargs)
-    channelwidth = np.abs(xarr[1].to(u.Hz, ) - xarr[0].to(u.Hz, )).value
+    #channelwidth = np.abs(xarr[1].to(u.Hz, ) - xarr[0].to(u.Hz, )).value
+    #channelwidth = xarr.as_unit(u.Hz).dxarr
     #velo = xarr.to(u.km/u.s, equiv).value
     freq = xarr.to(u.Hz).value # same unit as nu below
     model = np.zeros_like(xarr).value
@@ -91,18 +92,21 @@ def ch3oh_model(xarr, vcen, width, tex, column, background=None, tbg=2.73):
                                               temperature=tex)[ch3oh.Id]
 
     for A, g, nu, eu in zip(aij, deg, freqs_, EU):
-        tau_per_dnu = lte_molecule.line_tau_cgs(tex,
-                                                column,
-                                                Q,
-                                                g,
-                                                nu,
-                                                eu,
-                                                10**A)
+        taudnu = lte_molecule.line_tau_cgs(tex,
+                                           column,
+                                           Q,
+                                           g,
+                                           nu,
+                                           eu,
+                                           10**A)
         width_dnu = width / ckms * nu
-        s = np.exp(-(freq-(1-vcen/ckms)*nu)**2/(2*width_dnu**2))*tau_per_dnu/channelwidth
+        effective_linewidth_dnu = (2 * np.pi)**0.5 * width_dnu
+        fcen = (1 - vcen/ckms) * nu
+        tauspec = (np.exp(-(freq - fcen)**2 / (2 * width_dnu**2)) *
+                   taudnu/effective_linewidth_dnu)
         jnu = (lte_molecule.Jnu_cgs(nu, tex)-lte_molecule.Jnu_cgs(nu, tbg))
 
-        model = model + jnu*(1-np.exp(-s))
+        model = model + jnu*(1-np.exp(-tauspec))
 
     if background is not None:
         return background-model
@@ -145,19 +149,19 @@ def ch3oh_absorption_fitter():
 pyspeckit.spectrum.fitters.default_Registry.add_fitter('ch3oh_absorption',ch3oh_absorption_fitter(),5)
 
 
-if __name__ == "__main__" and False:
+if __name__ == "__main__":
 
     import glob
     import pyspeckit
     import paths
     import radio_beam
 
-    target = 'e2nw'
+    target = 'e2e'
 
-    spectra = pyspeckit.Spectra(glob.glob(paths.spath("*{0}*fits".format(target))))
+    spectra = pyspeckit.Spectra(glob.glob(paths.spath("*{0}_spw*fits".format(target))))
     beam = radio_beam.Beam.from_fits_header(spectra.header)
     # "baseline"
-    spectra.data -= 0.15
+    spectra.data -= np.nanpercentile(spectra.data, 10)
     spectra.data *= beam.jtok(spectra.xarr)
 
     spectra.plotter()
@@ -165,7 +169,7 @@ if __name__ == "__main__" and False:
     spectra.specfit.Registry.add_fitter('ch3oh', ch3oh_fitter(), 4)
     spectra.specfit(fittype='ch3oh', guesses=[55, 4, 200, 5e15],
                     limitedmin=[True]*4, limitedmax=[True]*4, limits=[(50,70),
-                                                                      (1,8),
+                                                                      (1,4),
                                                                       (20,
                                                                        1000),
                                                                       (1e13,
@@ -177,3 +181,49 @@ if __name__ == "__main__" and False:
                                          for x in slaim['Resolved QNs'][ok]],
                              line_xvals=freqs[ok],
                              velocity_offset=55.626*u.km/u.s)
+
+    import pylab as pl
+    import line_to_image_list
+    target = 'SelectedPixel{0}'
+    for selreg, tem, col, vel, width in ((1, 401, 5.1e18, 55.6, 5.3),
+                                         (2, 220, 1.3e18, 55.6, 5.3),
+                                         (3, 167, 5.7e17, 53, 5.3),
+                                         (4, 127, 1.7e17, 53, 5.3),
+                                        ):
+
+        speclist = [pyspeckit.Spectrum(fn) for fn in
+                    glob.glob(paths.spath("*{0}_spw*fits".format(target.format(selreg))))]
+        for sp in speclist:
+            sp.data -= np.nanpercentile(sp.data, 10)
+        spectra = pyspeckit.Spectra(speclist)
+        beam = radio_beam.Beam.from_fits_header(spectra.header)
+        # "baseline"
+        #spectra.data -= np.nanpercentile(spectra.data, 10)
+        spectra.data *= beam.jtok(spectra.xarr)
+        spectra.unit='K'
+
+        spectra.plotter(figure=selreg)
+
+        del spectra.specfit.Registry.multifitters['ch3oh']
+        spectra.specfit.Registry.add_fitter('ch3oh', ch3oh_fitter(), 4)
+        spectra.specfit.fitter = spectra.specfit.Registry.multifitters['ch3oh']
+
+        spectra.specfit.plot_model([vel, width/2.35, tem, col])
+
+        pl.figure(4+selreg).clf()
+        spectra.xarr.convert_to_unit(u.GHz)
+        linenamecen = [(x[0],float(x[1].strip('GHz'))) for x in line_to_image_list.line_to_image_list
+                       if 'CH3OH' in x[0][:5]]
+        for ii,(linename,linecen) in enumerate(linenamecen):
+            ax = pl.subplot(3,3,ii+1)
+            fcen = (1-vel/constants.c.to(u.km/u.s).value)*linecen
+            dx = width/constants.c.to(u.km/u.s).value * linecen*3
+            spectra.plotter(xmin=fcen-dx, xmax=fcen+dx,
+                            axis=ax)
+            spectra.specfit.plot_model([vel, width/2.35, tem, col])
+            ax.set_ylim(0, 100)
+            ax.annotate(linename, (0.7, 0.85), horizontalalignment='left',
+                        xycoords='axes fraction')
+
+            pl.savefig(paths.fpath("chemistry/ch3oh_rotdiagram_fits_SelectedPixel{0}.png"
+                                   .format(selreg)))

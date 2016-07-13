@@ -76,8 +76,8 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
         if 'moment0' in fn:
             m0 = fits.getdata(fn)
             header = fits.getheader(fn)
-            cutout = Cutout2D(m0, source, 2*radius, wcs=wcs.WCS(header)).data
-            m0 = cutout
+            cutout = Cutout2D(m0, source, 2*radius, wcs=wcs.WCS(header))
+            m0 = cutout.data
             try:
                 beam = radio_beam.Beam.from_fits_header(header)
                 jtok = beam.jtok(header['RESTFRQ']*u.Hz).value
@@ -85,6 +85,7 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
                 jtok = 222. # approximated 0.32x0.34 at 225 GHz
 
             m0 = m0 * jtok
+            header = cutout.wcs.to_header()
         else:
             cube = SpectralCube.read(fn)[:,yslice,xslice]
             bm = cube.beams[0]
@@ -517,3 +518,37 @@ if __name__ == "__main__":
 
         hdu = fits.PrimaryHDU(data=Nmap, header=header)
         hdu.writeto(paths.dpath('12m/cutouts/CH3OH_{0}_cutout_columnmap.fits'.format(sourcename)), clobber=True)
+
+    import pyregion
+    pixels = pyregion.open(paths.rpath('three_e2_pixels.reg'))
+    sourcename='e2'
+    _ = cutout_id_chem_map(source=sources[sourcename],
+                           radius=radii[sourcename],
+                           sourcename=sourcename,
+                           filelist=glob.glob(paths.dpath('12m/moments/*medsub_moment0.fits')),
+                           chem_name='.CH3OH', # use dot to exclude 13CH3OH
+                          )
+    xaxis,cube,maps,energies,cubefrequencies,indices,degeneracies,header = _
+    mywcs = wcs.WCS(header)
+    replace_bad = dthresh[sourcename]
+
+    pl.figure(4).clf()
+    for reg in pixels:
+        coord = coordinates.SkyCoord(reg.coord_list[0], reg.coord_list[1],
+                                     frame='fk5', unit=(u.deg, u.deg))
+        xpix, ypix = mywcs.celestial.wcs_world2pix(coord.ra.deg, coord.dec.deg,
+                                                   0)
+
+        uplims = nupper_of_kkms(replace_bad, cubefrequencies,
+                                einsteinAij[indices], degeneracies,)
+        print(reg.attr[1]['text'])
+        Ntot, tex, slope, intcpt = fit_tex(xaxis,
+                                           nupper_of_kkms(cube[:,int(ypix),int(xpix)],
+                                                          cubefrequencies,
+                                                          einsteinAij[indices],
+                                                          degeneracies).value,
+                                           uplims=uplims.value,
+                                           verbose=True,
+                                           plot=True)
+        pl.ylim(11, 15)
+        pl.xlim(0, 850)

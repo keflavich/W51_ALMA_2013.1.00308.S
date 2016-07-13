@@ -120,7 +120,7 @@ def ch3ocho_model(xarr, vcen, width, tex, column, background=None, tbg=2.73):
                                                 eu,
                                                 10**A)
         width_dnu = width / ckms * nu
-        s = np.exp(-(freq-(1-vcen/ckms)*nu)**2/(2*width_dnu**2))*tau_per_dnu/channelwidth
+        s = np.exp(-(freq-(1-vcen/ckms)*nu)**2/(2*width_dnu**2))*tau_per_dnu/((2*np.pi)**0.5*width_dnu)
         jnu = (lte_molecule.Jnu_cgs(nu, tex)-lte_molecule.Jnu_cgs(nu, tbg))
 
         model = model + jnu*(1-np.exp(-s))
@@ -203,12 +203,12 @@ if __name__ == "__main__" and False:
     import radio_beam
     import pylab as pl
 
-    target = 'e2nw'
+    target = 'e2e'
 
-    spectra = pyspeckit.Spectra(glob.glob(paths.spath("*{0}*fits".format(target))))
+    spectra = pyspeckit.Spectra(glob.glob(paths.spath("*{0}_spw*fits".format(target))))
     beam = radio_beam.Beam.from_fits_header(spectra.header)
     # "baseline"
-    spectra.data -= 0.15
+    spectra.data -= np.nanpercentile(spectra.data, 10)
     spectra.data *= beam.jtok(spectra.xarr)
     spectra.unit = u.K
 
@@ -216,14 +216,14 @@ if __name__ == "__main__" and False:
     spectra.plotter()
 
     spectra.specfit.Registry.add_fitter('ch3ocho', ch3ocho_fitter(), 4)
-    spectra.specfit(fittype='ch3ocho', guesses=[55.6, 2.9, 200, 5e15],
+    spectra.specfit(fittype='ch3ocho', guesses=[55.6, 3.8, 200, 5e17],
                     limitedmin=[True]*4, limitedmax=[True]*4,
-                    limits=[(50,70), (1,8), (20, 1000), (1e13, 1e18)])
+                    limits=[(50,70), (1,4), (20, 1000), (1e13, 1e18)])
 
     # advanced craziness: free-fit each CH3OH line
     sp = spectra[3][:1700]
     sp.xarr.convert_to_unit(u.GHz)
-    sp.data -= 0.15
+    sp.data -= np.nanpercentile(sp.data, 10)
     sp.data *= beam.jtok(sp.xarr)
     sp.unit = u.K
     okfreqs = np.array([sp.xarr.in_range(nu) and
@@ -266,10 +266,10 @@ if __name__ == "__main__" and False:
     amps = u.Quantity([x[0].value for x in qn_to_amp.values()], u.K)
     widths = u.Quantity([x[1]/x[2]*constants.c for x in qn_to_amp.values()])
     thesefreqs = u.Quantity([x[2] for x in qn_to_amp.values()], u.GHz)
-    aij = u.Quantity([10**x[3] for x in qn_to_amp.values()], u.s**-1)
+    these_aij = u.Quantity([10**x[3] for x in qn_to_amp.values()], u.s**-1)
     xaxis = u.Quantity([x[4] for x in qn_to_amp.values()], u.K)
     deg = [x[5] for x in qn_to_amp.values()]
-    nupper = nupper_of_kkms(amps*widths*np.sqrt(2*np.pi), thesefreqs, aij, deg).value
+    nupper = nupper_of_kkms(amps*widths*np.sqrt(2*np.pi), thesefreqs, these_aij, deg).value
     fit_tex(xaxis, nupper, plot=True)
 
     pl.savefig(paths.fpath('CH3OH_rotational_fit_notsogood.png'))
