@@ -51,7 +51,7 @@ nchans_total = {ii: int(np.abs(np.diff(frange[ii])/fstep[ii]*1000.)[0])
 ncubes_per_window = 40
 
 
-for spwnum in '0132':
+for spwnum in '1032':
     spwnum = int(spwnum)
 
 
@@ -120,7 +120,7 @@ for spwnum in '0132':
 
 
         # LINE IMAGING (MOSAIC MODE)
-        if (not (os.path.exists(output+".image.fits") or
+        if (not (os.path.exists(output+".image.fits") and
                  os.path.exists(output+".image.pbcor.fits"))
             or ('reclean' in locals() and reclean)):
             print "Imaging {0}".format(output)

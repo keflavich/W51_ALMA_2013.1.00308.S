@@ -30,6 +30,12 @@ e2e_dustmass = dust_emissivity.dust.massofsnu(freq, e2e_peak_flux,
                                               temperature=e2e_peak_tb)
 print("e2e dust mass: {0}".format(e2e_dustmass))
 
+e2e_peak_column = dust_emissivity.dust.colofsnu(freq, e2e_peak_flux,
+                                                beamomega=beam,
+                                                temperature=100*u.K).to(u.cm**-2,
+                                                                        u.dimensionless_angles())
+print("e2e peak column: {0}".format(e2e_peak_column))
+
 regfn = 'e2_exclude_e2w.reg'
 reg_noe2w = pyregion.open(paths.rpath(regfn))
 regfn = 'e2_exclude_e2w_and_e2e.reg'
@@ -48,6 +54,12 @@ print("Median brightness temperature: {0}".format(e2_median_tb))
 e2_20k_total_mass = dust_emissivity.dust.massofsnu(freq, e2_total_flux,
                                                    distance=distance,
                                                    temperature=20*u.K)
+
+e2_median_column = dust_emissivity.dust.colofsnu(freq, e2_median_flux,
+                                                  beamomega=beam,
+                                                  temperature=100*u.K).to(u.cm**-2,
+                                                                          u.dimensionless_angles())
+print("e2 median column: {0}".format(e2_median_column))
 
 print("e2 total mass, excluding e2w's flux, assuming T={1}: {0}"
       .format(e2_20k_total_mass, 20*u.K))

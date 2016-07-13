@@ -139,48 +139,6 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
     return xaxis,cube,maps,energies,frequencies,indices,degeneracies,header
 
 
-#def Nu_thin_hightex(flux, line_strength, freq, fillingfactor=1.0, tau=None):
-#    """
-#    Optically-thin-ish approximation for the column density of the upper state
-#    of a given line assuming T_ex >> T_bg and T_ex >> h nu
-#
-#    Parameters
-#    ----------
-#    flux : quantity
-#        flux density in K km/s
-#    line_strength : quantity
-#        The strength of the line S_ij in 10^-18 esu cm (i.e., in debye)
-#    freq : quantity
-#        The frequency in Hz-equivalent
-#
-#
-#    See eqn 29 of Mangum, rearranged to use eqn 11...
-#    """
-#    assert flux.unit.is_equivalent(u.K*u.km/u.s)
-#    assert line_strength.unit.is_equivalent(u.esu*u.cm)
-#    k = constants.k_B
-#    term1 = (3*k/(8*np.pi**2 * freq * line_strength**2))
-#    term5 = flux.to(u.K*u.km/u.s) / fillingfactor
-#    term6 = 1 if tau is None else tau/(1-np.exp(-tau))
-#    return (term1*term5*term6).to(u.cm**-2)
-#
-#
-#def Nu_thin(flux, line_strength, tex, freq, Tbg=2.7315*u.K, fillingfactor=1.0, tau=None):
-#    """
-#    Derived from Eqn 30 + Eqn 80 of Mangum 2015
-#    """
-#    assert flux.unit.is_equivalent(u.K*u.km/u.s)
-#    assert line_strength.unit.is_equivalent(u.esu*u.cm)
-#    hnu = constants.h * freq
-#    h = constants.h
-#    kbt = constants.k_B * tex
-#    term1 = (3*h/(8*np.pi**2 * line_strength**2))
-#    term3 = 1. / (np.exp(hnu/kbt) - 1)
-#    term4 = 1./(tex-Tbg)
-#    term5 = flux.to(u.K*u.km/u.s) / fillingfactor
-#    term6 = 1 if tau is None else tau/(1-np.exp(-tau))
-#    return (term1*term3*term4*term5*term6).to(u.cm**-2)
-
 def nupper_of_kkms(kkms, freq, Aul, degeneracies, Tex=100*u.K,
                    replace_bad=None):
     """ Derived directly from pyspeckit eqns..."""
@@ -247,10 +205,12 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None):
     Ntot = np.exp(result.intercept + np.log(Q_rot)) * u.cm**-2
 
     if verbose:
-        print(("Tex={0}, Ntot={1}, Q_rot={2}".format(tex, Ntot, Q_rot)))
+        print(("Tex={0}, Ntot={1}, Q_rot={2}, nuplim={3}".format(tex, Ntot, Q_rot, upperlim_mask.sum())))
 
     if plot:
         import pylab as pl
+        L, = pl.plot(eupper, np.log10(nupperoverg_tofit), 'ro',
+                     markeredgecolor='none', alpha=0.5)
         L, = pl.plot(eupper, np.log10(nupperoverg), 'o')
         xax = np.array([0, eupper.max().value])
         line = (xax*result.slope.value +
@@ -258,7 +218,7 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None):
         pl.plot(xax, np.log10(np.exp(line)), '-', color=L.get_color(),
                 label='$T={0:0.1f} \log(N)={1:0.1f}$'.format(tex, np.log10(Ntot.value)))
 
-        if uplims:
+        if uplims is not None:
             pl.plot(eupper, np.log10(uplims), marker='_', alpha=0.5,
                     linestyle='none', color='k')
 
@@ -405,10 +365,17 @@ if __name__ == "__main__":
              'ALMAmm14':2.1*u.arcsec,
              'north':4.0*u.arcsec,
             }
+    dthresh = {'e2': detection_threshold_jykms*approximate_jytok,
+               'e8': detection_threshold_jykms*approximate_jytok,
+               'north': detection_threshold_jykms*approximate_jytok,
+               'ALMAmm14': 0.001*approximate_jytok, # not real, just for better fits..
+              }
 
     # use precomputed moments
     for sourcename, region in (('e2','e2e8'), ('e8','e2e8'), ('north','north'),
                                ('ALMAmm14','ALMAmm14'),):
+
+        replace_bad = dthresh[sourcename]
                                 
         _ = cutout_id_chem_map(source=sources[sourcename],
                                radius=radii[sourcename],
@@ -427,11 +394,16 @@ if __name__ == "__main__":
             rdy = int(spy*cube.shape[1])
             plotnum = (nx*ny-(2*(ii//ny)*ny)+ii-ny)+1
             pl.subplot(nx,ny,plotnum)
+
+            uplims = nupper_of_kkms(replace_bad, cubefrequencies,
+                                    einsteinAij[indices], degeneracies,)
             Ntot, tex, slope, intcpt = fit_tex(xaxis,
                                                nupper_of_kkms(cube[:,rdy,rdx],
                                                               cubefrequencies,
                                                               einsteinAij[indices],
                                                               degeneracies).value,
+                                               uplims=uplims.value,
+                                               verbose=True,
                                                plot=True)
             pl.ylim(11, 15)
             pl.xlim(0, 850)
@@ -449,10 +421,10 @@ if __name__ == "__main__":
 
             # show upper limits
             pl.plot(xaxis,
-                    np.log10(nupper_of_kkms(detection_threshold_jykms*approximate_jytok,
+                    np.log10(nupper_of_kkms(replace_bad,
                                             cubefrequencies,
                                             einsteinAij[indices],
-                                            degeneracies,).value),
+                                            degeneracies).value),
                     linestyle='none', marker='_', color='k',
                     markeredgewidth=2, alpha=0.5)
 
@@ -478,9 +450,9 @@ if __name__ == "__main__":
         pl.subplots_adjust(hspace=0, wspace=0)
         pl.savefig(paths.fpath("chemistry/ch3oh_rotation_diagrams_{0}.png".format(sourcename)))
 
-        if True:
+        if False:
             tmap,Nmap = fit_all_tex(xaxis, cube, cubefrequencies, indices, degeneracies,
-                                    replace_bad=detection_threshold_jykms*approximate_jytok)
+                                    replace_bad=replace_bad)
 
             pl.figure(1).clf()
             pl.imshow(tmap, vmin=0, vmax=600, cmap='hot')

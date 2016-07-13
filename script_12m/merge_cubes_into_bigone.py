@@ -2,6 +2,7 @@
 http://docs.astropy.org/en/stable/io/fits/appendix/faq.html#how-can-i-create-a-very-large-fits-file-from-scratch
 """
 from astropy import log
+from astropy import wcs
 from astropy.io import fits
 import numpy as np
 import glob
@@ -126,7 +127,8 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
 
     # Find the appropriate files (this is NOT a good way to do this!  Better to
     # provide a list.  But wildcards are quick & easy...
-    files = glob.glob("piece_of_{1}_cube{2}.{0}.chan*{3}".format(spw,fntemplate,fnsuffix,filesuffix))
+    files = glob.glob("piece_of_{1}_cube{2}.{0}.chan*{3}"
+                      .format(spw,fntemplate,fnsuffix,filesuffix))
     log.info("Files to be merged: ")
     log.info(str(files))
 
@@ -145,8 +147,11 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='w51pointing32',
     bad = {}
 
     for fn in ProgressBar(files):
-        log.info("{0} {1}".format(getinds(fn), fn))
+        hdr = fits.getheader(fn)
+        mwcs = wcs.WCS(hdr)
+        (f0,f1), = mwcs.sub([wcs.WCSSUB_SPECTRAL]).wcs_pix2world((1,hdr['NAXIS3']), 1)
         ind0,ind1 = getinds(fn)
+        log.info("{0}->{1} {2}".format([ind0,ind1], [f0,f1], fn))
 
         if ind0 > 0:
             if skip_failures and ind1-ind0 != fits.getdata(fn).shape[0]:
