@@ -134,7 +134,8 @@ def spectral_overlays(fn, name, freq_name_mapping, frequencies, yoffset,
                                                  )
                     bgs.xarr.convert_to_unit(u.GHz, refX=freq)
 
-                sp.plotter.axis.set_ylim(-0.1, max(yoffset.values())*scaling+scaling)
+                if sp.plotter.axis is not None:
+                    sp.plotter.axis.set_ylim(-0.1, max(yoffset.values())*scaling+scaling)
 
                 if linename == peakspecies:
                     print('peakvelo, offset, maxdata: ', peakvelo,
@@ -158,7 +159,7 @@ def spectral_overlays(fn, name, freq_name_mapping, frequencies, yoffset,
         velo = 60*u.km/u.s
 
     fig.savefig(paths.fpath("spectral_overlays/{name}_overlaid_spectra{suffix}.png".format(name=name, suffix=suffix)),
-                bbox_inches='tight')
+                bbox_inches='tight', bbox_extra_artists=[])
 
     # plot type #2: full spectrum, with lines ID'd
     if plot_fullspec:
@@ -197,7 +198,7 @@ def spectral_overlays(fn, name, freq_name_mapping, frequencies, yoffset,
             fig.savefig(paths.fpath("spectral_overlays/{name}_spw{spw}_fullspec{suffix}.png".format(name=name,
                                                                                                     spw=spwnum,
                                                                                                     suffix=suffix)),
-                        bbox_inches='tight')
+                        bbox_inches='tight', bbox_extra_artists=[])
 
             
 

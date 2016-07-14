@@ -1,4 +1,5 @@
 import numpy as np
+from astropy import coordinates
 from astropy import units as u
 import pyregion
 import radio_beam
@@ -32,11 +33,25 @@ for extra1 in ("","_7m12m"):
                 if 'text' not in reg.attr[1]:
                     continue
                 name = reg.attr[1]['text']
-                if name:
+                if name and reg.name in ('circle',):
                     print("Extracting {0} from {1}".format(name, spw))
                     SL = pyregion.ShapeList([reg])
                     sc = cube.subcube_from_ds9region(SL)
                     spec = sc.mean(axis=(1,2))
+                    assert not all(np.isnan(spec))
+
+                    if beam is not None:
+                        spec.meta['beam'] = beam
+                    spec.hdu.writeto("spectra/{0}_spw{1}{2}{3}_mean.fits".format(name, spw, extra1, extra2),
+                                     clobber=True)
+                elif name and reg.name in ('point',):
+                    print("Extracting {0} from {1}".format(name, spw))
+                    coord = coordinates.SkyCoord(reg.coord_list[0], reg.coord_list[1],
+                                                 frame='fk5', unit=(u.deg, u.deg))
+                    xpix, ypix = cube.wcs.celestial.wcs_world2pix(coord.ra.deg,
+                                                                  coord.dec.deg,
+                                                                  0)
+                    spec = cube[:,int(ypix),int(xpix)]
                     assert not all(np.isnan(spec))
 
                     if beam is not None:

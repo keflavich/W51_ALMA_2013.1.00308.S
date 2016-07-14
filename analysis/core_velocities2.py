@@ -55,7 +55,8 @@ data_list.insert(0, names)
 
 tbl = Table(data_list)
 tbl.sort('SourceID')
-tbl.write(paths.tpath("core_velocities_7m12m_hires.ipac"), format="ascii.ipac")
+tbl.write(paths.tpath("core_velocities_7m12m_hires.ipac"), format="ascii.ipac",
+          overwrite=True)
 
 
 # 12m only
@@ -89,4 +90,5 @@ data_list.insert(0, names)
 
 tbl = Table(data_list)
 tbl.sort('SourceID')
-tbl.write(paths.tpath("core_velocities.ipac"), format="ascii.ipac")
+tbl.write(paths.tpath("core_velocities.ipac"), format="ascii.ipac",
+          overwrite=True)

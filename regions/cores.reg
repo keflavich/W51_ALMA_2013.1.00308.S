@@ -77,3 +77,4 @@ circle(19:23:38.940,+14:30:35.48,0.214922") # color=black text={ALMAmm54}
 circle(19:23:43.426,+14:30:50.46,0.144706") # color=black text={ALMAmm55}
 circle(19:23:43.440,+14:30:51.61,0.144706") # color=black text={ALMAmm56}
 circle(19:23:41.731,+14:30:52.99,0.212613") # color=black text={ALMAmm57}
+point(19:23:43.963,+14:30:34.53) # point=x text={e2e peak pixel}

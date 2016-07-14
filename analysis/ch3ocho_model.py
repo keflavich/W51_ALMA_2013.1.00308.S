@@ -112,43 +112,96 @@ def ch3ocho_model(xarr, vcen, width, tex, column, background=None, tbg=2.73):
     Q = (deg * np.exp(-EU*u.erg / (constants.k_B * tex*u.K))).sum()
 
     for A, g, nu, eu in zip(aij, deg, freqs_, EU):
-        tau_per_dnu = lte_molecule.line_tau_cgs(tex,
-                                                column,
-                                                Q,
-                                                g,
-                                                nu,
-                                                eu,
-                                                10**A)
+        taudnu = lte_molecule.line_tau_cgs(tex,
+                                           column,
+                                           Q,
+                                           g,
+                                           nu,
+                                           eu,
+                                           10**A)
         width_dnu = width / ckms * nu
-        s = np.exp(-(freq-(1-vcen/ckms)*nu)**2/(2*width_dnu**2))*tau_per_dnu/((2*np.pi)**0.5*width_dnu)
+        effective_linewidth_dnu = (2 * np.pi)**0.5 * width_dnu
+        fcen = (1 - vcen/ckms) * nu
+        tauspec = (np.exp(-(freq - fcen)**2 / (2 * width_dnu**2)) *
+                   taudnu/effective_linewidth_dnu)
         jnu = (lte_molecule.Jnu_cgs(nu, tex)-lte_molecule.Jnu_cgs(nu, tbg))
 
-        model = model + jnu*(1-np.exp(-s))
+        model = model + jnu*(1-np.exp(-tauspec))
 
     if background is not None:
         return background-model
     return model
 
-def fit_tex(eupper, nupperoverg, verbose=False, plot=False):
+
+#def fit_tex(eupper, nupperoverg, verbose=False, plot=False):
+#    """
+#    Fit the Boltzmann diagram
+#    """
+#    model = modeling.models.Linear1D()
+#    #fitter = modeling.fitting.LevMarLSQFitter()
+#    fitter = modeling.fitting.LinearLSQFitter()
+#    ok_to_fit = nupperoverg > 0
+#    result = fitter(model, eupper[ok_to_fit], np.log(nupperoverg[ok_to_fit]))
+#    tex = -1./result.slope*u.K
+#
+#    Q_rot = (deg * np.exp(-EU*u.erg / (constants.k_B * tex))).sum()
+#
+#    Ntot = np.exp(result.intercept + np.log(Q_rot)) * u.cm**-2
+#
+#    if verbose:
+#        print(("Tex={0}, Ntot={1}, Q_rot={2}".format(tex, Ntot, Q_rot)))
+#
+#    if plot:
+#        import pylab as pl
+#        L, = pl.plot(eupper, np.log10(nupperoverg), 'o')
+#        xax = np.array([0, eupper.max().value])
+#        line = (xax*result.slope.value +
+#                result.intercept.value)
+#        pl.plot(xax, np.log10(np.exp(line)), '-', color=L.get_color(),
+#                label='$T={0:0.1f} \log(N)={1:0.1f}$'.format(tex, np.log10(Ntot.value)))
+#
+#    return Ntot, tex, result.slope, result.intercept
+def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None):
     """
     Fit the Boltzmann diagram
     """
     model = modeling.models.Linear1D()
     #fitter = modeling.fitting.LevMarLSQFitter()
     fitter = modeling.fitting.LinearLSQFitter()
-    ok_to_fit = nupperoverg > 0
-    result = fitter(model, eupper[ok_to_fit], np.log(nupperoverg[ok_to_fit]))
+
+    nupperoverg_tofit = nupperoverg.copy()
+
+    if uplims is not None:
+        upperlim_mask = nupperoverg < uplims
+        if upperlim_mask.sum() > len(nupperoverg)/2.:
+            # too many upper limits = bad idea to fit.
+            return 0*u.cm**-2, 0*u.K, 0, 0
+        nupperoverg_tofit[upperlim_mask] = uplims[upperlim_mask]
+
+    # always ignore negatives
+    good = nupperoverg_tofit > 0
+    # skip any fits that have fewer than 50% good values
+    if good.sum() < len(nupperoverg_tofit)/2.:
+        return 0*u.cm**-2, 0*u.K, 0, 0
+
+    result = fitter(model, eupper[good], np.log(nupperoverg_tofit[good]))
     tex = -1./result.slope*u.K
 
+    #partition_func = specmodel.calculate_partitionfunction(ch3oh.data['States'],
+    #                                                       temperature=tex.value)
+    #assert len(partition_func) == 1
+    #Q_rot = tuple(partition_func.values())[0]
     Q_rot = (deg * np.exp(-EU*u.erg / (constants.k_B * tex))).sum()
 
     Ntot = np.exp(result.intercept + np.log(Q_rot)) * u.cm**-2
 
     if verbose:
-        print(("Tex={0}, Ntot={1}, Q_rot={2}".format(tex, Ntot, Q_rot)))
+        print(("Tex={0}, Ntot={1}, Q_rot={2}, nuplim={3}".format(tex, Ntot, Q_rot, upperlim_mask.sum())))
 
     if plot:
         import pylab as pl
+        L, = pl.plot(eupper, np.log10(nupperoverg_tofit), 'ro',
+                     markeredgecolor='none', alpha=0.5)
         L, = pl.plot(eupper, np.log10(nupperoverg), 'o')
         xax = np.array([0, eupper.max().value])
         line = (xax*result.slope.value +
@@ -156,7 +209,12 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False):
         pl.plot(xax, np.log10(np.exp(line)), '-', color=L.get_color(),
                 label='$T={0:0.1f} \log(N)={1:0.1f}$'.format(tex, np.log10(Ntot.value)))
 
+        if uplims is not None:
+            pl.plot(eupper, np.log10(uplims), marker='_', alpha=0.5,
+                    linestyle='none', color='k')
+
     return Ntot, tex, result.slope, result.intercept
+
 
 def ch3ocho_fitter():
     """
@@ -174,6 +232,8 @@ def ch3ocho_fitter():
     
     return myclass
 
+if 'ch3ocho' in pyspeckit.spectrum.fitters.default_Registry.multifitters:
+    del pyspeckit.spectrum.fitters.default_Registry.multifitters['ch3ocho']
 pyspeckit.spectrum.fitters.default_Registry.add_fitter('ch3ocho',ch3ocho_fitter(),4)
 
 def ch3ocho_absorption_fitter():
@@ -195,7 +255,7 @@ def ch3ocho_absorption_fitter():
 pyspeckit.spectrum.fitters.default_Registry.add_fitter('ch3ocho_absorption',ch3ocho_absorption_fitter(),5)
 
 
-if __name__ == "__main__" and False:
+if __name__ == "__main__":
 
     import glob
     import pyspeckit
@@ -268,8 +328,8 @@ if __name__ == "__main__" and False:
     thesefreqs = u.Quantity([x[2] for x in qn_to_amp.values()], u.GHz)
     these_aij = u.Quantity([10**x[3] for x in qn_to_amp.values()], u.s**-1)
     xaxis = u.Quantity([x[4] for x in qn_to_amp.values()], u.K)
-    deg = [x[5] for x in qn_to_amp.values()]
-    nupper = nupper_of_kkms(amps*widths*np.sqrt(2*np.pi), thesefreqs, these_aij, deg).value
-    fit_tex(xaxis, nupper, plot=True)
+    mydeg = [x[5] for x in qn_to_amp.values()]
+    nupper = nupper_of_kkms(amps*widths*np.sqrt(2*np.pi), thesefreqs, these_aij, mydeg).value
+    fit_tex(xaxis, nupper, plot=True, uplims=np.ones_like(nupper)*1e11)
 
     pl.savefig(paths.fpath('CH3OH_rotational_fit_notsogood.png'))
