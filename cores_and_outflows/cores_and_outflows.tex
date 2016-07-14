@@ -669,22 +669,18 @@ there are some lines in band that have much lower Einstein $A_{i,j}$ values
 but comparable upper-state energy levels, allowing us to probe higher column
 densities than would otherwise be possible.
 
+\FigureTwo{figures/ch3oh_temperature_map_e2.png}{figures/ch3oh_column_map_e2.png}
+{Methanol temperature and column density maps around e2.  The temperature goes
+negative toward the center, where the column densities are highest, strongly
+indicating that the lines have become optically thick in these regions.}
+{fig:ch3ohe2}{1}{10cm}
+
 The rotational diagrams are displayed in Figure \ref{fig:ch3ohe2rot}.
 The line intensities are computed from moment maps integrating over the range
 (51, 60) \kms in continuum-subtracted spectral cubes, where the continuum
 was estimated as the median over the ranges (25-35,85-95) \kms, except
 for the J=25 lines, which had a continuum estimated from the 10th percentile
 over the same range to exclude contamination from the SO outflow line wings.
-
-To validate some of the rotational diagram fits, we examined the modeled spectra
-overlaid on the real.  These generally display significant discrepancies, especially
-at low J
-
-\FigureTwo{figures/ch3oh_temperature_map_e2.png}{figures/ch3oh_column_map_e2.png}
-{Methanol temperature and column density maps around e2.  The temperature goes
-negative toward the center, where the column densities are highest, strongly
-indicating that the lines have become optically thick in these regions.}
-{fig:ch3ohe2}{1}{10cm}
 
 \Figure{figures/ch3oh_rotation_diagrams_e2.png}
 {A sampling of fitted rotation diagrams of the detected \methanol transitions.
@@ -696,6 +692,20 @@ of the transitions; points below these lines are ignored when fitting, and inste
 the threshold itself is used.  The fitted temperature and
 column are shown in the top right of each plot.
 }{fig:ch3ohe2rot}{1}{18cm}
+
+To validate some of the rotational diagram fits, we examined the modeled
+spectra overlaid on the real.  These generally display significant
+discrepancies, especially at low J where self-absorption is evident.  There is
+clearly a low-temperature component slightly redshifted from the high-J peak
+that can be seen as a dip within the line profile (Figure
+\ref{fig:ch3ohe2epeaks}).
+
+
+\Figure{figures/ch3oh_rotdiagram_fits_SelectedPixel1.png}
+{Spectra of the \methanol lines toward a selected pixel just outside of the
+e2e core.  The red curves show the LTE model fitted from a rotational diagram
+as shown in Figure \ref{fig:ch3ohe2rot}.  }
+{fig:ch3ohe2epeaks}{1}{18cm}
  
 \clearpage
 

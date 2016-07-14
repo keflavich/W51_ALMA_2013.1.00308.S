@@ -183,10 +183,11 @@ if __name__ == "__main__":
                              velocity_offset=55.626*u.km/u.s)
 
     import pylab as pl
+    pl.matplotlib.rc_file('pubfiguresrc')
     import line_to_image_list
     target = 'SelectedPixel{0}'
     for selreg, tem, col, vel, width, ylim in (
-        (1, 401, 5.1e18, 55.6, 5.3, (-5,100)),
+        (1, 401, 5.1e18, 55.2, 5.3, (-5,100)),
         (2, 220, 1.3e18, 55.6, 5.3, (-5,100)),
         (3, 167, 5.7e17, 53.0, 5.3, (-5,100)),
         (4, 127, 1.7e17, 54.0, 5.3, (-5,60)),
@@ -203,9 +204,11 @@ if __name__ == "__main__":
         spectra.data *= beam.jtok(spectra.xarr)
         spectra.unit='K'
 
+        pl.figure(selreg, figsize=(24,16)).clf()
         spectra.plotter(figure=selreg)
 
-        del spectra.specfit.Registry.multifitters['ch3oh']
+        if 'ch3oh' in spectra.specfit.Registry.multifitters:
+            del spectra.specfit.Registry.multifitters['ch3oh']
         spectra.specfit.Registry.add_fitter('ch3oh', ch3oh_fitter(), 4)
         spectra.specfit.fitter = spectra.specfit.Registry.multifitters['ch3oh']
 
@@ -215,19 +218,51 @@ if __name__ == "__main__":
         spectra.xarr.convert_to_unit(u.GHz)
         linenamecen = [(x[0],float(x[1].strip('GHz'))) for x in line_to_image_list.line_to_image_list
                        if 'CH3OH' in x[0][:5]]
+
+        nx,ny = 3,3
         for ii,(linename,linecen) in enumerate(linenamecen):
-            ax = pl.subplot(3,3,ii+1)
-            fcen = (1-vel/constants.c.to(u.km/u.s).value)*linecen
-            dx = width/constants.c.to(u.km/u.s).value * linecen*3
-            spectra.plotter(xmin=fcen-dx, xmax=fcen+dx,
+            plotnum=ii+1
+            ax = pl.subplot(nx,ny,ii+1)
+            spectra.xarr.convert_to_unit(u.GHz)
+            spectra.xarr.convert_to_unit(u.km/u.s, refX=linecen*u.GHz)
+            #fcen = (1-vel/constants.c.to(u.km/u.s).value)*linecen
+            #dx = width/constants.c.to(u.km/u.s).value * linecen*3
+            spectra.plotter(xmin=vel-3*width, xmax=vel+3*width,
                             axis=ax)
             spectra.specfit.plot_model([vel, width/2.35, tem, col])
             ax.set_ylim(*ylim)
-            ax.annotate(linename, (0.7, 0.85), horizontalalignment='left',
+            ax.annotate(line_to_image_list.labeldict[linename],
+                        (0.05, 0.85), horizontalalignment='left',
                         xycoords='axes fraction')
 
-            pl.savefig(paths.fpath("chemistry/ch3oh_rotdiagram_fits_SelectedPixel{0}.png"
-                                   .format(selreg)))
+            if ((plotnum-1) % ny == 0) and (((plotnum-1) // nx) == 1):
+                pl.ylabel("Brightness Temperature $T_B$ [K]")
+                if (plotnum-1) != (ny*(nx-1)):
+                    ticks = pl.gca().get_yaxis().get_ticklocs()
+                    pl.gca().get_yaxis().set_ticks(ticks[1:])
+            else:
+                pl.ylabel("")
+                pl.gca().get_yaxis().set_ticklabels([])
+            if (plotnum-1) >= (ny*(nx-1)) and (((plotnum-1) % nx) == 1):
+                pl.xlabel("$V_{LSR}$ [km/s]")
+                tl = pl.gca().get_yaxis().get_ticklabels()
+                xax = pl.gca().get_xaxis()
+                if (plotnum-1) == (nx*ny-1):
+                    pass
+                    #xax.set_ticks((0,200,400,600,800))
+                else:
+                    pass
+                    #xax.set_ticks((0,200,400,600))
+                xax.set_tick_params(labelsize=14)
+                print("Xlabel -> labeled: {0}".format(plotnum))
+            else:
+                print("Xlabel -> blank: {0}".format(plotnum))
+                pl.xlabel("")
+                pl.gca().get_xaxis().set_ticklabels([])
+            pl.subplots_adjust(hspace=0, wspace=0)
+
+        pl.savefig(paths.fpath("chemistry/ch3oh_rotdiagram_fits_SelectedPixel{0}.png"
+                               .format(selreg)))
 
         speclist = [pyspeckit.Spectrum(fn) for fn in
                     glob.glob(paths.merge_spath("*{0}_spw*7m12m_hires*fits".format(target.format(selreg))))]
