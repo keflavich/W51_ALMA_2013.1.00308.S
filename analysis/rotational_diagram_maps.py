@@ -1,4 +1,5 @@
 import paths
+import image_tools
 import itertools
 from spectral_cube import SpectralCube
 import numpy as np
@@ -451,7 +452,7 @@ if __name__ == "__main__":
         pl.subplots_adjust(hspace=0, wspace=0)
         pl.savefig(paths.fpath("chemistry/ch3oh_rotation_diagrams_{0}.png".format(sourcename)))
 
-        if False:
+        if True:
             tmap,Nmap = fit_all_tex(xaxis, cube, cubefrequencies, indices, degeneracies,
                                     replace_bad=replace_bad)
 
@@ -472,6 +473,17 @@ if __name__ == "__main__":
             hdu = fits.PrimaryHDU(data=Nmap, header=header)
             hdu.writeto(paths.dpath('12m/moments/CH3OH_{0}_cutout_columnmap.fits'.format(sourcename)), clobber=True)
 
+            nr, bins, rprof = image_tools.radialprofile.azimuthalAverage(tmap,
+                                                                         binsize=1.0,
+                                                                         return_nr=True)
+            mywcs = wcs.WCS(header)
+            pixscale = (mywcs.pixel_scale_matrix.diagonal()**2).sum()**0.5
+            pl.figure(4).clf()
+            pl.plot(bins*pixscale*3600, rprof)
+            pl.ylim(0,650)
+            pl.xlabel("Radius (arcsec)")
+            pl.ylabel("Average Temperature (K)")
+            pl.savefig(paths.fpath("chemistry/ch3oh_temperature_radial_profile_{0}.png".format(sourcename)))
 
 
 
@@ -518,6 +530,18 @@ if __name__ == "__main__":
 
         hdu = fits.PrimaryHDU(data=Nmap, header=header)
         hdu.writeto(paths.dpath('12m/cutouts/CH3OH_{0}_cutout_columnmap.fits'.format(sourcename)), clobber=True)
+
+        nr, bins, rprof = image_tools.radialprofile.azimuthalAverage(tmap,
+                                                                     binsize=1.0,
+                                                                     return_nr=True)
+        mywcs = wcs.WCS(header)
+        pixscale = (mywcs.pixel_scale_matrix.diagonal()**2).sum()**0.5
+        pl.figure(4).clf()
+        pl.plot(bins*pixscale*3600, rprof)
+        pl.xlabel("Radius (arcsec)")
+        pl.ylabel("Average Temperature (K)")
+        pl.savefig(paths.fpath("chemistry/ch3oh_temperature_radial_profile_{0}.png".format(sourcename)))
+
 
     import pyregion
     pixels = pyregion.open(paths.rpath('three_e2_pixels.reg'))

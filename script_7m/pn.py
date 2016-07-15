@@ -56,7 +56,7 @@ for spw in (3,7,11,15):
            threshold='15mJy',
           )
     myimagebase = output+".clean"
-    impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb', outfile=myimagebase+'.image.pbcor', overwrite=True)
+    exportfits(imagename=myimagebase+'.image', fitsimage=myimagebase+'.image.fits', overwrite=True, dropdeg=True)
 
 # full spw0
 tclean(vis=vis,
@@ -77,3 +77,5 @@ tclean(vis=vis,
        threshold='15mJy',
        savemodel='none',
       )
+myimagebase = 'full_spw0_7m.tclean'
+exportfits(imagename=myimagebase+'.image', fitsimage=myimagebase+'.image.fits', overwrite=True, dropdeg=True)

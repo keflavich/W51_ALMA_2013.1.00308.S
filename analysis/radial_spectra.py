@@ -59,7 +59,7 @@ if __name__ == "__main__":
                                       "+14:30:34.56",
                                       frame='fk5',
                                       unit=(u.hour, u.deg))
-    bins_ends_arcsec = np.linspace(0,1.5,5)
+    bins_ends_arcsec = np.linspace(0,2.25,7)
     bins_arcsec = np.array(list(zip(bins_ends_arcsec[:-1], bins_ends_arcsec[1:])))
     reg = pyregion.open(paths.rpath('e2_exclude_e2w.reg'))
 
@@ -88,8 +88,24 @@ if __name__ == "__main__":
 
         spectra = spectra_from_cubefn(cubefn, reg, bins_arcsec, coordinate)
 
+        pl.figure(1).clf()
+
         for bins, (key, spectrum) in zip(bins_arcsec, spectra.items()):
             spectrum.write(paths.spath('e2e_radial_bin_{0:0.2f}to{1:0.2f}_spw{2}.fits'
                                        .format(bins[0], bins[1], spw)),
                            overwrite=True
                           )
+
+
+            pl.plot(spectrum.spectral_axis.to(u.GHz).value, spectrum.value,
+                    label='{0:0.1f}-{1:0.1f}'.format(*bins))
+
+        pl.xlabel("Frequency (GHz)")
+        pl.ylabel("Intensity (Jy)")
+        pl.gca().ticklabel_format(useOffset=False)
+        pl.gca().get_xaxis().get_major_formatter().set_scientific(False)
+        pl.gca().get_yaxis().get_major_formatter().set_scientific(False)
+        
+        pl.legend(loc='best')
+        pl.savefig(paths.fpath('radial_spectra/e2e_radial_spectra_spw{0}.png'
+                               .format(spw)))

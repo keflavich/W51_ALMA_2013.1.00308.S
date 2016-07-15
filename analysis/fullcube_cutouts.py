@@ -23,6 +23,9 @@ corners = {reg.attr[1]['text']:
 
 for source in ('e2','e8','north','northoutflow'):
     for cubefn in glob.glob("full*fits"):
+        if 'cutout' in cubefn:
+            print("Skipping {0}".format(cubefn))
+            continue
 
         try:
             cube = SpectralCube.read(cubefn)
