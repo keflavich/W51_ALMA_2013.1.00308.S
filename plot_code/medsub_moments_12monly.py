@@ -59,6 +59,7 @@ try:
         'W51_b6_12M.HNCO1038-937.image.pbcor.fits',
         'W51_b6_12M.13CH3OH515-414.image.pbcor.fits',
         'W51_b6_12M.PN5-4.image.pbcor.fits',
+        'W51_b6_12M.HNCO28128-29029.image.pbcor.fits',
     ]
 
 except ImportError:
@@ -71,6 +72,7 @@ cont_percentiles = collections.defaultdict(lambda: 50)
 cont_percentiles['CH3OH23519-22617'] = 10
 cont_percentiles['CH3OH25322-24420'] = 10
 cont_percentiles['CH3OH18315-17414'] = 10
+cont_percentiles['HNCO28128-29029'] = 10
 
 def dpath(x):
     return os.path.join("./",x)

@@ -104,6 +104,7 @@ try:
         'W51_b6_7M_12M.OCS19-18.image.pbcor.fits',
         'W51_b6_7M_12M.PN5-4.image.pbcor.fits',
         'W51_b6_7M_12M.SO65-54.image.pbcor.fits',
+        'W51_b6_7M_12M.HNCO28128-29029.image.pbcor.fits',
     ]
 
 except ImportError:
@@ -115,6 +116,8 @@ cont_percentiles = collections.defaultdict(lambda: 50)
 # these lines almost intersect with SO, causing problems near outflows
 cont_percentiles['CH3OH23519-22617'] = 10
 cont_percentiles['CH3OH25322-24420'] = 10
+cont_percentiles['CH3OH18315-17414'] = 10
+cont_percentiles['HNCO28128-29029'] = 10
 
 def load_projection(filename):
     from astropy import wcs

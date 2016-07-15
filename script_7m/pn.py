@@ -57,3 +57,23 @@ for spw in (3,7,11,15):
           )
     myimagebase = output+".clean"
     impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb', outfile=myimagebase+'.image.pbcor', overwrite=True)
+
+# full spw0
+tclean(vis=vis,
+       imagename='full_spw0_7m'+".tclean",
+       field='w51',
+       spw='0,4,8,12',
+       gridder='mosaic',
+       specmode='cube',
+       veltype='radio',
+       outframe='LSRK',
+       interactive=F,
+       niter=100,
+       imsize=[256,256],
+       cell='0.5arcsec',
+       weighting='briggs',
+       robust=0.5,
+       phasecenter='',
+       threshold='15mJy',
+       savemodel='none',
+      )
