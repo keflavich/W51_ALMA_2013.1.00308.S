@@ -51,14 +51,17 @@ e2_total_flux = im[mask].sum()*u.Jy/u.beam / ppbeam
 e2_median_flux = np.nanmedian(im[mask])*u.Jy
 e2_median_tb = e2_median_flux.to(u.K, beam.jtok_equiv(freq))
 print("Median brightness temperature: {0}".format(e2_median_tb))
+e2_max_flux = np.nanmax(im[mask])*u.Jy
+e2_max_tb = e2_max_flux.to(u.K, beam.jtok_equiv(freq))
+print("e2 cluster peak brightness temperature: {0}".format(e2_max_tb))
 e2_20k_total_mass = dust_emissivity.dust.massofsnu(freq, e2_total_flux,
                                                    distance=distance,
                                                    temperature=20*u.K)
 
 e2_median_column = dust_emissivity.dust.colofsnu(freq, e2_median_flux,
-                                                  beamomega=beam,
-                                                  temperature=100*u.K).to(u.cm**-2,
-                                                                          u.dimensionless_angles())
+                                                 beamomega=beam,
+                                                 temperature=100*u.K).to(u.cm**-2,
+                                                                         u.dimensionless_angles())
 print("e2 median column: {0}".format(e2_median_column))
 
 print("e2 total mass, excluding e2w's flux, assuming T={1}: {0}"
@@ -92,3 +95,72 @@ e2_noe2e_100k_total_mass = dust_emissivity.dust.massofsnu(freq,
 
 print("e2 total mass, excluding e2w and e2e flux, assuming T={1}: {0}"
       .format(e2_noe2e_100k_total_mass, 100*u.K))
+
+
+
+
+
+reg_e8 = pyregion.open(paths.rpath('e8cluster.reg'))
+mask = reg_e8.get_mask(header=hd, shape=im.shape)
+
+e8_total_flux = im[mask].sum()*u.Jy/u.beam / ppbeam
+e8_median_flux = np.nanmedian(im[mask])*u.Jy
+e8_median_tb = e8_median_flux.to(u.K, beam.jtok_equiv(freq))
+print("e8 cluster Median brightness temperature: {0}".format(e8_median_tb))
+e8_max_flux = np.nanmax(im[mask])*u.Jy
+e8_max_tb = e8_max_flux.to(u.K, beam.jtok_equiv(freq))
+print("e8 cluster peak brightness temperature: {0}".format(e8_max_tb))
+e8_20k_total_mass = dust_emissivity.dust.massofsnu(freq, e8_total_flux,
+                                                   distance=distance,
+                                                   temperature=20*u.K)
+
+e8_median_column = dust_emissivity.dust.colofsnu(freq, e8_median_flux,
+                                                 beamomega=beam,
+                                                 temperature=100*u.K).to(u.cm**-2,
+                                                                         u.dimensionless_angles())
+print("e8 cluster median column: {0}".format(e8_median_column))
+
+print("e8 cluster total mass, assuming T={1}: {0}"
+      .format(e8_20k_total_mass, 20*u.K))
+
+e8_100k_total_mass = dust_emissivity.dust.massofsnu(freq, e8_total_flux,
+                                                    distance=distance,
+                                                    temperature=100*u.K)
+
+print("e8 cluster total mass, assuming T={1}: {0}"
+      .format(e8_100k_total_mass, 100*u.K))
+
+
+
+
+
+
+reg_north = pyregion.open(paths.rpath('north_exclude_HII.reg'))
+mask = reg_north.get_mask(header=hd, shape=im.shape)
+
+north_total_flux = im[mask].sum()*u.Jy/u.beam / ppbeam
+north_median_flux = np.nanmedian(im[mask])*u.Jy
+north_median_tb = north_median_flux.to(u.K, beam.jtok_equiv(freq))
+print("north cluster Median brightness temperature: {0}".format(north_median_tb))
+north_max_flux = np.nanmax(im[mask])*u.Jy
+north_max_tb = north_max_flux.to(u.K, beam.jtok_equiv(freq))
+print("north cluster peak brightness temperature: {0}".format(north_max_tb))
+north_20k_total_mass = dust_emissivity.dust.massofsnu(freq, north_total_flux,
+                                                      distance=distance,
+                                                      temperature=20*u.K)
+
+north_median_column = dust_emissivity.dust.colofsnu(freq, north_median_flux,
+                                                    beamomega=beam,
+                                                    temperature=100*u.K).to(u.cm**-2,
+                                                                            u.dimensionless_angles())
+print("north cluster median column: {0}".format(north_median_column))
+
+print("north cluster total mass, assuming T={1}: {0}"
+      .format(north_20k_total_mass, 20*u.K))
+
+north_100k_total_mass = dust_emissivity.dust.massofsnu(freq, north_total_flux,
+                                                       distance=distance,
+                                                       temperature=100*u.K)
+
+print("north cluster total mass, assuming T={1}: {0}"
+      .format(north_100k_total_mass, 100*u.K))

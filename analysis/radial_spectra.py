@@ -75,8 +75,11 @@ if __name__ == "__main__":
             spectra = spectra_from_cubefn(cubefn, reg, bins_arcsec, coordinate)
 
             for bins, (key, spectrum) in zip(bins_arcsec, spectra.items()):
+                include = np.isfinite(spectrum) & np.array([(bm.major < 1*u.arcsec) &
+                                                            (bm.minor < 1*u.arcsec)
+                                                            for bm in spectrum.beams])
                 avg_beam = spectral_cube.cube_utils.average_beams(spectrum.beams,
-                                                                  includemask=np.isfinite(spectrum))
+                                                                  includemask=include)
                 spectrum.meta['beam'] = avg_beam
                 spectrum.write(paths.merge_spath('e2e_radial_bin_{0:0.2f}to{1:0.2f}_7m12m_spw{2}{3}.fits'
                                                  .format(bins[0], bins[1], spw,
@@ -95,8 +98,11 @@ if __name__ == "__main__":
         pl.figure(1).clf()
 
         for bins, (key, spectrum) in zip(bins_arcsec, spectra.items()):
+            include = np.isfinite(spectrum) & np.array([(bm.major < 1*u.arcsec) &
+                                                        (bm.minor < 1*u.arcsec)
+                                                        for bm in spectrum.beams])
             avg_beam = spectral_cube.cube_utils.average_beams(spectrum.beams,
-                                                              includemask=np.isfinite(spectrum))
+                                                              includemask=include)
             spectrum.meta['beam'] = avg_beam
             spectrum.write(paths.spath('e2e_radial_bin_{0:0.2f}to{1:0.2f}_spw{2}.fits'
                                        .format(bins[0], bins[1], spw)),

@@ -1,3 +1,4 @@
+raise ValueError("TODO: refactor this to match the CH3OH rotational_diagrams.py setup, which is faster and does more things more correctly")
 import paths
 from spectral_cube import SpectralCube
 import numpy as np

@@ -5,6 +5,7 @@ from astropy import coordinates
 from astropy import units as u
 from astropy.table import Table
 
+
 for (rgb_cube_fits, rgb_cube_png, star_color, core_color, rlabel, glabel,
      blabel) in (('full_h2co_rgb.fits', 'full_h2co_rgb_auto.png', 'y', 'b',
                   'H$_2$CO $3_{0,3}-2_{0,2}$', 'H$_2$CO $3_{2,1}-2_{2,0}$',
@@ -58,3 +59,5 @@ for (rgb_cube_fits, rgb_cube_png, star_color, core_color, rlabel, glabel,
     F.hide_layer('hiiregions')
     F.save(paths.fpath("W51e2_{0}_aplpy_cores.png".format(name)))
     F.save(paths.fpath("W51e2_{0}_aplpy_cores.pdf".format(name)))
+
+    F.hide_layer('cores')
