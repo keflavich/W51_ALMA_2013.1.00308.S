@@ -3,13 +3,20 @@ from astropy import units as u
 import pyregion
 import radio_beam
 from spectral_cube import SpectralCube
+from astropy.io import fits
+from astropy import wcs
 
 tmplt = '{reg}cax.SPW{0}_ALL.image.fits'
 
 region_list = pyregion.open("cores_longbaseline_spectralextractionregions.reg")
+region_list += pyregion.open("e2e_se_jet.reg")
+region_list += pyregion.open("e2w_nitrogenic_bubble.reg")
+#region_list = pyregion.open("cores_longbaseline_spectralextractionregions_pix.reg")
+#fh = fits.open('W51e2cax.cont.image.pbcor.fits')
+#mywcs = wcs.WCS(fh[0].header)
 
 for region in ('W51e2', 'W51n'):
-    for spw in (2,4,6):
+    for spw in range(1,10): #(2,4,6):
         try:
             cube = SpectralCube.read(tmplt.format(spw, reg=region))
         except IOError:

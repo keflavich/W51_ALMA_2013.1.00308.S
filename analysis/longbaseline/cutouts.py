@@ -31,12 +31,18 @@ for source,cubefn in [#('e2', "W51e2cax.CH3CN_K3_nat.image.fits"),
                       # done ('e2', "W51e2cax.SPW2_ALL.image.fits"),
                       # done ('e2', "W51e2cax.SPW4_ALL.image.fits"),
                       # done ('e2', "W51e2cax.SPW6_ALL.image.fits"),
-                      ('e2', "W51e2cax.SPW1_ALL.image.fits"),
-                      ('e2', "W51e2cax.SPW3_ALL.image.fits"),
-                      ('e2', "W51e2cax.SPW5_ALL.image.fits"),
-                      ('e2', "W51e2cax.SPW7_ALL.image.fits"),
-                      ('e2', "W51e2cax.SPW8_ALL.image.fits"),
+                      # done ('e2', "W51e2cax.SPW1_ALL.image.fits"),
+                      # done ('e2', "W51e2cax.SPW3_ALL.image.fits"),
+                      # done ('e2', "W51e2cax.SPW5_ALL.image.fits"),
+                      # done ('e2', "W51e2cax.SPW7_ALL.image.fits"),
+                      # done ('e2', "W51e2cax.SPW8_ALL.image.fits"),
                       ('e2', "W51e2cax.SPW9_ALL.image.fits"),
+                      #('e8', "W51e2cax.SPW1_ALL.image.fits"),
+                      #('e8', "W51e2cax.SPW3_ALL.image.fits"),
+                      #('e8', "W51e2cax.SPW5_ALL.image.fits"),
+                      #('e8', "W51e2cax.SPW7_ALL.image.fits"),
+                      #('e8', "W51e2cax.SPW8_ALL.image.fits"),
+                      #('e8', "W51e2cax.SPW9_ALL.image.fits"),
                       #('e8', "W51e2cax.CH3CN_K3_nat.image.fits"),
                       #('e8', "W51e2cax.CH3CN_K3_nat_all.image.fits"),
                       # done ('e8', "W51e2cax.CH3CN_K8.image.pbcor.fits"),
@@ -75,9 +81,13 @@ for source,cubefn in [#('e2', "W51e2cax.CH3CN_K3_nat.image.fits"),
     cutout = cube[view]
     print(cutout)
     cutout.write(outfn.replace(suffix,"_cutout.fits"), overwrite=True)
+    print("Median calculation")
+    med = cutout.median(axis=0)
+    print("Median subtraction")
     cutout.allow_huge_operations=True
-    cutoutms = cutout-cutout.median(axis=0)
+    cutoutms = cutout-med
+    print("Velocity conversion")
     vcutoutms = cutoutms.with_spectral_unit(u.km/u.s,
                                             velocity_convention='radio')
-    print(vcutoutms)
+    print("Writing velocity cutout",vcutoutms)
     vcutoutms.write(outfn.replace(suffix,"_medsub_cutout.fits"), overwrite=True)

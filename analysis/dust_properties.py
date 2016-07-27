@@ -34,7 +34,7 @@ e2e_peak_column = dust_emissivity.dust.colofsnu(freq, e2e_peak_flux,
                                                 beamomega=beam,
                                                 temperature=100*u.K).to(u.cm**-2,
                                                                         u.dimensionless_angles())
-print("e2e peak column: {0}".format(e2e_peak_column))
+print("e2e peak column (T=100K): {0}".format(e2e_peak_column))
 
 regfn = 'e2_exclude_e2w.reg'
 reg_noe2w = pyregion.open(paths.rpath(regfn))
@@ -62,7 +62,7 @@ e2_median_column = dust_emissivity.dust.colofsnu(freq, e2_median_flux,
                                                  beamomega=beam,
                                                  temperature=100*u.K).to(u.cm**-2,
                                                                          u.dimensionless_angles())
-print("e2 median column: {0}".format(e2_median_column))
+print("e2 median column (T=100K): {0}".format(e2_median_column))
 
 print("e2 total mass, excluding e2w's flux, assuming T={1}: {0}"
       .format(e2_20k_total_mass, 20*u.K))
@@ -164,3 +164,29 @@ north_100k_total_mass = dust_emissivity.dust.massofsnu(freq, north_total_flux,
 
 print("north cluster total mass, assuming T={1}: {0}"
       .format(north_100k_total_mass, 100*u.K))
+
+
+"""
+e2e peak brightness: 228.1267575167404 K
+e2e luminosity: 23918.78717599044 solLum
+e2e dust mass: 18.742076274056984 solMass
+e2e peak column: 6.25229288904971e+25 1 / cm2
+Median brightness temperature: 7.002341281739255 K
+e2 cluster peak brightness temperature: 228.1267575167404 K
+e2 median column: 1.9178648670620061e+24 1 / cm2
+e2 total mass, excluding e2w's flux, assuming T=20.0 K: 12127.9410524976 solMass
+e2 total mass, excluding e2w's flux, assuming T=100.0 K: 1931.8484592796835 solMass
+Median brightness temperature (no e2e either): 7.4959131800605325 K
+e2 total mass, excluding e2w and e2e flux, assuming T=20.0 K: 8808.180625349396 solMass
+e2 total mass, excluding e2w and e2e flux, assuming T=100.0 K: 1403.0468989391943 solMass
+e8 cluster Median brightness temperature: 2.6771436081188913 K
+e8 cluster peak brightness temperature: 208.06306723244958 K
+e8 cluster median column: 7.345582708106389e+23 1 / cm2
+e8 cluster total mass, assuming T=20.0 K: 10789.704064105663 solMass
+e8 cluster total mass, assuming T=100.0 K: 1718.6822996807393 solMass
+north cluster Median brightness temperature: 3.6198044207380513 K
+north cluster peak brightness temperature: 260.4098839355622 K
+north cluster median column: 9.909858853481762e+23 1 / cm2
+north cluster total mass, assuming T=20.0 K: 12598.129830473512 solMass
+north cluster total mass, assuming T=100.0 K: 2006.743302980072 solMass
+"""
