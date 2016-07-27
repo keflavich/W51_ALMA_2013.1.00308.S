@@ -1,0 +1,15 @@
+# Region file format: DS9 version 4.1
+global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1
+image
+circle(2560.4941,2552.1918,24.2694) # text={e2w}
+circle(2393.432,2553.7265,6.55616) # text={e2e_left}
+circle(2655.2641,2842.7794,9.67904) # text={e2nw}
+ellipse(2588.3698,1306.4241,12.3261,26.9778,326.49499) # text={e8}
+ellipse(2707.4491,952.42408,11,12,0)
+ellipse(13766.648,8742.8174,21.7014,26.0416,0) # text={north}
+ellipse(14443.342,8608.8664,8.34398,11.5973,337.03699) # text={d2}
+ellipse(14051.26,8714.8376,20.1842,21.5758,0) # text={ALMAmm24}
+circle(2398.5397,2540.4242,6.55616) # text={e2e_center}
+circle(2413.9947,2533.9593,6.5561616) # text={e2e_right}
+circle(2399.593,2544.4243,19.0232) # text={e2e}
+circle(2378.6775,2522.5041,8.777664) # text={e2e_se_emission}
