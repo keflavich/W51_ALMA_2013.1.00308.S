@@ -3,19 +3,21 @@ from astropy import units as u
 import pyregion
 import radio_beam
 from spectral_cube import SpectralCube
+import paths
 from astropy.io import fits
 from astropy import wcs
 
 tmplt = '{reg}cax.SPW{0}_ALL.image.fits'
 
-region_list = pyregion.open("cores_longbaseline_spectralextractionregions.reg")
-region_list += pyregion.open("e2e_se_jet.reg")
-region_list += pyregion.open("e2w_nitrogenic_bubble.reg")
+#region_list = pyregion.open("cores_longbaseline_spectralextractionregions.reg")
+#region_list += pyregion.open("e2e_se_jet.reg")
+#region_list += pyregion.open("e2w_nitrogenic_bubble.reg")
 #region_list = pyregion.open("cores_longbaseline_spectralextractionregions_pix.reg")
 #fh = fits.open('W51e2cax.cont.image.pbcor.fits')
 #mywcs = wcs.WCS(fh[0].header)
 
-for region in ('W51e2', 'W51n'):
+for region, region_list in (('W51e2', pyregion.open(paths.rpath("cores_longbaseline_spectralextractionregions_pix.reg"))),
+                            ('W51n', pyregion.open(paths.rpath("cores_longbaseline_spectralextractionregions_pix_north.reg")))):
     for spw in range(1,10): #(2,4,6):
         try:
             cube = SpectralCube.read(tmplt.format(spw, reg=region))
@@ -51,5 +53,5 @@ for region in ('W51e2', 'W51n'):
 
                 if beam is not None:
                     spec.meta['beam'] = beam
-                spec.hdu.writeto("spectra/{0}_{reg}_spw{1}_mean.fits".format(name, spw, reg=region),
+                spec.hdu.writeto(paths.dpath("longbaseline/spectra/{0}_{reg}_spw{1}_mean.fits".format(name, spw, reg=region)),
                                  clobber=True)
