@@ -71,6 +71,8 @@ line_to_image_list = [
     ('CH3OCHO_990-981E', '235.2157GHz', -1, -1),
     ('CH3OCHO_991-982A', '235.26332GHz', -1, -1),
     ('SO2_422-313', '235.1517GHz', -1, -1),
+    ('SO2_28325-28226', '234.18705GHz', -1, -1),
+    ('SO2_16610-17513', '234.42157GHz', -1, -1),
     #('CH3OCHO_1138-1029E', '235.31514GHz', -1, -1), probably not real
     #('CH3OCHO_1138-1029A', '235.37525GHz', -1, -1), probably not real
     #('CH3OCH31394-1486EE','231.89851GHz',-1,-1,), probably not real (on top of H30a)
