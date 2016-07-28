@@ -103,7 +103,7 @@ for source in ('northwest','north','e2','e8',):
                 mx.FITSFigure.save(paths.fpath('longbaseline/moments/{1}_{0}_max.png'.format(linename, source)))
                 
                 # mask out low significance pixels
-                m1emi[(mx < slabstd*3) & (mn > -slabstd*3)] = np.nan
+                m1emi[(mx < slabstd*2) & (mn > -slabstd*2)] = np.nan
 
                 m1emi.quicklook()
                 m1emi.FITSFigure.show_contour(cont_cut, levels=[0.0015, 0.006, 0.012],
@@ -111,7 +111,7 @@ for source in ('northwest','north','e2','e8',):
                 m1emi.FITSFigure.show_colorscale(vmin=vrange[0], vmax=vrange[1])
                 m1emi.FITSFigure.save(paths.fpath('longbaseline/moments/{1}_{0}_mom1.png'.format(linename, source)))
 
-                m2emi[(mx < slabstd*3) & (mn > -slabstd*3)] = np.nan
+                m2emi[(mx < slabstd*2) & (mn > -slabstd*2)] = np.nan
 
                 m2emi.quicklook()
                 m2emi.FITSFigure.show_contour(cont_cut, levels=[0.0015, 0.006, 0.012],
