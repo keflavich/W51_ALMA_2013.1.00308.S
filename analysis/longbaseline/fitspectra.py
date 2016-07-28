@@ -11,6 +11,10 @@ import pylab as pl
 import pyregion
 import velo_guesses
 
+import warnings
+from numpy.ma.core import MaskedArrayFutureWarning
+warnings.filterwarnings('ignore', category=MaskedArrayFutureWarning)
+
 line_table = table.Table.read(paths.apath('full_line_table.csv'))
 line_table.sort('Species')
 
@@ -24,7 +28,12 @@ for region in regions:
     spectra = pyspeckit.Spectra(spectral_files)
     stats = spectra.stats()
     err = stats['std'] # overly conservative guess
-    med = stats['median']
+
+    for sp in spectra:
+        sp.data -= np.median(sp.data)
+    #med = stats['median']
+    #if med < 0:
+    #    med = 0
 
     line_table.add_column(table.Column(name='{0}FittedAmplitude'.format(name), data=np.zeros(len(line_table))))
     line_table.add_column(table.Column(name='{0}FittedCenter'.format(name), data=np.zeros(len(line_table))))
@@ -48,6 +57,8 @@ for region in regions:
         # check if line in range
         for sp in spectra:
             if sp.xarr.in_range(frq):
+
+                print(name, linename)
                 
                 sp.xarr.convert_to_unit(u.km/u.s, refX=frq)
 
@@ -63,11 +74,11 @@ for region in regions:
                 sp_sl.error[:] = err
                 
                 # perform fit
-                sp_sl.specfit(fittype='vheightgaussian',
-                              guesses=[med, 1, vcen, 2],
-                              fixed=[True,False,False,False], # use a fixed baseline
-                              limited=[(True,True)]*4,
-                              limits=[(0,1), (-5,5), (vcen-5, vcen+5), (0,10)],
+                sp_sl.specfit(fittype='gaussian',
+                              guesses=[0.1, vcen, 2],
+                              fixed=[False,False,False], # use a fixed baseline
+                              limited=[(True,True)]*3,
+                              limits=[(-5,5), (vcen-5, vcen+5), (0,10)],
                              )
 
                 sp_sl.plotter(axis=pl.subplot(6,6,plotnum))
