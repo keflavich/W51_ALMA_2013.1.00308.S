@@ -41,13 +41,14 @@ for region, region_list in (('W51e2', pyregion.open(paths.rpath("cores_longbasel
                 continue
             name = reg.attr[1]['text']
             if name:
-                print("Extracting {0} from {1}".format(name, spw))
+                print("Extracting {0} from {1} with region {2}".format(name, spw, reg))
                 SL = pyregion.ShapeList([reg])
                 try:
                     sc = cube.subcube_from_ds9region(SL)
                 except ValueError as ex:
                     print(ex)
                     continue
+                print("Done subcubing {0} from {1} with region {2}".format(name, spw, reg))
                 spec = sc.mean(axis=(1,2))
                 assert not all(np.isnan(spec))
 

@@ -85,7 +85,9 @@ for source in ('northwest','north','e2','e8',):
                 m1emi = slab.with_mask((slab>slabstd)).with_mask(emi).moment1()
                 m1abs = slab.with_mask((slab<-slabstd)).with_mask(absorb).moment1()
                 m1emi[absorb] = m1abs[absorb]
-                #m2 = slab.moment2()
+                m2emi = slab.with_mask((slab>slabstd)).with_mask(emi).moment2()
+                m2abs = slab.with_mask((slab<-slabstd)).with_mask(absorb).moment2()
+                m2emi[absorb] = m2abs[absorb]
 
                 for ii in pl.get_fignums():
                     pl.close(ii)
@@ -108,3 +110,11 @@ for source in ('northwest','north','e2','e8',):
                                               colors=['k']*3, alpha=0.5)
                 m1emi.FITSFigure.show_colorscale(vmin=vrange[0], vmax=vrange[1])
                 m1emi.FITSFigure.save(paths.fpath('longbaseline/moments/{1}_{0}_mom1.png'.format(linename, source)))
+
+                m2emi[(mx < slabstd*3) & (mn > -slabstd*3)] = np.nan
+
+                m2emi.quicklook()
+                m2emi.FITSFigure.show_contour(cont_cut, levels=[0.0015, 0.006, 0.012],
+                                              colors=['k']*3, alpha=0.5)
+                m2emi.FITSFigure.show_colorscale(vmin=0, vmax=10)
+                m2emi.FITSFigure.save(paths.fpath('longbaseline/moments/{1}_{0}_mom2.png'.format(linename, source)))
