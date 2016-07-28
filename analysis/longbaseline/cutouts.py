@@ -1,5 +1,8 @@
 """
 Make bite-sized cutouts of the long-baseline data
+
+The cutout process requires loading a lot into memory, so this can cause
+out-of-memory crashes if the cutouts are too large
 """
 import re
 from astropy import units as u
@@ -36,7 +39,7 @@ for source,cubefn in [#('e2', "W51e2cax.CH3CN_K3_nat.image.fits"),
                       # done ('e2', "W51e2cax.SPW5_ALL.image.fits"),
                       # done ('e2', "W51e2cax.SPW7_ALL.image.fits"),
                       # done ('e2', "W51e2cax.SPW8_ALL.image.fits"),
-                      ('e2', "W51e2cax.SPW9_ALL.image.fits"),
+                      #('e2', "W51e2cax.SPW9_ALL.image.fits"),
                       #('e8', "W51e2cax.SPW1_ALL.image.fits"),
                       #('e8', "W51e2cax.SPW3_ALL.image.fits"),
                       #('e8', "W51e2cax.SPW5_ALL.image.fits"),
@@ -55,6 +58,24 @@ for source,cubefn in [#('e2', "W51e2cax.CH3CN_K3_nat.image.fits"),
                       # done ('north', "W51ncax.SPW2_ALL.image.fits"),
                       # done ('north', "W51ncax.SPW4_ALL.image.fits"),
                       # done ('north', "W51ncax.SPW6_ALL.image.fits"),
+                      #('north', "W51ncax.SPW1_ALL.image.fits"),
+                      #('north', "W51ncax.SPW2_ALL.image.fits"),
+                      #('north', "W51ncax.SPW3_ALL.image.fits"),
+                      #('north', "W51ncax.SPW4_ALL.image.fits"),
+                      #('north', "W51ncax.SPW5_ALL.image.fits"),
+                      #('north', "W51ncax.SPW6_ALL.image.fits"),
+                      #('north', "W51ncax.SPW7_ALL.image.fits"),
+                      #('north', "W51ncax.SPW8_ALL.image.fits"),
+                      ('north', "W51ncax.SPW9_ALL.image.fits"),
+                      ('northwest', "W51ncax.SPW1_ALL.image.fits"),
+                      ('northwest', "W51ncax.SPW2_ALL.image.fits"),
+                      ('northwest', "W51ncax.SPW3_ALL.image.fits"),
+                      ('northwest', "W51ncax.SPW4_ALL.image.fits"),
+                      ('northwest', "W51ncax.SPW5_ALL.image.fits"),
+                      ('northwest', "W51ncax.SPW6_ALL.image.fits"),
+                      ('northwest', "W51ncax.SPW7_ALL.image.fits"),
+                      ('northwest', "W51ncax.SPW8_ALL.image.fits"),
+                      ('northwest', "W51ncax.SPW9_ALL.image.fits"),
                       ]:
     suffix = ".image.fits" if ".image.fits" in cubefn else ".image.pbcor.fits"
     print("Cube {0} cutout {1} beginning".format(cubefn, source))

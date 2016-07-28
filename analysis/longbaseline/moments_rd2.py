@@ -1,5 +1,7 @@
 """
 Make moment maps of cutouts
+
+Meant to operate on full-window cubes
 """
 import re
 import numpy as np
@@ -20,7 +22,7 @@ corners = {reg.attr[1]['text']: {'lowerleft': coordinates.SkyCoord([reg.coord_li
            for reg in regions
           }
 
-files = [
+files = {'e2':[
 "/Volumes/INTENSO/w51-longbaseline/W51e2cax.SPW1_ALL_medsub_cutout.fits",
 "/Volumes/INTENSO/w51-longbaseline/W51e2cax.SPW2_ALL_medsub_cutout.fits",
 "/Volumes/INTENSO/w51-longbaseline/W51e2cax.SPW3_ALL_medsub_cutout.fits",
@@ -30,69 +32,79 @@ files = [
 "/Volumes/INTENSO/w51-longbaseline/W51e2cax.SPW7_ALL_medsub_cutout.fits",
 "/Volumes/INTENSO/w51-longbaseline/W51e2cax.SPW8_ALL_medsub_cutout.fits",
 "/Volumes/INTENSO/w51-longbaseline/W51e2cax.SPW9_ALL_medsub_cutout.fits",
-]
+],}
+files['e8'] = [x.replace('e2cax','e8cax') for x in files['e2']]
+files['north'] = [x.replace('e2cax','northcax') for x in files['e2']]
+files['northwest'] = [x.replace('e2cax','northwestcax') for x in files['e2']]
 
-vrange = 56-8, 56+8
+vrange_ = {'e2': (56-8, 56+8),
+           'north': (61-8, 61+8),
+           'northwest': (61-8, 61+8),
+           'e8': (56-8, 56+8),
+          }
 
-cont = fits.open(paths.dpath('longbaseline/W51e2cax.cont.image.pbcor.fits'))
-contwcs = wcs.WCS(cont[0].header)
-source = 'e2'
-lowerleft, upperright = corners[source]['lowerleft'],corners[source]['upperright'],
-bl_x, bl_y = contwcs.celestial.wcs_world2pix(lowerleft.ra, lowerleft.dec, 0)
-tr_x, tr_y = contwcs.celestial.wcs_world2pix(upperright.ra, upperright.dec, 0)
-assert tr_y > bl_y+2
-assert tr_x > bl_x+2
-cont_cut = fits.PrimaryHDU(data=cont[0].data.squeeze()[bl_y:tr_y, bl_x:tr_x],
-                           header=contwcs.celestial[bl_y:tr_y, bl_x:tr_x].to_header())
+for source in ('northwest','north','e2','e8',):
+    cont = fits.open(paths.dpath('longbaseline/W51{0}cax.cont.image.pbcor.fits').format('n' if 'north' in source else 'e2'))
+    contwcs = wcs.WCS(cont[0].header)
+    lowerleft, upperright = corners[source]['lowerleft'],corners[source]['upperright'],
+    bl_x, bl_y = contwcs.celestial.wcs_world2pix(lowerleft.ra, lowerleft.dec, 0)
+    tr_x, tr_y = contwcs.celestial.wcs_world2pix(upperright.ra, upperright.dec, 0)
+    assert tr_y > bl_y+2
+    assert tr_x > bl_x+2
+    cont_cut = fits.PrimaryHDU(data=cont[0].data.squeeze()[bl_y:tr_y, bl_x:tr_x],
+                               header=contwcs.celestial[bl_y:tr_y, bl_x:tr_x].to_header())
+    assert cont_cut.data.size > 0
 
-for fn in files:
-    cube = SpectralCube.read(fn).with_spectral_unit(u.GHz)
+    vrange = vrange_[source]
 
-    for linename, freq, _, _ in line_to_image_list.line_to_image_list:
-        frq = float(freq.strip("GHz"))*u.GHz
+    for fn in files[source]:
+        cube = SpectralCube.read(fn).with_spectral_unit(u.GHz)
 
-        vcube = cube.with_spectral_unit(u.km/u.s, velocity_convention='radio',
-                                        rest_value=frq)
+        for linename, freq, _, _ in line_to_image_list.line_to_image_list:
+            frq = float(freq.strip("GHz"))*u.GHz
 
-        if ((vcube.spectral_axis.min() < vrange[0]*u.km/u.s) and
-            (vcube.spectral_axis.max() > vrange[1]*u.km/u.s)):
+            vcube = cube.with_spectral_unit(u.km/u.s, velocity_convention='radio',
+                                            rest_value=frq)
 
-            slab = vcube.spectral_slab(vrange[0]*u.km/u.s, vrange[1]*u.km/u.s)
+            if ((vcube.spectral_axis.min() < vrange[0]*u.km/u.s) and
+                (vcube.spectral_axis.max() > vrange[1]*u.km/u.s)):
 
-            print(linename, frq, slab)
+                slab = vcube.spectral_slab(vrange[0]*u.km/u.s, vrange[1]*u.km/u.s)
 
-            emi = cont_cut.data < 0.0015
-            absorb = ~emi
+                print(linename, frq, slab)
 
-            m0 = slab.moment0()
-            m0std = m0.std()
-            mx = slab.max(axis=0)
-            mn = slab.min(axis=0)
-            slabstd = slab.std()
+                emi = cont_cut.data < 0.0015
+                absorb = ~emi
 
-            m1emi = slab.with_mask((slab>slabstd)).with_mask(emi).moment1()
-            m1abs = slab.with_mask((slab<-slabstd)).with_mask(absorb).moment1()
-            m1emi[absorb] = m1abs[absorb]
-            #m2 = slab.moment2()
+                m0 = slab.moment0()
+                m0std = m0.std()
+                mx = slab.max(axis=0)
+                mn = slab.min(axis=0)
+                slabstd = slab.std()
 
-            for ii in pl.get_fignums():
-                pl.close(ii)
+                m1emi = slab.with_mask((slab>slabstd)).with_mask(emi).moment1()
+                m1abs = slab.with_mask((slab<-slabstd)).with_mask(absorb).moment1()
+                m1emi[absorb] = m1abs[absorb]
+                #m2 = slab.moment2()
 
-            m0.quicklook()
-            m0.FITSFigure.show_contour(cont_cut, levels=[0.0015, 0.006, 0.012],
-                                       colors=['r']*3)
-            m0.FITSFigure.save(paths.fpath('longbaseline/moments/e2e_{0}_mom0.png'.format(linename)))
+                for ii in pl.get_fignums():
+                    pl.close(ii)
 
-            mx.quicklook()
-            mx.FITSFigure.show_contour(cont_cut, levels=[0.0015, 0.006, 0.012],
-                                       colors=['r']*3)
-            mx.FITSFigure.save(paths.fpath('longbaseline/moments/e2e_{0}_max.png'.format(linename)))
-            
-            # mask out low significance pixels
-            m1emi[(mx < slabstd*3) & (mn > -slabstd*3)] = np.nan
+                m0.quicklook()
+                m0.FITSFigure.show_contour(cont_cut, levels=[0.0015, 0.006, 0.012],
+                                           colors=['r']*3)
+                m0.FITSFigure.save(paths.fpath('longbaseline/moments/{1}_{0}_mom0.png'.format(linename, source)))
 
-            m1emi.quicklook()
-            m1emi.FITSFigure.show_contour(cont_cut, levels=[0.0015, 0.006, 0.012],
-                                          colors=['k']*3, alpha=0.5)
-            m1emi.FITSFigure.show_colorscale(vmin=vrange[0], vmax=vrange[1])
-            m1emi.FITSFigure.save(paths.fpath('longbaseline/moments/e2e_{0}_mom1.png'.format(linename)))
+                mx.quicklook()
+                mx.FITSFigure.show_contour(cont_cut, levels=[0.0015, 0.006, 0.012],
+                                           colors=['r']*3)
+                mx.FITSFigure.save(paths.fpath('longbaseline/moments/{1}_{0}_max.png'.format(linename, source)))
+                
+                # mask out low significance pixels
+                m1emi[(mx < slabstd*3) & (mn > -slabstd*3)] = np.nan
+
+                m1emi.quicklook()
+                m1emi.FITSFigure.show_contour(cont_cut, levels=[0.0015, 0.006, 0.012],
+                                              colors=['k']*3, alpha=0.5)
+                m1emi.FITSFigure.show_colorscale(vmin=vrange[0], vmax=vrange[1])
+                m1emi.FITSFigure.save(paths.fpath('longbaseline/moments/{1}_{0}_mom1.png'.format(linename, source)))

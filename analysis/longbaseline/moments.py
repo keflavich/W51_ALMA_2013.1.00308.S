@@ -1,5 +1,8 @@
 """
 Make moment maps of cutouts
+
+(this was the first version using early data; moments_rd2 (round 2) is more up
+to date and probably better)
 """
 import re
 from astropy import units as u
