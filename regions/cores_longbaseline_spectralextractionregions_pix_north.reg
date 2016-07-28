@@ -1,0 +1,24 @@
+# Region file format: DS9 version 4.1
+global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1
+image
+ellipse(2554.5602,2560.0253,10.557624,11.903238,1.1724797e-06) # text={north}
+ellipse(2843.3573,2534.5038,20.1842,21.5758,1.1724797e-06) # text={ALMAmm24}
+ellipse(2536.5552,2577.7258,10.557624,11.903238,1.1724766e-06) # text={north_left}
+ellipse(2571.673,2540.0498,10.557624,11.903238,1.17248e-06) # text={north_right}
+circle(2365.6779,2617.7259,4.4461296) # text={north_ne1}
+circle(2421.7268,2614.2374,4.4461296) # text={north_ne2}
+circle(2421.2617,2592.376,4.4461296) # text={north_ne3}
+circle(3236.8147,2430.4249,2.1121344) # text={d2}
+annulus(3236.0071,2430.4249,8.183736,16.367544) # text={d2annulus}
+circle(3424.805,2502.8555,1.68012) # text={ALMAmm31_peak}
+circle(3425.0566,2508.9866,22.718808) # text={ALMAmm31avg}
+circle(3511.3436,2495.9551,3.6460944) # text={ALMAmm32}
+circle(3201.0729,2525.4215,2.0645352) # text={ALMAmm33peak}
+circle(3895.6643,2293.2382,1.5621624) # text={ALMAmm43peak}
+circle(4109.2091,2134.243,2.4327792) # text={ALMAmm36peak}
+circle(2393.7779,2346.522,2.2248432) # text={north_far_se_1}
+circle(2515.1107,2547.8279,1.908036) # text={north_se_1}
+circle(2734.7699,2626.1603,3.8761344) # text={ALMAmm35peak1}
+circle(2721.3972,2619.7647,3.8761344) # text={ALMAmm35peak2}
+circle(2711.8207,2684.4606,2.22552) # text={ALMAmm35peak3}
+ellipse(2714.9903,2687.3841,9.0443131,4.6836612,37.1301) # text={ALMAmm35peak3broad}
