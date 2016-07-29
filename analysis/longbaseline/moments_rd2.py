@@ -43,7 +43,8 @@ vrange_ = {'e2': (56-8, 56+8),
            'e8': (56-8, 56+8),
           }
 
-for source in ('northwest','north','e2','e8',):
+for source,stretch in zip(('northwest','north','e2','e8',),
+                          ((57,63), (58,62), (53,58), (54,58))):
     cont = fits.open(paths.dpath('longbaseline/W51{0}cax.cont.image.pbcor.fits').format('n' if 'north' in source else 'e2'))
     contwcs = wcs.WCS(cont[0].header)
     lowerleft, upperright = corners[source]['lowerleft'],corners[source]['upperright'],
@@ -110,6 +111,8 @@ for source in ('northwest','north','e2','e8',):
                                               colors=['k']*3, alpha=0.5)
                 m1emi.FITSFigure.show_colorscale(vmin=vrange[0], vmax=vrange[1])
                 m1emi.FITSFigure.save(paths.fpath('longbaseline/moments/{1}_{0}_mom1.png'.format(linename, source)))
+                m1emi.FITSFigure.show_colorscale(vmin=stretch[0], vmax=stretch[1])
+                m1emi.FITSFigure.save(paths.fpath('longbaseline/moments/{1}_{0}_mom1_rescale.png'.format(linename, source)))
 
                 m2emi[(mx < slabstd*2) & (mn > -slabstd*2)] = np.nan
 

@@ -48,17 +48,14 @@ F.scalebar.set_color('w')
 F.save(paths.fpath("NACO_green_outflows_aplpy.png"))
 F.save(paths.fpath("NACO_green_outflows_aplpy.pdf"))
 
-F.show_contour('../../alma/FITS/w51_spw3_continuum.image.fits', levels=[0.15,
-                                                                        0.30,
-                                                                        0.45,
-                                                                        0.60,
-                                                                        0.75],
+F.show_contour(paths.dpath('12m/continuum/w51_spw3_continuum.image.fits'),
+               levels=[0.15, 0.30, 0.45, 0.60, 0.75],
                colors=['w']*4, layer='alma_cont_lores')
 F.save(paths.fpath("NACO_green_outflows_aplpy_CONTours.png"))
 F.save(paths.fpath("NACO_green_outflows_aplpy_CONTours.pdf"))
 
 F.hide_layer('alma_cont_lores')
-F.show_contour('../../alma/FITS/12m/selfcal_spw3_selfcal_4ampphase_mfs_tclean_deeper_10mJy.image.pbcor.fits',
+F.show_contour(paths.dpath('W51_te_continuum_best.fits'),
                levels=[0.04,
                        #0.05,
                        0.06,
@@ -89,11 +86,8 @@ F.hide_layer('h77a_outflow')
 F.hide_layer('alma_cont_hires')
 
 
-F.show_contour('../../alma/cycle3goddi/W51n.cont.image.pbcor.fits', levels=[0.0015,
-                                                                            0.0030,
-                                                                            0.0045,
-                                                                            0.0060,
-                                                                            0.0075],
+F.show_contour(paths.dpath('longbaseline/W51ncax.cont.image.pbcor.fits'),
+               levels=[0.0015, 0.0030, 0.0045, 0.0060, 0.0075],
                colors=['w']*4, layer='alma_cont_cycle3hires')
 F.save(paths.fpath("NACO_green_outflows_aplpy_CONTours_cycle3hires.png"))
 F.save(paths.fpath("NACO_green_outflows_aplpy_CONTours_cycle3hires.pdf"))
@@ -127,9 +121,10 @@ F.save(paths.fpath("H77a_green_outflows_aplpy.pdf"))
 
 
 
-green_fits = '/Users/adam/work/w51/alma/FITS/w51_spw3_continuum.image.fits'
-blue_fits = '/Users/adam/work/w51/alma/FITS/moments/w51_12co2-1_blue0to45_masked.fits'
-red_fits = '/Users/adam/work/w51/alma/FITS/moments/w51_12co2-1_red73to130_masked.fits'
+#green_fits = '/Users/adam/work/w51/alma/FITS/w51_spw3_continuum.image.fits'
+green_fits = paths.dpath('W51_te_continuum_best.fits')
+blue_fits = paths.dpath('moments/w51_12co2-1_blue0to45_masked.fits')
+red_fits = paths.dpath('moments/w51_12co2-1_red73to130_masked.fits')
 rgb_cube_fits = 'outflow_co_redblue_1.4mmcont_green.fits'
 
 if not os.path.exists(rgb_cube_fits):
@@ -155,12 +150,20 @@ F.recenter(290.93291, 14.508188, radius=0.003)
 F.add_scalebar((0.1*u.pc / (5400*u.pc)).to(u.deg,u.dimensionless_angles()))
 F.scalebar.set_label('0.1 pc')
 F.scalebar.set_color('w')
-F.save(paths.fpath("ALMAcont_green_outflows_aplpy.png"))
-F.save(paths.fpath("ALMAcont_green_outflows_aplpy.pdf"))
+F.save(paths.fpath("ALMAcont_green_outflows_e2_aplpy.png"))
+F.save(paths.fpath("ALMAcont_green_outflows_e2_aplpy.pdf"))
+
+F.recenter(290.917, 14.518211, radius=0.005)
+F.save(paths.fpath("ALMAcont_green_outflows_north_aplpy.png"))
+F.save(paths.fpath("ALMAcont_green_outflows_north_aplpy.pdf"))
 
 F.show_contour('/Users/adam/work/w51/paper_w51_evla/data/W51Ku_BDarray_continuum_2048_both_uniform.hires.clean.image.fits',
                levels=[0.005/9., 0.005/3., 0.005, 0.015, 0.045, 0.135],
                colors=['w']*7, layer='evla_cont_lores')
-F.save(paths.fpath("Alma1.4mmcont_green_outflows_aplpy_CONTours.png"))
-F.save(paths.fpath("Alma1.4mmcont_green_outflows_aplpy_CONTours.pdf"))
+F.save(paths.fpath("Alma1.4mmcont_green_outflows_north_aplpy_cmCONTours.png"))
+F.save(paths.fpath("Alma1.4mmcont_green_outflows_north_aplpy_cmCONTours.pdf"))
+
+F.recenter(290.93291, 14.508188, radius=0.003)
+F.save(paths.fpath("Alma1.4mmcont_green_outflows_e2_aplpy_cmCONTours.png"))
+F.save(paths.fpath("Alma1.4mmcont_green_outflows_e2_aplpy_cmCONTours.pdf"))
 

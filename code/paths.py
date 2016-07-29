@@ -44,6 +44,12 @@ def apath(x, analysispath=analysispath):
 def dpath(x, datapath=datapath):
     return os.path.join(datapath, x)
 
+def dpath12m(x, datapath=datapath):
+    return os.path.join(datapath, '12m', x)
+
+def dpathmerge(x, datapath=datapath):
+    return os.path.join(datapath, 'merge', x)
+
 def dppath(x, datapath=datapath):
     return os.path.join(datapath, 'projections', x)
 

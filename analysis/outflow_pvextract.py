@@ -1,4 +1,5 @@
 import numpy as np
+import os
 import paths
 import aplpy
 import pylab as pl
@@ -44,6 +45,12 @@ lacypath.width = 1.5*u.arcsec
 lacyorigin = coordinates.SkyCoord(290.91564, 14.518122, frame='fk5',
                                   unit=(u.deg, u.deg))
 
+northpath = pvextractor.pvregions.paths_from_regfile(paths.rpath('north_segment_trace.reg'))[0]
+northpath.width = 1.5*u.arcsec
+northorigin = coordinates.SkyCoord(290.91689, 14.518197, frame='fk5',
+                                   unit=(u.deg, u.deg))
+
+
 h2velomap = fits.open('/Users/adam/work/w51/sinfoni/h2_velocity_map.fits')
 h2velowidthmap = fits.open('/Users/adam/work/w51/sinfoni/h2_velocity_width_map.fits')
 h2wcs = wcs.WCS(h2velomap[0].header)
@@ -78,6 +85,14 @@ parameters = {'e8':
                'wv': 300e3,
                'origin': lacyorigin,
               },
+              'north':
+              {'path': northpath,
+               'cx': 0.0065,
+               'cv': 65e3,
+               'wx': 0.0075,
+               'wv': 140e3,
+               'origin': northorigin,
+              },
               'e2e_disk':
               {'path': e2ediskpath,
                'cx': 0.0025,
@@ -90,13 +105,16 @@ parameters = {'e8':
 
 for ii, (fn, stretch, vmin, vmax, source) in enumerate(
     (
-     ('longbaseline/W51e2cax.CH3CN_K3_nat.image.fits',
-      'arcsinh', -0.0005, 0.003, 'e2e_disk'),
+     #('longbaseline/W51e2cax.CH3CN_K3_nat.image.fits',
+     # 'arcsinh', -0.0005, 0.003, 'e2e_disk'),
      #('H77a_BDarray_speccube_briggs0_contsub_cvel_big.fits',
      # 'arcsinh', -0.0005, 0.003, 'lacy'),
      #('w51_SO_65-54_contsub.fits', 'arcsinh', -0.005, 0.15, 'lacy'),
      #('w51_12CO_21_contsub_hires.image.pbcor.fits', 'arcsinh', -0.02, 0.2,
      # 'lacy'),
+     ('12m/w51_SO_65-54_contsub.fits', 'arcsinh', -0.025, 0.5, 'north'),
+     ('12m/w51_12CO_21_contsub_hires.image.pbcor.fits', 'arcsinh', -0.02, 0.4,
+      'north'),
      #('w51_SO_65-54_contsub.fits', 'arcsinh', -0.01, 0.3, 'e8'),
      #('w51_12CO_21_contsub_hires.image.pbcor.fits', 'arcsinh', -0.01, 0.2,
      # 'e8'),
@@ -108,12 +126,15 @@ for ii, (fn, stretch, vmin, vmax, source) in enumerate(
     cube = cube.with_spectral_unit(u.km/u.s, velocity_convention='radio')
     cube = cube.spectral_slab(-200*u.km/u.s, 200*u.km/u.s)
 
-    outname = '{0}_{1}.{{extension}}'.format(fn[:-5], source)
+    outname = os.path.split('{0}_{1}.{{extension}}'.format(fn[:-5], source))[-1]
 
-    pv = extract_pv_slice(cube.hdu, pars['path'])
-    #pv.data -= np.nanmin(pv.data) - 1e-3
-    pv.writeto(paths.dpath('pv/'+outname.format(extension='fits')),
-               clobber=True)
+    outpath_pv = paths.dpath('pv/'+outname.format(extension='fits'))
+    if not os.path.exists(outpath_pv):
+        pv = extract_pv_slice(cube.hdu, pars['path'])
+        #pv.data -= np.nanmin(pv.data) - 1e-3
+        pv.writeto(outpath_pv, clobber=True)
+    else:
+        pv = fits.open(outpath_pv)[0]
 
     origin = offset_to_point(pars['origin'].ra.deg,
                              pars['origin'].dec.deg,
@@ -134,6 +155,7 @@ for ii, (fn, stretch, vmin, vmax, source) in enumerate(
     # show() is unfortunately required before the text labels are set
     pl.draw()
     pl.show()
+    # may have to find a better way to force this to work:
     FF._ax1.set_yticklabels([str(float(L.get_text())/1e3) for L in
                              FF._ax1.get_yticklabels()])
     FF._ax1.set_ylabel("Velocity (km/s)")
@@ -153,5 +175,5 @@ for ii, (fn, stretch, vmin, vmax, source) in enumerate(
     if h2offset:
         FF.show_markers(h2offset, (np.array(h2velos)*1000).tolist(), marker='x')
 
-    outname = '{0}_{1}_with_h2.{{extension}}'.format(fn[:-5], source)
+    outname = os.path.split('{0}_{1}_with_h2.{{extension}}'.format(fn[:-5], source))[-1]
     FF.save(paths.fpath('outflows_pv/'+outname.format(extension='png')))
