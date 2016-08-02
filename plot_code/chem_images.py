@@ -15,11 +15,9 @@ from line_to_image_list import labeldict
 import re
 import glob
 
-"""
 # Sometimes debugging is necessary to prevent abort traps
 from astropy import log
 log.setLevel('DEBUG')
-"""
 
 
 def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,60]*u.km/u.s,

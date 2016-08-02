@@ -487,60 +487,60 @@ if __name__ == "__main__":
 
 
 
-    for sourcename, region, xslice, yslice, vrange, rdposns in (
-        #('e2','e2e8',(114,214),(367,467),(51,60),[(10,10),(60,84),]),
-        #('e8','e2e8',(119,239),(227,347),(52,63),[(10,60),(65,45),]),
-        #('north','north',(152,350),(31,231),(54,64),[(100,80),(75,80),]),
-        #('ALMAmm14','ALMAmm14',(80,180),(50,150),(58,67),[(65,40),(45,40),]),
-    ):
+    #for sourcename, region, xslice, yslice, vrange, rdposns in (
+    #    #('e2','e2e8',(114,214),(367,467),(51,60),[(10,10),(60,84),]),
+    #    #('e8','e2e8',(119,239),(227,347),(52,63),[(10,60),(65,45),]),
+    #    #('north','north',(152,350),(31,231),(54,64),[(100,80),(75,80),]),
+    #    #('ALMAmm14','ALMAmm14',(80,180),(50,150),(58,67),[(65,40),(45,40),]),
+    #):
 
-        _ = cutout_id_chem_map(yslice=slice(*yslice), xslice=slice(*xslice),
-                               vrange=vrange*u.km/u.s, sourcename=sourcename,
-                               filelist=glob.glob(paths.dpath('12m/cutouts/*{0}*fits').format(region)),
-                               chem_name='CH3OH',
-                              )
-        xaxis,cube,maps,energies,cubefrequencies,indices,degeneracies,header = _
+    #    _ = cutout_id_chem_map(yslice=slice(*yslice), xslice=slice(*xslice),
+    #                           vrange=vrange*u.km/u.s, sourcename=sourcename,
+    #                           filelist=glob.glob(paths.dpath('12m/cutouts/*{0}*fits').format(region)),
+    #                           chem_name='CH3OH',
+    #                          )
+    #    xaxis,cube,maps,energies,cubefrequencies,indices,degeneracies,header = _
 
 
-        pl.figure(2).clf()
-        for rdx,rdy in rdposns:
-            fit_tex(xaxis, nupper_of_kkms(cube[:,rdy,rdx], cubefrequencies,
-                                          einsteinAij[indices],
-                                          degeneracies).value, plot=True)
-        pl.ylabel("log($N_u / g_u$)")
-        pl.xlabel("$E_u$ [K]")
-        pl.legend(loc='best')
-        pl.savefig(paths.fpath("chemistry/ch3oh_rotation_diagrams_{0}.png".format(sourcename)))
+    #    pl.figure(2).clf()
+    #    for rdx,rdy in rdposns:
+    #        fit_tex(xaxis, nupper_of_kkms(cube[:,rdy,rdx], cubefrequencies,
+    #                                      einsteinAij[indices],
+    #                                      degeneracies).value, plot=True)
+    #    pl.ylabel("log($N_u / g_u$)")
+    #    pl.xlabel("$E_u$ [K]")
+    #    pl.legend(loc='best')
+    #    pl.savefig(paths.fpath("chemistry/ch3oh_rotation_diagrams_{0}.png".format(sourcename)))
 
-        tmap,Nmap = fit_all_tex(xaxis, cube, cubefrequencies, indices, degeneracies)
+    #    tmap,Nmap = fit_all_tex(xaxis, cube, cubefrequencies, indices, degeneracies)
 
-        pl.figure(1).clf()
-        pl.imshow(tmap, vmin=0, vmax=1000, cmap='hot')
-        cb = pl.colorbar()
-        cb.set_label("Temperature (K)")
-        pl.savefig(paths.fpath("chemistry/ch3oh_temperature_map_{0}.png".format(sourcename)))
-        pl.figure(3).clf()
-        pl.imshow(np.log10(Nmap), vmin=15, vmax=21, cmap='viridis')
-        cb = pl.colorbar()
-        cb.set_label("log N(CH$_3$OH)")
-        pl.savefig(paths.fpath("chemistry/ch3oh_column_map_{0}.png".format(sourcename)))
+    #    pl.figure(1).clf()
+    #    pl.imshow(tmap, vmin=0, vmax=1000, cmap='hot')
+    #    cb = pl.colorbar()
+    #    cb.set_label("Temperature (K)")
+    #    pl.savefig(paths.fpath("chemistry/ch3oh_temperature_map_{0}.png".format(sourcename)))
+    #    pl.figure(3).clf()
+    #    pl.imshow(np.log10(Nmap), vmin=15, vmax=21, cmap='viridis')
+    #    cb = pl.colorbar()
+    #    cb.set_label("log N(CH$_3$OH)")
+    #    pl.savefig(paths.fpath("chemistry/ch3oh_column_map_{0}.png".format(sourcename)))
 
-        hdu = fits.PrimaryHDU(data=tmap, header=header)
-        hdu.writeto(paths.dpath('12m/cutouts/CH3OH_{0}_cutout_temperaturemap.fits'.format(sourcename)), clobber=True)
+    #    hdu = fits.PrimaryHDU(data=tmap, header=header)
+    #    hdu.writeto(paths.dpath('12m/cutouts/CH3OH_{0}_cutout_temperaturemap.fits'.format(sourcename)), clobber=True)
 
-        hdu = fits.PrimaryHDU(data=Nmap, header=header)
-        hdu.writeto(paths.dpath('12m/cutouts/CH3OH_{0}_cutout_columnmap.fits'.format(sourcename)), clobber=True)
+    #    hdu = fits.PrimaryHDU(data=Nmap, header=header)
+    #    hdu.writeto(paths.dpath('12m/cutouts/CH3OH_{0}_cutout_columnmap.fits'.format(sourcename)), clobber=True)
 
-        nr, bins, rprof = image_tools.radialprofile.azimuthalAverage(tmap,
-                                                                     binsize=1.0,
-                                                                     return_nr=True)
-        mywcs = wcs.WCS(header)
-        pixscale = (mywcs.pixel_scale_matrix.diagonal()**2).sum()**0.5
-        pl.figure(4).clf()
-        pl.plot(bins*pixscale*3600, rprof)
-        pl.xlabel("Radius (arcsec)")
-        pl.ylabel("Average Temperature (K)")
-        pl.savefig(paths.fpath("chemistry/ch3oh_temperature_radial_profile_{0}.png".format(sourcename)))
+    #    nr, bins, rprof = image_tools.radialprofile.azimuthalAverage(tmap,
+    #                                                                 binsize=1.0,
+    #                                                                 return_nr=True)
+    #    mywcs = wcs.WCS(header)
+    #    pixscale = (mywcs.pixel_scale_matrix.diagonal()**2).sum()**0.5
+    #    pl.figure(4).clf()
+    #    pl.plot(bins*pixscale*3600, rprof)
+    #    pl.xlabel("Radius (arcsec)")
+    #    pl.ylabel("Average Temperature (K)")
+    #    pl.savefig(paths.fpath("chemistry/ch3oh_temperature_radial_profile_{0}.png".format(sourcename)))
 
 
     import pyregion
