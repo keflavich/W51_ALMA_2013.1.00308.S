@@ -1,7 +1,6 @@
 # Region file format: DS9 version 4.1
 global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1
 image
-ellipse(2554.5602,2560.0253,10.557624,11.903238,1.1724797e-06) # text={north}
 ellipse(2843.3573,2534.5038,20.1842,21.5758,1.1724797e-06) # text={ALMAmm24}
 ellipse(2536.5552,2577.7258,10.557624,11.903238,1.1724766e-06) # text={north_left}
 ellipse(2571.673,2540.0498,10.557624,11.903238,1.17248e-06) # text={north_right}
@@ -22,8 +21,9 @@ circle(2734.7699,2626.1603,3.8761344) # text={ALMAmm35peak1}
 circle(2721.3972,2619.7647,3.8761344) # text={ALMAmm35peak2}
 circle(2711.8207,2684.4606,2.22552) # text={ALMAmm35peak3}
 ellipse(2714.9903,2687.3841,9.0443131,4.6836612,37.1301) # text={ALMAmm35peak3broad}
-circle(2559.322,2558.4236,1.908036) # text={north_peak_left}
+circle(2559.322,2558.4236,1.908036) # text={north_peak_right}
 circle(2553.5168,2564.4235,1.908036) # text={north_peak_left}
 ellipse(2497.395,2494.5454,43.195216,66.670824,328.675) # text={north_blue_outflow_lobe_close}
-ellipse(2446.0648,2412.4236,27.231762,29.109794,360) # text={north_blue_outflow_lobe_far}
+ellipse(2446.0648,2412.4236,27.231762,29.109794,0) # text={north_blue_outflow_lobe_far}
 ellipse(2582.5651,2688.4235,43.415931,93.640406,357.863) # text={north_red_outflow_lobe}
+ellipse(2554.5602,2560.0253,10.557624,11.903238,1.1724797e-06) # text={north}

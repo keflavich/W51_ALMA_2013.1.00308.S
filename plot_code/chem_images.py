@@ -15,10 +15,19 @@ from line_to_image_list import labeldict
 import re
 import glob
 
+"""
+# Sometimes debugging is necessary to prevent abort traps
+from astropy import log
+log.setLevel('DEBUG')
+"""
+
 
 def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,60]*u.km/u.s,
               sourcename='e2', filelist=glob.glob(paths.dpath('12m/cutouts/*e2e8*fits')),
               suffix="", plotgrid=(5,8), figsize=(12.8,8),
+              vmax_m0=5.0,
+              vmax_max=150,
+              maxbeam=0.5*u.arcsec,
              ):
     nplots = np.product(plotgrid)
 
@@ -56,7 +65,16 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         m1fitsfn = paths.dpath("chemslices/chemical_m1_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
         maxfitsfn = paths.dpath("chemslices/chemical_max_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
         if not (os.path.exists(m0fitsfn) and os.path.exists(maxfitsfn)):
+            print("Extracting max/m0/m1 for {0}".format(fn))
             cube = SpectralCube.read(fn)[:,yslice,xslice]
+            goodbeams = np.array([bm.major < maxbeam for bm in cube.beams], dtype='bool')
+            cube = cube.with_mask(goodbeams[:,None,None])
+            cube = cube.minimal_subcube()
+
+            if cube.shape[0] == 0:
+                print("Skipping {0} because it was masked out".format(fn))
+                continue
+
             bm = cube.beams[0]
             restfreq = cube.wcs.wcs.restfrq
             cube = cube.to(u.K, bm.jtok_equiv(restfreq*u.Hz))
@@ -107,7 +125,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
 
         ax1 = fig1.add_subplot(gs1[figcounter])
 
-        im1 = ax1.imshow(m0.value, vmin=-1.25*jtok.value, vmax=5.0*jtok.value,
+        im1 = ax1.imshow(m0.value, vmin=-1.25*jtok.value, vmax=vmax_m0*jtok.value,
                          cmap=pl.cm.bone_r, interpolation='nearest')
         ax1.text(3, 0.87*m0.shape[0], label, fontsize=9)
         ax1.set_xticklabels([])
@@ -125,7 +143,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
 
         ax3 = fig3.add_subplot(gs2[figcounter])
 
-        im3 = ax3.imshow(max.value, vmin=-10, vmax=150,
+        im3 = ax3.imshow(max.value, vmin=-10, vmax=vmax_max,
                          cmap=pl.cm.bone_r, interpolation='nearest')
         ax3.text(3, 0.87*m0.shape[0], label, fontsize=9, color='r')
         ax3.set_xticklabels([])
@@ -146,6 +164,9 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
     cbs[2].set_label("Velocity (km s$^{-1}$)", fontsize=12)
     cbs[3].set_label("Peak Brightness (K)", fontsize=12)
 
+    pl.draw()
+    pl.show()
+
     fig1.savefig(paths.fpath("chemical_m0_slabs_{0}{1}.png".format(sourcename,
                                                                    suffix)),
                  bbox_inches='tight', dpi=150)
@@ -158,21 +179,28 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
                                                                     suffix)),
                  bbox_inches='tight', dpi=150)
 
-    pl.draw()
-    pl.show()
 
 
 if __name__ == "__main__":
     linere = re.compile("W51_b6_7M_12M.(.*).image.pbcor")
 
-    chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214),
+    chem_plot(linere, yslice=slice(357,477), xslice=slice(104,224),
               vrange=[51,60]*u.km/u.s, sourcename='e2',
               filelist=glob.glob(paths.dpath('merge/cutouts/W51_b6_7M_12M.*e2e8*fits')),
               suffix="_merge")
+    # not implemented chem_plot(linere, yslice=slice(357,477), xslice=slice(104,224),
+    # not implemented           vrange=[51,60]*u.km/u.s, sourcename='e2',
+    # not implemented           filelist=glob.glob(paths.dpath('merge/cutouts/W51_b6_7M_12M.*e2e8*fits')),
+    # not implemented           continuum=paths.dpath('W51_te_continuum_best.fits'),
+    # not implemented           continuum_levels=[0.015, 0.0256944, 0.0577778, 0.11125, 0.186111,
+    # not implemented                             0.282361, 0.4, ],
+    # not implemented           suffix="_merge_cont")
     chem_plot(re.compile("W51_b6_7M_12M_natural.(.*).image.pbcor"), yslice=slice(168,249), xslice=slice(42,118),
               vrange=[51,60]*u.km/u.s, sourcename='e2',
               filelist=glob.glob(paths.dpath('merge/cutouts/W51_b6_7M_12M_natural.*e2e8*fits')),
-              suffix="_merge_natural")
+              suffix="_merge_natural",
+              maxbeam=1.5*u.arcsec,
+              vmax_m0=7.5)
 
     chem_plot(linere, yslice=slice(227,347), xslice=slice(119,239),
               vrange=[52,63]*u.km/u.s, sourcename='e8',
@@ -188,7 +216,7 @@ if __name__ == "__main__":
 
     linere = re.compile("W51_b6_12M.(.*).image.pbcor")
 
-    chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214),
+    chem_plot(linere, yslice=slice(357,477), xslice=slice(104,224),
               vrange=[51,60]*u.km/u.s, sourcename='e2',
               filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*e2e8*fits')))
 

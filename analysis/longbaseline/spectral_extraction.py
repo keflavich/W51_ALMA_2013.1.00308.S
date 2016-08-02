@@ -18,7 +18,7 @@ tmplt = '{reg}cax.SPW{0}_ALL.image.fits'
 
 for region, region_list in (('W51e2', pyregion.open(paths.rpath("cores_longbaseline_spectralextractionregions_pix.reg"))),
                             ('W51n', pyregion.open(paths.rpath("cores_longbaseline_spectralextractionregions_pix_north.reg")))):
-    for spw in range(1,10): #(2,4,6):
+    for spw in range(0,10): #(2,4,6):
         try:
             cube = SpectralCube.read(tmplt.format(spw, reg=region))
         except IOError:

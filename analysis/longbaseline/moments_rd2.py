@@ -83,6 +83,11 @@ for source,stretch in zip(('northwest','north','e2','e8',),
                 mn = slab.min(axis=0)
                 slabstd = slab.std()
 
+                bluvcube = vcube.spectral_slab((vrange[0]-20)*u.km/u.s, vrange[0]*u.km/u.s)
+                redvcube = vcube.spectral_slab((vrange[1])*u.km/u.s, (vrange[1]+20)*u.km/u.s)
+                blumax = bluvcube.max(axis=0)
+                redmax = redvcube.max(axis=0)
+
                 m1emi = slab.with_mask((slab>slabstd)).with_mask(emi).moment1()
                 m1abs = slab.with_mask((slab<-slabstd)).with_mask(absorb).moment1()
                 m1emi[absorb] = m1abs[absorb]
@@ -100,8 +105,13 @@ for source,stretch in zip(('northwest','north','e2','e8',),
 
                 mx.quicklook()
                 mx.FITSFigure.show_contour(cont_cut, levels=[0.0015, 0.006, 0.012],
-                                           colors=['r']*3)
+                                           colors=['c']*3)
                 mx.FITSFigure.save(paths.fpath('longbaseline/moments/{1}_{0}_max.png'.format(linename, source)))
+                mx.FITSFigure.show_contour(blumax.hdu, levels=[0.005, 0.0075, 0.010],
+                                           colors=['b']*3)
+                mx.FITSFigure.show_contour(redmax.hdu, levels=[0.005, 0.0075, 0.010],
+                                           colors=['r']*3)
+                mx.FITSFigure.save(paths.fpath('longbaseline/moments/{1}_{0}_max_outflow.png'.format(linename, source)))
                 
                 # mask out low significance pixels
                 m1emi[(mx < slabstd*2) & (mn > -slabstd*2)] = np.nan
