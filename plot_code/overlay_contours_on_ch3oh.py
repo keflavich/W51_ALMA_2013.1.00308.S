@@ -61,12 +61,20 @@ ch3ohT_hdul = fits.open(paths.dpath('12m/moments/CH3OH_e2_cutout_temperaturemap.
 dust_brightness,wts = reproject.reproject_interp(fits.open(paths.dpath('W51_te_continuum_best.fits')),
                                                  ch3ohN_hdul[0].header)
 
+w = wcs.WCS(ch3ohT_hdul[0].header)
+pixscale = (w.pixel_scale_matrix.diagonal()**2).sum()**0.5 * u.deg
+
 pl.figure(5).clf()
 ch3ohN = ch3ohN_hdul[0].data
 ch3ohT = ch3ohT_hdul[0].data
-pl.scatter(dust_brightness, ch3ohN, c=ch3ohT, vmax=600, vmin=0)
+pl.scatter(dust_brightness, ch3ohN, c=ch3ohT, vmax=600, vmin=0,
+           edgecolor='none', alpha=0.9)
 pl.axis((1e-3, 0.2, 1e17, 1e19))
 pl.loglog()
+pl.xlabel("Dust Brightness (Jy/beam)")
+pl.ylabel("N(CH$_3$OH) [cm$^{-2}$]")
+cb = pl.colorbar()
+cb.set_label('CH$_3$OH-derived Temperature')
 pl.savefig(paths.fpath('chemistry/CH3OH_LTE_vs_dust_brightness.png'))
 
 bm = radio_beam.Beam.from_fits_header(paths.dpath("W51_te_continuum_best.fits"))
@@ -76,13 +84,47 @@ dust_column = dust_emissivity.dust.colofsnu(225*u.GHz, dust_brightness*u.Jy,
                                             temperature=ch3ohT*u.K)
 
 pl.figure(6).clf()
-pl.scatter(dust_column, ch3ohN, c=ch3ohT, vmax=600, vmin=0)
+pl.plot([1e23,1e25], [1e16, 1e18], 'k-', label='$X=10^{-7}$', zorder=-1)
+pl.plot([1e23,1e25], [1e17, 1e19], 'k--', label='$X=10^{-6}$', zorder=-2)
+pl.scatter(dust_column, ch3ohN, c=ch3ohT, vmax=600, vmin=0, edgecolor='none',
+           alpha=0.9)
 pl.loglog()
 pl.axis((1e23, 1e25, 1e17, 1e19))
+pl.xlabel("Dust-derived N(H$_2$) [cm$^{-2}$]")
+pl.ylabel("N(CH$_3$OH) [cm$^{-2}$]")
+cb = pl.colorbar()
+cb.set_label('CH$_3$OH-derived Temperature')
+pl.legend(loc='lower right')
 pl.savefig(paths.fpath('chemistry/CH3OH_LTE_vs_dust_column.png'))
 
 pl.figure(7).clf()
 ch3oh_abundance = ch3ohN / dust_column.value 
-pl.imshow(ch3oh_abundance, vmin=1e-8, vmax=1e-5, cmap='gray_r', norm=matplotlib.colors.LogNorm())
-pl.colorbar()
+pl.imshow(ch3oh_abundance, vmin=1e-7, vmax=1e-5, cmap='gray_r', norm=matplotlib.colors.LogNorm())
+cb = pl.colorbar()
+cb.set_label("Dust-derived N(H$_2$) [cm$^{-2}$]")
+pl.xticks([])
+pl.yticks([])
+pl.plot([80,80+(1*u.arcsec/pixscale)], [5, 5], 'k-')
+pl.annotate("1\" = 5400 AU", ((160+(1*u.arcsec/pixscale))/2. - 5, 7.5),
+            horizontalalignment='center')
 pl.savefig(paths.fpath('chemistry/CH3OH_LTE_abundance_map.png'))
+
+pl.figure(8).clf()
+yy,xx = np.indices(ch3ohN.shape)
+yyc = (yy-ch3ohN.shape[0]/2.)
+xxc = (xx-ch3ohN.shape[1]/2.)
+rr = (yyc**2 + xxc**2)**0.5
+theta = np.arctan2(yyc,xxc)*u.rad
+mask = ((theta > 15*u.deg) & (theta < 345*u.deg)) | (theta < -15*u.deg)
+
+pl.scatter((rr*pixscale).to(u.arcsec).value[mask],
+           ch3oh_abundance[mask],
+           c=ch3ohT[mask], vmax=600, vmin=0, edgecolor='none', alpha=0.9)
+#pl.semilogy()
+pl.axis((0,(rr.max()*pixscale).to(u.arcsec).value,
+         1e-7, 5e-6))
+pl.xlabel("Separation from e2e (\")")
+pl.ylabel("$X$(CH$_3$OH)")
+cb = pl.colorbar()
+cb.set_label('CH$_3$OH-derived Temperature')
+pl.savefig(paths.fpath('chemistry/CH3OH_LTE_abundance_radial_profile.png'))
