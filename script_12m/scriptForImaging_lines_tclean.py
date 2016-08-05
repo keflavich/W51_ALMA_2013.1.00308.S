@@ -8,17 +8,26 @@ calpath = './'
 
 vis_tc='calibrated_12m.ms'
 
-velocity_range = 25,95
 velocity_res = 1.0
 
 # It's not clear how cvel will handle overlapping SPWs
 
 for line, restfreq, velocity_res, spw in line_to_image_list:
 
+    if spw < 0 or velocity_res < 0:
+        continue
+
+    if line == 'H30alpha':
+        velocity_range = -100, 200
+    else:
+        velocity_range = 25,95
+
     outms_template = "{line}_W51_B6_{array}.cvel.ms"
     outms = outms_template.format(line=line, array='12m')
 
     nchans = int((velocity_range[1]-velocity_range[0])/velocity_res)
+
+    print("Beginning {0}".format(line))
 
     # cvel the data first
     if not os.path.exists(outms):

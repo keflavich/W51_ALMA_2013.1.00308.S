@@ -5,6 +5,7 @@ The cutout process requires loading a lot into memory, so this can cause
 out-of-memory crashes if the cutouts are too large
 """
 import re
+from astropy import log
 from astropy import units as u
 from astropy import coordinates
 from spectral_cube import SpectralCube
@@ -27,6 +28,9 @@ corners = {reg.attr[1]['text']: {'lowerleft': coordinates.SkyCoord([reg.coord_li
 #          }
 repl = re.compile("W51[en]2?cax")
 
+# sometimes needed to workaround abort traps
+log.setLevel('DEBUG')
+
 for source,cubefn in [#('e2', "W51e2cax.CH3CN_K3_nat.image.fits"),
                       #('e2', "W51e2cax.CH3CN_K3_nat_all.image.fits"),
                       # done ('e2', "W51e2cax.CH3CN_K8.image.pbcor.fits"),
@@ -39,8 +43,8 @@ for source,cubefn in [#('e2', "W51e2cax.CH3CN_K3_nat.image.fits"),
                       # done ('e2', "W51e2cax.SPW5_ALL.image.fits"),
                       # done ('e2', "W51e2cax.SPW7_ALL.image.fits"),
                       # done ('e2', "W51e2cax.SPW8_ALL.image.fits"),
-                      ('e2', "W51e2cax.SPW0_ALL.image.fits"),
-                      ('e8', "W51e2cax.SPW0_ALL.image.fits"),
+                      #('e2', "W51e2cax.SPW0_ALL.image.fits"),
+                      #('e8', "W51e2cax.SPW0_ALL.image.fits"),
                       #('e2', "W51e2cax.SPW9_ALL.image.fits"),
                       #('e8', "W51e2cax.SPW1_ALL.image.fits"),
                       #('e8', "W51e2cax.SPW3_ALL.image.fits"),
@@ -60,6 +64,7 @@ for source,cubefn in [#('e2', "W51e2cax.CH3CN_K3_nat.image.fits"),
                       # done ('north', "W51ncax.SPW2_ALL.image.fits"),
                       # done ('north', "W51ncax.SPW4_ALL.image.fits"),
                       # done ('north', "W51ncax.SPW6_ALL.image.fits"),
+                      ('north', "W51ncax.SPW0_ALL.image.fits"),
                       #('north', "W51ncax.SPW1_ALL.image.fits"),
                       #('north', "W51ncax.SPW2_ALL.image.fits"),
                       #('north', "W51ncax.SPW3_ALL.image.fits"),
@@ -83,6 +88,7 @@ for source,cubefn in [#('e2', "W51e2cax.CH3CN_K3_nat.image.fits"),
     print("Cube {0} cutout {1} beginning".format(cubefn, source))
 
     try:
+        log.debug("Reading cube")
         cube = SpectralCube.read(cubefn)
     except Exception as ex:
         print(cubefn, ex)
@@ -101,7 +107,9 @@ for source,cubefn in [#('e2', "W51e2cax.CH3CN_K3_nat.image.fits"),
     print(cube)
     print("View: ",view)
 
+    log.debug("Slicing cube")
     cutout = cube[view]
+    log.debug("Done slicing cube")
     print(cutout)
     cutout.write(outfn.replace(suffix,"_cutout.fits"), overwrite=True)
     print("Median calculation")
