@@ -8,6 +8,8 @@ import dust_emissivity
 from astropy.io import fits
 import pylab as pl
 from astropy import units as u
+from astropy import wcs
+import image_tools
 matplotlib.rc_file('pubfiguresrc')
 
 
@@ -35,7 +37,7 @@ F.save(paths.fpath("ch3oh1029_contours_on_continuum.png"))
 matplotlib.pyplot.figure(3).clf()
 F = aplpy.FITSFigure(paths.dpath('12m/moments/CH3OH_e2_cutout_temperaturemap.fits'),
                      figure=matplotlib.pyplot.figure(3))
-F.show_colorscale(vmax=600, vmin=0, cmap='hot')
+F.show_colorscale(vmax=600, vmin=100, cmap='hot')
 F.show_contour(paths.dpath('W51_te_continuum_best.fits'),
                colors=['b']*11,
                levels=[0.015, 0.0256944, 0.0577778, 0.11125, 0.186111,
@@ -67,7 +69,7 @@ pixscale = (w.pixel_scale_matrix.diagonal()**2).sum()**0.5 * u.deg
 pl.figure(5).clf()
 ch3ohN = ch3ohN_hdul[0].data
 ch3ohT = ch3ohT_hdul[0].data
-pl.scatter(dust_brightness, ch3ohN, c=ch3ohT, vmax=600, vmin=0,
+pl.scatter(dust_brightness, ch3ohN, c=ch3ohT, vmax=600, vmin=100,
            edgecolor='none', alpha=0.9)
 pl.axis((1e-3, 0.2, 1e17, 1e19))
 pl.loglog()
@@ -86,7 +88,7 @@ dust_column = dust_emissivity.dust.colofsnu(225*u.GHz, dust_brightness*u.Jy,
 pl.figure(6).clf()
 pl.plot([1e23,1e25], [1e16, 1e18], 'k-', label='$X=10^{-7}$', zorder=-1)
 pl.plot([1e23,1e25], [1e17, 1e19], 'k--', label='$X=10^{-6}$', zorder=-2)
-pl.scatter(dust_column, ch3ohN, c=ch3ohT, vmax=600, vmin=0, edgecolor='none',
+pl.scatter(dust_column, ch3ohN, c=ch3ohT, vmax=600, vmin=100, edgecolor='none',
            alpha=0.9)
 pl.loglog()
 pl.axis((1e23, 1e25, 1e17, 1e19))
@@ -95,7 +97,7 @@ pl.ylabel("N(CH$_3$OH) [cm$^{-2}$]")
 cb = pl.colorbar()
 cb.set_label('CH$_3$OH-derived Temperature')
 pl.legend(loc='lower right')
-pl.savefig(paths.fpath('chemistry/CH3OH_LTE_vs_dust_column.png'))
+pl.savefig(paths.fpath('chemistry/CH3OH_LTE_vs_dust_column.png'), bbox_inches='tight')
 
 pl.figure(7).clf()
 ch3oh_abundance = ch3ohN / dust_column.value 
@@ -107,7 +109,7 @@ pl.yticks([])
 pl.plot([80,80+(1*u.arcsec/pixscale)], [5, 5], 'k-')
 pl.annotate("1\" = 5400 AU", ((160+(1*u.arcsec/pixscale))/2. - 5, 7.5),
             horizontalalignment='center')
-pl.savefig(paths.fpath('chemistry/CH3OH_LTE_abundance_map.png'))
+pl.savefig(paths.fpath('chemistry/CH3OH_LTE_abundance_map.png'), bbox_inches='tight')
 
 pl.figure(8).clf()
 yy,xx = np.indices(ch3ohN.shape)
@@ -116,15 +118,47 @@ xxc = (xx-ch3ohN.shape[1]/2.)
 rr = (yyc**2 + xxc**2)**0.5
 theta = np.arctan2(yyc,xxc)*u.rad
 mask = ((theta > 15*u.deg) & (theta < 345*u.deg)) | (theta < -15*u.deg)
+mask = mask & (ch3oh_abundance > 0) & (ch3oh_abundance < 1e-5)
+
+#inds = np.argsort(rr.ravel())
+#bad = ~np.isfinite(ch3oh_abundance)
+#cumul_mean = (np.cumsum((np.nan_to_num(ch3oh_abundance)*mask).ravel()[inds]) /
+#              np.cumsum(np.arange(inds.size)*(~bad).ravel()*mask.ravel()))
+radbins,radialprof = image_tools.radialprofile.azimuthalAverage(ch3oh_abundance,
+                                                                weights=mask.astype('float'),
+                                                                returnradii=True,
+                                                                binsize=2)
 
 pl.scatter((rr*pixscale).to(u.arcsec).value[mask],
            ch3oh_abundance[mask],
-           c=ch3ohT[mask], vmax=600, vmin=0, edgecolor='none', alpha=0.9)
+           c=ch3ohT[mask], vmax=600, vmin=100, edgecolor='none', alpha=0.9)
 #pl.semilogy()
 pl.axis((0,(rr.max()*pixscale).to(u.arcsec).value,
          1e-7, 5e-6))
+pl.plot((radbins*pixscale).to(u.arcsec).value, radialprof, color='k', alpha=0.5, linewidth=2)
 pl.xlabel("Separation from e2e (\")")
 pl.ylabel("$X$(CH$_3$OH)")
+pl.gca().ticklabel_format(style='sci', axis='y', scilimits=(0,0), useOffset=False)
 cb = pl.colorbar()
 cb.set_label('CH$_3$OH-derived Temperature')
-pl.savefig(paths.fpath('chemistry/CH3OH_LTE_abundance_radial_profile.png'))
+pl.savefig(paths.fpath('chemistry/CH3OH_LTE_abundance_radial_profile.png'),
+           bbox_inches='tight')
+
+pl.figure(9).clf()
+pl.scatter((rr*pixscale).to(u.arcsec).value[mask],
+           ch3ohT[mask],
+           c=ch3oh_abundance[mask], vmax=5e-6, vmin=1e-7, edgecolor='none', alpha=0.8,
+           norm=matplotlib.colors.LogNorm())
+pl.scatter((rr*pixscale).to(u.arcsec).value[~mask],
+           ch3ohT[~mask],
+           c=ch3oh_abundance[~mask], vmax=5e-6, vmin=1e-7, edgecolor='k', alpha=0.5,
+           norm=matplotlib.colors.LogNorm(), zorder=-1)
+#pl.semilogy()
+pl.axis((0,(rr.max()*pixscale).to(u.arcsec).value,
+         100,600))
+pl.xlabel("Separation from e2e (\")")
+cb = pl.colorbar()
+cb.set_label("$X$(CH$_3$OH)")
+pl.ylabel('CH$_3$OH-derived Temperature')
+pl.savefig(paths.fpath('chemistry/CH3OH_LTE_temperature_radial_profile.png'),
+           bbox_inches='tight')
