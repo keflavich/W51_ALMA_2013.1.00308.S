@@ -14,14 +14,14 @@ matplotlib.rc_file('pubfiguresrc')
 
 
 matplotlib.pyplot.figure(1).clf()
-F = aplpy.FITSFigure(paths.dpath('chemslices/chemical_m0_slabs_e2_CH3OH1029-936_merge.fits'),
+F1 = aplpy.FITSFigure(paths.dpath('chemslices/chemical_m0_slabs_e2_CH3OH1029-936_merge.fits'),
                      figure=matplotlib.pyplot.figure(1))
-F.show_grayscale(invert=True, vmax=1100, vmin=-20)
-F.show_contour(paths.dpath('W51_te_continuum_best.fits'),
-               colors=['r']*11,
-               levels=[0.015, 0.0256944, 0.0577778, 0.11125, 0.186111,
-                       0.282361, 0.4, ])
-F.save(paths.fpath("continuum_contours_on_ch3oh1029.png"))
+F1.show_grayscale(invert=True, vmax=1100, vmin=-20)
+F1.show_contour(paths.dpath('W51_te_continuum_best.fits'),
+                colors=['r']*11,
+                levels=[0.015, 0.0256944, 0.0577778, 0.11125, 0.186111,
+                        0.282361, 0.4, ])
+F1.save(paths.fpath("continuum_contours_on_ch3oh1029.png"))
 
 matplotlib.pyplot.figure(2).clf()
 F = aplpy.FITSFigure(paths.dpath('W51_te_continuum_best.fits'),
@@ -89,7 +89,7 @@ pl.figure(6).clf()
 pl.plot([1e23,1e25], [1e16, 1e18], 'k-', label='$X=10^{-7}$', zorder=-1)
 pl.plot([1e23,1e25], [1e17, 1e19], 'k--', label='$X=10^{-6}$', zorder=-2)
 pl.scatter(dust_column, ch3ohN, c=ch3ohT, vmax=600, vmin=100, edgecolor='none',
-           alpha=0.9)
+           alpha=0.6)
 pl.loglog()
 pl.axis((1e23, 1e25, 1e17, 1e19))
 pl.xlabel("Dust-derived N(H$_2$) [cm$^{-2}$]")
@@ -111,14 +111,25 @@ pl.annotate("1\" = 5400 AU", ((160+(1*u.arcsec/pixscale))/2. - 5, 7.5),
             horizontalalignment='center')
 pl.savefig(paths.fpath('chemistry/CH3OH_LTE_abundance_map.png'), bbox_inches='tight')
 
-pl.figure(8).clf()
 yy,xx = np.indices(ch3ohN.shape)
 yyc = (yy-ch3ohN.shape[0]/2.)
 xxc = (xx-ch3ohN.shape[1]/2.)
 rr = (yyc**2 + xxc**2)**0.5
+rr_as = (rr*pixscale).to(u.arcsec)
 theta = np.arctan2(yyc,xxc)*u.rad
 mask = ((theta > 15*u.deg) & (theta < 345*u.deg)) | (theta < -15*u.deg)
 mask = mask & (ch3oh_abundance > 0) & (ch3oh_abundance < 1e-5)
+mask = mask & (rr_as < 3*u.arcsec) # there's not really any valid data out of this radius
+mask = mask & ~((ch3ohT > 250) & (ch3ohN < 5e17)) # these are low-column,
+# high-temperature: they're very likely to be bad fits, since there is no
+# high-excitation data at these positions
+
+mask_hdu = fits.PrimaryHDU(data=mask.astype('float'), header=ch3ohN_hdul[0].header)
+F1.hide_layer('contour_set_1')
+F1.show_contour(mask_hdu, levels=[0.5,1.5], colors=[(1,0,0,0.1)]*2, filled=True,
+                layer='mask_contours')
+F1.save(paths.fpath("chemistry/CH3OH_LTE_mask_contours_on_ch3oh1029.png"))
+
 
 #inds = np.argsort(rr.ravel())
 #bad = ~np.isfinite(ch3oh_abundance)
@@ -127,15 +138,17 @@ mask = mask & (ch3oh_abundance > 0) & (ch3oh_abundance < 1e-5)
 radbins,radialprof = image_tools.radialprofile.azimuthalAverage(ch3oh_abundance,
                                                                 weights=mask.astype('float'),
                                                                 returnradii=True,
-                                                                binsize=2)
+                                                                binsize=1,
+                                                                interpnan=True)
 
-pl.scatter((rr*pixscale).to(u.arcsec).value[mask],
+pl.figure(8).clf()
+pl.scatter(rr_as.value[mask],
            ch3oh_abundance[mask],
            c=ch3ohT[mask], vmax=600, vmin=100, edgecolor='none', alpha=0.9)
 #pl.semilogy()
-pl.axis((0,(rr.max()*pixscale).to(u.arcsec).value,
-         1e-7, 5e-6))
 pl.plot((radbins*pixscale).to(u.arcsec).value, radialprof, color='k', alpha=0.5, linewidth=2)
+pl.axis((0,3, #(rr.max()*pixscale).to(u.arcsec).value,
+         1e-7, 5e-6))
 pl.xlabel("Separation from e2e (\")")
 pl.ylabel("$X$(CH$_3$OH)")
 pl.gca().ticklabel_format(style='sci', axis='y', scilimits=(0,0), useOffset=False)
@@ -145,20 +158,55 @@ pl.savefig(paths.fpath('chemistry/CH3OH_LTE_abundance_radial_profile.png'),
            bbox_inches='tight')
 
 pl.figure(9).clf()
-pl.scatter((rr*pixscale).to(u.arcsec).value[mask],
+pl.scatter(rr_as.value[mask],
            ch3ohT[mask],
            c=ch3oh_abundance[mask], vmax=5e-6, vmin=1e-7, edgecolor='none', alpha=0.8,
            norm=matplotlib.colors.LogNorm())
-pl.scatter((rr*pixscale).to(u.arcsec).value[~mask],
+pl.scatter(rr_as.value[~mask],
            ch3ohT[~mask],
            c=ch3oh_abundance[~mask], vmax=5e-6, vmin=1e-7, edgecolor='k', alpha=0.5,
            norm=matplotlib.colors.LogNorm(), zorder=-1)
 #pl.semilogy()
-pl.axis((0,(rr.max()*pixscale).to(u.arcsec).value,
+pl.axis((0,3,#(rr.max()*pixscale).to(u.arcsec).value,
          100,600))
 pl.xlabel("Separation from e2e (\")")
 cb = pl.colorbar()
 cb.set_label("$X$(CH$_3$OH)")
 pl.ylabel('CH$_3$OH-derived Temperature')
 pl.savefig(paths.fpath('chemistry/CH3OH_LTE_temperature_radial_profile.png'),
+           bbox_inches='tight')
+
+
+
+pl.figure(10).clf()
+pl.scatter(ch3ohT[mask],
+           ch3ohN[mask],
+           c=ch3oh_abundance[mask], vmax=5e-6, vmin=1e-7, edgecolor='none', alpha=0.8,
+           norm=matplotlib.colors.LogNorm())
+pl.semilogy()
+#pl.axis((0,(rr.max()*pixscale).to(u.arcsec).value,
+#         100,600))
+pl.axis((100,600, 1e17,1e19))
+cb = pl.colorbar()
+cb.set_label("$X$(CH$_3$OH)")
+pl.xlabel('CH$_3$OH-derived Temperature')
+pl.ylabel('N(CH$_3$OH) [cm$^{-2}$]')
+pl.savefig(paths.fpath('chemistry/CH3OH_LTE_temperature_vs_column.png'),
+           bbox_inches='tight')
+
+
+pl.figure(11).clf()
+pl.scatter(ch3ohT[mask],
+           ch3oh_abundance[mask],
+           c=ch3ohN[mask], vmax=1e17, vmin=1e19, edgecolor='none', alpha=0.8,
+           norm=matplotlib.colors.LogNorm())
+pl.semilogy()
+#pl.axis((0,(rr.max()*pixscale).to(u.arcsec).value,
+#         100,600))
+pl.axis((100,600, 1e-7, 5e-6,))
+cb = pl.colorbar()
+pl.ylabel("$X$(CH$_3$OH)")
+pl.xlabel('CH$_3$OH-derived Temperature')
+cb.set_label('N(CH$_3$OH) [cm$^{-2}$]')
+pl.savefig(paths.fpath('chemistry/CH3OH_LTE_temperature_vs_abundance.png'),
            bbox_inches='tight')
