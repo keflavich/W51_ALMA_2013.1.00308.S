@@ -77,7 +77,8 @@ pl.xlabel("Dust Brightness (Jy/beam)")
 pl.ylabel("N(CH$_3$OH) [cm$^{-2}$]")
 cb = pl.colorbar()
 cb.set_label('CH$_3$OH-derived Temperature')
-pl.savefig(paths.fpath('chemistry/CH3OH_LTE_vs_dust_brightness.png'))
+pl.savefig(paths.fpath('chemistry/CH3OH_LTE_vs_dust_brightness.png'),
+           bbox_inches='tight')
 
 bm = radio_beam.Beam.from_fits_header(paths.dpath("W51_te_continuum_best.fits"))
 
@@ -97,7 +98,8 @@ pl.ylabel("N(CH$_3$OH) [cm$^{-2}$]")
 cb = pl.colorbar()
 cb.set_label('CH$_3$OH-derived Temperature')
 pl.legend(loc='upper left')
-pl.savefig(paths.fpath('chemistry/CH3OH_LTE_vs_dust_column.png'), bbox_inches='tight')
+pl.savefig(paths.fpath('chemistry/CH3OH_LTE_vs_dust_column.png'),
+           bbox_inches='tight')
 
 pl.figure(7).clf()
 ch3oh_abundance = ch3ohN / dust_column.value 
