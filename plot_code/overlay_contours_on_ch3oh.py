@@ -164,10 +164,10 @@ pl.scatter(rr_as.value[mask],
            ch3ohT[mask],
            c=ch3oh_abundance[mask], vmax=5e-6, vmin=1e-7, edgecolor='none', alpha=0.8,
            norm=matplotlib.colors.LogNorm())
-pl.scatter(rr_as.value[~mask],
-           ch3ohT[~mask],
-           c=ch3oh_abundance[~mask], vmax=5e-6, vmin=1e-7, edgecolor='k', alpha=0.5,
-           norm=matplotlib.colors.LogNorm(), zorder=-1)
+#pl.scatter(rr_as.value[~mask],
+#           ch3ohT[~mask],
+#           c=ch3oh_abundance[~mask], vmax=5e-6, vmin=1e-7, edgecolor='k', alpha=0.5,
+#           norm=matplotlib.colors.LogNorm(), zorder=-1)
 #pl.semilogy()
 pl.axis((0,3,#(rr.max()*pixscale).to(u.arcsec).value,
          100,600))
