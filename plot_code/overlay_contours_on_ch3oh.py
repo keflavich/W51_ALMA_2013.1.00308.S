@@ -96,7 +96,7 @@ pl.xlabel("Dust-derived N(H$_2$) [cm$^{-2}$]")
 pl.ylabel("N(CH$_3$OH) [cm$^{-2}$]")
 cb = pl.colorbar()
 cb.set_label('CH$_3$OH-derived Temperature')
-pl.legend(loc='lower right')
+pl.legend(loc='upper left')
 pl.savefig(paths.fpath('chemistry/CH3OH_LTE_vs_dust_column.png'), bbox_inches='tight')
 
 pl.figure(7).clf()
