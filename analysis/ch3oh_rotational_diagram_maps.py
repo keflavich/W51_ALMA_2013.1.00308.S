@@ -47,9 +47,10 @@ einsteinAij = u.Quantity([float(rt[key].TransitionProbabilityA) for key in rt], 
 # http://www.astro.uni-koeln.de/cdms/catalog#equations
 # the units are almost certainly wrong; I don't know how to compute line strength
 # from aij =(
-line_strengths_smu2 = u.Quantity([(frq**-3 * deg / 1.16395e-20 * Aij).value
-                                  for frq,deg,Aij in zip(frqs, degeneracies, einsteinAij)],
-                                 u.esu*u.cm)
+# thankfully, these aren't used anywhere.
+#line_strengths_smu2 = u.Quantity([(frq**-3 * deg / 1.16395e-20 * Aij).value
+#                                  for frq,deg,Aij in zip(frqs, degeneracies, einsteinAij)],
+#                                 u.esu*u.cm)
 
 
 def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
@@ -173,7 +174,9 @@ def nupper_of_kkms(kkms, freq, Aul, degeneracies, Tex=100*u.K,
 #    return nline.value / degeneracies *u.cm**-2 # because... something wrong.
 #    return nline.value * u.cm**-2
 #
-def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None):
+def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None,
+            errors=None, min_nupper=1,
+            max_uplims='half'):
     """
     Fit the Boltzmann diagram
     """
@@ -185,18 +188,26 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None):
 
     if uplims is not None:
         upperlim_mask = nupperoverg < uplims
-        if upperlim_mask.sum() > len(nupperoverg)/2.:
+
+        # allow this magical keyword 'half'
+        max_uplims = len(nupperoverg)/2. if max_uplims == 'half' else max_uplims
+
+        if upperlim_mask.sum() > max_uplims:
             # too many upper limits = bad idea to fit.
             return 0*u.cm**-2, 0*u.K, 0, 0
         nupperoverg_tofit[upperlim_mask] = uplims[upperlim_mask]
 
-    # always ignore negatives
-    good = nupperoverg_tofit > 0
+    # always ignore negatives & really low values
+    good = nupperoverg_tofit > min_nupper
     # skip any fits that have fewer than 50% good values
     if good.sum() < len(nupperoverg_tofit)/2.:
         return 0*u.cm**-2, 0*u.K, 0, 0
 
-    result = fitter(model, eupper[good], np.log(nupperoverg_tofit[good]))
+    if errors is not None:
+        weights = 1./errors**2.
+
+    result = fitter(model, eupper[good], np.log(nupperoverg_tofit[good]),
+                    weights=weights[good])
     tex = -1./result.slope*u.K
 
     partition_func = specmodel.calculate_partitionfunction(ch3oh.data['States'],
@@ -214,11 +225,20 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None):
         L, = pl.plot(eupper, np.log10(nupperoverg_tofit), 'ro',
                      markeredgecolor='none', alpha=0.5)
         L, = pl.plot(eupper, np.log10(nupperoverg), 'o')
+        if errors is not None:
+            pl.errorbar(eupper.value,
+                        np.log10(nupperoverg),
+                        yerr=np.array([np.log10(nupperoverg)-np.log10(nupperoverg-errors),
+                                       np.log10(nupperoverg+errors)-np.log10(nupperoverg)]),
+                        linestyle='none',
+                        marker='.', zorder=-5)
         xax = np.array([0, eupper.max().value])
         line = (xax*result.slope.value +
                 result.intercept.value)
         pl.plot(xax, np.log10(np.exp(line)), '-', color=L.get_color(),
-                label='$T={0:0.1f} \log(N)={1:0.1f}$'.format(tex, np.log10(Ntot.value)))
+                label='$T={0:0.1f}$ $\log(N)={1:0.1f}$'.format(tex, np.log10(Ntot.value)))
+        pl.ylabel("log N$_u$ (cm$^{-2}$)")
+        pl.xlabel("E$_u$ (K)")
 
         if uplims is not None:
             pl.plot(eupper, np.log10(uplims), marker='_', alpha=0.5,

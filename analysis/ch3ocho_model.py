@@ -280,7 +280,7 @@ if __name__ == "__main__":
                     limitedmin=[True]*4, limitedmax=[True]*4,
                     limits=[(50,70), (1,4), (20, 1000), (1e13, 1e18)])
 
-    # advanced craziness: free-fit each CH3OH line
+    # advanced craziness: free-fit each CH3OCHO line
     sp = spectra[3][:1700]
     sp.xarr.convert_to_unit(u.GHz)
     sp.data -= np.nanpercentile(sp.data, 10)

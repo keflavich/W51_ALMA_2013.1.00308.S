@@ -9,11 +9,16 @@ from spectral_cube import SpectralCube
 from astropy import units as u
 from astropy import constants
 from astropy.io import fits
+from astropy import log
 from astroquery.splatalogue import Splatalogue
 
 from vamdclib import nodes
 from vamdclib import request
 from vamdclib import specmodel
+
+import pylab as pl
+pl.matplotlib.rc_file('pubfiguresrc')
+import line_to_image_list
 
 tbl = Splatalogue.query_lines(210*u.GHz, 235*u.GHz, chemical_name=' CH3OH',
                               energy_max=1840, energy_type='eu_k')
@@ -149,6 +154,125 @@ def ch3oh_absorption_fitter():
 pyspeckit.spectrum.fitters.default_Registry.add_fitter('ch3oh_absorption',ch3oh_absorption_fitter(),5)
 
 
+def show_modelfit(spectra, vel, width, tem, col, figsavename=None, fignum=1,
+                  vscale=3, ylim=(-5,100), separation_tolerance=0.005*u.GHz,):
+    """
+    width=fwhm
+    """
+
+    assert spectra.unit == 'K'
+
+    if 'ch3oh' in spectra.specfit.Registry.multifitters:
+        del spectra.specfit.Registry.multifitters['ch3oh']
+    spectra.specfit.Registry.add_fitter('ch3oh', ch3oh_fitter(), 4)
+    spectra.specfit.fitter = spectra.specfit.Registry.multifitters['ch3oh']
+
+    #spectra.specfit.plot_model([vel, width/2.35, tem, col])
+
+    pl.figure(fignum).clf()
+    spectra.xarr.convert_to_unit(u.GHz)
+    linenamecen = [(x[0],float(x[1].strip('GHz')))
+                   for x in line_to_image_list.line_to_image_list
+                   if 'CH3OH' in x[0][:5]]
+
+    # three checks:
+    # 1) is the line in range?
+    # 2) does the line correspond to finite data?
+    # 3) is the closest spectral pixel actually near the line?
+    #    (this is to check whether the line falls in SPW gaps)
+    okfreqs = np.array([spectra.xarr.in_range(nu) and
+                        np.isfinite(spectra.data[spectra.xarr.x_to_pix(nu)]) and
+                        np.min(np.abs(spectra.xarr-nu*u.GHz)) < separation_tolerance
+                        for ln,nu in linenamecen], dtype='bool')
+
+
+    nx,ny = 3,3
+    plotnum = 1
+    for ii,((linename,linecen),isOK) in enumerate(zip(linenamecen,okfreqs)):
+        if not isOK:
+            print("Skipped {0}:{1} because it is not OK".format(linename,linecen))
+            continue
+        ax = pl.subplot(nx,ny,plotnum)
+        spectra.xarr.convert_to_unit(u.GHz)
+        spectra.xarr.convert_to_unit(u.km/u.s, refX=linecen*u.GHz)
+        #fcen = (1-vel/constants.c.to(u.km/u.s).value)*linecen
+        #dx = width/constants.c.to(u.km/u.s).value * linecen*3
+        try:
+            spectra.plotter(xmin=vel-vscale*width, xmax=vel+vscale*width,
+                            axis=ax)
+        except Exception as ex:
+            if "Infinite recursion" in str(ex):
+                ax.clear()
+                ax.set_ylabel("")
+                ax.get_yaxis().set_ticklabels([])
+                ax.set_xlabel("")
+                ax.get_xaxis().set_ticklabels([])
+                print("Skipped {0}:{1} because it failed".format(linename,linecen))
+                continue
+            else:
+                raise ex
+        if tem > 0: # check to avoid div-by-zero error
+            spectra.specfit.plot_model([vel, width/2.35, tem, col])
+        else:
+            print("Model had T=0 for {0}".format(linename))
+        ax.set_ylim(*ylim)
+        ax.annotate(line_to_image_list.labeldict[linename],
+                    (0.05, 0.85), horizontalalignment='left',
+                    xycoords='axes fraction')
+
+        if ((plotnum-1) % ny == 0) and (((plotnum-1) // nx) == 1):
+            pl.ylabel("Brightness Temperature $T_B$ [K]")
+            if (plotnum-1) != (ny*(nx-1)):
+                ticks = pl.gca().get_yaxis().get_ticklocs()
+                pl.gca().get_yaxis().set_ticks(ticks[1:])
+        else:
+            pl.ylabel("")
+            pl.gca().get_yaxis().set_ticklabels([])
+        if (plotnum-1) >= (ny*(nx-1)) and (((plotnum-1) % nx) == 1):
+            pl.xlabel("$V_{LSR}$ [km/s]")
+            #tl = pl.gca().get_yaxis().get_ticklabels()
+            xax = pl.gca().get_xaxis()
+            if (plotnum-1) == (nx*ny-1):
+                pass
+                #xax.set_ticks((0,200,400,600,800))
+            else:
+                pass
+                #xax.set_ticks((0,200,400,600))
+            xax.set_tick_params(labelsize=14)
+            log.debug("Xlabel -> labeled: {0}".format(plotnum))
+        else:
+            log.debug("Xlabel -> blank: {0}".format(plotnum))
+            pl.xlabel("")
+            pl.gca().get_xaxis().set_ticklabels([])
+        pl.subplots_adjust(hspace=0, wspace=0)
+        plotnum += 1
+
+    if figsavename is not None:
+        pl.savefig(figsavename, bbox_inches='tight')
+
+
+def load_and_convert_spectra(globname):
+    import glob
+    import paths
+    import pyspeckit
+    import radio_beam
+    speclist = [pyspeckit.Spectrum(fn) for fn in
+                glob.glob(paths.spath(globname))]
+    for sp in speclist:
+        sp.data -= np.nanpercentile(sp.data, 25)
+    spectra = pyspeckit.Spectra(speclist)
+    beam = radio_beam.Beam.from_fits_header(spectra.header)
+    # "baseline"
+    #spectra.data -= np.nanpercentile(spectra.data, 10)
+    spectra.data *= beam.jtok(spectra.xarr)
+    spectra.unit='K'
+
+    spectra.xarr.refX = 220*u.GHz # hackalack
+
+    return spectra
+
+
+
 if __name__ == "__main__":
 
     import glob
@@ -182,9 +306,6 @@ if __name__ == "__main__":
                              line_xvals=freqs[ok],
                              velocity_offset=55.626*u.km/u.s)
 
-    import pylab as pl
-    pl.matplotlib.rc_file('pubfiguresrc')
-    import line_to_image_list
     target = 'SelectedPixel{0}'
     for selreg, tem, col, vel, width, ylim in (
         (1, 401, 5.1e18, 55.2, 5.3, (-5,100)),
@@ -207,62 +328,10 @@ if __name__ == "__main__":
         pl.figure(selreg, figsize=(24,16)).clf()
         spectra.plotter(figure=selreg)
 
-        if 'ch3oh' in spectra.specfit.Registry.multifitters:
-            del spectra.specfit.Registry.multifitters['ch3oh']
-        spectra.specfit.Registry.add_fitter('ch3oh', ch3oh_fitter(), 4)
-        spectra.specfit.fitter = spectra.specfit.Registry.multifitters['ch3oh']
-
-        spectra.specfit.plot_model([vel, width/2.35, tem, col])
-
-        pl.figure(4+selreg).clf()
-        spectra.xarr.convert_to_unit(u.GHz)
-        linenamecen = [(x[0],float(x[1].strip('GHz'))) for x in line_to_image_list.line_to_image_list
-                       if 'CH3OH' in x[0][:5]]
-
-        nx,ny = 3,3
-        for ii,(linename,linecen) in enumerate(linenamecen):
-            plotnum=ii+1
-            ax = pl.subplot(nx,ny,ii+1)
-            spectra.xarr.convert_to_unit(u.GHz)
-            spectra.xarr.convert_to_unit(u.km/u.s, refX=linecen*u.GHz)
-            #fcen = (1-vel/constants.c.to(u.km/u.s).value)*linecen
-            #dx = width/constants.c.to(u.km/u.s).value * linecen*3
-            spectra.plotter(xmin=vel-3*width, xmax=vel+3*width,
-                            axis=ax)
-            spectra.specfit.plot_model([vel, width/2.35, tem, col])
-            ax.set_ylim(*ylim)
-            ax.annotate(line_to_image_list.labeldict[linename],
-                        (0.05, 0.85), horizontalalignment='left',
-                        xycoords='axes fraction')
-
-            if ((plotnum-1) % ny == 0) and (((plotnum-1) // nx) == 1):
-                pl.ylabel("Brightness Temperature $T_B$ [K]")
-                if (plotnum-1) != (ny*(nx-1)):
-                    ticks = pl.gca().get_yaxis().get_ticklocs()
-                    pl.gca().get_yaxis().set_ticks(ticks[1:])
-            else:
-                pl.ylabel("")
-                pl.gca().get_yaxis().set_ticklabels([])
-            if (plotnum-1) >= (ny*(nx-1)) and (((plotnum-1) % nx) == 1):
-                pl.xlabel("$V_{LSR}$ [km/s]")
-                tl = pl.gca().get_yaxis().get_ticklabels()
-                xax = pl.gca().get_xaxis()
-                if (plotnum-1) == (nx*ny-1):
-                    pass
-                    #xax.set_ticks((0,200,400,600,800))
-                else:
-                    pass
-                    #xax.set_ticks((0,200,400,600))
-                xax.set_tick_params(labelsize=14)
-                print("Xlabel -> labeled: {0}".format(plotnum))
-            else:
-                print("Xlabel -> blank: {0}".format(plotnum))
-                pl.xlabel("")
-                pl.gca().get_xaxis().set_ticklabels([])
-            pl.subplots_adjust(hspace=0, wspace=0)
-
-        pl.savefig(paths.fpath("chemistry/ch3oh_rotdiagram_fits_SelectedPixel{0}.png"
-                               .format(selreg)))
+        show_modelfit(spectra, vel, width, tem, col,
+                      figsavename=paths.fpath("chemistry/ch3oh_rotdiagram_fits_SelectedPixel{0}.png"
+                                              .format(selreg)),
+                      fignum=4+selreg, ylim=ylim)
 
         speclist = [pyspeckit.Spectrum(fn) for fn in
                     glob.glob(paths.merge_spath("*{0}_spw*7m12m_hires*fits".format(target.format(selreg))))]
