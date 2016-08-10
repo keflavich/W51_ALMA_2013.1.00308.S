@@ -12,6 +12,7 @@ from astropy import wcs
 from astropy import log
 from astropy.io import fits
 from astropy.nddata import Cutout2D
+from astropy.stats import mad_std
 
 from pyspeckit.spectrum.models import lte_molecule
 
@@ -62,6 +63,7 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
     assert filelist
 
     maps = {}
+    map_error = {}
     energies = {}
     degeneracies = {}
     frequencies = {}
@@ -77,9 +79,12 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
 
         if 'moment0' in fn:
             m0 = fits.getdata(fn)
+            stddev = fits.getdata(fn.replace("moment0","stddev"))
             header = fits.getheader(fn)
             cutout = Cutout2D(m0, source, 2*radius, wcs=wcs.WCS(header))
             m0 = cutout.data
+            cutout_std = Cutout2D(stddev, source, 2*radius, wcs=wcs.WCS(header))
+            stddev = cutout_std.data
             try:
                 beam = radio_beam.Beam.from_fits_header(header)
                 jtok = beam.jtok(header['RESTFRQ']*u.Hz).value
@@ -87,6 +92,7 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
                 jtok = 222. # approximated 0.32x0.34 at 225 GHz
 
             m0 = m0 * jtok
+            stddev = stddev * jtok
             header = cutout.wcs.to_header()
         else:
             cube = SpectralCube.read(fn)[:,yslice,xslice]
@@ -100,6 +106,7 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
             #contguess = cube.spectral_slab(70*u.km/u.s, 100*u.km/u.s).percentile(50, axis=0)
             mask = (cube.spectral_axis<40*u.km/u.s) | (cube.spectral_axis > 75*u.km/u.s)
             contguess = cube.with_mask(mask[:,None,None]).percentile(30, axis=0)
+            stddev = cube.with_mask(mask[:,None,None]).apply_numpy_function(mad_std, axis=0)
             slabsub = (slab-contguess)
             slabsub.beam_threshold = 0.15
             m0 = slabsub.moment0()
@@ -116,6 +123,7 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
                              unit=upperstate.StateEnergyUnit)
 
         maps[label] = m0
+        map_error[label] = stddev
         energies[label] = upperen
         degeneracies[label] = int(upperstate.TotalStatisticalWeight)
         indices[label] = closest_ind
@@ -127,11 +135,13 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
     keys = [energy_to_key[k] for k in order]
 
     cube = np.empty((len(maps),)+maps[label].shape)
+    ecube = np.empty_like(cube)
     xaxis = u.Quantity([energies[k] for k in keys])
     xaxis = xaxis.to(u.erg, u.spectral()).to(u.K, u.temperature_energy())
     for ii,key in enumerate(keys):
         # divide by degeneracy
         cube[ii,:,:] = maps[key]
+        ecube[ii,:,:] = map_err[key]
 
     frequencies = u.Quantity([frequencies[k] for k in keys])
     indices = [indices[k] for k in keys]
@@ -139,7 +149,7 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
 
     assert xaxis.size == cube.shape[0]
 
-    return xaxis,cube,maps,energies,frequencies,indices,degeneracies,header
+    return xaxis,cube,ecube,maps,map_error,energies,frequencies,indices,degeneracies,header
 
 
 def nupper_of_kkms(kkms, freq, Aul, degeneracies, Tex=100*u.K,
@@ -393,7 +403,7 @@ if __name__ == "__main__":
                'ALMAmm14': 0.001*approximate_jytok, # not real, just for better fits..
               }
 
-    # use precomputed moments
+    # use precomputed moments from chem_images
     for sourcename, region in (('e2','e2e8'), ('e8','e2e8'), ('north','north'),
                                ('ALMAmm14','ALMAmm14'),):
 
@@ -405,7 +415,7 @@ if __name__ == "__main__":
                                filelist=glob.glob(paths.dpath('12m/moments/*medsub_moment0.fits')),
                                chem_name='.CH3OH', # use dot to exclude 13CH3OH
                               )
-        xaxis,cube,maps,energies,cubefrequencies,indices,degeneracies,header = _
+        xaxis,cube,ecube,maps,map_error,energies,cubefrequencies,indices,degeneracies,header = _
 
         pl.figure(2, figsize=(12,12)).clf()
         sample_pos = np.linspace(0,1,7)[1:-1]
@@ -519,7 +529,7 @@ if __name__ == "__main__":
     #                           filelist=glob.glob(paths.dpath('12m/cutouts/*{0}*fits').format(region)),
     #                           chem_name='CH3OH',
     #                          )
-    #    xaxis,cube,maps,energies,cubefrequencies,indices,degeneracies,header = _
+    #    xaxis,cube,ecube,maps,map_error,energies,cubefrequencies,indices,degeneracies,header = _
 
 
     #    pl.figure(2).clf()
@@ -572,7 +582,7 @@ if __name__ == "__main__":
                            filelist=glob.glob(paths.dpath('12m/moments/*medsub_moment0.fits')),
                            chem_name='.CH3OH', # use dot to exclude 13CH3OH
                           )
-    xaxis,cube,maps,energies,cubefrequencies,indices,degeneracies,header = _
+    xaxis,cube,ecube,maps,map_error,energies,cubefrequencies,indices,degeneracies,header = _
     mywcs = wcs.WCS(header)
     replace_bad = dthresh[sourcename]
 

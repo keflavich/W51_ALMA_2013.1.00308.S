@@ -10,6 +10,7 @@ import radio_beam
 from spectral_cube.lower_dimensional_structures import Projection
 from astropy.io import fits
 from astropy import wcs
+from astropy.stats import mad_std
 from line_to_image_list import labeldict
 
 import re
@@ -62,6 +63,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         m0fitsfn = paths.dpath("chemslices/chemical_m0_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
         m1fitsfn = paths.dpath("chemslices/chemical_m1_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
         maxfitsfn = paths.dpath("chemslices/chemical_max_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
+        madstdfitsfn = paths.dpath("chemslices/chemical_madstd_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
         if not (os.path.exists(m0fitsfn) and os.path.exists(maxfitsfn)):
             print("Extracting max/m0/m1 for {0}".format(fn))
             cube = SpectralCube.read(fn)[:,yslice,xslice]
@@ -93,14 +95,21 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
             m0 = slabsub.moment0()
             m1 = slabsub.moment1()
             max = slabsub.max(axis=0)
+            madstd = cube.with_mask(mask[:,None,None]).apply_numpy_function(mad_std,
+                                                                            axis=0,
+                                                                            projection=True,
+                                                                            unit=cube.unit,
+                                                                           )
 
             m0.write(m0fitsfn, overwrite=True)
             m1.write(m1fitsfn, overwrite=True)
             max.write(maxfitsfn, overwrite=True)
+            madstd.write(madstdfitsfn, overwrite=True)
         else:
             m0fh = fits.open(m0fitsfn)
             m1fh = fits.open(m1fitsfn)
             maxfh = fits.open(maxfitsfn)
+            madstdfh = fits.open(madstdfitsfn)
 
             m0 = Projection(value=m0fh[0].data, header=m0fh[0].header,
                             wcs=wcs.WCS(m0fh[0].header),
@@ -111,6 +120,10 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
             max = Projection(value=maxfh[0].data, header=maxfh[0].header,
                              wcs=wcs.WCS(maxfh[0].header),
                              unit=u.Unit(maxfh[0].header['BUNIT']),)
+            madstd = Projection(value=madstdfh[0].data,
+                                header=madstdfh[0].header,
+                                wcs=wcs.WCS(madstdfh[0].header),
+                                unit=u.Unit(madstdfh[0].header['BUNIT']),)
 
             bm = radio_beam.Beam.from_fits_header(m0fh[0].header)
             restfreq = m0fh[0].header['RESTFRQ']

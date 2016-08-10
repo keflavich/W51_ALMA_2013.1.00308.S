@@ -251,6 +251,11 @@ if __name__ == "__main__":
 
     full_results = {}
 
+    """
+    NOTE: the J=25 lines are in the line wings of SO.  That can artificially
+    inflate the fitted amplitude if a spw-wide continuum subtraction is done.
+    """
+
     # now fit 'em all...
     #for cn in core_names:
     for cn in ['ALMAmm14','eSmm6']: # debug
