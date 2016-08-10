@@ -79,7 +79,7 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
 
         if 'moment0' in fn:
             m0 = fits.getdata(fn)
-            stddev = fits.getdata(fn.replace("moment0","stddev"))
+            stddev = fits.getdata(fn.replace("moment0","madstd"))
             header = fits.getheader(fn)
             cutout = Cutout2D(m0, source, 2*radius, wcs=wcs.WCS(header))
             m0 = cutout.data
@@ -403,7 +403,7 @@ if __name__ == "__main__":
                'ALMAmm14': 0.001*approximate_jytok, # not real, just for better fits..
               }
 
-    # use precomputed moments from chem_images
+    # use precomputed moments from medsub_moments
     for sourcename, region in (('e2','e2e8'), ('e8','e2e8'), ('north','north'),
                                ('ALMAmm14','ALMAmm14'),):
 

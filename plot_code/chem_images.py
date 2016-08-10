@@ -49,6 +49,11 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
     gs3 = gridspec.GridSpec(*plotgrid)
     gs3.update(wspace=0.0, hspace=0.0)
 
+    fig4 = pl.figure(4, figsize=figsize)
+    fig4.clf()
+    gs4 = gridspec.GridSpec(*plotgrid)
+    gs4.update(wspace=0.0, hspace=0.0)
+
     figcounter = 0
 
     for ii,fn in enumerate(ProgressBar(filelist)):
@@ -64,7 +69,9 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         m1fitsfn = paths.dpath("chemslices/chemical_m1_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
         maxfitsfn = paths.dpath("chemslices/chemical_max_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
         madstdfitsfn = paths.dpath("chemslices/chemical_madstd_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
-        if not (os.path.exists(m0fitsfn) and os.path.exists(maxfitsfn)):
+        if not (os.path.exists(m0fitsfn) and
+                os.path.exists(maxfitsfn) and
+                os.path.exists(madstdfitsfn)):
             print("Extracting max/m0/m1 for {0}".format(fn))
             cube = SpectralCube.read(fn)[:,yslice,xslice]
             goodbeams = np.array([bm.major < maxbeam for bm in cube.beams], dtype='bool')
@@ -95,11 +102,11 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
             m0 = slabsub.moment0()
             m1 = slabsub.moment1()
             max = slabsub.max(axis=0)
-            madstd = cube.with_mask(mask[:,None,None]).apply_numpy_function(mad_std,
-                                                                            axis=0,
-                                                                            projection=True,
-                                                                            unit=cube.unit,
-                                                                           )
+            madstd = cube.with_mask(mask[:,None,None]).apply_function(mad_std,
+                                                                      axis=0,
+                                                                      projection=True,
+                                                                      progressbar=True,
+                                                                      unit=cube.unit,)
 
             m0.write(m0fitsfn, overwrite=True)
             m1.write(m1fitsfn, overwrite=True)
@@ -161,19 +168,30 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         ax3.set_yticklabels([])
         ax3.set_aspect('equal')
 
+        ax4 = fig4.add_subplot(gs2[figcounter])
+
+        im4 = ax4.imshow(madstd.value,
+                         cmap=pl.cm.bone_r, interpolation='nearest')
+        ax4.text(3, 0.87*m0.shape[0], label, fontsize=9, color='r')
+        ax4.set_xticklabels([])
+        ax4.set_yticklabels([])
+        ax4.set_aspect('equal')
+
         figcounter += 1
 
     cbs = {}
     for ii,fig, im, gs in ((1,fig1,im1,gs1), (2,fig2,im2,gs2),
-                           (3,fig3,im3,gs3),):
+                           (3,fig3,im3,gs3), (4,fig4,im4,gs4),):
         bottom,top,left,right = gs.get_grid_positions(fig)
-        cbar_ax = fig.add_axes([np.max(right)+0.01, np.min(bottom), 0.05, np.max(top)-np.min(bottom)])
+        cbar_ax = fig.add_axes([np.max(right)+0.01, np.min(bottom),
+                                0.05, np.max(top)-np.min(bottom)])
         cbs[ii] = pl.colorbar(mappable=im, cax=cbar_ax)
         cbs[ii].ax.tick_params(labelsize=12)
 
     cbs[1].set_label("Flux Density (K km s$^{-1}$)", fontsize=12)
     cbs[2].set_label("Velocity (km s$^{-1}$)", fontsize=12)
     cbs[3].set_label("Peak Brightness (K)", fontsize=12)
+    cbs[4].set_label("MAD StdDev (K)", fontsize=12)
 
     pl.draw()
     pl.show()
@@ -190,6 +208,9 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
                                                                     suffix)),
                  bbox_inches='tight', dpi=150)
 
+    fig4.savefig(paths.fpath("chemical_madstd_slabs_{0}{1}.png".format(sourcename,
+                                                                       suffix)),
+                 bbox_inches='tight', dpi=150)
 
 
 if __name__ == "__main__":

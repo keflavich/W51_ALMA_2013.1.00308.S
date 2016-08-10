@@ -98,14 +98,16 @@ for fn in files:
     m0fn = dpath("moments/{0}_medsub_moment0.fits".format(fname))
     m1fn = dpath("moments/{0}_medsub_moment1.fits".format(fname))
     m2fn = dpath("moments/{0}_medsub_moment2.fits".format(fname))
+    madstdfn = dpath("moments/{0}_medsub_madstd.fits".format(fname))
     maxfn = dpath("moments/{0}_medsub_max.fits".format(fname))
     argmaxfn = dpath("moments/{0}_medsub_argmax.fits".format(fname))
 
-    if os.path.exists(m0fn):# and os.path.exists(argmaxfn):
+    if os.path.exists(m0fn) and os.path.exists(madstdfn):
         m0 = load_projection(m0fn)
         m1 = load_projection(m1fn)
         m2 = load_projection(m2fn)
         pmax = load_projection(maxfn)
+        madstd = load_projection(madstdfn)
 #        argmaxfn = dpath("moments/{0}_medsub_argmax.fits".format(fname))
     else:
         cube = SpectralCube.read(dpath(fn)).minimal_subcube()
@@ -117,10 +119,11 @@ for fn in files:
             if key in fname:
                 pct = cont_percentiles[key]
 
-        med = vcube.with_mask(((vcube.spectral_axis < 35*u.km/u.s) |
-                               (vcube.spectral_axis >
-                                80*u.km/u.s))[:,None,None]).percentile(pct,
-                                                                       axis=0)
+        contmasked_cube = vcube.with_mask(((vcube.spectral_axis < 35*u.km/u.s)
+                                           | (vcube.spectral_axis >
+                                              80*u.km/u.s))[:,None,None])
+
+        med = contmasked_cube.percentile(pct, axis=0)
         vcube = vcube.spectral_slab(50*u.km/u.s, 65*u.km/u.s)
         # I hope this isn't needed....
         vcube.allow_huge_operations=True
@@ -129,6 +132,10 @@ for fn in files:
         m0 = vcube_msub.moment0(axis=0)
         m1 = vcube_msub.moment1(axis=0)
         m2 = vcube_msub.moment2(axis=0)
+        madstd = contmasked_cube.apply_function(mad_std, axis=0,
+                                                projection=True,
+                                                progressbar=True,
+                                                unit=cube.unit,)
         pmax = vcube_msub.max(axis=0)
 
 #        argmax = vcube.spectral_axis[vcube_msub.argmax(axis=0)]
@@ -145,6 +152,9 @@ for fn in files:
 
     pmax.quicklook()
     pmax.hdu.writeto(maxfn, clobber=True)
+
+    madstd.quicklook()
+    madstd.hdu.writeto(madstdfn, clobber=True)
 
 #    argmax.quicklook()
 #    argmax.hdu.writeto(argmaxfn, clobber=True)
