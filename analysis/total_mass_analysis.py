@@ -36,13 +36,14 @@ ppbeam = (beam.sr/(pixel_scale**2)).decompose().value / u.beam
 
 #pl.hist(data[np.isfinite(data)], bins=np.linspace(1e-4,0.1,100))
 
+# over what threshold are we including flux when measuring total masses?
 threshold = 10*u.mJy/u.beam
-threshold_column = (threshold * u.beam/u.Jy * masscalc.col_conversion_factor(beam.sr.value)).to(u.cm**-2)
+threshold_column = (threshold * u.beam/u.Jy * masscalc.col_conversion_factor(beam)).to(u.cm**-2)
 threshold_column = masscalc.dust.colofsnu(nu=masscalc.centerfreq,
                                           snu=threshold*u.beam,
                                           beamomega=beam.sr).to(u.cm**-2,
                                                                 u.dimensionless_angles())
-threshold_density = (masscalc.mass_conversion_factor(20) * 0.01 /
+threshold_density = (masscalc.mass_conversion_factor(20) * threshold.to(u.mJy).value /
                      (4/3.*np.pi) /
                      (beam.sr.value*masscalc.distance**2)**(1.5) /
                      (2.8*constants.m_p)).to(1/u.cm**3)
@@ -94,3 +95,23 @@ print("*nonprotostellar* Fraction of recovered flux alpha=3.5: {0}".format(total
 print("*nonprotostellar* Fraction of recovered flux alpha=3: {0}".format(total_minus_protostars / bgps_scaled_225_3))
 print("*nonprotostellar* Fraction of recovered flux alpha=4: {0}".format(total_minus_protostars / bgps_scaled_225_4))
 print("Protostellar fraction: {0}".format(dendro_protostars_pt2 / bgps_scaled_225))
+
+print()
+print()
+
+
+cores_merge = Table.read(paths.tpath('core_continuum_and_line.ipac'), format='ascii.ipac')
+
+smallest_mass = masscalc.dust.massofsnu(nu=226*u.GHz,
+                                        snu=cores_merge['peak'].min()*u.Jy,
+                                        distance=masscalc.distance,
+                                        beamomega=beam)
+print("Faintest point source 20K mass: {0}"
+      .format(smallest_mass))
+
+smallest_density = (smallest_mass / (4/3.*np.pi) /
+                    (beam.sr.value*masscalc.distance**2)**(1.5) /
+                    (2.8*constants.m_p)).to(1/u.cm**3)
+
+print("Faintest point source 20K density: {0}, log={1}"
+      .format(smallest_density, np.log10(smallest_density.value)))

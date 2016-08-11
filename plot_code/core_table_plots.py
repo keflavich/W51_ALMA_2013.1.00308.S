@@ -8,12 +8,17 @@ import pylab as pl
 from astropy.io import fits
 from astropy import wcs
 from matplotlib.patches import Circle
+import matplotlib
 
 pl.matplotlib.rc_file('pubfiguresrc')
 
 core_velo_tbl = Table.read(paths.tpath("core_velocities.ipac"), format="ascii.ipac")
 core_phot_tbl = Table.read(paths.tpath("continuum_photometry.ipac"), format='ascii.ipac')
 cores_merge = Table.read(paths.tpath('core_continuum_and_line.ipac'), format='ascii.ipac')
+
+beam_area = cores_merge['beam_area']
+jy_to_k = (1*u.Jy).to(u.K, u.brightness_temperature(beam_area,
+                                                    226*u.GHz)).mean()
 
 fig1 = pl.figure(1)
 fig1.clf()
@@ -34,6 +39,16 @@ fit = powerlaw.Fit(core_phot_tbl['peak'])
 fit.plot_ccdf(color='k')
 fit.power_law.plot_ccdf(color='r', linestyle='--')
 ax2.set_ylabel("Fraction of sources")
+ax2.xaxis.set_label_position('top')
+ax2.xaxis.set_ticks_position('top')
+def my_formatter_fun(x, p):
+    brightness = x*jy_to_k
+    return "$%0.1f$" % (brightness.value)
+ax2.xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(my_formatter_fun))
+ax2.xaxis.set_major_locator(matplotlib.ticker.FixedLocator(
+    np.array([1,3,5,10,20,40,100,200,300])/jy_to_k.value))
+ax2.set_xlabel("Peak $T_B$ [K]")
+
 
 ax3 = fig2.add_subplot(212)
 
@@ -43,7 +58,7 @@ ax3.hist(core_phot_tbl['peak'], bins=np.logspace(-3,-0.5,15),
          color='k', facecolor='none', histtype='step')
 ax3.set_xscale('log')
 fit.power_law.plot_pdf(color='r', linestyle='--')
-ax3.set_ylim(0.3, 11)
+ax3.set_ylim(0.3, 15)
 ax3.set_xlabel("Peak flux density (Jy/beam)")
 ax3.set_ylabel("Number of sources")
 fig2.savefig(paths.fpath('coreplots/flux_powerlaw_histogram_fit.png'))
@@ -117,9 +132,6 @@ fig2.savefig(paths.fpath('coreplots/mass_histograms_low.png'))
 
 
 
-beam_area = cores_merge['beam_area']
-jy_to_k = (1*u.Jy).to(u.K, u.brightness_temperature(beam_area,
-                                                    220*u.GHz)).mean()
 
 fig3 = pl.figure(3)
 fig3.clf()
@@ -196,6 +208,25 @@ fig2 = pl.figure(2)
 fig2.clf()
 #ax = fig2.gca()
 
+bins = np.logspace(-3,1.05, 20)
+
+ax = pl.subplot(7,1,1)
+
+H,L,P = ax.hist(core_phot_tbl['peak'], bins=bins, facecolor='none',
+                histtype='step')
+ax.set_xscale('log')
+ax.set_ylim(0, H.max()+1)
+ax.set_xlim(0.001, 15)
+ax.set_ylabel("Peak")
+
+ax.xaxis.set_ticklabels([])
+ax.set_xlabel("Peak $T_B$ [K]")
+ax.set_xlabel("")
+
+max_yticks=3
+yloc = pl.MaxNLocator(max_yticks)
+ax.yaxis.set_major_locator(yloc)
+
 apertures = ('0p2', '0p4', '0p6', '0p8', '1p0', '1p5')
 for ii,aperture in enumerate(apertures):
     flux = (cores_merge['cont_flux{0}arcsec'.format(aperture)] -
@@ -217,9 +248,9 @@ for ii,aperture in enumerate(apertures):
                                     }
 
 
-    ax = pl.subplot(6,1,ii+1)
+    ax = pl.subplot(7,1,ii+2)
     ax.set_ylabel("${0}''$".format(aperture.replace("p",".")))
-    H,L,P = ax.hist(flux[~ff], bins=np.logspace(-3,1.05, 20),
+    H,L,P = ax.hist(flux[~ff], bins=bins,
                     #facecolor='none',
                     #alpha=0.5,
                     histtype='step',
@@ -228,14 +259,13 @@ for ii,aperture in enumerate(apertures):
         ax.set_xticklabels([])
         ax.get_xaxis().set_visible(False)
 
-    max_yticks=3
     yloc = pl.MaxNLocator(max_yticks)
     ax.yaxis.set_major_locator(yloc)
 
     ax.set_xscale('log')
-    ax.set_xlim(0.002, 15)
+    ax.set_xlim(0.001, 15)
     ax.set_ylim(0, H.max()+1)
-ax.set_xlabel("Flux (Jy)")
+ax.set_xlabel("Integrated or Peak Flux Density (Jy)")
 pl.subplots_adjust(hspace=0)
 pl.savefig(paths.fpath("coreplots/core_flux_histogram_apertureradius.png"))
 

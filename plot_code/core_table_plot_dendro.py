@@ -144,6 +144,24 @@ fig2 = pl.figure(2)
 fig2.clf()
 #ax = fig2.gca()
 
+bins = np.logspace(-3,1.05, 20)
+
+ax = pl.subplot(7,1,1)
+
+H,L,P = ax.hist(dendro_merge['peak_cont_flux'], bins=bins, facecolor='none',
+                histtype='step')
+ax.set_xscale('log')
+ax.set_ylim(0, H.max()+1)
+ax.set_xlim(0.001, 15)
+ax.set_ylabel("Peak")
+
+ax.xaxis.set_ticklabels([])
+ax.set_xlabel("")
+
+max_yticks=3
+yloc = pl.MaxNLocator(max_yticks)
+ax.yaxis.set_major_locator(yloc)
+
 apertures = ('0p2', '0p4', '0p6', '0p8', '1p0', '1p5')
 for ii,aperture in enumerate(apertures):
     flux = (dendro_merge['cont_flux{0}arcsec'.format(aperture)] -
@@ -165,9 +183,9 @@ for ii,aperture in enumerate(apertures):
                                     }
 
 
-    ax = pl.subplot(6,1,ii+1)
+    ax = pl.subplot(7,1,ii+1)
     ax.set_ylabel("${0}''$".format(aperture.replace("p",".")))
-    H,L,P = ax.hist(flux[~ff], bins=np.logspace(-3,1.05, 20),
+    H,L,P = ax.hist(flux[~ff], bins=bins,
                     #facecolor='none',
                     #alpha=0.5,
                     histtype='step',

@@ -407,7 +407,7 @@ the source velocity.   This process also allowed us to identify the brightest
 lines in each window and the brightest overall line observed, which we use
 later for temperature estimation.
 
-\subsection{Temperature estimation of the continuum cores}
+\subsection{Temperature estimation of the continuum sources}
 \label{sec:temperature}
 The temperature is a critical ingredient for determining the total mass of each
 continuum source or region. Since we do not have any means of directly
@@ -437,7 +437,8 @@ mJy/beam) to 600 K (1 Jy/beam).  Toward most of this emission, optically-thick
 free-free emission can be strongly ruled out as the driving mechanism using
 existing data that limits the free-free contribution to be $<50\%$ if it is
 optically thick, and negligible ($<<1\%$) if it is optically thin at radio wavelengths
-(Ginsburg et al, 2016; Goddi2016a).
+\citep{Ginsburg2016b, Goddi2016a}.
+%(Ginsburg et al, 2016; Goddi2016a).
 
 To gain a more detailed measurement of the dust temperature in regions where it
 is likely to be coupled to the gas, we use the peak brightness temperature
@@ -452,6 +453,12 @@ nonthermal (maser) emission would push $T_{B,max} > T_{gas}$.
 One potential problem with this approach is if the gas becomes optically thick
 before probing most of the dust.  Some transitions, e.g. CO and \formaldehyde, 
 are likely to be affected by this issue.
+
+Some sources have no detected line emission aside from the molecular cloud
+species CO and \formaldehyde.  Given the density necessitated by any continuum
+detection for a spherical source $n>10^{7.5}$ \percc for a 1.6 mJy source,
+it is unlikely that the species are merely subthermally excited.  More likely,
+the underyling emission source is very compact, optically thick, and/or cold.
 
 \todo{Continue here...}
 
@@ -1025,6 +1032,13 @@ structure we observe.
 
 
 \section{Discussion}
+\subsection{The nature of the continuum sources}
+We have detected up to 113 distinct compact `sources' and characterized some of
+their basic properties assuming they consist purely of gas and dust, but this
+interpretation is incomplete.  At the least, all of the sources with peak
+surface brightnesses $T_{B,max} > 30$ K are likely to contain central heating
+sources, i.e., stars or protostars.
+
 \subsection{Limits on accretion onto HII regions}
 \citet{Peters2010a} and \citet{Klaassen2012a} proposed that ultra- and
 hyper-compact \hii regions may be variably accreting.  When accretion is most
