@@ -27,8 +27,8 @@ def plot_whole_spectrum(spectra, line_id=line_ids, velocity=55*u.km/u.s,
         ax = fig.add_subplot(7,1,1)
         spectra[0].xarr.convert_to_unit(u.GHz)
         spectra[0].plotter(axis=ax)
-        spectra[0].plotter.line_ids(list(line_ids.keys()),
-                                    list(line_ids.values()),
+        spectra[0].plotter.line_ids(list(line_id.keys()),
+                                    list(line_id.values()),
                                     velocity_offset=velocity,
                                     label1_size=fontsize,
                                     plot_kwargs={'linewidth':linewidth},
@@ -40,8 +40,8 @@ def plot_whole_spectrum(spectra, line_id=line_ids, velocity=55*u.km/u.s,
             spectra[ii].xarr.convert_to_unit(u.GHz)
             cropspec = spectra[ii][:spectra[ii].shape[0]/2]
             cropspec.plotter(axis=ax)
-            cropspec.plotter.line_ids(list(line_ids.keys()),
-                                      list(line_ids.values()),
+            cropspec.plotter.line_ids(list(line_id.keys()),
+                                      list(line_id.values()),
                                       velocity_offset=velocity,
                                       label1_size=fontsize,
                                       plot_kwargs={'linewidth':linewidth},
@@ -52,8 +52,8 @@ def plot_whole_spectrum(spectra, line_id=line_ids, velocity=55*u.km/u.s,
             ax = fig.add_subplot(7,1,2*ii+1)
             cropspec = spectra[ii][spectra[ii].shape[0]/2:]
             cropspec.plotter(axis=ax)
-            cropspec.plotter.line_ids(list(line_ids.keys()),
-                                      list(line_ids.values()),
+            cropspec.plotter.line_ids(list(line_id.keys()),
+                                      list(line_id.values()),
                                       velocity_offset=velocity,
                                       label1_size=fontsize,
                                       plot_kwargs={'linewidth':linewidth},
@@ -82,6 +82,32 @@ if __name__ == "__main__":
                         # write as ascii.fixed_width
                         format='ascii.fixed_width', delimiter='|')
 
+    line_table = Table.read(paths.apath('full_line_table.csv'))
+    all_line_ids = {"{0}_{1}".format(row['Species'], row['Resolved QNs']):
+                    (row['Freq-GHz'] if row['Freq-GHz']
+                     else row['Meas Freq-GHz'])*u.GHz
+                    for row in line_table}
+    all_line_ids.update(line_ids)
+
+    for row in myvtbl:
+
+        speclist = [pyspeckit.Spectrum(fn) for fn in
+                    glob.glob(paths.spath("{0}_spw*fits".format(row['source'])))]
+
+        for sp in speclist:
+            beam = radio_beam.Beam.from_fits_header(sp.header)
+            sp.data *= beam.jtok(sp.xarr)
+            sp.unit='K'
+
+        plot_whole_spectrum(speclist,
+                            title=row['source'],
+                            line_id=all_line_ids,
+                            figname='fullspectra/ALLLINES_{0}.png'.format(row['source']),
+                            velocity=row['velocity']*u.km/u.s,
+                           )
+
+
+
     for row in myvtbl:
 
         speclist = [pyspeckit.Spectrum(fn) for fn in
@@ -97,3 +123,4 @@ if __name__ == "__main__":
                             figname='fullspectra/{0}.png'.format(row['source']),
                             velocity=row['velocity']*u.km/u.s,
                            )
+
