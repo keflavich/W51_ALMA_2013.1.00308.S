@@ -64,7 +64,6 @@ circle(19:23:44.076,+14:30:33.53,0.179339") # color=black text={e2se}
 circle(19:23:39.590,+14:31:04.13,0.143871") # color=black text={ALMAmm43}
 circle(19:23:38.054,+14:31:05.68,0.168035") # color=black text={ALMAmm44}
 circle(19:23:38.760,+14:31:07.22,0.160041") # color=black text={ALMAmm45}
-circle(19:23:41.839,+14:30:54.20,0.212613") # color=black text={ALMAmm58}
 circle(19:23:41.834,+14:30:52.99,0.212613") # color=black text={ALMAmm46}
 circle(19:23:42.569,+14:31:04.27,0.150098") # color=black text={ALMAmm47}
 circle(19:23:42.881,+14:30:58.40,0.144335") # color=black text={ALMAmm48}
@@ -77,4 +76,5 @@ circle(19:23:38.940,+14:30:35.48,0.214922") # color=black text={ALMAmm54}
 circle(19:23:43.426,+14:30:50.46,0.144706") # color=black text={ALMAmm55}
 circle(19:23:43.440,+14:30:51.61,0.144706") # color=black text={ALMAmm56}
 circle(19:23:41.731,+14:30:52.99,0.212613") # color=black text={ALMAmm57}
+circle(19:23:41.839,+14:30:54.20,0.212613") # color=black text={ALMAmm58}
 point(19:23:43.963,+14:30:34.53) # point=x text={e2e peak pixel}
