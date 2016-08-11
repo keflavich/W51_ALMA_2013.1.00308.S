@@ -258,7 +258,7 @@ if __name__ == "__main__":
 
     # now fit 'em all...
     #for cn in core_names:
-    for cn in ['ALMAmm14','eSmm6']: # debug
+    for cn in ['ALMAmm4',]: # debug
         spectra = load_and_convert_spectra('{corename}_spw*fits'
                                            .format(corename=cn))
         spectra.object_name = cn

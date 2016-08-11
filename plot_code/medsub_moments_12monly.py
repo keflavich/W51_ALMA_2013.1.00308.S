@@ -3,6 +3,9 @@ import glob
 import collections
 from astropy import units as u
 from spectral_cube import SpectralCube
+#from astropy.stats import mad_std
+from mad import mad_std_nan
+import numpy as np
 
 import matplotlib
 matplotlib.use('Agg')
@@ -132,10 +135,19 @@ for fn in files:
         m0 = vcube_msub.moment0(axis=0)
         m1 = vcube_msub.moment1(axis=0)
         m2 = vcube_msub.moment2(axis=0)
-        madstd = contmasked_cube.apply_function(mad_std, axis=0,
-                                                projection=True,
-                                                progressbar=True,
-                                                unit=cube.unit,)
+        # required if mad_std can't handle NaNs
+        #madstd = contmasked_cube.apply_function(mad_std, axis=0,
+        #                                        projection=True,
+        #                                        progressbar=True,
+        #                                        unit=cube.unit,)
+        madstd = contmasked_cube.apply_numpy_function(mad_std_nan,
+                                                      axis=0,
+                                                      projection=True,
+                                                      unit=cube.unit,
+                                                      fill=np.nan,
+                                                      how='cube',
+                                                      reduce=True,
+                                                      progressbar=True)
         pmax = vcube_msub.max(axis=0)
 
 #        argmax = vcube.spectral_axis[vcube_msub.argmax(axis=0)]
