@@ -41,6 +41,8 @@ units = {'peak':u.Jy/u.beam,
 for reg in regions:
     if 'text' not in reg.attr[1]:
         continue
+    if reg.name == 'point':
+        continue
 
     shreg = pyregion.ShapeList([reg])
     name = reg.attr[1]['text']
