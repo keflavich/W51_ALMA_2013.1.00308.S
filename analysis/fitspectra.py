@@ -23,8 +23,11 @@ regions = (pyregion.open(paths.rpath("cores.reg")))
 for region in regions:
     name = region.attr[1]['text']
 
-    spectral_files = glob.glob(paths.spath('{0}_spw*.fits'.format(name)))
+    spectral_files = glob.glob(paths.spath('{0}_spw[0123]_mean.fits'.format(name)))
+    #background_spectral_files = glob.glob(paths.spath('{0}_spw[0123]_background_mean.fits'.format(name)))
+    assert len(spectral_files) == 4#len(background_spectral_files) == 4
     spectra = pyspeckit.Spectra(spectral_files)
+    #bgspectra = pyspeckit.Spectra(background_spectral_files)
     stats = spectra.stats()
     err = stats['std'] # overly conservative guess
 
@@ -47,6 +50,8 @@ for region in regions:
 
     pl.figure(1).clf()
 
+    debug_fitted_lines = []
+
     for ii,line_row in enumerate(ProgressBar(line_table)):
 
         frq = line_row['Freq-GHz'] * u.GHz
@@ -65,7 +70,7 @@ for region in regions:
                 sp.xarr.refX = frq
 
                 # crop
-                sp_sl = sp.slice((vcen-20)*u.km/u.s, (vcen+20)*u.km/u.s, unit=u.km/u.s)
+                sp_sl = sp.slice((vcen-15)*u.km/u.s, (vcen+15)*u.km/u.s, unit=u.km/u.s)
 
                 if not np.any(np.isfinite(sp_sl.data)):
                     continue
@@ -80,14 +85,18 @@ for region in regions:
                 sp_sl.error[:] = err
                 
                 # perform fit
-                sp_sl.specfit(fittype='gaussian',
-                              guesses=[0.1, vcen, 2],
-                              fixed=[False,False,False], # use a fixed baseline
-                              limited=[(True,True)]*3,
-                              limits=[(-5,5), (vcen-2.5, vcen+2.5), (0,5)],
+                sp_sl.specfit(fittype='vheightgaussian',
+                              guesses=[0.0, 0.1, vcen, 2],
+                              fixed=[False,False,False,False], # use a fixed baseline
+                              limited=[(True,True)]*4,
+                              limits=[(-0.1,0.1), (-5,5), (vcen-2.5, vcen+2.5), (0,5)],
                              )
 
-                if np.abs(sp_sl.specfit.parinfo[0].value) > sp_sl.specfit.parinfo[0].error*2:
+                if (((sp_sl.specfit.parinfo[0].value) >
+                     sp_sl.specfit.parinfo[0].error*3) and
+                    (sp_sl.specfit.parinfo[2].value >
+                     sp_sl.specfit.parinfo[2].error*3)):
+
                     if plotnum <= 49:
                         sp_sl.plotter(axis=pl.subplot(7,7,plotnum))
                         plotnum += 1
@@ -125,6 +134,25 @@ for region in regions:
 
     pl.savefig(paths.fpath('spectral_fits/{0}_linefits.png'.format(name)),
                bbox_inches='tight', bbox_extra_artists=[])
+
+    pl.figure(2).clf()
+    widths = line_table['{0}FittedWidth'.format(name)]
+    ewidths = line_table['{0}FittedWidthError'.format(name)]
+    labels = line_table['Species']
+    inds = np.argsort(widths)
+    mask = (widths[inds]>0) & (widths[inds]<5) & (ewidths[inds] < widths[inds]) & (ewidths[inds] < 5)
+    pl.errorbar(x=np.arange(mask.sum()),
+                y=widths[inds][mask],
+                yerr=ewidths[inds][mask],
+                linestyle='none',
+                color='k')
+    ax = pl.gca()
+    ax.set_xticks(np.arange(mask.sum()))
+    ax.set_xticklabels(labels[inds][mask], rotation='vertical')
+    ax.set_xlim(-1, mask.sum()+1)
+    pl.savefig(paths.fpath('spectral_fits/{0}_linewidths.png'.format(name)),
+               bbox_inches='tight', bbox_extra_artists=[])
+
 
     line_table.write(paths.tpath('spectral_lines_and_fits.csv'),
                      overwrite=True)

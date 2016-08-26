@@ -108,6 +108,18 @@ try:
         'W51_b6_7M_12M.PN5-4.image.pbcor.fits',
         'W51_b6_7M_12M.SO65-54.image.pbcor.fits',
         'W51_b6_7M_12M.HNCO28128-29029.image.pbcor.fits',
+        'W51_b6_7M_12M.SO2_22715-23618.image.pbcor.fits',
+        'W51_b6_7M_12M_natural.SO2_22715-23618.image.pbcor.fits',
+        'W51_b6_7M_12M.SO2_16610-17513.image.pbcor.fits',
+        'W51_b6_7M_12M_natural.SO2_16610-17513.image.pbcor.fits',
+        'W51_b6_7M_12M.SO2v2=1_20218-19317.image.pbcor.fits',
+        'W51_b6_7M_12M_natural.SO2v2=1_20218-19317.image.pbcor.fits',
+        'W51_b6_7M_12M.SO2v2=1_22220-22121.image.pbcor.fits',
+        'W51_b6_7M_12M_natural.SO2v2=1_22220-22121.image.pbcor.fits',
+        'W51_b6_7M_12M.SO2v2=1_16313-16214.image.pbcor.fits',
+        'W51_b6_7M_12M_natural.SO2v2=1_16313-16214.image.pbcor.fits',
+        'W51_b6_7M_12M.SO2v2=1_642-735.image.pbcor.fits',
+        'W51_b6_7M_12M_natural.SO2v2=1_642-735.image.pbcor.fits',
     ]
 
 except ImportError:
@@ -187,6 +199,7 @@ for fn in files:
                                                       projection=True,
                                                       unit=cube.unit,
                                                       fill=np.nan,
+                                                      how='cube',
                                                       reduce=True,
                                                       progressbar=True)
         pmax = vcube_msub.max(axis=0)

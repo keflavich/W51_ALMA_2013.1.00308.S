@@ -108,7 +108,8 @@ attempted, but lead to instabilities.
 
 \subsubsection{Lines}
 We produced spectral image cubes of the lines listed in Table ....
-The cubes use only 12m data, as the 12m + 7m combination was unsuccessful.
+
+
 
 
 \subsubsection{UV coverage}
@@ -330,6 +331,16 @@ uncleaned PSF sidelobe artifacts.  In particular, the dendrogram catalog include
 a number of sources around e2/e8 that, by eye, appear to be parts of continuous
 extended emission rather than local peaks; ``streaking'' artifacts in the
 reduced data result in their identification despite our threshold criteria.
+
+When extracting properties of the `by-eye' sources, we used variable sized
+circular apertures, where the apertures were selected to include all of the
+detectable symmetric emission around a central peak up to a maximum radius
+$r\sim0.6$\arcsec.  This approach is necessary, as some of the `cores' are
+not centrally peaked and are therefore likely to be starless cores.
+% can probably argue safely that the 'background' is filtered out as much
+% as we would want...
+%For spectral extraction, we also measured a background spectrum averaging
+%over an annulus with twice the radius of the source extraction.
 
 \subsection{The spatial distribution of cores}
 The detected cores are not uniformly distributed across the observed region.
@@ -1038,6 +1049,15 @@ their basic properties assuming they consist purely of gas and dust, but this
 interpretation is incomplete.  At the least, all of the sources with peak
 surface brightnesses $T_{B,max} > 30$ K are likely to contain central heating
 sources, i.e., stars or protostars.
+
+We fit each of up to $\sim50$ lines (see Table ...) with Gaussian profiles to
+attempt to determine the line width of each source.  Most sources were detected
+in at least $\sim5-10$ lines, though some of these are associated with
+interstellar rather than circumstellar material, i.e., \formaldehyde, CO, $^{13}$CS,
+HC$_3$N.  In all cases where unambiguous Gaussian fits were acquired, the line
+widths are not consistent between different tracers.  
+
+*demonstrate this* Generally, the obviously interstellar features are narrower.
 
 \subsection{Limits on accretion onto HII regions}
 \citet{Peters2010a} and \citet{Klaassen2012a} proposed that ultra- and
