@@ -498,6 +498,21 @@ line that is not associated with extended molecular cloud emission,
 i.e., CO and its isotopologues and \formaldehyde are excluded.}
 {fig:peaktbhist}{1}{10cm}
 
+We use these peak line brightness temperatures to compute the `corrected'
+masses of the continuum sources.  For sources with $T_{B,max} < 20$ K, we
+assume $T_{dust} = 20$ K to avoid producing unreasonably high masses; in such
+sources the lines are likely to be optically thin and/or subthermally excited.
+The correction is illustrated in Figure \ref{fig:moftbvsm20k}.
+
+\Figure{figures/aperture_mass20K_vs_massTB.png}
+{The mass computed at the peak brightness temperature vs. that computed
+assuming 20 K  for the aperture extracted continuum sources.
+The faded sources in the top left of the diagram are those with $M(T_{B,max}) >
+M(20\textrm{K})$; the circles along the dashed line show their $M(20\mathrm{K})$.
+The dashed line shows $M(T_{B,max}) =
+M(20\textrm{K})$ and the dashed line shows $M(T_{B,max}) = 0.1 
+M(20\textrm{K})$ 
+}{fig:moftbvsm20k}{1}{10cm}
 
 \Figure{figures/dendro_peakTB_vs_selfconsistentcontinuum.png}
 {The peak line brightness vs the continuum brightness of our target sources
