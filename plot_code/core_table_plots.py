@@ -277,9 +277,9 @@ pl.show()
 fig3 = pl.figure(3)
 fig3.clf()
 
-flux02 = (cores_merge['cont_flux0.2arcsec'.format(aperture)] -
-          cores_merge['KUbandcont_flux0.2arcsec'.format(aperture)])
-flux04 = (cores_merge['cont_flux0.4arcsec'.format(aperture)] -
-          cores_merge['KUbandcont_flux0.4arcsec'.format(aperture)])
+flux02 = (cores_merge['cont_flux0p2arcsec'.format(aperture)] -
+          cores_merge['KUbandcont_flux0p2arcsec'.format(aperture)])
+flux04 = (cores_merge['cont_flux0p4arcsec'.format(aperture)] -
+          cores_merge['KUbandcont_flux0p4arcsec'.format(aperture)])
 
 pl.plot(flux02, flux02/flux04, '.')

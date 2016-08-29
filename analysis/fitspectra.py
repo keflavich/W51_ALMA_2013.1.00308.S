@@ -92,10 +92,10 @@ for region in regions:
                               limits=[(-0.1,0.1), (-5,5), (vcen-2.5, vcen+2.5), (0,5)],
                              )
 
-                if (((sp_sl.specfit.parinfo[0].value) >
-                     sp_sl.specfit.parinfo[0].error*3) and
-                    (sp_sl.specfit.parinfo[2].value >
-                     sp_sl.specfit.parinfo[2].error*3)):
+                if (((sp_sl.specfit.parinfo['AMPLITUDE0'].value) >
+                     (sp_sl.specfit.parinfo['AMPLITUDE0'].error*3)) and
+                    (sp_sl.specfit.parinfo['WIDTH0'].value >
+                     (sp_sl.specfit.parinfo['WIDTH0'].error*3))):
 
                     if plotnum <= 49:
                         sp_sl.plotter(axis=pl.subplot(7,7,plotnum))

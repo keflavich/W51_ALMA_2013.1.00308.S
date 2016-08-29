@@ -78,3 +78,4 @@ circle(19:23:43.440,+14:30:51.61,0.144706") # color=black text={ALMAmm56}
 circle(19:23:41.731,+14:30:52.99,0.212613") # color=black text={ALMAmm57}
 circle(19:23:41.839,+14:30:54.20,0.212613") # color=black text={ALMAmm58}
 point(19:23:43.963,+14:30:34.53) # point=x text={e2e peak pixel}
+circle(19:23:40.711,+14:30:40.96,0.243186") # color=black text={ContinuumFreeOutflowSource1}

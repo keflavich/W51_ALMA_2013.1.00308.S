@@ -384,21 +384,26 @@ double-count some pixels.  The smallest separation is
 0.26\arcsec, so the 0.2\arcsec aperture contains only unique pixels.
 
 \Figure{figures/core_flux_histogram_apertureradius.png}
-{Histograms of the core fluxes measured with circular apertures centered
+{Histograms of the core flux densities measured with circular apertures centered
 on the hand-extracted core positions.  The aperture size is listed 
-in the y-axis label.}
+in the y-axis label.  For the top plot, labeled `Peak', this is the peak
+flux density in Jy/beam.  For the rest, it is the integrated flux density
+in the specified aperture.[1:-1,:,:]}
 {fig:fluxhistograms}
 {1}{16cm}
 
 \Figure{figures/dendro_core_flux_histograms.png}
-{Histograms of the core fluxes measured with circular apertures centered
+{Histograms of the core flux densities measured with circular apertures centered
 on the dendrogram-extracted core centroids.  The aperture size is listed 
 in the y-axis label.  Free-free-dominated sources are excluded.}
 {fig:dendrofluxhistograms}
 {1}{16cm}
 
 \subsubsection{Distribution Functions}
-We fit power law distributions to each aperture's flux distribution.  The
+We fit power law distributions to each aperture's flux distribution using the
+packages \texttt{plfit} and \texttt{PowerLaw}
+\citep[https://github.com/keflavich/plfit,
+https://github.com/jeffalstott/powerlaw][]{Clauset2007a,Alstott2014a}.  The
 powerlaws steepen slightly from $\alpha=2.0\pm0.12$ to $\alpha=2.2\pm0.16$ for
 larger apertures.  The minimum flux represented by a power law increases from
 $\sim20$ mJy to 0.4 Jy (14-280 \msun at 20K).  These slopes are shallower than 
@@ -1058,6 +1063,10 @@ HC$_3$N.  In all cases where unambiguous Gaussian fits were acquired, the line
 widths are not consistent between different tracers.  
 
 *demonstrate this* Generally, the obviously interstellar features are narrower.
+
+idea: concentration parameter, compare to power-law cores of varying indices.
+Protostar / core ratio on this basis?  Evolutionary indicator of subregions?
+
 
 \subsection{Limits on accretion onto HII regions}
 \citet{Peters2010a} and \citet{Klaassen2012a} proposed that ultra- and

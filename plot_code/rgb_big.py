@@ -20,6 +20,7 @@ fn303 = paths.dpath('merge/moments/W51_b6_7M_12M.H2CO303_202.image.pbcor_medsub_
 fn321 = paths.dpath('merge/moments/W51_b6_7M_12M.H2CO321_220.image.pbcor_medsub_max.fits')
 fn322 = paths.dpath('merge/moments/W51_b6_7M_12M.H2CO322_221.coarser.image.pbcor_medsub_max.fits')
 fnc18o = paths.dpath('merge/moments/W51_b6_7M_12M.C18O2-1.image.pbcor_medsub_max.fits')
+fnSO = paths.dpath('merge/moments/W51_b6_7M_12M.SO65-54.image.pbcor_medsub_max.fits')
 fnku = paths.dpath('evla/W51Ku_BDarray_continuum_2048_both_uniform.hires.clean.image.fits')
 fnhc3n = paths.dpath('merge/moments/W51_b6_7M_12M.HC3N24-23.image.pbcor_medsub_max.fits')
 fnch3oh422 = paths.dpath('merge/moments/W51_b6_7M_12M.CH3OH422-312.image.pbcor_medsub_max.fits')
@@ -61,10 +62,17 @@ make_rgb('full_h2co_12monly_rgb.fits',
 make_rgb('h2co_hc3n_ch3oh_rgb.fits',
          blueline='HC3N24-23',
          greenline='CH3OH422-312')
+make_rgb('h2co_hc3n_so_rgb.fits',
+         blueline='HC3N24-23',
+         greenline='SO65-54')
 make_rgb('c18o_hc3n_ch3oh_rgb.fits',
          redline='C18O2-1',
          blueline='HC3N24-23',
          greenline='CH3OH422-312')
+make_rgb('c18o_hc3n_so_rgb.fits',
+         redline='C18O2-1',
+         blueline='HC3N24-23',
+         greenline='SO65-54')
 make_rgb('ku_hc3n_ch3oh_rgb.fits',
          redline=fnku,
          blueline='HC3N24-23',
