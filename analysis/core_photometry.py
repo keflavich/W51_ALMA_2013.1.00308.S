@@ -1,3 +1,6 @@
+"""
+Approximate execution time 1-3 minutes
+"""
 import os
 import numpy as np
 from astropy import units as u
@@ -123,6 +126,15 @@ tbl = Table([Column(data=columns[k],
                     name=k)
              for k in ['name', 'RA', 'Dec', 'peak', 'sum', 'npix', 'beam_area',
                        'peak_mass', 'peak_col']+keys])
+tbl.meta = {'keywords': {'ppbeam': {'value': ppbeam},
+                         'beam_area_sr': {'value': beam.sr.value},
+                         'pixel_scale_as': {'value': pixel_scale_as},
+                         'mass_conversion_factor': {'value':
+                                                    masscalc.mass_conversion_factor()},
+                         'column_conversion_factor': {'value':
+                                                      masscalc.col_conversion_factor(beam.sr)},
+                        }
+           }
 
 tbl.sort('peak_mass')
 tbl.write(paths.tpath("continuum_photometry.ipac"), format='ascii.ipac')

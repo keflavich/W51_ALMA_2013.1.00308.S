@@ -8,6 +8,7 @@ import masscalc
 outflow_tbl = Table.read(paths.tpath("outflow_co_photometry.ipac"), format='ascii.ipac')
 core_velo_tbl = Table.read(paths.tpath("core_velocities.ipac"), format="ascii.ipac")
 core_phot_tbl = Table.read(paths.tpath("continuum_photometry.ipac"), format='ascii.ipac')
+ppbeam = core_phot_tbl.meta['keywords']['ppbeam']['value']
 
 
 core_phot_tbl.rename_column('name','SourceID')
@@ -23,17 +24,26 @@ cores_merge.add_column(Column(brightest_line_name, name='PeakLineSpecies'))
 peak_line_brightness = (peak_line_flux*u.Jy).to(u.K, u.brightness_temperature(cores_merge['beam_area'], 220*u.GHz))
 cores_merge.add_column(Column(peak_line_brightness, name='PeakLineBrightness'))
 
+jtok_eq = u.brightness_temperature(cores_merge['beam_area'], 225*u.GHz)
+cont_brightness = Column((u.beam * cores_merge['sum']/cores_merge['npix']).to(u.K, jtok_eq),
+                         name='MeanContinuumBrightness')
+cores_merge.add_column(cont_brightness)
+
+aperturemass20k = cores_merge['sum'] / ppbeam * masscalc.mass_conversion_factor(20)
+cores_merge.add_column(Column(aperturemass20k.value, name='ApertureMass20K', unit=u.M_sun))
+
 temperature_corrected_mass = Column([(masscalc.mass_conversion_factor(20).value
                                       if np.isnan(row['PeakLineBrightness'])
                                       else masscalc.mass_conversion_factor(row['PeakLineBrightness'])).value
                                      * row['peak'] for row in cores_merge],
-                                    name='T_corrected_mass',
+                                    name='T_corrected_peakmass',
                                     unit=u.M_sun)
 cores_merge.add_column(temperature_corrected_mass)
 
 cores_merge = cores_merge['SourceID',
                           'peak_mass',
-                          'T_corrected_mass',
+                          'ApertureMass20K',
+                          'T_corrected_peakmass',
                           'PeakLineBrightness',
                           'PeakLineFlux',
                           'PeakLineSpecies',
@@ -45,6 +55,7 @@ cores_merge = cores_merge['SourceID',
                           'continuum20pct3',
                           'peak',
                           'sum',
+                          'MeanContinuumBrightness',
                           'peak0',
                           'peak0velo',
                           'peak0freq',
@@ -90,7 +101,7 @@ newcol = Column([core_phot_tbl['peak_mass'][core_phot_tbl['SourceID'] == name][0
                 name='CoreMass')
 outflow_tbl.add_column(newcol)
 
-newcol = Column([cores_merge['T_corrected_mass'][cores_merge['SourceID'] == name][0]
+newcol = Column([cores_merge['T_corrected_peakmass'][cores_merge['SourceID'] == name][0]
                  if any(cores_merge['SourceID'] == name) else np.nan
                  for name in outflow_tbl['SourceID']],
                 name='TCorrectedCoreMass')

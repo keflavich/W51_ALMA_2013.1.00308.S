@@ -46,4 +46,20 @@ cores_merge.add_column(Column(brightest_noncld_qns, 'BrightestFittedQNs'))
 cores_merge.add_column(Column(brightest_noncld_fluxes, 'BrightestFittedApMeanFlux', unit=u.Jy))
 cores_merge.add_column(Column(brightest_fitted_brightness, 'BrightestFittedApMeanBrightness', unit=u.K))
 
+# need to add back in continuum because we're concerned with the *absolute*
+# brightness
+# moved to other merge jtok_eq = u.brightness_temperature(cores_merge['beam_area'], 225*u.GHz)
+# moved to other merge cont_brightness = (u.beam * cores_merge['sum']/cores_merge['npix']).to(u.K, jtok_eq)
+cont_brightness = cores_merge['MeanContinuumBrightness']
+contincluded_line_brightness = cores_merge['BrightestFittedApMeanBrightness'] + cont_brightness
+cores_merge.add_column(Column(contincluded_line_brightness, 'BrightestFittedApMeanBrightnessWithcont', unit=u.K))
+
+temperature_corrected_aperturemass = Column([(masscalc.mass_conversion_factor(20).value
+                                          if np.isnan(row['BrightestFittedApMeanBrightnessWithcont'])
+                                          else masscalc.mass_conversion_factor(row['BrightestFittedApMeanBrightnessWithcont']).value)
+                                         * row['sum']/ppbeam for row in cores_merge],
+                                        name='T_corrected_aperturemass',
+                                        unit=u.M_sun)
+cores_merge.add_column(temperature_corrected_aperturemass)
+
 cores_merge.write(paths.tpath('core_continuum_and_line.ipac'), format='ascii.ipac', overwrite=True)

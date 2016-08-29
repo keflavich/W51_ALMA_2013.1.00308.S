@@ -69,19 +69,19 @@ fig2 = pl.figure(2)
 fig2.clf()
 ax2 = fig2.add_subplot(211)
 
-fit = powerlaw.Fit(cores_merge['T_corrected_mass'])
+fit = powerlaw.Fit(cores_merge['T_corrected_peakmass'])
 fit.plot_ccdf(color='k')
 fit.power_law.plot_ccdf(color='r', linestyle='--')
 ax2.set_ylabel("Fraction of sources")
 
 ax3 = fig2.add_subplot(212)
 
-fit = powerlaw.Fit(cores_merge['T_corrected_mass'])
+fit = powerlaw.Fit(cores_merge['T_corrected_peakmass'])
 # doesn't work at all fit.plot_pdf(color='k')
 bmin, bmax = 0.2, 6.0
 bins = np.logspace(np.log10(bmin),np.log10(bmax),15)
 bins = np.linspace((bmin),(bmax),15)
-H,L,P = ax3.hist(cores_merge['T_corrected_mass'], bins=bins, color='k',
+H,L,P = ax3.hist(cores_merge['T_corrected_peakmass'], bins=bins, color='k',
                  facecolor='none', histtype='step')
 pdf = fit.power_law.pdf(bins)*np.max(H)
 ax3.plot(bins[bins>fit.power_law.xmin], pdf, 'r--')
@@ -101,7 +101,7 @@ fig2.clf()
 ax3 = fig2.add_subplot(111)
 bmin, bmax = 0.2, 6.0
 bins = np.linspace((bmin),(bmax),15)
-H,L,P = ax3.hist(cores_merge['T_corrected_mass'], bins=bins*0.99, color='k',
+H,L,P = ax3.hist(cores_merge['T_corrected_peakmass'], bins=bins*0.99, color='k',
                  facecolor='none', histtype='step', label='M($T_B$)',
                  linewidth=2, alpha=0.5)
 H,L,P = ax3.hist(cores_merge['peak_mass'], bins=np.linspace(bmin, 130, 50), color='b',
@@ -146,7 +146,7 @@ fig3.savefig(paths.fpath('coreplots/peakTB_vs_continuum.png'))
 fig4 = pl.figure(4)
 fig4.clf()
 ax5 = fig4.gca()
-ax5.plot(cores_merge['peak_mass'], cores_merge['T_corrected_mass'], 's')
+ax5.plot(cores_merge['peak_mass'], cores_merge['T_corrected_peakmass'], 's')
 ylims = ax5.get_ylim()
 ax5.plot([0,250], [0,250], 'k--')
 ax5.set_ylim(ylims)
@@ -295,10 +295,12 @@ isOK = np.isfinite(cores_merge['BrightestFittedApMeanBrightness'])
 histdata = []
 
 # need to add back in continuum because we're concerned with the *absolute*
-# brightness
-jtok_eq = u.brightness_temperature(cores_merge['beam_area'], 225*u.GHz)
-cont_brightness = (u.beam * cores_merge['sum']/cores_merge['npix']).to(u.K, jtok_eq)
-contincluded_line_brightness = cores_merge['BrightestFittedApMeanBrightness'] + cont_brightness
+# brightness.  MOVED TO merge_spectral...py
+#jtok_eq = u.brightness_temperature(cores_merge['beam_area'], 225*u.GHz)
+#cont_brightness = (u.beam * cores_merge['sum']/cores_merge['npix']).to(u.K, jtok_eq)
+#contincluded_line_brightness = cores_merge['BrightestFittedApMeanBrightness'] + cont_brightness
+cont_brightness = cores_merge['MeanContinuumBrightness']
+contincluded_line_brightness = cores_merge['BrightestFittedApMeanBrightnessWithcont']
 
 for linename in np.unique(cores_merge['BrightestFittedLine']):
     if linename == '-':
@@ -318,10 +320,32 @@ fig6 = pl.figure(6)
 fig6.clf()
 ax6 = fig6.gca()
 ax6.plot(cont_brightness, contincluded_line_brightness, 's')
-ax6.plot([0,200], [0, 200], 'k--')
+ax6.plot([0,200], [0, 200], 'k--', alpha=0.5)
 ax6.plot([0,200], [0, 200*10], 'k:', zorder=-1, alpha=0.5)
+ax6.plot([0,200], [0+70, 200+70], 'k-', zorder=-1, alpha=0.2)
 ax6.set_xlabel("Continuum brightness (K)")
 ax6.set_ylabel("Peak line brightness (K)")
 ax6.set_xlim([0, 105])
 ax6.set_ylim([0, 175])
 fig6.savefig(paths.fpath('coreplots/fittedpeakTB_vs_aperturecontinuum.png'))
+
+fig7 = pl.figure(7)
+fig7.clf()
+ax7 = fig7.gca()
+L, = ax7.plot(cores_merge['ApertureMass20K'][cores_merge['ApertureMass20K'] > cores_merge['T_corrected_aperturemass']],
+              cores_merge['T_corrected_aperturemass'][cores_merge['ApertureMass20K'] > cores_merge['T_corrected_aperturemass']], 's')
+ax7.plot(cores_merge['ApertureMass20K'][cores_merge['ApertureMass20K'] < cores_merge['T_corrected_aperturemass']],
+         cores_merge['T_corrected_aperturemass'][cores_merge['ApertureMass20K'] < cores_merge['T_corrected_aperturemass']], 's',
+         color=L.get_color(), alpha=0.25)
+ax7.plot(cores_merge['ApertureMass20K'][cores_merge['ApertureMass20K'] < cores_merge['T_corrected_aperturemass']],
+         cores_merge['ApertureMass20K'][cores_merge['ApertureMass20K'] < cores_merge['T_corrected_aperturemass']], 'o')
+ylims = ax7.get_ylim()
+ax7.set_xscale('log')
+ax7.set_yscale('log')
+ax7.plot([0,2500], [0,2500], 'k--', alpha=0.5, zorder=-5)
+ax7.plot([0,2500], [0,2500/10.], 'k:', alpha=0.5, zorder=-5)
+ax7.set_ylim(ylims)
+ax7.set_xlim((4,2000))
+ax7.set_xlabel("Mass at 20K [M$_\\odot$]")
+ax7.set_ylabel("Mass at peak $T_B$ [M$_\\odot$]")
+fig7.savefig(paths.fpath('coreplots/aperture_mass20K_vs_massTB.png'))
