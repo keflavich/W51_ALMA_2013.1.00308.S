@@ -204,9 +204,9 @@ fig2.savefig(paths.fpath('coreplots/core_spatial_distribution.png'))
 
 powerlaw_parameters = {}
 
-fig2 = pl.figure(2)
-fig2.clf()
-#ax = fig2.gca()
+fig5 = pl.figure(5)
+fig5.clf()
+#ax = fig5.gca()
 
 bins = np.logspace(-3,1.05, 20)
 
@@ -283,3 +283,45 @@ flux04 = (cores_merge['cont_flux0p4arcsec'.format(aperture)] -
           cores_merge['KUbandcont_flux0p4arcsec'.format(aperture)])
 
 pl.plot(flux02, flux02/flux04, '.')
+pl.xlabel("0.2\" aperture flux")
+pl.ylabel("0.2\" over 0.4\" concentration parameter")
+pl.ylim(0,1.5)
+
+fig4 = pl.figure(4)
+fig4.clf()
+ax=fig4.gca()
+
+isOK = np.isfinite(cores_merge['BrightestFittedApMeanBrightness'])
+histdata = []
+
+# need to add back in continuum because we're concerned with the *absolute*
+# brightness
+jtok_eq = u.brightness_temperature(cores_merge['beam_area'], 225*u.GHz)
+cont_brightness = (u.beam * cores_merge['sum']/cores_merge['npix']).to(u.K, jtok_eq)
+contincluded_line_brightness = cores_merge['BrightestFittedApMeanBrightness'] + cont_brightness
+
+for linename in np.unique(cores_merge['BrightestFittedLine']):
+    if linename == '-':
+        continue
+    match = linename==cores_merge['BrightestFittedLine']
+    histdata.append((linename,
+                     contincluded_line_brightness[match & isOK]))
+
+ax.hist([x[1] for x in histdata],
+        label=[x[0] for x in histdata],
+        stacked=True)
+ax.legend(loc='best')
+ax.set_xlabel("$T_B$ [K]")
+fig4.savefig(paths.fpath('coreplots/brightest_line_histogram.png'))
+
+fig6 = pl.figure(6)
+fig6.clf()
+ax6 = fig6.gca()
+ax6.plot(cont_brightness, contincluded_line_brightness, 's')
+ax6.plot([0,200], [0, 200], 'k--')
+ax6.plot([0,200], [0, 200*10], 'k:', zorder=-1, alpha=0.5)
+ax6.set_xlabel("Continuum brightness (K)")
+ax6.set_ylabel("Peak line brightness (K)")
+ax6.set_xlim([0, 105])
+ax6.set_ylim([0, 175])
+fig6.savefig(paths.fpath('coreplots/fittedpeakTB_vs_aperturecontinuum.png'))

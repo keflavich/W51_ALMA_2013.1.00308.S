@@ -10,6 +10,7 @@ from astropy.utils.console import ProgressBar
 import pylab as pl
 import pyregion
 import velo_guesses
+import radio_beam
 
 import warnings
 from numpy.ma.core import MaskedArrayFutureWarning
@@ -43,6 +44,7 @@ for region in regions:
     line_table.add_column(table.Column(name='{0}FittedAmplitudeError'.format(name), data=np.zeros(len(line_table))))
     line_table.add_column(table.Column(name='{0}FittedCenterError'.format(name), data=np.zeros(len(line_table))))
     line_table.add_column(table.Column(name='{0}FittedWidthError'.format(name), data=np.zeros(len(line_table))))
+    line_table.add_column(table.Column(name='{0}JtoK'.format(name), data=np.zeros(len(line_table))))
 
     vcen = velo_guesses.guesses[name]
 
@@ -61,6 +63,7 @@ for region in regions:
         # check if line in range
         for sp in spectra:
             sp.xarr.convert_to_unit(u.GHz)
+            beam = radio_beam.Beam.from_fits_header(sp.header)
             if sp.xarr.in_range(frq):
 
                 
@@ -114,6 +117,8 @@ for region in regions:
                     line_row['{0}FittedAmplitudeError'.format(name)] = sp_sl.specfit.parinfo['AMPLITUDE0'].error
                     line_row['{0}FittedCenterError'.format(name)] = sp_sl.specfit.parinfo['SHIFT0'].error
                     line_row['{0}FittedWidthError'.format(name)] = sp_sl.specfit.parinfo['WIDTH0'].error
+                    jtok = beam.jtok(np.median(sp_sl.xarr.as_unit(u.GHz)))
+                    line_row['{0}JtoK'.format(name)] = jtok.value
 
     ymin = 0
     ymax = 0

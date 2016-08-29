@@ -9,6 +9,7 @@ outflow_tbl = Table.read(paths.tpath("outflow_co_photometry.ipac"), format='asci
 core_velo_tbl = Table.read(paths.tpath("core_velocities.ipac"), format="ascii.ipac")
 core_phot_tbl = Table.read(paths.tpath("continuum_photometry.ipac"), format='ascii.ipac')
 
+
 core_phot_tbl.rename_column('name','SourceID')
 cores_merge = table.join(core_velo_tbl, core_phot_tbl,)
 
@@ -104,4 +105,6 @@ outflow_tbl.add_column(newcol)
 
 outflow_tbl.write(paths.tpath('outflows_with_cores.ipac'), format='ascii.ipac')
 
-
+# exec other merge now
+with open(paths.apath('merge_spectral_fits_with_photometry.py')) as source_file:
+    exec(source_file.read(), globals(), locals())

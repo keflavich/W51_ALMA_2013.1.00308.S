@@ -388,7 +388,7 @@ double-count some pixels.  The smallest separation is
 on the hand-extracted core positions.  The aperture size is listed 
 in the y-axis label.  For the top plot, labeled `Peak', this is the peak
 flux density in Jy/beam.  For the rest, it is the integrated flux density
-in the specified aperture.[1:-1,:,:]}
+in the specified aperture.}
 {fig:fluxhistograms}
 {1}{16cm}
 
@@ -403,15 +403,17 @@ in the y-axis label.  Free-free-dominated sources are excluded.}
 We fit power law distributions to each aperture's flux distribution using the
 packages \texttt{plfit} and \texttt{PowerLaw}
 \citep[https://github.com/keflavich/plfit,
-https://github.com/jeffalstott/powerlaw][]{Clauset2007a,Alstott2014a}.  The
+https://github.com/jeffalstott/powerlaw;][]{Clauset2007a,Alstott2014a}.  The
 powerlaws steepen slightly from $\alpha=2.0\pm0.12$ to $\alpha=2.2\pm0.16$ for
-larger apertures.  The minimum flux represented by a power law increases from
-$\sim20$ mJy to 0.4 Jy (14-280 \msun at 20K).  These slopes are shallower than 
-the Salpeter-like slope for the mass function derived by \citep{Konyves2015a}
-for their sample, though with only modest significance ($<3-\sigma$).  Of
-course, these measurements are of the continuum flux density, not directly of
-the mass, and so a direct comparison may not be appropriate.  We revisit this
-question after assessing the dust temperature in Section \ref{sec:temperature}.
+larger apertures.  The minimum flux density represented by a power law
+increases from $\sim20$ mJy for the peak flux density distribution to 0.4 Jy
+for the largest aperture (14-280 \msun at 20K).  These slopes are shallower
+than the Salpeter-like slope for the mass function derived by
+\citep{Konyves2015a} for their sample, though with only modest significance
+($<3-\sigma$).  Of course, these measurements are of the continuum flux
+density, not directly of the mass, and so a direct comparison may not be
+appropriate.  We revisit this question after assessing the dust temperature in
+Section \ref{sec:temperature}.
 
 \subsection{Spectral Lines \& Velocities}
 To determine the line-of-sight velocity of each source, we extracted a spectrum
@@ -438,7 +440,7 @@ The average dust temperature, as estimated from Herschel Hi-Gal SED fits
 \citep{Molinari2016a,Wang2015a}, is 38 K when including the 70 \um data or 26 K
 when excluding it.  This average is obtained over a $\sim45\arcsec$ ($\sim 1$
 pc) beam and therefore is likely to be strongly biased toward the hottest dust
-in the HII regions and around the massive cores, which are known to have
+in the HII regions and around the massive cores, which have
 temperatures reaching $>300$ K \citep{Goddi2016a}.  Despite these
 uncertainties, this bulk measurement provides us with a reasonable range to
 assume for the uncoupled, low-density dust, which (weakly) dominates the mass
@@ -460,23 +462,39 @@ To gain a more detailed measurement of the dust temperature in regions where it
 is likely to be coupled to the gas, we use the peak brightness temperature
 $T_{B,max}$ of lines along the line of sight.  If the observed molecule is in
 local thermal equilibrium, as is expected if the density is high enough to be
-coupled to the dust for many molecules, and it is optically thick, the
-brightness temperature provides an approximate measurement of the true physical
-temperature near the $\tau=1$ surface.  If any of these assumptions do not
-hold, $T_{B,max}$ will set a lower limit on the true gas temperature.  Only
-nonthermal (maser) emission would push $T_{B,max} > T_{gas}$.
+collisionally coupled to the dust, and it is optically thick, the brightness
+temperature provides an approximate measurement of the local temperature near
+the $\tau=1$ surface.  If any of these assumptions do not hold, $T_{B,max}$
+will set a lower limit on the true gas temperature.  Only nonthermal (maser)
+emission would push $T_{B,max} > T_{gas}$.
 
 One potential problem with this approach is if the gas becomes optically thick
-before probing most of the dust.  Some transitions, e.g. CO and \formaldehyde, 
-are likely to be affected by this issue.
+before probing most of the dust.  Some transitions, e.g. CO and \formaldehyde,
+are likely to be affected by this issue.  However, many of the molecules
+included in the observations have lower abundances and are likely to be
+optically thin along most of the line of sight.
 
 Some sources have no detected line emission aside from the molecular cloud
-species CO and \formaldehyde.  Given the density necessitated by any continuum
-detection for a spherical source $n>10^{7.5}$ \percc for a 1.6 mJy source,
-it is unlikely that the species are merely subthermally excited.  More likely,
-the underyling emission source is very compact, optically thick, and/or cold.
+species CO and \formaldehyde.  The minimum density requirement imposed by a
+continuum detection at our limit of 1.6 mJy is $n>10^{7.5}$ \percc for a
+spherical source.  At such high density, it is unlikely that the species are
+undetected because they are subthermally excited.  More likely, the underyling
+emission source is very compact, optically thick, and/or cold.
 
-\todo{Continue here...}
+Figure \ref{fig:peaktbhist} shows the distribution of peak line brightnesses
+for the continuum sources.  The spectra used to determine this brightness are
+the mean spectra over the continuum photometry aperture.  The line brightnesses
+are the sum of the continuum-subtracted peak line brightness and the continuum
+brightness.  Excepting CO and
+\formaldehyde, which are excluded from the plot, \methanol is the brightest
+line toward most sources. 
+
+\Figure{figures/brightest_line_histogram.png}
+{Histogram of the brightest line toward each continuum source.
+The bars are colored by the molecular species associated with the brightest
+line that is not associated with extended molecular cloud emission,
+i.e., CO and its isotopologues and \formaldehyde are excluded.}
+{fig:peaktbhist}{1}{10cm}
 
 
 \Figure{figures/dendro_peakTB_vs_selfconsistentcontinuum.png}
@@ -1067,6 +1085,8 @@ widths are not consistent between different tracers.
 idea: concentration parameter, compare to power-law cores of varying indices.
 Protostar / core ratio on this basis?  Evolutionary indicator of subregions?
 
+%\subsection{The source flux density distribution \& the core mass function}
+%\todo{maybe}
 
 \subsection{Limits on accretion onto HII regions}
 \citet{Peters2010a} and \citet{Klaassen2012a} proposed that ultra- and
