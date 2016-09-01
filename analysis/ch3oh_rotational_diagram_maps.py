@@ -59,6 +59,7 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
                        filelist=glob.glob(paths.dpath('12m/cutouts/*e2e8*fits')),
                        source=None, radius=None,
                        chem_name='CH3OH',
+                       shape=None, # check that shape matches slice
                       ):
     assert filelist
 
@@ -69,6 +70,9 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
     frequencies = {}
     indices = {}
 
+    # sanity check
+    #shapes = [fits.getdata(fn).shape for fn in filelist]
+    #assert len(set(shapes)) == 1
 
     for ii,fn in enumerate(ProgressBar(filelist)):
         if chem_name not in fn:
@@ -78,13 +82,15 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
             continue
 
         if 'moment0' in fn:
-            m0 = fits.getdata(fn)
-            stddev = fits.getdata(fn.replace("moment0","madstd"))
+            # there is a slight danger of off-by-one-pixel errors with the
+            # cropping used here.  Ideally, we'd reproject...
+            m0_full = fits.getdata(fn)
+            #stddev = fits.getdata(fn.replace("moment0","madstd"))
             header = fits.getheader(fn)
-            cutout = Cutout2D(m0, source, 2*radius, wcs=wcs.WCS(header))
+            cutout = Cutout2D(m0_full, source, 2*radius, wcs=wcs.WCS(header))
             m0 = cutout.data
-            cutout_std = Cutout2D(stddev, source, 2*radius, wcs=wcs.WCS(header))
-            stddev = cutout_std.data
+            #cutout_std = Cutout2D(stddev, source, 2*radius, wcs=wcs.WCS(header))
+            #stddev = cutout_std.data
             try:
                 beam = radio_beam.Beam.from_fits_header(header)
                 jtok = beam.jtok(header['RESTFRQ']*u.Hz).value
@@ -92,10 +98,17 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
                 jtok = 222. # approximated 0.32x0.34 at 225 GHz
 
             m0 = m0 * jtok
-            stddev = stddev * jtok
+            # stddev = error in a single channel... not very accurate
+            #stddev = stddev * jtok
+            print("stddev for {0}".format(fn)) # this debug statement prevents abort traps
+            stddev = mad_std(m0_full[np.isfinite(m0_full)]) * jtok
             header = cutout.wcs.to_header()
         else:
-            cube = SpectralCube.read(fn)[:,yslice,xslice]
+            cube_ = SpectralCube.read(fn)
+            if shape:
+                # have to have same shapes, otherwise pixel slices don't make sense
+                assert cube_.shape == shape
+            cube = cube_[:,yslice,xslice]
             bm = cube.beams[0]
             #jtok = bm.jtok(cube.wcs.wcs.restfrq*u.Hz)
             cube = cube.to(u.K, bm.jtok_equiv(cube.wcs.wcs.restfrq*u.Hz))
@@ -264,23 +277,32 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None,
         import pylab as pl
         L, = pl.plot(eupper, np.log10(nupperoverg_tofit), 'ro',
                      markeredgecolor='none', alpha=0.5)
-        L, = pl.plot(eupper, np.log10(nupperoverg), 'o')
+        L, = pl.plot(eupper, np.log10(nupperoverg), 'bo', alpha=0.2)
         if errors is not None:
+            yerr = np.array([np.log10(nupperoverg_tofit)-np.log10(nupperoverg_tofit-errors),
+                             np.log10(nupperoverg_tofit+errors)-np.log10(nupperoverg_tofit)])
+            # if lower limit is nan, set to zero
+            yerr[0,:] = np.nan_to_num(yerr[0,:])
+            if np.any(np.isnan(yerr[1,:])):
+                print("*** Some upper limits are NAN")
             pl.errorbar(eupper.value,
-                        np.log10(nupperoverg),
-                        yerr=np.array([np.log10(nupperoverg)-np.log10(nupperoverg-errors),
-                                       np.log10(nupperoverg+errors)-np.log10(nupperoverg)]),
+                        np.log10(nupperoverg_tofit),
+                        yerr=yerr,
                         linestyle='none',
+                        linewidth=0.5,
                         marker='.', zorder=-5)
         xax = np.array([0, eupper.max().value])
         line = (xax*result.slope.value +
                 result.intercept.value)
         pl.plot(xax, np.log10(np.exp(line)), '-', color=L.get_color(),
+                alpha=0.3,
                 label='$T={0:0.1f}$ $\log(N)={1:0.1f}$'.format(tex, np.log10(Ntot.value)))
         pl.ylabel("log N$_u$ (cm$^{-2}$)")
         pl.xlabel("E$_u$ (K)")
 
-        if uplims is not None:
+        if (uplims is not None) and ((errors is None) or replace_errors_with_uplims):
+            # if errors are specified, their errorbars will be better
+            # representations of what's actually being fit
             pl.plot(eupper, np.log10(uplims), marker='_', alpha=0.5,
                     linestyle='none', color='k')
 
@@ -400,6 +422,9 @@ def fit_all_tex(xaxis, cube, cubefrequencies, indices, degeneracies,
             if ecube is not None:
                 nupper_error = nupper_of_kkms(ecube[:,ii,jj], cubefrequencies,
                                               einsteinAij[indices], degeneracies,).value
+                uplims = 3 * nupper_error
+                if replace_bad:
+                    raise ValueError("replace_bad is ignored now...")
             else:
                 nupper_error = None
 
@@ -417,7 +442,8 @@ if __name__ == "__main__":
     import pylab as pl
     pl.matplotlib.rc_file('pubfiguresrc')
 
-    detection_threshold_jykms = 0.065
+    # sigma ~0.055 - 0.065
+    detection_threshold_jykms = 0.065 * 2
     approximate_jytok = 221
 
     sources = {'e2': coordinates.SkyCoord('19:23:43.963', '+14:30:34.53',
@@ -446,7 +472,9 @@ if __name__ == "__main__":
     for sourcename, region in (('e2','e2e8'), ('e8','e2e8'), ('north','north'),
                                ('ALMAmm14','ALMAmm14'),):
 
-        replace_bad = dthresh[sourcename]
+        # use 3-sigma instead of arbitrary
+        # replace_bad = dthresh[sourcename]
+        replace_bad = False
                                 
         _ = cutout_id_chem_map(source=sources[sourcename],
                                radius=radii[sourcename],
@@ -466,10 +494,11 @@ if __name__ == "__main__":
             plotnum = (nx*ny-(2*(ii//ny)*ny)+ii-ny)+1
             pl.subplot(nx,ny,plotnum)
 
-            uplims = nupper_of_kkms(replace_bad, cubefrequencies,
-                                    einsteinAij[indices], degeneracies,)
+            #uplims = nupper_of_kkms(replace_bad, cubefrequencies,
+            #                        einsteinAij[indices], degeneracies,)
             nupper_error = nupper_of_kkms(ecube[:,rdy,rdx], cubefrequencies,
                                           einsteinAij[indices], degeneracies,)
+            uplims = 3*nupper_error
             Ntot, tex, slope, intcpt = fit_tex(xaxis,
                                                nupper_of_kkms(cube[:,rdy,rdx],
                                                               cubefrequencies,
@@ -494,13 +523,14 @@ if __name__ == "__main__":
                         horizontalalignment='left', fontsize=12)
 
             # show upper limits
-            pl.plot(xaxis,
-                    np.log10(nupper_of_kkms(replace_bad,
-                                            cubefrequencies,
-                                            einsteinAij[indices],
-                                            degeneracies).value),
-                    linestyle='none', marker='_', color='k',
-                    markeredgewidth=2, alpha=0.5)
+            # (this is automatically done now)
+            #pl.plot(xaxis,
+            #        np.log10(nupper_of_kkms(replace_bad,
+            #                                cubefrequencies,
+            #                                einsteinAij[indices],
+            #                                degeneracies).value),
+            #        linestyle='none', marker='_', color='k',
+            #        markeredgewidth=2, alpha=0.5)
 
             if (plotnum-1) % ny == 0:
                 pl.ylabel("log($N_u / g_u$)")
@@ -638,10 +668,11 @@ if __name__ == "__main__":
         xpix, ypix = mywcs.celestial.wcs_world2pix(coord.ra.deg, coord.dec.deg,
                                                    0)
 
-        uplims = nupper_of_kkms(replace_bad, cubefrequencies,
-                                einsteinAij[indices], degeneracies,)
+        #uplims = nupper_of_kkms(replace_bad, cubefrequencies,
+        #                        einsteinAij[indices], degeneracies,)
         nupper_error = nupper_of_kkms(ecube[:,rdy,rdx], cubefrequencies,
                                       einsteinAij[indices], degeneracies,)
+        uplims = 3*nupper_error
 
         print(reg.attr[1]['text'])
         Ntot, tex, slope, intcpt = fit_tex(xaxis,
