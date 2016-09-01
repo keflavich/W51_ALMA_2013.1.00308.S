@@ -63,7 +63,7 @@ ax3.set_xlabel("Peak flux density (Jy/beam)")
 ax3.set_ylabel("Number of sources")
 fig2.savefig(paths.fpath('coreplots/flux_powerlaw_histogram_fit.png'))
 
-print("Fit parameters: alpha={0}".format(fit.power_law.alpha))
+print("Flux Fit parameters: alpha={0}".format(fit.power_law.alpha))
 
 fig2 = pl.figure(2)
 fig2.clf()
@@ -94,7 +94,46 @@ ax3.set_xlabel("Temperature-corrected mass")
 ax3.set_ylabel("Number of sources")
 fig2.savefig(paths.fpath('coreplots/tcorr_mass_powerlaw_histogram_fit.png'))
 
-print("Fit parameters: alpha={0}".format(fit.power_law.alpha))
+print("Mass Fit parameters: alpha={0}".format(fit.power_law.alpha))
+
+fig2 = pl.figure(2)
+fig2.clf()
+ax2 = fig2.add_subplot(211)
+
+masses_to_fit = np.where(cores_merge['T_corrected_aperturemass'] < cores_merge['ApertureMass20K'],
+                         cores_merge['T_corrected_aperturemass'], cores_merge['ApertureMass20K'])
+
+fit = powerlaw.Fit(masses_to_fit)
+fit.plot_ccdf(color='k')
+fit.power_law.plot_ccdf(color='r', linestyle='--')
+ax2.set_ylabel("Fraction of sources")
+
+ax3 = fig2.add_subplot(212)
+
+fit = powerlaw.Fit(masses_to_fit)
+# doesn't work at all fit.plot_pdf(color='k')
+bmin, bmax = 0.1, 300.0
+bins = np.logspace(np.log10(bmin),np.log10(bmax),15)
+bins = np.linspace((bmin),(bmax),15)
+H,L,P = ax3.hist(masses_to_fit, bins=bins, color='k',
+                 facecolor='none', histtype='step')
+pdf = fit.power_law.pdf(bins)/fit.power_law.pdf(bins).max()*np.max(H)
+ax3.plot(bins[bins>fit.power_law.xmin]-np.mean(np.diff(bins))/2., pdf, 'r--')
+#fit.power_law.plot_pdf(color='r', linestyle='--')
+#ax3.set_ylim(0.03, 0.5)
+#ax3.set_xscale('log')
+#ax3.set_yscale('log')
+ax3.set_xlabel("Temperature-corrected mass")
+#ax3.set_ylabel("Fraction of sources")
+ax3.set_ylabel("Number of sources")
+print("Aperture mass fit parameters: alpha={0}+/-{1}".format(fit.power_law.alpha, fit.power_law.sigma))
+fig2.savefig(paths.fpath('coreplots/tcorr_aperture_mass_powerlaw_histogram_fit.png'))
+
+
+
+
+
+
 
 fig2 = pl.figure(2)
 fig2.clf()

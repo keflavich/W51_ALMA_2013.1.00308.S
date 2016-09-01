@@ -22,9 +22,13 @@ merge_spectrum_path = os.path.join(root, 'FITS/merge/spectra')
 perseus_synpath = os.path.join(root, 'perseus_synth')
 simulation_path = os.path.join(root, 'simulations')
 h2comodelpath = os.path.join(root, 'analysis/h2co')
+longbaselinepath = '/Volumes/passport/alma/w51/longbaseline/'
 
 def path(x, basepath):
     return os.path.join(basepath, x)
+
+def lbpath(x, longbaselinepath=longbaselinepath):
+    return os.path.join(longbaselinepath, x)
 
 def fpath(x, figurepath=figurepath):
     return os.path.join(figurepath, x)

@@ -62,7 +62,7 @@ make_rgb('full_h2co_12monly_rgb.fits',
 make_rgb('h2co_hc3n_ch3oh_rgb.fits',
          blueline='HC3N24-23',
          greenline='CH3OH422-312')
-make_rgb('h2co_hc3n_so_rgb.fits',
+make_rgb('h2co_so_hc3n_rgb.fits',
          blueline='HC3N24-23',
          greenline='SO65-54')
 make_rgb('c18o_hc3n_ch3oh_rgb.fits',
@@ -137,4 +137,13 @@ rgb_im = aplpy.make_rgb_image(data=rgb_cube_fits, output=rgb_cube_png,
                               vmin_r=-0.0005,
                               vmax_r=0.01,
                               stretch_r='log',
+                              embed_avm_tags=True)
+
+rgb_cube_fits = 'ku_so_c18o_rgb.fits'
+if not os.path.exists(rgb_cube_fits):
+    # does not return anything
+    aplpy.make_rgb_cube([fitsKu_fn, fnSO, fnc18o,], rgb_cube_fits)
+
+rgb_cube_png = rgb_cube_fits[:-5]+"_auto.png"
+rgb_im = aplpy.make_rgb_image(data=rgb_cube_fits, output=rgb_cube_png,
                               embed_avm_tags=True)
