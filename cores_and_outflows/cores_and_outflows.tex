@@ -528,7 +528,7 @@ M(20\textrm{K})$
 %}
 %{fig:peaktb}{1}{10cm}
 
-\subsubsection{W51e2e Mass and Temperature Estimates}
+\subsubsection{W51e2e mass and temperature estimates from continuum}
 \label{sec:W51e2e}
 
 In a $0.21\arcsec\times0.19\arcsec$ beam ($1100\times1000$ au), the peak flux
@@ -536,20 +536,28 @@ density is 0.38 Jy, which corresponds to a brightness temperature $T_B=228$ K.
 This is a lower limit to the surface brightness of the millimeter core, since
 an optical depth $\tau<1$ or a filling factor of the emission $ff<1$ would both
 imply higher intrinsic temperatures.  The implied luminosity, assuming a pure
-blackbody, is $L = 4\pi r^2 \sigma_{sb} T^4 = 2.4\ee{4} \lsun$.  Since any systematic
-uncertainties imply a higher temperature, this estimate is a lower limit on the source
-luminosity.
+blackbody, is $L = 4\pi r^2 \sigma_{sb} T^4 = 2.4\ee{4} \lsun$.  Since any
+systematic uncertainties imply a higher temperature, this estimate is a lower
+limit on the source luminosity.
 
 If we assume that $T_{dust} = T_{peak}$ and that the dust is optically thin, we
-derive a dust mass $M_{dust}\sim20$ \msun.  However, this final mass is not a
-strict limit in either direction: if the dust is optically thick, there may be
-substantial hidden or undetected gas, while if the filling factor is low, it
-may be much hotter and therefore lower in mass.
+derive a dust mass $M_{dust}\sim20$ \msun.  This  mass is not a strict limit in
+either direction: if the dust is optically thick, there may be substantial
+hidden or undetected gas, while if the filling factor is low, it may be much
+hotter and therefore lower in mass.  However, simulations and models both
+predict that the dust will become highly optically thick at radii
+$r\lesssim1000$ au \citep{Forgan2016,Klassen2016a}, so it is likely that
+this measurement provides only a lower limit on the total gas mass surrounding
+the protostar.
 
 In the broader region surrounding W51e2e, out to a radius $\sim8000$ au, the
 total mass is $M\approx1400 (T / 100 \mathrm{K})^{-1}$ \msun  (Figure
-\ref{fig:hmradprof}).  The mass heated by e2e is therefore enormous,
-constituting an entire star cluster's worth of material.
+\ref{fig:hmradprof}).  On these larger scales, a cooler assumed temperature and
+optically thin dust are more reasonable.  The mass heated by e2e is therefore
+enormous, constituting an entire star cluster's worth of material.
+
+For an independent measurement of the temperature, we use the eight \methanol
+lines in band, ...
 
 \todo{How much is the \methanol enhanced compared to the surroundings?}
 
@@ -659,8 +667,10 @@ molecules, or increased excitation.
 Figure \ref{fig:ch3ohvscont} shows a comparison between the \methanol
 $10_{2,9}-9_{3,6}$ line and the 225 GHz continuum.  While the brightest regions
 in \methanol mostly have corresponding dust emission, the dust morphology
-traces the \methanol morphology very poorly.  This suggests that the enhanced
-brightness is not simply because of higher total column density.
+traces the \methanol morphology very poorly.  This difference suggests that the
+enhanced brightness is not simply because of higher total column density.
+We examine the dust-\methanol link more quantitatively in Figure
+\ref{fig:ch3ohtemX}.
 
 \FigureTwo{figures/continuum_contours_on_ch3oh1029.png}
           {figures/ch3oh1029_contours_on_continuum.png}
@@ -674,12 +684,14 @@ appear to be self-absorbed.}
 The detection of highly excited \methanol lines, including
 $18_{3,15}-17_{4,14}$ ($E_U=447$ K) and $25_{3,22}-24_{4,20}$ ($E_U=802$ K),
 suggests that the excitation is at least part of the explanation.  However,
-abundance also plays a large role.  Figure \ref{fig:ch3ohtemX} shows a comparison
-of the \methanol temperature and abundance.  To derive the abundance, the 
-\methanol-derived temperature was used as the assumed dust temperature to derive
-a column density from the dust surface brightness.  The figure shows all pixels
-within a 3\arcsec (16200 AU) radius of e2e, with pixels having low column density
-and high temperature (i.e., pixels with bad fits) and those near e2w excluded.
+abundance also plays a large role.  Figure \ref{fig:ch3ohtemX} shows a
+comparison of the \methanol temperature and abundance.  The \methanol abundance
+is derived by comparing the rotation-diagram-fitted \methanol column density to
+the dust column density while using the \methanol-derived temperature as the
+assumed dust temperature.  The figure shows all pixels within a 3\arcsec (16200
+AU) radius of e2e, with pixels having low column density and high temperature
+(i.e., pixels with bad fits) and those near e2w (which may be heated
+by a different source) excluded.
 
 \FigureFour{figures/CH3OH_LTE_temperature_vs_abundance.png}
 {figures/CH3OH_LTE_temperature_radial_profile.png}
