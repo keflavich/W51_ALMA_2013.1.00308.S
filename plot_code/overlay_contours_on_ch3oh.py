@@ -27,7 +27,8 @@ for source in ('e2','e8','north'):
     matplotlib.pyplot.figure(2).clf()
     F = aplpy.FITSFigure(paths.dpath('W51_te_continuum_best.fits'),
                          figure=matplotlib.pyplot.figure(2))
-    F.recenter(290.93315, 14.5097, 2.8/3600.)
+    if source == 'e2': # TODO: mapping for each source
+        F.recenter(290.93315, 14.5097, 2.8/3600.)
     F.show_grayscale(invert=True, vmax=0.43, vmin=-0.01, stretch='arcsinh')
     F.show_contour(paths.dpath('chemslices/chemical_m0_slabs_{0}_CH3OH1029-936_merge.fits'.format(source)),
                    colors=['b']*11,
@@ -38,7 +39,7 @@ for source in ('e2','e8','north'):
     matplotlib.pyplot.figure(3).clf()
     F = aplpy.FITSFigure(paths.dpath('12m/moments/CH3OH_{0}_cutout_temperaturemap.fits'.format(source)),
                          figure=matplotlib.pyplot.figure(3))
-    F.show_colorscale(vmax=600, vmin=100, cmap='hot')
+    F.show_colorscale(vmax=600, vmin=50, cmap='hot')
     F.show_contour(paths.dpath('W51_te_continuum_best.fits'),
                    colors=['b']*11,
                    levels=[0.015, 0.0256944, 0.0577778, 0.11125, 0.186111,
@@ -70,7 +71,7 @@ for source in ('e2','e8','north'):
     pl.figure(5).clf()
     ch3ohN = ch3ohN_hdul[0].data
     ch3ohT = ch3ohT_hdul[0].data
-    pl.scatter(dust_brightness, ch3ohN, c=ch3ohT, vmax=600, vmin=100,
+    pl.scatter(dust_brightness, ch3ohN, c=ch3ohT, vmax=600, vmin=50,
                edgecolor='none', alpha=0.9)
     pl.axis((1e-3, 0.2, 1e17, 1e19))
     pl.loglog()
@@ -90,7 +91,7 @@ for source in ('e2','e8','north'):
     pl.figure(6).clf()
     pl.plot([1e23,1e25], [1e16, 1e18], 'k-', label='$X=10^{-7}$', zorder=-1)
     pl.plot([1e23,1e25], [1e17, 1e19], 'k--', label='$X=10^{-6}$', zorder=-2)
-    pl.scatter(dust_column, ch3ohN, c=ch3ohT, vmax=600, vmin=100, edgecolor='none',
+    pl.scatter(dust_column, ch3ohN, c=ch3ohT, vmax=600, vmin=50, edgecolor='none',
                alpha=0.6)
     pl.loglog()
     pl.axis((1e23, 1e25, 1e17, 1e19))
@@ -103,8 +104,8 @@ for source in ('e2','e8','north'):
                bbox_inches='tight')
 
     pl.figure(7).clf()
-    ch3oh_abundance = ch3ohN / dust_column.value 
-    pl.imshow(ch3oh_abundance, vmin=1e-7, vmax=1e-5, cmap='gray_r', norm=matplotlib.colors.LogNorm())
+    ch3oh_abundance = ch3ohN / dust_column.value
+    pl.imshow(ch3oh_abundance, vmin=5e-8, vmax=1e-5, cmap='gray_r', norm=matplotlib.colors.LogNorm())
     cb = pl.colorbar()
     cb.set_label("Dust-derived N(H$_2$) [cm$^{-2}$]")
     pl.xticks([])
@@ -115,17 +116,29 @@ for source in ('e2','e8','north'):
     pl.savefig(paths.fpath('chemistry/{0}_CH3OH_LTE_abundance_map.png'.format(source)), bbox_inches='tight')
 
     yy,xx = np.indices(ch3ohN.shape)
-    yyc = (yy-ch3ohN.shape[0]/2.)
-    xxc = (xx-ch3ohN.shape[1]/2.)
+    if source == 'north':
+        center = [84.,38.]
+    else:
+        center = [ch3ohN.shape[0]/2., ch3ohN.shape[1]/2.]
+    yyc = (yy-center[0])
+    xxc = (xx-center[1])
     rr = (yyc**2 + xxc**2)**0.5
     rr_as = (rr*pixscale).to(u.arcsec)
     theta = np.arctan2(yyc,xxc)*u.rad
-    mask = ((theta > 15*u.deg) & (theta < 345*u.deg)) | (theta < -15*u.deg)
-    mask = mask & (ch3oh_abundance > 0) & (ch3oh_abundance < 1e-5)
+
+    # mask is an INCLUDE mask
+    # we don't see anything at all for abundances below 1e-10
+    mask = (ch3oh_abundance > 1e-10) & (ch3oh_abundance < 1e-5)
+    if source == 'e2':
+        mask = mask & (((theta > 15*u.deg) & (theta < 345*u.deg)) | (theta < -15*u.deg))
     mask = mask & (rr_as < 3*u.arcsec) # there's not really any valid data out of this radius
     mask = mask & np.isfinite(ch3oh_abundance)
+    # exclude high-abundance, low-column regions: likely to be div-by-zero zones
+    mask = mask & (~((ch3ohN < 1e18) & (ch3oh_abundance > 5e-6)))
+    mask = mask & (~((dust_brightness<1e-2) & (ch3ohT > 500) & (ch3oh_abundance > 1e-6)))
+
     mask = mask & (~((ch3ohT > 250) &
-                     (ch3ohN < 5e17) &
+                     (ch3ohN < 1e18) &
                      (rr_as>1.5*u.arcsec))
                    )# these are low-column,
     # high-temperature: they're very likely to be bad fits, since there is no
@@ -149,24 +162,25 @@ for source in ('e2','e8','north'):
     # (use 'ones' to avoid div-by-zero error; this is not obviously necessary)
     ch3oh_abundance_toprofile = ch3oh_abundance.copy()
     ch3oh_abundance_toprofile[~np.isfinite(ch3oh_abundance)] = 1.0
+    # force the masked values to be positive.  Negative values cause bad things.
+    ch3oh_abundance_toprofile[~mask] = 1.0
 
     radbins,radialprof = image_tools.radialprofile.azimuthalAverage(ch3oh_abundance_toprofile,
                                                                     weights=mask.astype('float'),
                                                                     returnradii=True,
                                                                     binsize=1,
                                                                     # to ensure self-consistency, use an identical center
-                                                                    center=[ch3ohN.shape[0]/2.,
-                                                                            ch3ohN.shape[1]/2.],
+                                                                    center=center,
                                                                     interpnan=True)
 
     pl.figure(8).clf()
     pl.scatter(rr_as.value[mask],
                ch3oh_abundance[mask],
-               c=ch3ohT[mask], vmax=600, vmin=100, edgecolor='none', alpha=0.9)
+               c=ch3ohT[mask], vmax=600, vmin=50, edgecolor='none', alpha=0.9)
     #pl.semilogy()
     pl.plot((radbins*pixscale).to(u.arcsec).value, radialprof, color='k', alpha=0.5, linewidth=2)
     pl.axis((0,3, #(rr.max()*pixscale).to(u.arcsec).value,
-             1e-7, 5e-6))
+             5e-8, 5e-6))
     pl.xlabel("Separation from {0} (\")".format(source))
     pl.ylabel("$X$(CH$_3$OH)")
     pl.gca().ticklabel_format(style='sci', axis='y', scilimits=(0,0), useOffset=False)
@@ -178,15 +192,15 @@ for source in ('e2','e8','north'):
     pl.figure(9).clf()
     pl.scatter(rr_as.value[mask],
                ch3ohT[mask],
-               c=ch3oh_abundance[mask], vmax=5e-6, vmin=1e-7, edgecolor='none', alpha=0.8,
+               c=ch3oh_abundance[mask], vmax=5e-6, vmin=5e-8, edgecolor='none', alpha=0.8,
                norm=matplotlib.colors.LogNorm())
     #pl.scatter(rr_as.value[~mask],
     #           ch3ohT[~mask],
-    #           c=ch3oh_abundance[~mask], vmax=5e-6, vmin=1e-7, edgecolor='k', alpha=0.5,
+    #           c=ch3oh_abundance[~mask], vmax=5e-6, vmin=5e-8, edgecolor='k', alpha=0.5,
     #           norm=matplotlib.colors.LogNorm(), zorder=-1)
     #pl.semilogy()
     pl.axis((0,3,#(rr.max()*pixscale).to(u.arcsec).value,
-             100,600))
+             50,600))
     pl.xlabel("Separation from {0} (\")".format(source))
     cb = pl.colorbar()
     cb.set_label("$X$(CH$_3$OH)")
@@ -203,8 +217,8 @@ for source in ('e2','e8','north'):
                norm=matplotlib.colors.LogNorm())
     pl.semilogy()
     #pl.axis((0,(rr.max()*pixscale).to(u.arcsec).value,
-    #         100,600))
-    pl.axis((100,600, 1e17,1e19))
+    #         50,600))
+    pl.axis((50,600, 0.5e17,1e19))
     cb = pl.colorbar()
     cb.set_label("$X$(CH$_3$OH)")
     pl.xlabel('CH$_3$OH-derived Temperature')
@@ -220,8 +234,8 @@ for source in ('e2','e8','north'):
                norm=matplotlib.colors.LogNorm())
     pl.semilogy()
     #pl.axis((0,(rr.max()*pixscale).to(u.arcsec).value,
-    #         100,600))
-    pl.axis((100,600, 1e-7, 5e-6,))
+    #         50,600))
+    pl.axis((50,600, 5e-8, 5e-6,))
     cb = pl.colorbar()
     pl.ylabel("$X$(CH$_3$OH)")
     pl.xlabel('CH$_3$OH-derived Temperature')
