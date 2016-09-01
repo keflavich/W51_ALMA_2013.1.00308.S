@@ -78,7 +78,7 @@ def fit_each_line_with_a_gaussian(spectra, ampguess, vguess_kms, widthguess,
     qn_to_amp = {}
 
     # only one width error b/c of tied
-    width_error = sp.specfit.parinfo['WIDTH0'].error
+    #width_error = sp.specfit.parinfo['WIDTH0'].error
 
     for (amp, freq, width) in zip(sp.specfit.parinfo[::3],
                                   sp.specfit.parinfo[1::3],
@@ -115,6 +115,7 @@ def fit_each_line_with_a_gaussian(spectra, ampguess, vguess_kms, widthguess,
     if plot:
         pl.figure(fignum_start).clf()
 
+    log.info("nupper={0}, nupper_error={1}".format(nupper, nupper_error))
     result = fit_tex(xaxis, nupper, errors=nupper_error, plot=plot)
     pl.legend(loc='upper right')
 
@@ -123,9 +124,12 @@ def fit_each_line_with_a_gaussian(spectra, ampguess, vguess_kms, widthguess,
         peakamp = max(sp.specfit.parinfo.values[::3])
         width_fit = sp.specfit.parinfo['WIDTH0']*2.35 / sp.specfit.parinfo['SHIFT0'] * constants.c.to(u.km/u.s)
 
+        log.info("vel_fit = {0},  width_fit = {1}".format(velocity_fit, width_fit))
+
         # critical that this is done *before* show_modelfit is called, since
         # that replaces the model
-        show_gaussian_modelfit(sp, vel=velocity_fit.value,
+        show_gaussian_modelfit(sp,
+                               vel=velocity_fit.value,
                                width=width_fit.value,
                                fignum=fignum_start+3,
                                ylim=(-0.1*peakamp,peakamp+2),
@@ -153,6 +157,9 @@ def show_gaussian_modelfit(spectra, vel, width, figsavename=None, fignum=1,
     excluded)
 
     width=fwhm
+
+    vel, width are just to set the window limits; the actual plotted parameters
+    come from the spectrum's parinfo
     """
 
     assert spectra.unit == 'K'
@@ -178,7 +185,8 @@ def show_gaussian_modelfit(spectra, vel, width, figsavename=None, fignum=1,
     plotnum = 1
     for ii,((linename,linecen),isOK) in enumerate(zip(linenamecen,okfreqs)):
         if not isOK:
-            print("Skipped {0}:{1} because it is not OK".format(linename,linecen))
+            log.info("Skipped {0}:{1} because it is not in-band and finite"
+                     .format(linename,linecen))
             continue
         ax = pl.subplot(nx,ny,plotnum)
         spectra.xarr.convert_to_unit(u.GHz)
@@ -199,6 +207,8 @@ def show_gaussian_modelfit(spectra, vel, width, figsavename=None, fignum=1,
                 continue
             else:
                 raise ex
+        log.debug("%(module) parinfo for show_gaussian_modelfit: {0}"
+                  .format(spectra.specfit.parinfo))
         spectra.specfit.plot_fit(annotate=False)
         ax.set_ylim(*ylim)
         ax.annotate(line_to_image_list.labeldict[linename],
@@ -258,8 +268,8 @@ if __name__ == "__main__":
 
     # now fit 'em all...
     #for cn in core_names:
-    for cn in ['ALMAmm4',]: # debug
-        spectra = load_and_convert_spectra('{corename}_spw*fits'
+    for cn in ['ALMAmm51',]: # debug
+        spectra = load_and_convert_spectra('{corename}_spw[0-4]_mean.fits'
                                            .format(corename=cn))
         spectra.object_name = cn
         result, qn_to_amp = fit_each_line_with_a_gaussian(spectra, 20, 62.5, 6, plot=True)

@@ -141,7 +141,7 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
     for ii,key in enumerate(keys):
         # divide by degeneracy
         cube[ii,:,:] = maps[key]
-        ecube[ii,:,:] = map_err[key]
+        ecube[ii,:,:] = map_error[key]
 
     frequencies = u.Quantity([frequencies[k] for k in keys])
     indices = [indices[k] for k in keys]
@@ -186,9 +186,16 @@ def nupper_of_kkms(kkms, freq, Aul, degeneracies, Tex=100*u.K,
 #
 def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None,
             errors=None, min_nupper=1,
+            replace_errors_with_uplims=False,
             max_uplims='half'):
     """
     Fit the Boltzmann diagram
+
+    Parameters
+    ----------
+    max_uplims: str or number
+        The maximum number of upper limits before the fit is ignored completely
+        and instead zeros are returned
     """
     model = modeling.models.Linear1D()
     #fitter = modeling.fitting.LevMarLSQFitter()
@@ -205,7 +212,19 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None,
         if upperlim_mask.sum() > max_uplims:
             # too many upper limits = bad idea to fit.
             return 0*u.cm**-2, 0*u.K, 0, 0
-        nupperoverg_tofit[upperlim_mask] = uplims[upperlim_mask]
+        
+        if errors is None:
+            # if errors are not specified, we set the upper limits as actual values
+            # (which gives a somewhat useful upper limit on the temperature)
+            nupperoverg_tofit[upperlim_mask] = uplims[upperlim_mask]
+        else:
+            # otherwise, we set the values to zero-column and set the errors to
+            # be whatever the upper limits are (hopefully a 1-sigma upper
+            # limit)
+            # 1.0 here becomes 0.0 in log and makes the relative errors meaningful
+            nupperoverg_tofit[upperlim_mask] = 1.0
+            if replace_errors_with_uplims:
+                errors[upperlim_mask] = uplims[upperlim_mask]
 
     # always ignore negatives & really low values
     good = nupperoverg_tofit > min_nupper
@@ -214,10 +233,21 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None,
         return 0*u.cm**-2, 0*u.K, 0, 0
 
     if errors is not None:
-        weights = 1./errors**2.
+        rel_errors = errors / nupperoverg_tofit
+        weights = 1. / rel_errors**2
+        log.debug("Fitting with data = {0}, weights = {1}, errors = {2},"
+                  "relative_errors = {3}"
+                  .format(np.log(nupperoverg_tofit[good]),
+                          np.log(weights[good]),
+                          errors[good],
+                          rel_errors[good],
+                         ))
+    else:
+        # want log(weight) = 1
+        weights = np.exp(np.ones_like(nupperoverg_tofit))
 
     result = fitter(model, eupper[good], np.log(nupperoverg_tofit[good]),
-                    weights=weights[good])
+                    weights=np.log(weights[good]))
     tex = -1./result.slope*u.K
 
     partition_func = specmodel.calculate_partitionfunction(ch3oh.data['States'],
@@ -338,6 +368,7 @@ def test_roundtrip(cubefrequencies=[218.44005, 234.68345, 220.07849, 234.69847, 
 
 
 def fit_all_tex(xaxis, cube, cubefrequencies, indices, degeneracies,
+                ecube=None,
                 replace_bad=False):
     """
     Parameters
@@ -359,14 +390,22 @@ def fit_all_tex(xaxis, cube, cubefrequencies, indices, degeneracies,
         else:
             if replace_bad:
                 uplims = nupper_of_kkms(replace_bad, cubefrequencies,
-                                        einsteinAij[indices], degeneracies,)
+                                        einsteinAij[indices], degeneracies,).value
             else:
                 uplims = None
 
             nuppers = nupper_of_kkms(cube[:,ii,jj], cubefrequencies,
                                      einsteinAij[indices], degeneracies,
                                     )
-            fit_result = fit_tex(xaxis, nuppers.value, uplims=uplims.value)
+            if ecube is not None:
+                nupper_error = nupper_of_kkms(ecube[:,ii,jj], cubefrequencies,
+                                              einsteinAij[indices], degeneracies,).value
+            else:
+                nupper_error = None
+
+            fit_result = fit_tex(xaxis, nuppers.value,
+                                 errors=nupper_error,
+                                 uplims=uplims)
             tmap[ii,jj] = fit_result[1].value
             Nmap[ii,jj] = fit_result[0].value
         pb.update(count)
@@ -429,11 +468,14 @@ if __name__ == "__main__":
 
             uplims = nupper_of_kkms(replace_bad, cubefrequencies,
                                     einsteinAij[indices], degeneracies,)
+            nupper_error = nupper_of_kkms(ecube[:,rdy,rdx], cubefrequencies,
+                                          einsteinAij[indices], degeneracies,)
             Ntot, tex, slope, intcpt = fit_tex(xaxis,
                                                nupper_of_kkms(cube[:,rdy,rdx],
                                                               cubefrequencies,
                                                               einsteinAij[indices],
                                                               degeneracies).value,
+                                               errors=nupper_error.value,
                                                uplims=uplims.value,
                                                verbose=True,
                                                plot=True)
@@ -467,6 +509,7 @@ if __name__ == "__main__":
                     pl.gca().get_yaxis().set_ticks(ticks[1:])
             else:
                 pl.gca().get_yaxis().set_ticklabels([])
+                pl.ylabel("")
             if (plotnum-1) >= (ny*(nx-1)):
                 pl.xlabel("$E_u$ [K]")
                 tl = pl.gca().get_yaxis().get_ticklabels()
@@ -478,12 +521,14 @@ if __name__ == "__main__":
                 xax.set_tick_params(labelsize=14)
             else:
                 pl.gca().get_xaxis().set_ticklabels([])
+                pl.xlabel("")
             #pl.legend(loc='best', fontsize='small')
         pl.subplots_adjust(hspace=0, wspace=0)
         pl.savefig(paths.fpath("chemistry/ch3oh_rotation_diagrams_{0}.png".format(sourcename)))
 
         if True:
             tmap,Nmap = fit_all_tex(xaxis, cube, cubefrequencies, indices, degeneracies,
+                                    ecube=ecube,
                                     replace_bad=replace_bad)
 
             pl.figure(1).clf()
@@ -595,12 +640,16 @@ if __name__ == "__main__":
 
         uplims = nupper_of_kkms(replace_bad, cubefrequencies,
                                 einsteinAij[indices], degeneracies,)
+        nupper_error = nupper_of_kkms(ecube[:,rdy,rdx], cubefrequencies,
+                                      einsteinAij[indices], degeneracies,)
+
         print(reg.attr[1]['text'])
         Ntot, tex, slope, intcpt = fit_tex(xaxis,
                                            nupper_of_kkms(cube[:,int(ypix),int(xpix)],
                                                           cubefrequencies,
                                                           einsteinAij[indices],
                                                           degeneracies).value,
+                                           errors=nupper_error.value,
                                            uplims=uplims.value,
                                            verbose=True,
                                            plot=True)

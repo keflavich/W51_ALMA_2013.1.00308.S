@@ -190,7 +190,8 @@ def show_modelfit(spectra, vel, width, tem, col, figsavename=None, fignum=1,
     plotnum = 1
     for ii,((linename,linecen),isOK) in enumerate(zip(linenamecen,okfreqs)):
         if not isOK:
-            print("Skipped {0}:{1} because it is not OK".format(linename,linecen))
+            log.info("Skipped {0}:{1} because it is not in-band and finite"
+                     .format(linename,linecen))
             continue
         ax = pl.subplot(nx,ny,plotnum)
         spectra.xarr.convert_to_unit(u.GHz)
