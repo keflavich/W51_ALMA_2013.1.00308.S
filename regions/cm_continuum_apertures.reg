@@ -1,0 +1,18 @@
+# Region file format: DS9 version 4.1
+global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1
+fk5
+circle(19:23:43.908,+14:30:34.47,0.57622") # text={e2}
+circle(19:23:43.910,+14:30:29.42,0.452657") # text={e4}
+circle(19:23:43.776,+14:30:26.11,0.621551") # text={e1}
+circle(19:23:43.846,+14:30:24.71,0.350215") # text={e3}
+circle(19:23:41.861,+14:30:56.64,0.566136") # text={e5}
+circle(19:23:41.791,+14:31:02.64,1.81142") # text={e6}
+circle(19:23:41.879,+14:30:36.12,1.70156") # text={irs1}
+circle(19:23:43.650,+14:30:26.80,0.520546") # text={e9}
+circle(19:23:43.957,+14:30:26.95,0.461358") # text={e10}
+circle(19:23:43.900,+14:30:28.20,0.521197") # text={e8}
+circle(19:23:39.894,+14:31:08.35,1.59463") # text={irs2}
+circle(19:23:40.172,+14:31:07.11,0.97529") # text={lacyflow1}
+circle(19:23:40.047,+14:31:06.81,0.869278") # text={lacyflow2}
+circle(19:23:39.818,+14:31:04.97,0.500818") # text={irs2b?}
+circle(19:23:39.814,+14:31:12.15,1.42913") # text={rabbitears}

@@ -8,7 +8,9 @@ from spectral_cube import SpectralCube
 
 tmplt = "full_W51{2}_spw{0}{1}_lines.fits"
 
-region_list = pyregion.open('outflow_spectralextraction_ellipses.reg') + pyregion.open("cores.reg")
+region_list = (pyregion.open('outflow_spectralextraction_ellipses.reg') +
+               pyregion.open("cores.reg") +
+               pyregion.open('cm_continuum_apertures.reg'))
 
 for extra1 in ("","_7m12m"):
     for extra2 in ("","_hires"):
