@@ -255,6 +255,7 @@ def show_modelfit(spectra, vel, width, tem, col, figsavename=None, fignum=1,
 def load_and_convert_spectra(globname):
     import glob
     import paths
+    from astropy import wcs
     import pyspeckit
     import radio_beam
     speclist = [pyspeckit.Spectrum(fn) for fn in
@@ -278,12 +279,15 @@ if __name__ == "__main__":
 
     import glob
     import pyspeckit
+    from astropy import wcs
+    from astropy import coordinates
+    import pyregion
     import paths
     import radio_beam
 
     target = 'e2e'
 
-    spectra = pyspeckit.Spectra(glob.glob(paths.spath("*{0}_spw*fits".format(target))))
+    spectra = pyspeckit.Spectra(glob.glob(paths.spath("*{0}_spw[0-9]_mean.fits".format(target))))
     beam = radio_beam.Beam.from_fits_header(spectra.header)
     # "baseline"
     spectra.data -= np.nanpercentile(spectra.data, 10)
@@ -307,16 +311,31 @@ if __name__ == "__main__":
                              line_xvals=freqs[ok],
                              velocity_offset=55.626*u.km/u.s)
 
+    pixel_regions = pyregion.open(paths.rpath('three_e2_pixels.reg'))
+    colmap = fits.open(paths.dpath('12m/moments/CH3OH_e2_cutout_columnmap.fits'))
+    temmap = fits.open(paths.dpath('12m/moments/CH3OH_e2_cutout_temperaturemap.fits'))
+    ch3ohwcs = wcs.WCS(colmap[0].header)
+
     target = 'SelectedPixel{0}'
     for selreg, tem, col, vel, width, ylim in (
-        (1, 401, 5.1e18, 55.2, 5.3, (-5,100)),
-        (2, 220, 1.3e18, 55.6, 5.3, (-5,100)),
-        (3, 167, 5.7e17, 53.0, 5.3, (-5,100)),
-        (4, 127, 1.7e17, 54.0, 5.3, (-5,60)),
+        (1, 9999401, 99995.1e18, 55.2, 5.3, (-5,100)),
+        (2, 9999220, 99991.3e18, 55.6, 5.3, (-5,100)),
+        (3, 9999167, 99995.7e17, 53.0, 5.3, (-5,100)),
+        (4, 9999127, 99991.7e17, 54.0, 5.3, (-5,60)),
        ):
 
+        # tem, col should be extractd from RTD fits
+        reg = [rr for rr in pixel_regions if int(rr.attr[1]['text'][-1]) == selreg][0]
+        coord = coordinates.SkyCoord(reg.coord_list[0], reg.coord_list[1],
+                                     frame='fk5', unit=(u.deg, u.deg))
+        xpix, ypix = ch3ohwcs.celestial.wcs_world2pix(coord.ra.deg,
+                                                      coord.dec.deg,
+                                                      0)
+        tem = temmap[0].data[int(ypix), int(xpix)]
+        col = colmap[0].data[int(ypix), int(xpix)]
+
         speclist = [pyspeckit.Spectrum(fn) for fn in
-                    glob.glob(paths.spath("*{0}_spw*fits".format(target.format(selreg))))]
+                    glob.glob(paths.spath("*{0}_spw[0-9]_mean.fits".format(target.format(selreg))))]
         for sp in speclist:
             sp.data -= np.nanpercentile(sp.data, 10)
         spectra = pyspeckit.Spectra(speclist)

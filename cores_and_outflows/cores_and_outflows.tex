@@ -727,7 +727,12 @@ most of the lines shown in Figure \ref{fig:chemmapse2}.  These enhancements
 could occur from increased total column density, increased abundance of the
 molecules, or increased excitation.
 
-In Section \ref{sec:ch3ohtem}, we determine that the \methanol abundance
+In Section \ref{sec:ch3ohtem}, we examine the \methanol abundance
+and excitation conditions. 
+The detection of highly excited \methanol lines, including
+$18_{3,15}-17_{4,14}$ ($E_U=447$ K) and $25_{3,22}-24_{4,20}$ ($E_U=802$ K),
+suggests that the excitation is part of the explanation for the brighter
+molecular emission.  However, LTE modeling reveals that the \methanol abundance
 increases by a factor of $\sim5-10$ from the protocluster gas inward toward the
 e2e core.  This abundance gradient is likely present in other molecules as
 well.  Given the enhanced abundance of \methanol, these sharp-edged bubbles
@@ -740,11 +745,11 @@ the sublimation temperature for each species.
 \subsection{\methanol temperatures \& columns in the hot cores}
 \label{sec:ch3ohtem}
 The extreme chemical regions appear to be associated with regions of
-dramatically elevated gas temperature.  We examine this directly by analyzing
+elevated gas temperature.  We examine this directly by analyzing
 the excitation of lines for which we have detected multiple transitions with
 significant energy differences.  We do not use \formaldehyde for this analysis
-because it is clearly optically thick (self-absorbed) in the regions of
-greatest interest.
+because it is clearly optically thick (self-absorbed) in all lines in the
+regions of greatest interest.
 
 We produce rotational diagrams for each spatial pixel covering all \methanol lines
 detected at high significance toward at least one position.  The detected lines
@@ -762,7 +767,7 @@ the cores appear to have lower column densities because the lines become
 optically thick and self-absorbed.}
 {fig:ch3ohe2}{1}{10cm}
 
-The rotational diagrams are displayed in Figure \ref{fig:ch3ohe2rot}.
+Sample fitted rotational diagrams are displayed in Figure \ref{fig:ch3ohe2rot}.
 The line intensities are computed from moment maps integrating over the range
 (51, 60) \kms in continuum-subtracted spectral cubes, where the continuum
 was estimated as the median over the ranges (25-35,85-95) \kms, except
@@ -788,16 +793,22 @@ that can be seen as a dip within the line profile (Figure
 \ref{fig:ch3ohe2epeaks}).
 
 
-\Figure{figures/ch3oh_rotdiagram_fits_SelectedPixel1.png}
+\FigureTwo
+{figures/ch3oh_rotdiagram_fits_SelectedPixel1.png}
+{figures/ch3oh_rotdiagram_fits_SelectedPixel2.png}
 {Spectra of the \methanol lines toward a selected pixel just outside of the e2e
 core.  The red curves show the LTE model fitted from a rotational diagram as
 shown in Figure \ref{fig:ch3ohe2rot}.  The model is not a fit to the data
-shown, but is instead a single-component LTE mode fit to the integrated
+shown, but is instead a single-component LTE model fit to the integrated
 intensity of the lines shown.  As such, the fit is not convincing, and it is
 evident that a single-temperature, single-velocity model does not explain the
 observed lines.  Nonetheless, a component with the modeled temperature is
-likely to be present.}
-{fig:ch3ohe2epeaks}{1}{18cm}
+likely to be present in addition to a cooler component responsible for the
+self-absorption in the low-J lines.  (a) shows a pixel close to the center of
+e2e, which is probably optically thick in most of the shown transitions, while
+(b) shows a better case where the highest-$A_{ij}$ lines are overpredicted but
+many of the others are well-fit.}
+{fig:ch3ohe2epeaks}{1}{8cm}
 
 Figure \ref{fig:ch3ohvscont} shows a comparison between the \methanol
 $10_{2,9}-9_{3,6}$ line and the 225 GHz continuum.  While the brightest regions
@@ -816,23 +827,18 @@ of the \methanol map correspond to the bright continuum cores and show where all
 appear to be self-absorbed.}
 {fig:ch3ohvscont}{1}{8cm}
 
-The detection of highly excited \methanol lines, including
-$18_{3,15}-17_{4,14}$ ($E_U=447$ K) and $25_{3,22}-24_{4,20}$ ($E_U=802$ K),
-suggests that the excitation is at least part of the explanation.  However,
-abundance also plays a large role.  Figure \ref{fig:ch3ohtemX} shows a
-comparison of the \methanol temperature and abundance.
-The \methanol abundance
-is derived by comparing the rotational diagram (RTD) fitted \methanol column density to
-the dust column density while using the \methanol-derived temperature as the
-assumed dust temperature.  The figure shows all pixels within a 3\arcsec (16200
-AU) radius of e2e, with pixels having low column density and high temperature
-(i.e., pixels with bad fits) and those near e2w (which may be heated
-by a different source) excluded.
-We used moment-0 (integrated intensity) maps of the \methanol lines to perform
-these RTD fits, which means we have ignored the line profile entirely and in some
-cases underestimated the intensity of the optically thick lower-J lines: in
-the regions of highest column, the column is  underestimated and the temperature
-is overestimated.
+Figure \ref{fig:ch3ohtemX} shows a comparison of the \methanol temperature and
+abundance.  The \methanol abundance is derived by comparing the rotational
+diagram (RTD) fitted \methanol column density to the dust column density while
+using the \methanol-derived temperature as the assumed dust temperature.  The
+figure shows all pixels within a 3\arcsec (16200 AU) radius of e2e, with pixels
+having low column density and high temperature (i.e., pixels with bad fits) and
+those near e2w (which may be heated by a different source) excluded.  We used
+moment-0 (integrated intensity) maps of the \methanol lines to perform these
+RTD fits, which means we have ignored the line profile entirely and in some
+cases underestimated the intensity of the optically thick lower-J lines: in the
+regions of highest column, the column is  underestimated and the temperature is
+overestimated, as can be seen in Figure \ref{fig:ch3ohe2epeaks}.
 
 \FigureFour
 {figures/e2_CH3OH_LTE_temperature_vs_abundance.png}
