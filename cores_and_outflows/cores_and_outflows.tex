@@ -658,83 +658,15 @@ By contrast, along the south end of the e8 filament, no such enhanced features
 are seen; only \formaldehyde and the lowest transition of \methanol are
 evident.
 
-\subsubsection{Interpretation}
-These enhancements occur as factor of 3-10 increases in the peak brightness of
-most of the lines shown in Figure \ref{fig:chemmapse2}.  These enhancements
-could occur from increased total column density, increased abundance of the
-molecules, or increased excitation.
-
-Figure \ref{fig:ch3ohvscont} shows a comparison between the \methanol
-$10_{2,9}-9_{3,6}$ line and the 225 GHz continuum.  While the brightest regions
-in \methanol mostly have corresponding dust emission, the dust morphology
-traces the \methanol morphology very poorly.  This difference suggests that the
-enhanced brightness is not simply because of higher total column density.
-We examine the dust-\methanol link more quantitatively in Figure
-\ref{fig:ch3ohtemX}.
-
-\FigureTwo{figures/continuum_contours_on_ch3oh1029.png}
-          {figures/ch3oh1029_contours_on_continuum.png}
-{Images showing \methanol $10_{2,9}-9_{3,6}$ and 225 GHz continuum emission,
-with \methanol in grayscale and continuum in contours (left) and continuum in
-grayscale, \methanol in contours (right).  The fainter (whiter) regions in the center
-of the \methanol map correspond to the bright continuum cores and show where all lines
-appear to be self-absorbed.}
-{fig:ch3ohvscont}{1}{8cm}
-
-The detection of highly excited \methanol lines, including
-$18_{3,15}-17_{4,14}$ ($E_U=447$ K) and $25_{3,22}-24_{4,20}$ ($E_U=802$ K),
-suggests that the excitation is at least part of the explanation.  However,
-abundance also plays a large role.  Figure \ref{fig:ch3ohtemX} shows a
-comparison of the \methanol temperature and abundance.
-The \methanol abundance
-is derived by comparing the rotational diagram (RTD) fitted \methanol column density to
-the dust column density while using the \methanol-derived temperature as the
-assumed dust temperature.  The figure shows all pixels within a 3\arcsec (16200
-AU) radius of e2e, with pixels having low column density and high temperature
-(i.e., pixels with bad fits) and those near e2w (which may be heated
-by a different source) excluded.
-We used moment-0 (integrated intensity) maps of the \methanol lines to perform
-these RTD fits, which means we have ignored the line profile entirely and in some
-cases underestimated the intensity of the optically thick lower-J lines: in
-the regions of highest column, the column is  underestimated and the temperature
-is overestimated.
-
-\FigureFour{figures/CH3OH_LTE_temperature_vs_abundance.png}
-{figures/e2_CH3OH_LTE_temperature_radial_profile.png}
-{figures/e2_CH3OH_LTE_abundance_radial_profile.png}
-{figures/e2_CH3OH_LTE_vs_dust_column.png}
-{Comparison of the \methanol temperature, column density, and abundance.
-(a) The relation between temperature and abundance.  There is a weak correlation,
-but most of the high abundance regions are at high temperatures.
-(b) Temperature vs distance from e2e.  There is a clear trend toward higher
-temperatures closer  to the central source
-(c) Abundance vs distance from e2e.  The apparent dip at $r<1\arcsec$ is
-somewhat artificial, as it is driven by a rising dust emissivity that
-corresponds to an increasing optical depth in the dust.  The \methanol column
-in this inner region is likely to be underestimated. 
-(d) \methanol vs dust column density.  }
-{fig:ch3ohtemX}
-
-The temperature jump at $r\sim1.5\arcsec$ (8100 AU) is substantial, though
-the floor at greater radii may be artificial...
-\todo{In order to really justify this, I need to flag out the bad fits.}
-
-{\color{red} Is the higher abundance hypothesis still supportable given Figure
-\ref{fig:ch3ohtemX}?}
-Given the enhanced abundance of \methanol in particular, it seems likely that these
-sharp-edged bubbles represent sublimation zones in which substantial quantities
-of grain-processed materials are released into the gas phase.  The sharp edges
-likely reflect the particular point where the temperature exceeds the sublimation
-temperature for each species.
-
 The relative chemical structures of e2, e8, and IRS2 are relatively similar.
 The same species are detected in all of the central cores.  However, in e2,
 \dimethylether, \methylformate, \ethylcyanide, and Acetone (\acetone) are
 significantly more extended in e2 than in the other sources.
 \gaucheethanol is detected in W51 North, but is weak in e8 and almost absent
-in e2.
+in e2 (Figures \ref{fig:chemmapse2}, \ref{fig:chemmapse8},
+\ref{fig:chemmapsnorth}, \ref{fig:chemmapsALMAmm14}).
 
-The substructure of different species in e2 is also revealing.  Species that
+Different chemical groups exhibit different morphologies around e2.  Species that
 are elongated in the NW/SE direction are associated primarily with the outflow
 (\cyanoacetylene, \ethylcyanide).  Other species are associated primarily with
 the extended core (\methylformate, \dimethylether, \acetone).  Some are only
@@ -787,9 +719,26 @@ over the ranges 25-40 and 75-90 \kms.  All images are on the same scale.
 ALMAmm14 is one of the brightest sources outside of e2/e8/IRS2, but
 it is substantially fainter than those regions.  Still, it has a noticeably
 rich chemistry.
-}{fig:ALMAmm14}{1}{18cm}
+}{fig:chemmapsALMAmm14}{1}{18cm}
 
-\subsection{Temperatures \& Columns associated with Chemically Extreme Regions}
+\subsubsection{Chemical structure: Interpretation}
+These enhancements occur as factor of 3-10 increases in the peak brightness of
+most of the lines shown in Figure \ref{fig:chemmapse2}.  These enhancements
+could occur from increased total column density, increased abundance of the
+molecules, or increased excitation.
+
+In Section \ref{sec:ch3ohtem}, we determine that the \methanol abundance
+increases by a factor of $\sim5-10$ from the protocluster gas inward toward the
+e2e core.  This abundance gradient is likely present in other molecules as
+well.  Given the enhanced abundance of \methanol, these sharp-edged bubbles
+probably represent sublimation zones in which substantial quantities of
+grain-processed materials are released into the gas phase.  The relatively
+sharp edges likely reflect the particular point where the temperature exceeds
+the sublimation temperature for each species.
+
+
+\subsection{\methanol temperatures \& columns in the hot cores}
+\label{sec:ch3ohtem}
 The extreme chemical regions appear to be associated with regions of
 dramatically elevated gas temperature.  We examine this directly by analyzing
 the excitation of lines for which we have detected multiple transitions with
@@ -808,9 +757,9 @@ but comparable upper-state energy levels, allowing us to probe higher column
 densities than would otherwise be possible.
 
 \FigureTwo{figures/ch3oh_temperature_map_e2.png}{figures/ch3oh_column_map_e2.png}
-{Methanol temperature and column density maps around e2.  The temperature goes
-negative toward the center, where the column densities are highest, strongly
-indicating that the lines have become optically thick in these regions.}
+{Methanol temperature and column density maps around e2.  The central regions around
+the cores appear to have lower column densities because the lines become
+optically thick and self-absorbed.}
 {fig:ch3ohe2}{1}{10cm}
 
 The rotational diagrams are displayed in Figure \ref{fig:ch3ohe2rot}.
@@ -849,6 +798,71 @@ evident that a single-temperature, single-velocity model does not explain the
 observed lines.  Nonetheless, a component with the modeled temperature is
 likely to be present.}
 {fig:ch3ohe2epeaks}{1}{18cm}
+
+Figure \ref{fig:ch3ohvscont} shows a comparison between the \methanol
+$10_{2,9}-9_{3,6}$ line and the 225 GHz continuum.  While the brightest regions
+in \methanol mostly have corresponding dust emission, the dust morphology
+traces the \methanol morphology very poorly.  This difference suggests that the
+enhanced brightness is not simply because of higher total column density.
+We examine the dust-\methanol link more quantitatively in Figure
+\ref{fig:ch3ohtemX}.
+
+\FigureTwo{figures/continuum_contours_on_ch3oh1029.png}
+          {figures/ch3oh1029_contours_on_continuum.png}
+{Images showing \methanol $10_{2,9}-9_{3,6}$ and 225 GHz continuum emission,
+with \methanol in grayscale and continuum in contours (left) and continuum in
+grayscale, \methanol in contours (right).  The fainter (whiter) regions in the center
+of the \methanol map correspond to the bright continuum cores and show where all lines
+appear to be self-absorbed.}
+{fig:ch3ohvscont}{1}{8cm}
+
+The detection of highly excited \methanol lines, including
+$18_{3,15}-17_{4,14}$ ($E_U=447$ K) and $25_{3,22}-24_{4,20}$ ($E_U=802$ K),
+suggests that the excitation is at least part of the explanation.  However,
+abundance also plays a large role.  Figure \ref{fig:ch3ohtemX} shows a
+comparison of the \methanol temperature and abundance.
+The \methanol abundance
+is derived by comparing the rotational diagram (RTD) fitted \methanol column density to
+the dust column density while using the \methanol-derived temperature as the
+assumed dust temperature.  The figure shows all pixels within a 3\arcsec (16200
+AU) radius of e2e, with pixels having low column density and high temperature
+(i.e., pixels with bad fits) and those near e2w (which may be heated
+by a different source) excluded.
+We used moment-0 (integrated intensity) maps of the \methanol lines to perform
+these RTD fits, which means we have ignored the line profile entirely and in some
+cases underestimated the intensity of the optically thick lower-J lines: in
+the regions of highest column, the column is  underestimated and the temperature
+is overestimated.
+
+\FigureFour
+{figures/e2_CH3OH_LTE_temperature_vs_abundance.png}
+{figures/e2_CH3OH_LTE_temperature_radial_profile.png}
+{figures/e2_CH3OH_LTE_abundance_radial_profile.png}
+{figures/e2_CH3OH_LTE_vs_dust_column.png}
+{Comparison of the \methanol temperature, column density, and abundance.
+(a) The relation between temperature and abundance.  There is a weak correlation,
+but most of the high abundance regions are at high temperatures.
+(b) Temperature vs distance from e2e.  There is a clear trend toward higher
+temperatures closer  to the central source
+(c) Abundance vs distance from e2e.  The apparent dip at $r<1\arcsec$ is
+somewhat artificial, as it is driven by a rising dust emissivity that
+corresponds to an increasing optical depth in the dust.  The \methanol column
+in this inner region is likely to be underestimated. 
+(d) \methanol vs dust column density.  }
+{fig:ch3ohtemX}
+
+A few features illustrate the effects of thermal radiative feedback on the gas.
+The temperature jump starting inwards of  $r\sim1.5\arcsec$ (8100 AU) is
+substantial, though the 100-200 K floor at greater radii is likely artificial as
+the low-J transitions are not consistent with a thermal distribution.
+There is an abundance enhancement at the inner radii, but it appears to be a
+radial bump rather than a pure increase.  The abundance enhancement is probably real,
+and is approximately a factor of $\sim5-10$; the inner deficit
+is caused by two coincident effects: first, the \methanol column becomes underestimated
+because the \methanol is \emph{self}-absorbed, and second, the dust becomes
+optically thick, blocking additional \methanol emission, though this latter
+effect is somewhat self-regulating.
+
  
 \clearpage
 

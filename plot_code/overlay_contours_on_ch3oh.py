@@ -12,7 +12,7 @@ from astropy import wcs
 import image_tools
 matplotlib.rc_file('pubfiguresrc')
 
-for source in ('e2','e8','north'):
+for source in ('e8','north','e2',):
 
     matplotlib.pyplot.figure(1).clf()
     F1 = aplpy.FITSFigure(paths.dpath('chemslices/chemical_m0_slabs_{0}_CH3OH1029-936_merge.fits'.format(source)),
