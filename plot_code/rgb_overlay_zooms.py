@@ -7,9 +7,7 @@ from astropy.table import Table
 import os
 from astropy import log
 from vla_cont_cutout import fitsKu_cutout
-
-e1 = coordinates.SkyCoord(290.93263,14.50745,unit=('deg','deg'), frame='fk5')
-
+from outflow_meta import e1
 
 for suffix in ('auto','99.99'):
     # note to self: rgb_cube_fits doesn't have to exist, it's just a prefix

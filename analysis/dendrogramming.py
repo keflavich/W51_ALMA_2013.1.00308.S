@@ -27,7 +27,7 @@ radiofilename = os.path.join(paths.vlapath,
 radio_image = fits.open(radiofilename)
 
 # estimate the noise from the local standard deviation of the residuals
-residfile = fits.open(paths.dpath('W51_te_continuum_best_residual.fits'))
+residfile = fits.open(paths.dpath('12m/continuum/W51_te_continuum_best_residual.fits'))
 resid = residfile[0].data
 smresid = convolve_fft(np.nan_to_num(resid), Gaussian2DKernel(30))
 resid[np.isnan(resid)] = 0.01 # make the noise outside very high
@@ -154,3 +154,10 @@ pruned_ppcat.meta = {'keywords':
 
 pruned_ppcat.write(paths.tpath("dendrogram_continuum_catalog.ipac"),
                    format='ascii.ipac')
+
+with open(paths.rpath("dendrogram_cores.reg"), 'w') as fh:
+    fh.write("fk5\n")
+    for row in pruned_ppcat:
+        fh.write("ellipse({x_cen}, {y_cen}, {major_sigma}, "
+                 "{minor_sigma}, {position_angle}) # text={{{_idx}}}\n"
+                 .format(**dict(zip(row.colnames, row))))

@@ -7,6 +7,10 @@ from astropy.table import Table
 import radio_beam
 import FITS_tools
 import pyregion
+try:
+    from paths import tpath
+except ImportError:
+    tpath = lambda x: x
 
 if os.path.exists('full_W51_7m12m_spw0_lines.fits'):
     tmplt = "full_W51_7m12m_spw{0}_lines.fits"
@@ -15,7 +19,7 @@ else:
     tmplt = "full_W51_spw{0}_lines.fits"
     suffix = ''
 
-pruned_ppcat = Table.read("dendrogram_continuum_catalog.ipac",
+pruned_ppcat = Table.read(tpath("dendrogram_continuum_catalog.ipac"),
                           format='ascii.ipac')
 #dendromask = fits.open('dendrograms_min1mJy_diff1mJy_mask_pruned.fits')
 

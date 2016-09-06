@@ -10,7 +10,7 @@ import paths
 from astropy.io import fits
 from astropy.nddata import Cutout2D
 from astropy import wcs
-from outflow_meta import e2e, e8fil, north, e8, e8south, d2
+from outflow_meta import e2e, e8fil, north, e8, e8south, d2, e1
 
 from get_m0 import get_mom0
 
@@ -100,3 +100,5 @@ zoomfigure(target=north, targetname='north', radius=10*u.arcsec,
            cutout='north', zoom_radius=4*u.arcsec, tick_spacing=2*u.arcsec)
 zoomfigure(target=d2, targetname='d2', radius=10*u.arcsec,
            cutout='north', zoom_radius=4*u.arcsec, tick_spacing=2*u.arcsec)
+zoomfigure(target=e1, targetname='e1', radius=8.5*u.arcsec,
+           cutout='e2e8', zoom_radius=4*u.arcsec, tick_spacing=2*u.arcsec)

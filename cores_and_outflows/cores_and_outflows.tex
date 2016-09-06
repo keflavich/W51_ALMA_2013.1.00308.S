@@ -8,11 +8,9 @@ preliminary analysis that will make it in to one or more papers.
 
 Data summary: the 7m and 12m data have all been delivered, but the UV coverage
 is non-optimal.  Importantly and unfortunately, no single-dish (total power)
-data were ever acquired.  I have been granted APEX time using the new
-PI230 instrument to recover the spectral line zero spacings, and that data is likely
-to be acquired in October or December.  The original proposed project connecting
-cloud scales to core scales will not be possible until the single dish data are
-acquired.
+data were ever acquired.  APEX data with SHFI have been acquired but not
+reduced.  The original proposed project connecting cloud scales to core scales
+will not be possible until the single dish data are completed.
 
 
 Subprojects:
@@ -77,28 +75,44 @@ that are not included in the text:
 \end{itemize}
 
 
+\section{Paper 1 to-do list}
+\begin{enumerate}
+    \item Make a photometry table - one from the hand-extracted, one from
+        dendrogram-extracted?  Section \ref{sec:photometry}
+    \item Is any discussion of the gas kinematics warranted?  That should
+        perhaps be relegated to the (lack of?) disks paper
+
+\end{enumerate}
+
 \section{Observations}
 As part of ALMA Cycle 2 program 2013.1.00308.S, we observed a
 $\sim2\arcmin\times1\arcmin$ region centered between W51 IRS2 and W51 e1/e2
 with a 37-pointing mosaic.  Two configurations of the 12m array were used,
 achieving a resolution of 0.2\arcsec.  Additionally, a 12-pointing mosaic was
-performed using the 7m array, probing scales up to XXX\arcsec.  The full UV
-coverage was from XX to YY m.
+performed using the 7m array, hypothetically probing scales up to
+$\sim28$\arcsec.  The full UV coverage was from $\sim12$ to $\sim1500$ m
+(figure \ref{fig:uvcov}).
 
-Data reduction was performed using CASA.  The QA2-produced data products were
-combined using the standard inverse variance weighting (check this).
-The visibilities were imaged into full spectral cubes at coarse (0.5\arcsec)
-resolution in order to get a first look at all 15630 spectral channels.  The
-resulting cube was used to identify bright lines in the spectrum extracted
-from source e8.  To produce continuum images, frequency channels including
-bright lines were excluded.
+% figure produced directly in CASA; not included in repository b/c
+% it requries having access to the full data set
+\Figure{figures/visibility_weight_vs_uvdist_linear.png}
+{A weighted histogram of the visibility weights as a function of UV distance;
+this approximately shows the amount of data received at each baseline length.}
+{fig:uvcov}{1}{16cm}
 
-The spectral setups were ...
+\todo{Add a spectral window table}
 
 \subsection{Data Reduction}
+Data reduction was performed using CASA.  The QA2-produced data products were
+combined using the standard inverse variance weighting.  Two sets of images
+were produced for different aspects of the analysis, one including the 7m array
+data and one including only 12m data.  Except where otherwise noted, the
+12m-only data were used in order to focus on the compact structures.
+
+
 \subsubsection{Continuum}
 A continuum image combining all 4 spectral windows was produced using
-\texttt{tclean}.  We phase self-calibrated the image on baselines longer than
+\texttt{tclean}.  We phase self-calibrated the data on baselines longer than
 100m to increase the dynamic range.  The final image was cleaned with 50000
 iterations to a threshold of 5 mJy.  The lowest noise level in the image, away
 from bright sources, is $\sim0.2$ mJy/beam, but near the bright sources e2 and
@@ -109,153 +123,26 @@ attempted, but lead to instabilities.
 \subsubsection{Lines}
 We produced spectral image cubes of the lines listed in Table ....
 
-
-
-
-\subsubsection{UV coverage}
-\Figure{figures/visibility_weight_vs_uvdist_linear.png}
-{A weighted histogram of the visibility weights as a function of UV distance;
-this approximately shows the amount of data received at each baseline length.}
-{fig:uvcov}{1}{16cm}
-
-\subsection{Continuum Morphological Analysis}
-\label{sec:morphology}
-The largest detected structures include the W51 Main HII region bubble and the
-W51 IRS2 HII region, which are relatively uninteresting since their properties
-have been previously well-characterized using radio (JVLA) data.  More exciting
-are the bright dusty structures, especially the ``tail'' pointing south of W51
-e8, which can be described as a 0.25 pc by 0.05 pc filament. This structure has
-a very high surface brightness along its ridge, exceeding 40 mJy/beam in our TE
-maps (23 K or 3.7\ee{4} MJy sr$^{-1}$).  This high brightness implies a high
-intrinsic temperature, $T>30$ K (Section \ref{sec:temperature}).
-
-This narrow filament is most prominent in the continuum. It is evident
-in some lines (\formaldehyde, $^{13}$CS, \ceighteeno), but not others (SO, ).
-It is surrounded by molecular emission that is only slightly fainter...
-...in SO it's pretty uniform brightness...
-
-\subsubsection{A bubble around e5}
-There is evidence of a bubble in the continuum around e5 with a radius of
-6.2\arcsec (0.16 pc; Figure \ref{fig:e5bubble}).  The bubble is completely
-absent in the centimeter continuum, so the observed emission is from dust.  The
-bubble edge can be seen from 58 \kms to 63 \kms in \ceighteeno and
-\formaldehyde, though it is not continuous in any single velocity channel.
-There is a collection of compact sources (protostars or cores) along the
-southeast edge of the bubble.
-
-The presence of such a bubble in dense gas, but its absence in ionizing gas, is
-surprising.  The most likely mechanism for blowing such a bubble is ionizing
-radiative feedback, especially around a source that is currently a hypercompact
-HII region, but since no free-free emission is evident within or on the edge of
-the bubble, it is at least not presently driving the bubble.  A plausible
-explanation for this discrepancy is that e5 was an exposed O-star within the
-past Myr, but has since begun accreting heavily and therefore had its HII
-region shrunk.  This model is marginally supported by the presence of a `pillar'
-of dense material pointing from e5 toward the south.
-
-The total flux in the north half of the `bubble', which shows no signs of
-free-free contamination, is about 1.5 Jy.  The implied mass in just this
-fragment of the bubble is about $M\sim350$ \msun for a relatively high assumed
-temperature $T=50$ K.  The total mass of the bubble is closer to $M\sim1000$
-\msun, though it may be lower ($\sim500$ \msun) if the southern half is
-dominated by free-free emission.
-
-With such a large mass, the implied density of the original cloud, assuming it
-was uniformly distributed over a 0.2 pc sphere, is $n(\hh) \approx 2-5\ee{5}$
-\percc.
-
-% this analysis courtesy Jim Dale
-To evaluate the plausibility of the \hii-region origin of the bubble, we compare
-to classical equations for \hii regions.
-The Str\"omgren radius is \\
-\begin{eqnarray}
-R_{\rm s}=\left(\frac{3Q_{\rm H}}{4\pi\alpha_{\rm B} n^{2}}\right)^{\frac{1}{3}}.
-\end{eqnarray} 
-For $Q_{\rm H}\sim10^{49}$ \pers, $\alpha_{\rm B}=3\times10^{-13}$\,cm$^{3}$\,s$^{-1}$, $R_{\rm s}\approx0.01$\,pc.\\
-\\
-The Spitzer solution for HII region expansion gives\\
-\begin{eqnarray}
-R_{\rm HII}(t)=R_{\rm s}\left(1+\frac{7}{4}\frac{c_{\rm II}t}{R_{\rm s}}\right)^{\frac{4}{7}}.
-\end{eqnarray} 
-With $c_{\rm II}=7.5$\,km\,s$^{-1}$ and $t=10^{4}$\,yr,
-$R_{\rm HII}(t)\approx0.04$\,pc, while at $t=10^5$\,yr, it is $R_{\rm
-HII}\approx0.16$\,pc, which is comparable to the observed radius
-($r_{obs} \sim 0.13-0.19$ pc)\\
-\\
-Whitworth et al. 1994 give the fragmentation timescale as
-\begin{eqnarray}
-t_{\rm frag}\sim1.56\left(\frac{c_{\rm s}}{0.2{\rm km\,s}^{-1}}\right)^{\frac{7}{11}}\left(\frac{Q_{\rm H}}{10^{49}{\rm s}^{-1}}\right)^{-\frac{1}{11}}\left(\frac{n}{10^{3}{\rm cm}^{-3}}\right)^{-\frac{5}{11}}{\rm Myr}.
-\end{eqnarray} 
-Plugging in our numbers gives $t_{\rm frag}\approx1.0\times10^{5}$\,yr, or
-$10\times$ longer than the expansion time.\\
-\\
-% The corresponding radius at which fragmentation occurs is\\
-% \begin{eqnarray}
-% R_{\rm frag}\sim5.8\left(\frac{c_{\rm s}}{0.2{\rm km\,s}^{-1}}\right)^{\frac{4}{11}}\left(\frac{Q_{\rm H}}{10^{49}{\rm s}^{-1}}\right)^{\frac{1}{11}}\left(\frac{n}{10^{3}{\rm cm}^{-3}}\right)^{-\frac{6}{11}}{\rm pc},
-% \end{eqnarray}
-% which gives us $R_{\rm frag}\approx0.17$\,pc.\\
-
-These values are consistent with a late O-type star having been exposed,
-driving an \hii region, for $\sim10^4-10^5$ year, after which a substantial
-increase in the accretion rate quenched the ionizing radiation from the star,
-trapping it into a hypercompact ($r<0.005$ pc) configuration.  The
-recombination timescale is short enough that the ionized gas would disappear
-almost immediately after the continuous ionizing radiation source was hidden.
-This is essentially the scenario laid out in \citet{de-Pree2014a} as an
-explanation for the compact \hii region lifetime problem.  In this case,
-however, it also seems that the \hii region has effectively driven the
-``collect'' phase of what will presumably end in a collect-and-collapse style
-triggering event.
-
-Technically, it is possible that e5 actually represents an optically thick
-high-mass-loss-rate wind rather than an ultracompact HII region, but I think we
-can rule this out on physical plausibility considerations if we compare to 
-wind models.  Note that $\eta$ Car would have a flux of $\sim0.5$ Jy at 2 cm
-and $\sim5$ Jy at 1 mm at the distance of W51.
-
-\FigureTwo{figures/e5_bubble.png}{figures/e5_bubble_robust2.png}
-{The bubble around source e5.  The bubble interior shows no sign of centimeter
-emission, though the lower-left region of the shell - just south of the
-``cores'' - coincides with part of the W51 Main ionized shell.  The source of
-the ionization is not obvious.
-({\it Left}): A robust -2.0 image with a small (0.2\arcsec) beam and poor
-recovery of large angular scale emission.  This image highlights the presence
-of protostellar cores on the left edge of the bubble and along a filament just
-south of the central source.
-({\it Right}): A robust +2.0 image with a larger (0.4\arcsec) beam and better
-recovery of large angular scales.  The contours show radio continuum (14.5 GHz)
-emission at 1.5, 3, and 6 mJy/beam.  While some of the detected 1.4 mm emission
-in the south could be free-free emission, the eastern and northern parts of the
-shell show no emission down to the 50 $\mu$Jy noise level of the Ku-band map,
-confirming that they consist only of dust emission.
-}{fig:e5bubble}{1}{8cm}
+\todo{Add a spectral line table}
 
 
 
 
-\subsection{Dense Gas Kinematics}
-\label{sec:kinematics}
-We examine the gas kinematics throughout the cloud, but especially near the 
-massive cores.
-
-The ambient cloud, which consists of gas that has not yet condensed into
-compact prestellar objects, is evident in absorption against the mm cores at
-55-58 \kms (toward e2) and 57-60 \kms (toward e8).  Narrower velocity
-components related to the known high-velocity streams are detected around 68
-\kms toward both sources.  These absorption features are seen in all 
-\formaldehyde transitions, \methanol $4_{2,2}-3_{1,2}$, OCS 18-17,
-but it was less obvious or absent in HNCO $10_{1,10}-9_{1,9}$ and OCS 19-18.
-
-In the material surrounding the e2 and e8 ``cores'', one particularly notable
-feature is that the cores themselves show a redshifted centroid velocity
-relative to their surroundings in nearly all of the bright lines (H2CO, OCS,
-SO, \ceighteeno).  The observed shift is up to $\lesssim2$ \kms.  The shift is
-a sign of infall.  Given the high continuum brightness, the cores are likely
-optically thick in the continuum (Section \ref{sec:} XXX), therefore obscuring
-all molecular emission behind them.  We are seeing only gas in the
-foreground, and this gas is clearly moving toward the cores.
-
-The source ALMAmm14 shows a similar kinematic signature....
+% \subsection{Continuum Morphological Analysis}
+% \label{sec:morphology}
+% The largest detected structures include the W51 Main HII region bubble and the
+% W51 IRS2 HII region, which are relatively uninteresting since their properties
+% have been previously well-characterized using radio (JVLA) data.  More exciting
+% are the bright dusty structures, especially the ``tail'' pointing south of W51
+% e8, which can be described as a 0.25 pc by 0.05 pc filament. This structure has
+% a very high surface brightness along its ridge, exceeding 40 mJy/beam in our TE
+% maps (23 K or 3.7\ee{4} MJy sr$^{-1}$).  This high brightness implies a high
+% intrinsic temperature, $T>30$ K (Section \ref{sec:temperature}).
+% 
+% This narrow filament is most prominent in the continuum. It is evident
+% in some lines (\formaldehyde, $^{13}$CS, \ceighteeno), but not others (SO, ).
+% It is surrounded by molecular emission that is only slightly fainter...
+% ...in SO it's pretty uniform brightness...
 
 % \subsection{Simulations}
 % {\bf Unfortunately CASA's simulations produce reproducible incorrectness, in
@@ -305,7 +192,7 @@ The source ALMAmm14 shows a similar kinematic signature....
 
 
 
-\section{Analysis}
+\section{Results \& Analysis}
 \subsection{Source Identification}
 % dendrogramming.py
 We used the \texttt{dendrogram} method described by \citet{Rosolowsky2008c} and
@@ -320,7 +207,7 @@ all sources with peak S/N < 8, mean S/N per pixel $< 5$, and minimum S/N per
 pixel $ < 1$.  We also only included the smallest sources in the dendrogram,
 the ``leaves''.  These parameters were tuned by checking against ``real''
 sources identified by eye and selected using \texttt{ds9}: most real sources are
-recovered (but not all; see Section ...) and few spurious sources ($<10$) are
+recovered and few spurious sources ($<10$) are
 included.  The resulting catalog includes 113 sources.
 
 The `by-eye' core extraction approach, in which we placed ds9 regions on all
@@ -335,8 +222,9 @@ reduced data result in their identification despite our threshold criteria.
 When extracting properties of the `by-eye' sources, we used variable sized
 circular apertures, where the apertures were selected to include all of the
 detectable symmetric emission around a central peak up to a maximum radius
-$r\sim0.6$\arcsec.  This approach is necessary, as some of the `cores' are
-not centrally peaked and are therefore likely to be starless cores.
+$r\sim0.6$\arcsec.  This approach is necessary, as some of the sources are not
+centrally peaked and are therefore likely to be spatially resolved starless
+cores.
 % can probably argue safely that the 'background' is filtered out as much
 % as we would want...
 %For spectral extraction, we also measured a background spectrum averaging
@@ -344,8 +232,8 @@ not centrally peaked and are therefore likely to be starless cores.
 
 \subsection{The spatial distribution of cores}
 The detected cores are not uniformly distributed across the observed region.
-The most notable feature in the spatial distribution is their alignment: most
-of the cores are detected along common lines.  This is especially evident
+The most notable feature in the spatial distribution is their alignment: most cores
+collect along approximately linear features.  This is especially evident
 in W51 IRS2, where the core density is very high and there is virtually no
 deviation from the line.  The e8 filament is also notably linear, though there
 area few sources detected just off the filament. 
@@ -370,18 +258,38 @@ The dashed circle shows a hypothetical ring of star formation.
 }{fig:corepositions}{1}{16cm}
 
 \subsection{Photometry}
+\label{sec:photometry}
 We created a catalog of the dendrogram sources including their peak and mean
 flux density, their centroid, and their geometric properties.  For each source,
 we further extracted aperture photometry around the centroid in 6 apertures:
 0.2, 0.4, 0.6, 0.8, 1.0, and 1.5\arcsec.  We performed the same aperture
-photometry on the W51 Ku-band images from \citet{Ginsburg2016a}.  These
-observations are reported in Table {...}.
+photometry on the W51 Ku-band images from \citet{Ginsburg2016a} to estimate
+the free-free contribution to the observed flux density measurements.  These
+measurements are reported in Table {...}.
 
 The source flux density distribution is shown in Figure
 \ref{fig:fluxhistograms}.  The most common nearest-neighbor separation between
 cataloged cores is $\sim0.3\arcsec$, which implies that the larger apertures
 double-count some pixels.  The smallest separation is
 0.26\arcsec, so the 0.2\arcsec aperture contains only unique pixels.
+
+We also extracted photometry for the hand-selected sources, extracting the flux
+density measurement from the specified aperture radius.  As with the dendrogram
+sources, we also extracted photometry from varying-sized apertures centered on
+the same source position to allow for more systematic direct comparison (e.g.,
+concentration parameters).  These measurements are reported in Table {...}.
+
+Except where noted below, the hand-selected sources are used for further
+analysis as they are more reliable.  However, to encourage reproducible results
+- which hand-extracted source positions defy - we also provide the
+algorithmically-extracted and selected dendrogram catalog.
+
+\Figure{figures/dendro_core_flux_histograms.png}
+{Histograms of the core flux densities measured with circular apertures centered
+on the dendrogram-extracted core centroids.  The aperture size is listed 
+in the y-axis label.  Free-free-dominated sources are excluded.}
+{fig:dendrofluxhistograms}
+{1}{16cm}
 
 \Figure{figures/core_flux_histogram_apertureradius.png}
 {Histograms of the core flux densities measured with circular apertures centered
@@ -392,14 +300,9 @@ in the specified aperture.}
 {fig:fluxhistograms}
 {1}{16cm}
 
-\Figure{figures/dendro_core_flux_histograms.png}
-{Histograms of the core flux densities measured with circular apertures centered
-on the dendrogram-extracted core centroids.  The aperture size is listed 
-in the y-axis label.  Free-free-dominated sources are excluded.}
-{fig:dendrofluxhistograms}
-{1}{16cm}
 
 \subsubsection{Distribution Functions}
+\label{sec:distributionfunctions}
 We fit power law distributions to each aperture's flux distribution using the
 packages \texttt{plfit} and \texttt{PowerLaw}
 \citep[https://github.com/keflavich/plfit,
@@ -415,15 +318,44 @@ density, not directly of the mass, and so a direct comparison may not be
 appropriate.  We revisit this question after assessing the dust temperature in
 Section \ref{sec:temperature}.
 
-\subsection{Spectral Lines \& Velocities}
-To determine the line-of-sight velocity of each source, we extracted a spectrum
-from an 0.5\arcsec aperture centered on the source and from a 0.5-1.0\arcsec
-annulus around it.  We then searched each spectrum for the brightest pixel and
-associated it with the likeliest spectral line.  We repeated this in each of
-our 4 spectral windows, then averaged the 4 velocities to get an estimate of
-the source velocity.   This process also allowed us to identify the brightest
-lines in each window and the brightest overall line observed, which we use
-later for temperature estimation.
+%Not used any more: the fitting approach is better, it just took longer to
+%implement
+% \subsection{Spectral Lines \& Velocities}
+% \label{sec:losvelo}
+% To determine the line-of-sight velocity of each source, we extracted a spectrum
+% from an 0.5\arcsec aperture centered on the source and from a 0.5-1.0\arcsec
+% annulus around it.  We then searched each spectrum for the brightest pixel and
+% associated it with the likeliest spectral line.  We repeated this in each of
+% our 4 spectral windows, then averaged the 4 velocities to get an estimate of
+% the source velocity.   This process also allowed us to identify the brightest
+% lines in each window and the brightest overall line observed, which we use
+% later for temperature estimation.
+
+
+% \subsection{Dense Gas Kinematics}
+% \label{sec:kinematics}
+% We examine the gas kinematics throughout the cloud, but especially near the 
+% massive cores.
+% 
+% The ambient cloud, which consists of gas that has not yet condensed into
+% compact prestellar objects, is evident in absorption against the mm cores at
+% 55-58 \kms (toward e2) and 57-60 \kms (toward e8).  Narrower velocity
+% components related to the known high-velocity streams are detected around 68
+% \kms toward both sources.  These absorption features are seen in all 
+% \formaldehyde transitions, \methanol $4_{2,2}-3_{1,2}$, OCS 18-17,
+% but it was less obvious or absent in HNCO $10_{1,10}-9_{1,9}$ and OCS 19-18.
+% 
+% In the material surrounding the e2 and e8 ``cores'', one particularly notable
+% feature is that the cores themselves show a redshifted centroid velocity
+% relative to their surroundings in nearly all of the bright lines (H2CO, OCS,
+% SO, \ceighteeno).  The observed shift is up to $\lesssim2$ \kms.  The shift is
+% a sign of infall.  Given the high continuum brightness, the cores are likely
+% optically thick in the continuum (Section \ref{sec:} XXX), therefore obscuring
+% all molecular emission behind them.  We are seeing only gas in the
+% foreground, and this gas is clearly moving toward the cores.
+% 
+% The source ALMAmm14 shows a similar kinematic signature....
+
 
 \subsection{Temperature estimation of the continuum sources}
 \label{sec:temperature}
@@ -881,8 +813,6 @@ because the \methanol is \emph{self}-absorbed, and second, the dust becomes
 optically thick, blocking additional \methanol emission, though this latter
 effect is somewhat self-regulating.
 
- 
-\clearpage
 
 % presently, this section adds nothing to the paper-in-progress...
 % \subsection{Temperatures derived from \formaldehyde}
@@ -933,7 +863,54 @@ effect is somewhat self-regulating.
 % very optically thick, so the color no longer implies anything about the temperature.}
 % {fig:h2corgb}{1}{12cm}
 
-\section{Outflows}
+\subsection{Ionizing Radiation}
+This was covered in \citep{Ginsburg2016b}.  Ionizing radiation affects much
+of the cloud, but little of the high-density prestellar material.  There is no
+evidence of increased gas temperatures in the vicinity of \hii regions.  While
+in Section \ref{sec:nonionizingradiation} we identify chemically enhanced
+regions as those where radiative feedback has heated the dust and released ices
+into the gas phase, no such regions are observed surrounding the most luminous
+compact \hii regions.
+
+This lack of molecular brightness enhancement is only an indirect indication
+that the \hii regions do not affect the surrounding dense gas temperature.  A
+direct proof that the ionizing sources are having no or minimal effect would
+require temperature measurements on the outskirts of the \hii regions, but this
+is not possible without prior detection of bright emission in thermometric
+transitions.
+
+\subsection{Non-ionizing Radiation}
+\label{sec:nonionizingradiation}
+The formed and forming protostars are producing a total $\gtrsim10^7$ \lsun of
+far infrared illumination \citep{Ginsburg2016b}.  This radiation heats the
+cloud's molecular gas, affecting the initial conditions of future star
+formation.
+
+The chemical maps shown in Section \ref{sec:chemistrymaps} show the volumes of
+gas clearly affected by newly-forming high-luminosity stars.  The
+\methanol-enhanced region around W51e2 extends 0.04 pc, or 8500 AU (see Section
+\ref{sec:ch3ohtem}). Other
+locally enhanced species, especially the nitrogenic molecules HNCO and
+\formamide, occupy a smaller and more asymmetric region around e2e and e2w 
+(Figure \ref{fig:e2methanolhnco}).
+
+\FigureTwo
+{figures/W51e2_ch3oh_hnco_continuum_aplpy_kucontours.pdf}
+{figures/W51e8fil_ch3oh_hnco_continuum_aplpy_kucontours.pdf}
+{Image of \methanol $8_{0,8}-7_{1,6}$ (red), HCNO $10_{0,10}-9_{0,9}$ (green), and 225 GHz
+continuum (blue) toward (a) W51e2 (b) W51e8.  The contours show Ku-band radio continuum
+emission tracing the \hii regions (a) W51 e2w and (b) W51e1, e3, e4, e9, and
+e10.  The \methanol emission is relatively symmetric around the high-mass
+protostar W51 e2e and the weak radio source W51 e8, suggesting that these
+forming stars are responsible for heating their surroundings.  By contrast, the
+\hii regions do not exhibit any local molecular brightness enhancements (except
+e8), indicating that the \hii regions are not heating their local dense
+molecular gas.}
+{fig:e2methanolhnco}{1}{8.5cm}
+ 
+
+
+\subsection{Outflows}
 \label{sec:outflows}
 We detected many outflows, primarily in CO 2-1 and SO $6_5-5_4$.  The flows are
 weakly detected in some other lines, e.g. \formaldehyde, but we defer
@@ -944,7 +921,7 @@ outflows in the W51 region.  We show the most readily identified outflows in
 Figures \ref{fig:outflowscontinuume2}, \ref{fig:outflowscontinuumnorth},
 \ref{fig:e2ecooutflow}, and \ref{fig:e8cooutflow}.
 
-\subsection{The Lacy jet}
+\subsubsection{The Lacy jet}
 A high-velocity outflow was discovered within the W51 IRS2 region by
 \citet{Lacy2007a}, and subsequently detected in H77$\alpha$ by
 \citet{Ginsburg2016b}.  We have now discovered the CO counterpart to this
@@ -961,7 +938,7 @@ reveals the position at which the CO is breaking out of the cloud and into the
 \hii region.
 
 
-\subsection{The e2e outflow}
+\subsubsection{The e2e outflow}
 The dominant outflow in W51, which was previously detected by the SMA
 \citep{Shi2010a,Shi2010b}, comes from the source e2e.  This outflow is
 remarkable for its high velocity, extending nearly to the limit of our spectral
@@ -990,16 +967,15 @@ radio images because of the nearby 100 mJy HCHII region e2w.  The dynamical age
 of the outflow is $\sim600$ years at the peak observed velocity, which is a
 lower limit on the true age of the outflow.
 
-\subsection{e8}
+\subsubsection{e8}
 There are at least four distinct outflows coming from the e8 filament.
 The e8 core is launching a redshifted outflow to the northwest.  A blueshifted
 outflow is coming from somewhere south of the e8 peak and pointing straight
 east.  While these originate quite near each other, they seem not to have
 a common source, since the red and blue streams are not parallel.
 
-\subsection{north}
+\subsubsection{north}
 The outflow from W51 north is extended and complex.
-
 A jet-like high-velocity feature appears directly to the north of W51 north in
 both CO and SO.  However, in SO, this feature begins to emit at $\sim47$ \kms
 and continues to $\sim 100$ \kms.  The CO emission below $<70$ \kms is
@@ -1035,60 +1011,15 @@ connects the northwest and southeast extrema of the flow.}
 {channel maps of the e8 outflow in CO}
 {fig:e8cooutflow}{1}{18cm}
 
-\section{Feedback in W51}
-\subsection{Ionizing Radiation}
-This was covered in \citep{Ginsburg2016b}.  Ionizing radiation affects much
-of the cloud, but little of the high-density prestellar material.  There is no
-evidence of increased gas temperatures in the vicinity of \hii regions.  While
-in Section \ref{sec:nonionizingradiation} we identify chemically enhanced
-regions as those where radiative feedback has heated the dust and released ices
-into the gas phase, no such regions are observed surrounding the most luminous
-compact \hii regions.
-
-This lack of molecular brightness enhancement is only an indirect indication
-that the \hii regions do not affect the surrounding dense gas temperature.  A
-direct proof that the ionizing sources are having no or minimal effect would
-require temperature measurements on the outskirts of the \hii regions, but this
-is not possible without prior detection of bright emission in thermometric
-transitions.
 
 
-\todo{What direct tests can be used to show that \hii regions aren't heating
-their surroundings?  \formaldehyde is good, in principle, but maybe not in
-practice because of the possible optical depth issues.  Radio \ammonia might be
-OK, but it might also be affected by imaging artifacts from the bright radio
-sources.}
+% \todo{What direct tests can be used to show that \hii regions aren't heating
+% their surroundings?  \formaldehyde is good, in principle, but maybe not in
+% practice because of the possible optical depth issues.  Radio \ammonia might be
+% OK, but it might also be affected by imaging artifacts from the bright radio
+% sources.}
 
-\subsection{Outflows}
-While the outflows described in Section \ref{sec:outflows} are impressive and
-plentiful, they are obviously not the dominant form of feedback, as their area
-filling factor is small compared to that of the various forms of radiative
-feedback.  A low area filling factor implies a substantially smaller volume
-filling factor and therefore a lower overall effect on the cloud.  However,
-these outflows likely do punch holes through protostellar envelopes and the
-surrounding cloud material, allowing radiation to escape.
 
-The detection of widespread high-J \methanol emission around the highest-mass
-protostars suggests that the use of \methanol as a bulk outflow tracer as
-suggested by \citet{Kristensen2015a} is not viable.  While mid-J \methanol
-emission is detected associated with the outflow (e.g., the J=10-9 transition),
-it is completely dominated by the general `extended hot core' emission
-described in Section \ref{sec:chemistrymaps}.
-
-\subsection{Non-ionizing Radiation}
-\label{sec:nonionizingradiation}
-The formed and forming protostars are producing a total $\gtrsim10^7$ \lsun of
-far infrared illumination \citep{Ginsburg2016b}.  This radiation heats the
-cloud's molecular gas, affecting the initial conditions of future star
-formation.
-
-The chemical maps shown in Section \ref{sec:chemistrymaps} show the volumes of
-gas clearly affected by newly-forming high-luminosity stars.  The
-\methanol-enhanced region around W51e2 extends 0.04 pc, or 8500 AU (see Section
-\ref{sec:ch3ohtem}). Other
-locally enhanced species, especially the nitrogenic molecules HNCO and
-\formamide, occupy a smaller and more asymmetric region around e2e and e2w 
-(Figure \ref{fig:e2methanolhnco}).
 
 %incorrect, and discussed in sec:ch3ohtem in detail
 % The extraordinarily high column densities of \methanol make direct temperature
@@ -1111,19 +1042,6 @@ locally enhanced species, especially the nitrogenic molecules HNCO and
 % brightness/column?  Is it going up faster?  By how much?}
 % answered in fig:ch3ohtemX
 
-\FigureTwo
-{figures/W51e2_ch3oh_hnco_continuum_aplpy_kucontours.pdf}
-{figures/W51e8fil_ch3oh_hnco_continuum_aplpy_kucontours.pdf}
-{Image of \methanol $8_{0,8}-7_{1,6}$ (red), HCNO $10_{0,10}-9_{0,9}$ (green), and 225 GHz
-continuum (blue) toward (a) W51e2 (b) W51e8.  The contours show Ku-band radio continuum
-emission tracing the \hii regions (a) W51 e2w and (b) W51e1, e3, e4, e9, and
-e10.  The \methanol emission is relatively symmetric around the high-mass
-protostar W51 e2e and the weak radio source W51 e8, suggesting that these
-forming stars are responsible for heating their surroundings.  By contrast, the
-\hii regions do not exhibit any local molecular brightness enhancements (except
-e8), indicating that the \hii regions are not heating their local dense
-molecular gas.}
-{fig:e2methanolhnco}{1}{12cm}
 
 %Is there any evidence that the main-sequence stars that illuminate the \hii
 %regions in W51 \citep{Ginsburg2016b} affect the pre-star-forming gas throughout
@@ -1187,6 +1105,23 @@ d2 provides a counterpoint, however, as it is a hypercompact \hii region that *d
 exhibit enhanced molecular emission in its surroundings
 
 
+\subsection{Outflows}
+While the outflows described in Section \ref{sec:outflows} are impressive and
+plentiful, they are obviously not the dominant form of feedback, as their area
+filling factor is small compared to that of the various forms of radiative
+feedback.  A low area filling factor implies a substantially smaller volume
+filling factor and therefore a lower overall effect on the cloud.  However,
+these outflows likely do punch holes through protostellar envelopes and the
+surrounding cloud material, allowing radiation to escape.
+
+The detection of widespread high-J \methanol emission around the highest-mass
+protostars suggests that the use of \methanol as a bulk outflow tracer as
+suggested by \citet{Kristensen2015a} is not viable.  While mid-J \methanol
+emission is detected associated with the outflow (e.g., the J=10-9 transition),
+it is completely dominated by the general `extended hot core' emission
+described in Section \ref{sec:chemistrymaps}.
+
+
 \subsection{Question: Where does the radiation from the HII regions end up?}
 The \hii regions show no signs of heating around them.  However, we know that
 these must be $>10^4$ \lsun stars, and even the infrared radiation should be
@@ -1199,5 +1134,105 @@ able to see them unless the geometry is particularly unfavorable.
 
 \todo{idea: dust is more concentrated than gas (compare PSDs).  Can we do this to
 sims and determine which lines are thick?}
+
+\appendix
+
+\section{A bubble around e5}
+There is evidence of a bubble in the continuum around e5 with a radius of
+6.2\arcsec (0.16 pc; Figure \ref{fig:e5bubble}).  The bubble is completely
+absent in the centimeter continuum, so the observed emission is from dust.  The
+bubble edge can be seen from 58 \kms to 63 \kms in \ceighteeno and
+\formaldehyde, though it is not continuous in any single velocity channel.
+There is a collection of compact sources (protostars or cores) along the
+southeast edge of the bubble.
+
+The presence of such a bubble in dense gas, but its absence in ionizing gas, is
+surprising.  The most likely mechanism for blowing such a bubble is ionizing
+radiative feedback, especially around a source that is currently a hypercompact
+HII region, but since no free-free emission is evident within or on the edge of
+the bubble, it is at least not presently driving the bubble.  A plausible
+explanation for this discrepancy is that e5 was an exposed O-star within the
+past Myr, but has since begun accreting heavily and therefore had its HII
+region shrunk.  This model is marginally supported by the presence of a `pillar'
+of dense material pointing from e5 toward the south.
+
+The total flux in the north half of the `bubble', which shows no signs of
+free-free contamination, is about 1.5 Jy.  The implied mass in just this
+fragment of the bubble is about $M\sim350$ \msun for a relatively high assumed
+temperature $T=50$ K.  The total mass of the bubble is closer to $M\sim1000$
+\msun, though it may be lower ($\sim500$ \msun) if the southern half is
+dominated by free-free emission.
+
+With such a large mass, the implied density of the original cloud, assuming it
+was uniformly distributed over a 0.2 pc sphere, is $n(\hh) \approx 2-5\ee{5}$
+\percc.
+
+% this analysis courtesy Jim Dale
+To evaluate the plausibility of the \hii-region origin of the bubble, we compare
+to classical equations for \hii regions.
+The Str\"omgren radius is \\
+\begin{eqnarray}
+R_{\rm s}=\left(\frac{3Q_{\rm H}}{4\pi\alpha_{\rm B} n^{2}}\right)^{\frac{1}{3}}.
+\end{eqnarray} 
+For $Q_{\rm H}\sim10^{49}$ \pers, $\alpha_{\rm B}=3\times10^{-13}$\,cm$^{3}$\,s$^{-1}$, $R_{\rm s}\approx0.01$\,pc.\\
+\\
+The Spitzer solution for HII region expansion gives\\
+\begin{eqnarray}
+R_{\rm HII}(t)=R_{\rm s}\left(1+\frac{7}{4}\frac{c_{\rm II}t}{R_{\rm s}}\right)^{\frac{4}{7}}.
+\end{eqnarray} 
+With $c_{\rm II}=7.5$\,km\,s$^{-1}$ and $t=10^{4}$\,yr,
+$R_{\rm HII}(t)\approx0.04$\,pc, while at $t=10^5$\,yr, it is $R_{\rm
+HII}\approx0.16$\,pc, which is comparable to the observed radius
+($r_{obs} \sim 0.13-0.19$ pc)\\
+\\
+Whitworth et al. 1994 give the fragmentation timescale as
+\begin{eqnarray}
+t_{\rm frag}\sim1.56\left(\frac{c_{\rm s}}{0.2{\rm km\,s}^{-1}}\right)^{\frac{7}{11}}\left(\frac{Q_{\rm H}}{10^{49}{\rm s}^{-1}}\right)^{-\frac{1}{11}}\left(\frac{n}{10^{3}{\rm cm}^{-3}}\right)^{-\frac{5}{11}}{\rm Myr}.
+\end{eqnarray} 
+Plugging in our numbers gives $t_{\rm frag}\approx1.0\times10^{5}$\,yr, or
+$10\times$ longer than the expansion time.\\
+\\
+% The corresponding radius at which fragmentation occurs is\\
+% \begin{eqnarray}
+% R_{\rm frag}\sim5.8\left(\frac{c_{\rm s}}{0.2{\rm km\,s}^{-1}}\right)^{\frac{4}{11}}\left(\frac{Q_{\rm H}}{10^{49}{\rm s}^{-1}}\right)^{\frac{1}{11}}\left(\frac{n}{10^{3}{\rm cm}^{-3}}\right)^{-\frac{6}{11}}{\rm pc},
+% \end{eqnarray}
+% which gives us $R_{\rm frag}\approx0.17$\,pc.\\
+
+These values are consistent with a late O-type star having been exposed,
+driving an \hii region, for $\sim10^4-10^5$ year, after which a substantial
+increase in the accretion rate quenched the ionizing radiation from the star,
+trapping it into a hypercompact ($r<0.005$ pc) configuration.  The
+recombination timescale is short enough that the ionized gas would disappear
+almost immediately after the continuous ionizing radiation source was hidden.
+This is essentially the scenario laid out in \citet{de-Pree2014a} as an
+explanation for the compact \hii region lifetime problem.  In this case,
+however, it also seems that the \hii region has effectively driven the
+``collect'' phase of what will presumably end in a collect-and-collapse style
+triggering event.
+
+Technically, it is possible that e5 actually represents an optically thick
+high-mass-loss-rate wind rather than an ultracompact HII region, but I think we
+can rule this out on physical plausibility considerations if we compare to 
+wind models.  Note that $\eta$ Car would have a flux of $\sim0.5$ Jy at 2 cm
+and $\sim5$ Jy at 1 mm at the distance of W51.
+
+\FigureTwo{figures/e5_bubble.png}{figures/e5_bubble_robust2.png}
+{The bubble around source e5.  The bubble interior shows no sign of centimeter
+emission, though the lower-left region of the shell - just south of the
+``cores'' - coincides with part of the W51 Main ionized shell.  The source of
+the ionization is not obvious.
+({\it Left}): A robust -2.0 image with a small (0.2\arcsec) beam and poor
+recovery of large angular scale emission.  This image highlights the presence
+of protostellar cores on the left edge of the bubble and along a filament just
+south of the central source.
+({\it Right}): A robust +2.0 image with a larger (0.4\arcsec) beam and better
+recovery of large angular scales.  The contours show radio continuum (14.5 GHz)
+emission at 1.5, 3, and 6 mJy/beam.  While some of the detected 1.4 mm emission
+in the south could be free-free emission, the eastern and northern parts of the
+shell show no emission down to the 50 $\mu$Jy noise level of the Ku-band map,
+confirming that they consist only of dust emission.
+}{fig:e5bubble}{1}{8cm}
+
+
 
 \end{document}
