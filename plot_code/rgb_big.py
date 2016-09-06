@@ -40,27 +40,55 @@ def make_rgb(outname, redline='H2CO303_202', greenline='H2CO321_220', blueline='
                                   embed_avm_tags=True, **kwargs)
     return rgb_im
 
-make_rgb('full_h2co_12monly_rgb.fits',
-         fntemplate=paths.dpath('12m/moments/W51_b6_12M.{0}.image.pbcor_medsub_max.fits'),
-        )
-make_rgb('h2co_hc3n_ch3oh_rgb.fits',
-         blueline='HC3N24-23',
-         greenline='CH3OH422-312')
-make_rgb('h2co_so_hc3n_rgb.fits',
-         blueline='HC3N24-23',
-         greenline='SO65-54')
-make_rgb('c18o_hc3n_ch3oh_rgb.fits',
-         redline='C18O2-1',
-         blueline='HC3N24-23',
-         greenline='CH3OH422-312')
-make_rgb('c18o_hc3n_so_rgb.fits',
-         redline='C18O2-1',
-         blueline='HC3N24-23',
-         greenline='SO65-54')
-make_rgb('ku_hc3n_ch3oh_rgb.fits',
-         redline=fnku,
-         blueline='HC3N24-23',
-         greenline='CH3OH422-312')
+for suffix, pct in (('_auto', 99.75),
+                    ('_99.99', 99.99),
+                   ):
+    make_rgb('full_h2co_12monly_rgb.fits',
+             fntemplate=paths.dpath('12m/moments/W51_b6_12M.{0}.image.pbcor_medsub_max.fits'),
+             suffix=suffix,
+             pmax_g=pct, pmax_b=pct, pmax_r=pct,
+            )
+    make_rgb('h2co_hc3n_ch3oh_rgb.fits',
+             blueline='HC3N24-23',
+             greenline='CH3OH422-312',
+             suffix=suffix,
+             pmax_g=pct, pmax_b=pct, pmax_r=pct,
+            )
+    make_rgb('h2co_so_hc3n_rgb.fits',
+             blueline='HC3N24-23',
+             greenline='SO65-54',
+             suffix=suffix,
+             pmax_g=pct, pmax_b=pct, pmax_r=pct,
+            )
+    make_rgb('c18o_hc3n_ch3oh_rgb.fits',
+             redline='C18O2-1',
+             blueline='HC3N24-23',
+             greenline='CH3OH422-312',
+             suffix=suffix,
+             pmax_g=pct, pmax_b=pct, pmax_r=pct,
+            )
+    make_rgb('c18o_hc3n_so_rgb.fits',
+             redline='C18O2-1',
+             blueline='HC3N24-23',
+             greenline='SO65-54',
+             suffix=suffix,
+             pmax_g=pct, pmax_b=pct, pmax_r=pct,
+            )
+    make_rgb('ku_hc3n_ch3oh_rgb.fits',
+             redline=fnku,
+             blueline='HC3N24-23',
+             greenline='CH3OH422-312',
+             suffix=suffix,
+             pmax_g=pct, pmax_b=pct, pmax_r=pct,
+            )
+    make_rgb('hc3n_ch3oh_ocs_rgb.fits',
+             greenline='OCS18-17',
+             redline='HC3N24-23',
+             blueline='CH3OH422-312',
+             suffix=suffix,
+             pmax_g=pct, pmax_b=pct, pmax_r=pct,
+            )
+
 make_rgb('ku_hc3n_ch3oh_rgb.fits',
          suffix="_max",
          pmax_r=99.75,
@@ -69,10 +97,6 @@ make_rgb('ku_hc3n_ch3oh_rgb.fits',
          redline=fnku,
          blueline='HC3N24-23',
          greenline='CH3OH422-312')
-make_rgb('hc3n_ch3oh_ocs_rgb.fits',
-         greenline='OCS18-17',
-         redline='HC3N24-23',
-         blueline='CH3OH422-312')
 make_rgb('ku_so_c18o_rgb.fits',
          greenline='SO65-54',
          redline=fnku,

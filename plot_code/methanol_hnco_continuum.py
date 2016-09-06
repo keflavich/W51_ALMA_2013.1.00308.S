@@ -79,14 +79,14 @@ def zoomfigure(target=e2e, targetname='e2e', radius=7.5*u.arcsec, cutout='e2e8',
     F.add_label(0.05, 0.95, "CH$_3$OH", relative=True, color='r', horizontalalignment='left')
     F.add_label(0.05, 0.91, "HNCO", relative=True, color='g', horizontalalignment='left')
     F.add_label(0.05, 0.87, "Continuum", relative=True, color='b', horizontalalignment='left')
-    F.save(paths.fpath("W51{0}_ch3oh_hnco_continuum_aplpy.png".format(targetname)))
-    F.save(paths.fpath("W51{0}_ch3oh_hnco_continuum_aplpy.pdf".format(targetname)))
+    F.save(paths.fpath("rgb_zooms/W51{0}_ch3oh_hnco_continuum_aplpy.png".format(targetname)))
+    F.save(paths.fpath("rgb_zooms/W51{0}_ch3oh_hnco_continuum_aplpy.pdf".format(targetname)))
 
     F.show_contour(paths.vpath('data/W51Ku_BDarray_continuum_2048_both_uniform.hires.clean.image.fits'),
                    levels=np.array([0.0015,0.0045,0.0135,0.0270,0.054,0.108])*1.25,
                    colors=['w']*7, layer='evla_cont')
-    F.save(paths.fpath("W51{0}_ch3oh_hnco_continuum_aplpy_kucontours.png".format(targetname)))
-    F.save(paths.fpath("W51{0}_ch3oh_hnco_continuum_aplpy_kucontours.pdf".format(targetname)))
+    F.save(paths.fpath("rgb_zooms/W51{0}_ch3oh_hnco_continuum_aplpy_kucontours.png".format(targetname)))
+    F.save(paths.fpath("rgb_zooms/W51{0}_ch3oh_hnco_continuum_aplpy_kucontours.pdf".format(targetname)))
 
 zoomfigure(target=e2e, targetname='e2e', radius=7.5*u.arcsec, cutout='e2e8',
            zoom_radius=3*u.arcsec, tick_spacing=1.8*u.arcsec)

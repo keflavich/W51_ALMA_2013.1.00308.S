@@ -120,6 +120,10 @@ try:
         'W51_b6_7M_12M_natural.SO2v2=1_16313-16214.image.pbcor.fits',
         'W51_b6_7M_12M.SO2v2=1_642-735.image.pbcor.fits',
         'W51_b6_7M_12M_natural.SO2v2=1_642-735.image.pbcor.fits',
+        'W51_b6_7M_12M.CH3NCO_25124-24123.image.pbcor.fits',
+        'W51_b6_7M_12M_natural.CH3NCO_25124-24123.image.pbcor.fits',
+        'W51_b6_7M_12M.CH3NCO_27226-26225.image.pbcor.fits',
+        'W51_b6_7M_12M_natural.CH3NCO_27226-26225.image.pbcor.fits',
     ]
 
 except ImportError:
