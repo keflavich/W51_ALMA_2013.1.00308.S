@@ -10,6 +10,12 @@ from astropy import log
 def quick_analyze(sp, freq_name_mapping, minvelo, maxvelo):
     """ get peak of spectrum, subtract continuum, etc. """
     argmax = np.nanargmax(sp.data)
+
+    # can have empty spectra passed to this, apparently
+    if not np.isfinite(sp.data[argmax]):
+        return (np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, False, '',
+                np.nan)
+
     cont = np.nanpercentile(sp.data, 20)
 
     shift = (minvelo+maxvelo)/2. / constants.c
@@ -21,7 +27,7 @@ def quick_analyze(sp, freq_name_mapping, minvelo, maxvelo):
     assert sp.data[argmax] == peak
     peakfreq_shifted = peakfreq * (1+shift)
     freqlist = list(freq_name_mapping.keys())
-    reverse_freq_name_mapping = {v:k for k,v in freq_name_mapping.items()}
+    #reverse_freq_name_mapping = {v:k for k,v in freq_name_mapping.items()}
     bestmatch = np.argmin(np.abs(peakfreq_shifted - u.Quantity(freqlist)))
     closest_freq = freqlist[bestmatch]
     peakvelo = ((closest_freq-peakfreq)/closest_freq *
