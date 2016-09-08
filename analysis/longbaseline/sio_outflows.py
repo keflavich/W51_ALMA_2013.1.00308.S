@@ -32,3 +32,21 @@ e2sioblue.write('/Users/adam/work/w51/alma/FITS/longbaseline/SiO_m32to55kms_e2.f
 
 e2siored = e2mslab.spectral_slab(74*u.km/u.s, 118*u.km/u.s).moment0()
 e2siored.write('/Users/adam/work/w51/alma/FITS/longbaseline/SiO_74to118kms_e2.fits')
+
+
+
+
+e8cube = SpectralCube.read('/Volumes/passport/alma/w51/longbaseline/W51e8cax.SPW0_ALL_medsub_cutout.fits')
+e8vcube = e8cube.with_spectral_unit(u.km/u.s, rest_value=217.10498*u.GHz,
+                                    velocity_convention='radio')
+
+e8slab = e8vcube.spectral_slab(-20*u.km/u.s, 180*u.km/u.s)
+e8slab.allow_huge_operations = True
+e8med = e8slab.median(axis=0)
+e8mslab = e8slab-e8med
+
+e8sioblue = e8mslab.spectral_slab(-32*u.km/u.s, 55*u.km/u.s).moment0()
+e8sioblue.write('/Users/adam/work/w51/alma/FITS/longbaseline/SiO_m32to55kms_e8.fits')
+
+e8siored = e8mslab.spectral_slab(74*u.km/u.s, 118*u.km/u.s).moment0()
+e8siored.write('/Users/adam/work/w51/alma/FITS/longbaseline/SiO_74to118kms_e8.fits')
