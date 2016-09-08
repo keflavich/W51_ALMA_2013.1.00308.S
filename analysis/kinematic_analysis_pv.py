@@ -12,10 +12,21 @@ import pylab as pl
 #fntemplate = 'full_W51e2cutout_spw{0}_lines.fits'
 #medsubtemplate = 'full_W51e2cutout_spw{0}_lines_medsub.fits'
 
+# the c&p approach is stupid compared to the LB approach that reads the reg files...
 # c&p'd from ../regions/e2e_disk_pvextract.reg  ../regions/north_disk_pvextract.reg
 northdiskycoords = "19:23:40.177,+14:31:06.50,19:23:39.923,+14:31:04.52".split(",")
+# orthogonal to SiO outflow
+northdiskycoords = "19:23:40.069,+14:31:06.10,19:23:40.039,+14:31:04.90".split(",")
+
+# perpendicular to outflow (ish)
 e2diskycoords = "19:23:44.197,+14:30:37.34,19:23:43.960,+14:30:34.55,19:23:43.882,+14:30:32.21,19:23:43.851,+14:30:31.26".split(",")
+# perpendicular to SiO outflow
+e2diskycoords = "19:23:44.032,+14:30:36.29,19:23:43.909,+14:30:32.90".split(",")
+
+# big, perp to CO (very, very coarsely)
 e8diskycoords = "19:23:43.913,+14:30:29.96,19:23:43.874,+14:30:26.09".split(",")
+# small, perp to SiO outflow
+e8diskycoords = "19:23:43.928,+14:30:29.17,19:23:43.882,+14:30:27.18".split(",")
 
 for name, diskycoordtxt, vrange in (
     ('north', northdiskycoords, (45,75)),
