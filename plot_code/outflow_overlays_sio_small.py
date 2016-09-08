@@ -71,6 +71,16 @@ rgb_im = aplpy.make_rgb_image(data=e2_rgb_cube_fits, output=rgb_cube_png,
                               vmin_g=0.0001,
                               stretch_g='arcsinh', embed_avm_tags=True)
 
+rgb_cube_png_faintercont = e2_rgb_cube_fits[:-5]+"_lineargreen.png"
+rgb_im = aplpy.make_rgb_image(data=e2_rgb_cube_fits, output=rgb_cube_png_faintercont,
+                              vmax_g=0.017,
+                              vmax_b=0.6,
+                              vmax_r=0.2,
+                              vmin_r=-0.0025,
+                              vmin_b=-0.0025,
+                              vmin_g=0.0001,
+                              stretch_g='linear', embed_avm_tags=True)
+
 
 pl.rcParams['font.size'] = 18
 fig1 = pl.figure(1)
@@ -91,6 +101,29 @@ F.scalebar.set_label('1000 au / 0.005 pc')
 F.scalebar.set_color('w')
 F.save(paths.fpath("outflows/W51e2_cycle3green_SiO_outflows_aplpy_zoom.png"))
 F.save(paths.fpath("outflows/W51e2_cycle3green_SiO_outflows_aplpy_zoom.pdf"))
+
+
+fig1 = pl.figure(1)
+fig1.clf()
+F = aplpy.FITSFigure(rgb_cube_png_faintercont, figure=fig1)
+F.show_rgb(rgb_cube_png_faintercont)
+F.recenter(290.93315, 14.509584, radius=0.0004)
+F.add_scalebar((0.025*u.pc / (5400*u.pc)).to(u.deg,u.dimensionless_angles()))
+F.scalebar.set_label('5000 au / 0.025 pc')
+F.scalebar.set_color('w')
+F.save(paths.fpath("outflows/W51e2_cycle3green_SiO_outflows_faintercontinuum_aplpy.png"))
+F.save(paths.fpath("outflows/W51e2_cycle3green_SiO_outflows_faintercontinuum_aplpy.pdf"))
+
+
+F.recenter(290.93318, 14.509591, radius=0.0001)
+F.scalebar.set_length((0.005*u.pc / (5400*u.pc)).to(u.deg,u.dimensionless_angles()))
+F.scalebar.set_label('1000 au / 0.005 pc')
+F.scalebar.set_color('w')
+F.save(paths.fpath("outflows/W51e2_cycle3green_SiO_outflows_faintercontinuum_aplpy_zoom.png"))
+F.save(paths.fpath("outflows/W51e2_cycle3green_SiO_outflows_faintercontinuum_aplpy_zoom.pdf"))
+
+
+
 
 
 blue_fits_e8_fn = paths.dpath('longbaseline/SiO_m32to55kms_e8.fits')
