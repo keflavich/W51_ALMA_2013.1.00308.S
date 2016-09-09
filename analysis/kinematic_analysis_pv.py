@@ -1,3 +1,4 @@
+import numpy as np
 import pvextractor
 import os
 import glob
@@ -7,6 +8,10 @@ from astropy import coordinates
 from astropy import wcs
 from spectral_cube import SpectralCube
 import pyregion
+
+# use outflow_meta b/c higher precision than ds9 reg
+from outflow_meta import e2e, e8, north
+from line_point_offset import offset_to_point
 
 import pylab as pl
 
@@ -45,10 +50,10 @@ for ii,direction in enumerate(('perpco', 'perpsio')):
 
     diskycoorddict['e2'] = diskycoorddict['e2e']
 
-    for name, vrange in (
-        ('north',  (45,75)),
-        ('e8', (45,75)),
-        ('e2', (45,70)),
+    for name, source, vrange in (
+        ('north', north, (45,75)),
+        ('e8', e8, (45,75)),
+        ('e2', e2e, (45,70)),
        ):
 
         diskycoords = diskycoorddict[name]
@@ -67,14 +72,16 @@ for ii,direction in enumerate(('perpco', 'perpsio')):
                                  "fits"])
             outfn = paths.dpath(os.path.join("12m/pv/", basename))
 
+            print("Extracting {0} {2}: {1}".format(fn, direction, name))
+
             cube = SpectralCube.read(fn)
             cube.allow_huge_operations=True
             cube.beam_threshold = 5
             med = cube.median(axis=0)
             medsub = cube - med
 
-            P = pvextractor.Path(diskycoords, 0.2*u.arcsec)
-            extracted = pvextractor.extract_pv_slice(medsub, P)
+            extraction_path = pvextractor.Path(diskycoords, 0.2*u.arcsec)
+            extracted = pvextractor.extract_pv_slice(medsub, extraction_path)
             #extracted.writeto(outfn, clobber=True)
 
             ww = wcs.WCS(extracted.header)
@@ -90,11 +97,47 @@ for ii,direction in enumerate(('perpco', 'perpsio')):
             ax.imshow(extracted.data, cmap='viridis')
             ax.set_xlabel("Offset [\"]")
             ax.set_ylabel("$V_{LSR}$ [km/s]")
+
+            good_limits = (np.argmax(np.isfinite(extracted.data.max(axis=0))),
+                           extracted.data.shape[1] -
+                           np.argmax(np.isfinite(extracted.data.max(axis=0)[::-1])))
+            leftmost_position = ww.wcs_pix2world(good_limits[0],
+                                                 vrange[0],
+                                                 0)[0]*u.arcsec
+
+            trans = ax.get_transform('world')
+            length = (1000*u.au / (5400*u.pc)).to(u.deg, u.dimensionless_angles())
+            endpoints_x = u.Quantity([0.5*u.arcsec, 0.5*u.arcsec+length]) + leftmost_position
+            ax.plot(endpoints_x.to(u.arcsec),
+                    [vrange[0]+5]*2*u.km/u.s,
+                    'w',
+                    transform=trans,
+                    zorder=100, linewidth=2)
+            ax.text(endpoints_x.mean().value,
+                    (vrange[0]+6),
+                    "1000 au", color='w', transform=trans, ha='center')
+
+            origin = offset_to_point(source.ra.deg,
+                                     source.dec.deg,
+                                     extraction_path)*u.deg
+
+            ax.vlines(origin.to(u.arcsec).value, vrange[0]-5, vrange[1]+5,
+                      color='w', linestyle='--', linewidth=2.0,
+                      alpha=0.6, transform=trans)
+
             ax.set_ylim(ww.wcs_world2pix(0,vrange[0],0)[1],
                         ww.wcs_world2pix(0,vrange[1],0)[1])
-            ax.set_aspect(4)
+            ax.set_xlim(good_limits)
+
+
+            # ax.set_aspect(4)
+            ax.set_aspect(2*extracted.data.shape[1]/extracted.data.shape[0])
+
+
+
             fig.savefig(paths.fpath('pv/{0}/{1}'.format(name, direction) +
-                                    basename.replace(".fits",".png")))
+                                    basename.replace(".fits",".png")),
+                        bbox_inches='tight')
 
 
             #outflow_coords = coordinates.SkyCoord(["19:23:44.127 +14:30:32.30", "19:23:43.822 +14:30:36.64"], unit=(u.hour, u.deg), frame='fk5')

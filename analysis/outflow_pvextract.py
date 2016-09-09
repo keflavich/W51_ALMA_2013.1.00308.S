@@ -14,6 +14,8 @@ import pvextractor
 from pvextractor import extract_pv_slice
 from pvextractor.geometry import Path
 
+from line_point_offset import offset_to_point
+
 e8mm = coordinates.SkyCoord(290.93289, 14.507833, frame='fk5', unit=(u.deg,
                                                                      u.deg))
 e8blue_endpoint = coordinates.SkyCoord(290.93538, 14.506403, frame='fk5',
@@ -54,20 +56,6 @@ northorigin = coordinates.SkyCoord(290.91689, 14.518197, frame='fk5',
 h2velomap = fits.open('/Users/adam/work/w51/sinfoni/h2_velocity_map.fits')
 h2velowidthmap = fits.open('/Users/adam/work/w51/sinfoni/h2_velocity_width_map.fits')
 h2wcs = wcs.WCS(h2velomap[0].header)
-
-def offset_to_point(xx, yy, path):
-    """
-    Determine the offset along the path to the nearest point on a path to the
-    specified point
-    """
-    import shapely.geometry as geom
-
-    if hasattr(path,'_coords'):
-        line = geom.LineString(zip(path._coords.ra.deg, path._coords.dec.deg))
-    else:
-        raise ValueError("Path doesn't have coords - maybe need _xy?")
-    point = geom.Point(xx, yy)
-    return line.project(point)
 
 parameters = {'e8':
               {'path': e8flowxy,
