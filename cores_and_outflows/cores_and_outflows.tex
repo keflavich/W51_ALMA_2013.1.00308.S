@@ -84,6 +84,7 @@ that are not included in the text:
     \item create Table ref{tab:linelist} = \ref{tab:linelist} (Section
         \ref{sec:temperature})
     \item Show a `core' mass histogram in Section \ref{sec:temperature}
+    \item Repeat Section \ref{sec:W51e2e} for e8 and north
 
 \end{enumerate}
 
@@ -469,13 +470,13 @@ M(20\textrm{K})$
 \label{sec:W51e2e}
 
 In a $0.21\arcsec\times0.19\arcsec$ beam ($1100\times1000$ au), the peak flux
-density is 0.38 Jy, which corresponds to a brightness temperature $T_B=228$ K.
-This is a lower limit to the surface brightness of the millimeter core, since
-an optical depth $\tau<1$ or a filling factor of the emission $ff<1$ would both
-imply higher intrinsic temperatures.  The implied luminosity, assuming a pure
-blackbody, is $L = 4\pi r^2 \sigma_{sb} T^4 = 2.4\ee{4} \lsun$.  Since any
-systematic uncertainties imply a higher temperature, this estimate is a lower
-limit on the source luminosity.
+density toward W51 e2e is 0.38 Jy, which corresponds to a brightness
+temperature $T_B=228$ K.  This is a lower limit to the surface brightness of
+the millimeter core, since an optical depth $\tau<1$ or a filling factor of the
+emission $ff<1$ would both imply higher intrinsic temperatures.  The implied
+luminosity, assuming a pure blackbody, is $L = 4\pi r^2 \sigma_{sb} T^4 =
+2.4\ee{4} \lsun$.  Since any systematic uncertainties imply a higher
+temperature, this estimate is a lower limit on the source luminosity.
 
 If we assume that $T_{dust} = T_{peak}$ and that the dust is optically thin, we
 derive a dust mass $M_{dust}\sim20$ \msun.  This  mass is not a strict limit in
@@ -487,23 +488,24 @@ $r\lesssim1000$ au \citep{Forgan2016a,Klassen2016a}, so it is likely that
 this measurement provides only a lower limit on the total gas mass surrounding
 the protostar.
 
-In the broader region surrounding W51e2e, out to a radius $\sim8000$ au, the
-total mass is $M\approx1400 (T / 100 \mathrm{K})^{-1}$ \msun  (Figure
-\ref{fig:hmradprof}).  On these larger scales, a cooler assumed temperature and
-optically thin dust are more reasonable.  The mass heated by e2e is therefore
-enormous, constituting an entire star cluster's worth of material.
+For an independent measurement of the temperature that is not limited
+to the optically thick regions, we use the \methanol
+lines in band, calculating an LTE temperature that is $200 < T < 600$ K
+out to $r<2$\arcsec ($r<10^4$ au; Section \ref{sec:methanol}).  As noted
+in Section \ref{sec:methanol}, these temperatures may be overestimates
+when the low-J lines of \methanol are optically thick, but for now they
+are the best measurements we have available.
 
-For an independent measurement of the temperature, we use the eight \methanol
-lines in band, ...
 
-\todo{How much is the \methanol enhanced compared to the surroundings?}
 
-\subsection{The most massive protostellar cores in W51}
+\subsection{Radial mass profiles around the most massive cores}
 In Figure \ref{fig:hmradprof}, we show the radial profiles extracted from the
 three high-mass protostellar cores in W51: W51 North, W51 e2e, and W51 e8.
 The plot shows the enclosed mass out to $\sim1\arcsec$ (5400 AU).  On larger
 spatial scales, the enclosed mass rises more shallowly, indicating the end of the
-core. % too hard to measure this (though our data are capable of recovering spatial scales up to XXXXX).
+core.
+% too hard to measure this (though our data are capable of recovering spatial
+% scales up to XXXXX).
 
 All three sources show similar radial profiles, containing up to 3000 \msun
 within a very compact radius of 5400 AU (0.03 pc).  However, the temperature
@@ -514,8 +516,16 @@ all at 600 K, the mass would be $\sim17\times$ lower, 100 \msun, which we treat
 as a strict lower bound as it is unlikely that the dust more than $\gtrsim1000$
 au is so warm.  Additionally, it is very likely that a substantial mass of cold
 dust is also present but undetectable because it is hidden by the hotter dust.
-\todo{This paragraph is somewhat redundant with Section \ref{sec:W51e2e}, but
-still useful.  Perhaps blend these?}
+%\todo{This paragraph is somewhat redundant with Section \ref{sec:W51e2e}, but
+%still useful.  Perhaps blend these?}
+
+%In the broader region surrounding W51e2e, out to a radius $\sim8000$ au, the
+%total mass is $M\approx1400 (T / 100 \mathrm{K})^{-1}$ \msun  (Figure
+%\ref{fig:hmradprof}).  On these larger scales, this moderately cooler ($T=100$
+%K) assumed temperature and optically thin dust are more reasonable, though
+%a factor of 2-5 increase in temperature may be warranted.  Nonetheless, the mass
+%heated by e2e is enormous, constituting an entire star cluster's
+%worth of material.
 
 \Figure{figures/cumulative_radial_flux_massivecores.png}
 {The cumulative flux density radial profiles centered on three
@@ -526,30 +536,32 @@ outer, more massive regions.  The cumulative mass distribution may
 therefore be deceptive.}
 {fig:hmradprof}{1}{14cm}
 
-\subsection{The most massive prestellar cores in W51}
-% may be repeated from temperature section above
-To place limits on the most massive prestellar cores, we need to know the
-temperature of the dust in all of the bright ($>15$ mJy; 10 \msun at 20 K)
-sources.  We do not have any direct means of evaluating the dust temperature,
-but we can infer at
-least a lower limit on it by determining the peak brightness temperature of an
-optically thick line that is excited at densities $n\gtrsim10^5$ \percc, at
-which the dust and gas are coupled.
-
-To accomplish this, we have found the brightest lines across the full $\sim6$
-GHz spectra and measured their peak brightness temperature.
-
-\todo{TODO: use coarser resolution (2\arcsec = 0.1 pc?) data to extract ``cores''
-where no smaller (protostellar) cores are detected.  Try to estimate their masses.
-These are the best candidate ``prestellar" cores, though likely anything this
-large is likely to be a massive cluster...}
+%probably not worth doing
+% \subsection{The most massive prestellar cores in W51}
+% % may be repeated from temperature section above
+% To place limits on the most massive prestellar cores, we need to know the
+% temperature of the dust in all of the bright ($>15$ mJy; 10 \msun at 20 K)
+% sources.  We do not have any direct means of evaluating the dust temperature,
+% but we can infer at
+% least a lower limit on it by determining the peak brightness temperature of an
+% optically thick line that is excited at densities $n\gtrsim10^5$ \percc, at
+% which the dust and gas are coupled.
+% 
+% To accomplish this, we have found the brightest lines across the full $\sim6$
+% GHz spectra and measured their peak brightness temperature.
+% 
+% \todo{TODO: use coarser resolution (2\arcsec = 0.1 pc?) data to extract ``cores''
+% where no smaller (protostellar) cores are detected.  Try to estimate their masses.
+% These are the best candidate ``prestellar" cores, though likely anything this
+% large is likely to be a massive cluster...}
 
 \subsection{The mass budget on different spatial scales}
 \label{sec:massbudget}
-An important evolutionary indicator is the amount of mass at a given density; a
-more evolved (more efficiently star-forming) region will have more mass at high
-densities.  We cannot measure the dense gas fraction directly, but the amount of
-flux density recovered by an interferometer provides a reasonable approximation.
+An evolutionary indicator used for star-forming regions is the amount of mass
+at a given density; a more evolved (more efficiently star-forming) region will
+have more mass at high densities.  We cannot measure the dense gas fraction
+directly, but the amount of flux density recovered by an interferometer
+provides a reasonable approximation.
 
 % total_mass_analysis
 For the ``total'' flux density in the region, we use the Bolocam Galactic Plane
@@ -565,11 +577,11 @@ for a change in $\alpha\pm0.5$.  The threshold of 10 mJy/beam corresponds to a
 column threshold $N>1.3\ee{25}$ \percc for 20 K dust. This threshold also
 corresponds to an optical depth of $\tau\approx0.5$, implying that a large
 fraction of the cloud is either approaching optically thick or warmer than 20
-K..  For an unresolved spherical source in the $\sim0.2\arcsec$ beam, this
+K.  For an unresolved spherical source in the $\sim0.2\arcsec$ beam, this
 column density corresponds to a volume density $n>10^{8.1}$ \percc.
 
-\todo{TODO: determine the largest angular scale in the ALMA images.  Requires
-using the simulations.}
+% \todo{TODO: determine the largest angular scale in the ALMA images.  Requires
+% using the simulations.}
 
 \subsection{Chemically Distinct Regions}
 \label{sec:chemistrymaps}

@@ -124,6 +124,14 @@ try:
         'W51_b6_7M_12M_natural.CH3NCO_25124-24123.image.pbcor.fits',
         'W51_b6_7M_12M.CH3NCO_27226-26225.image.pbcor.fits',
         'W51_b6_7M_12M_natural.CH3NCO_27226-26225.image.pbcor.fits',
+        'W51_b6_7M_12M.CH3SH_152-151.image.pbcor.fits',
+        'W51_b6_7M_12M_natural.CH3SH_152-151.image.pbcor.fits',
+        'W51_b6_7M_12M.CH3SH_162-161.image.pbcor.fits',
+        'W51_b6_7M_12M_natural.CH3SH_162-161.image.pbcor.fits',
+        'W51_b6_7M_12M.CH3SH_73-82.image.pbcor.fits',
+        'W51_b6_7M_12M_natural.CH3SH_73-82.image.pbcor.fits',
+        'W51_b6_7M_12M.CH3SH_232-231.image.pbcor.fits',
+        'W51_b6_7M_12M_natural.CH3SH_232-231.image.pbcor.fits',
     ]
 
 except ImportError:

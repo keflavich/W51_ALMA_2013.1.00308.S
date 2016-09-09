@@ -64,7 +64,7 @@ for source,cubefn in [#('e2', "W51e2cax.CH3CN_K3_nat.image.fits"),
                       # done ('north', "W51ncax.SPW2_ALL.image.fits"),
                       # done ('north', "W51ncax.SPW4_ALL.image.fits"),
                       # done ('north', "W51ncax.SPW6_ALL.image.fits"),
-                      ('north', "W51ncax.SPW0_ALL.image.fits"),
+                      #('north', "W51ncax.SPW0_ALL.image.fits"),
                       #('north', "W51ncax.SPW1_ALL.image.fits"),
                       #('north', "W51ncax.SPW2_ALL.image.fits"),
                       #('north', "W51ncax.SPW3_ALL.image.fits"),
@@ -74,6 +74,7 @@ for source,cubefn in [#('e2', "W51e2cax.CH3CN_K3_nat.image.fits"),
                       #('north', "W51ncax.SPW7_ALL.image.fits"),
                       #('north', "W51ncax.SPW8_ALL.image.fits"),
                       #('north', "W51ncax.SPW9_ALL.image.fits"),
+                      ('northwest', "W51ncax.SPW0_ALL.image.fits"),
                       #('northwest', "W51ncax.SPW1_ALL.image.fits"),
                       #('northwest', "W51ncax.SPW2_ALL.image.fits"),
                       #('northwest', "W51ncax.SPW3_ALL.image.fits"),
@@ -95,6 +96,7 @@ for source,cubefn in [#('e2', "W51e2cax.CH3CN_K3_nat.image.fits"),
         continue
         raise ex
 
+    print("Successfully read cube {0}".format(cubefn))
     outfn = repl.sub("W51{0}cax".format(source), cubefn)
 
     lowerleft, upperright = corners[source]['lowerleft'],corners[source]['upperright'],

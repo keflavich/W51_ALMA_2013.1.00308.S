@@ -5,17 +5,60 @@ os.system('rm -rf w51-cont.*')
 clean(vis="calibrated.ms",
       imagename="w51-cont",
       field="w51*",
-      spw="1,2,3",
+      spw="0,1,2,3",
       mode="mfs",
       niter=1000,gain=0.1,threshold="0.0mJy",
       psfmode="clark",imagermode="mosaic",ftmachine="mosaic",
       interactive=True,
       outframe="BARY",veltype="optical",
-      imsize=128,cell="1.2arcsec",
+      imsize=256,cell="0.6arcsec",
       phasecenter="",
       stokes="I",
       weighting="briggs",robust=0.5,
       pbcor=False)
+
+os.system('rm -rf w51-cont-tclean.*')
+# Just ignoring all line emission contamination...
+tclean(vis="calibrated.ms",
+       imagename="w51-cont-tclean",
+       field="w51*",
+       spw="0,1,2,3",
+       niter=1000,gain=0.1,threshold="0.0mJy",
+       deconvolver="clark",specmode="mfs",gridder="mosaic",
+       outframe="LSRK",veltype="radio",
+       imsize=256,cell="0.6arcsec",
+       savemodel='none',
+       weighting="briggs",robust=0.5)
+myimagebase = "w51-cont-tclean"
+exportfits(myimagebase+'.image', myimagebase+'.image.fits',
+           dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor',
+           myimagebase+'.image.pbcor.fits', dropdeg=True,
+           overwrite=True)
+
+os.system('rm -rf w51-cont-tclean-robustm2.*')
+# Just ignoring all line emission contamination...
+tclean(vis="calibrated.ms",
+       imagename="w51-cont-tclean-robustm2",
+       field="w51*",
+       spw="0,1,2,3",
+       niter=1000,gain=0.1,threshold="0.0mJy",
+       deconvolver="clark",specmode="mfs",gridder="mosaic",
+       outframe="LSRK",veltype="radio",
+       imsize=256,cell="0.6arcsec",
+       savemodel='none',
+       weighting="briggs",robust=-2)
+myimagebase = "w51-cont-tclean-robustm2"
+exportfits(myimagebase+'.image', myimagebase+'.image.fits',
+           dropdeg=True, overwrite=True)
+impbcor(imagename=myimagebase+'.image',pbimage=myimagebase+'.pb',
+        outfile=myimagebase+'.image.pbcor', overwrite=True)
+exportfits(myimagebase+'.image.pbcor',
+           myimagebase+'.image.pbcor.fits', dropdeg=True,
+           overwrite=True)
+
 
 
 # continuum subtraction 

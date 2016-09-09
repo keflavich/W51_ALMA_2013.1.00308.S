@@ -58,6 +58,9 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
                        vrange=[51,60]*u.km/u.s, sourcename='e2',
                        filelist=glob.glob(paths.dpath('12m/cutouts/*e2e8*fits')),
                        source=None, radius=None,
+                       molecular_database=ch3oh,
+                       radiative_transitions=rt,
+                       frqs=frqs,
                        chem_name='CH3OH',
                        shape=None, # check that shape matches slice
                       ):
@@ -129,9 +132,9 @@ def cutout_id_chem_map(yslice=slice(367,467), xslice=slice(114,214),
         frq = name_to_freq[label]
 
         closest_ind = np.argmin(np.abs(frqs - frq))
-        closest_key = list(rt.keys())[closest_ind]
-        closest_rt = rt[closest_key]
-        upperstate = ch3oh.data['States'][closest_rt.UpperStateRef]
+        closest_key = list(radiative_transitions.keys())[closest_ind]
+        closest_rt = radiative_transitions[closest_key]
+        upperstate = molecular_database.data['States'][closest_rt.UpperStateRef]
         upperen = u.Quantity(float(upperstate.StateEnergyValue),
                              unit=upperstate.StateEnergyUnit)
 
