@@ -20,3 +20,5 @@ e1 = SkyCoord(290.93263,14.50745,unit=('deg','deg'), frame='fk5')
 reg = pyregion.open(paths.rpath("e2eoutflow_reference_vector.reg"))[0]
 e2e_reference_vector = SkyCoord(reg.coord_list[::2], reg.coord_list[1::2],
                                 unit=(u.deg, u.deg))
+
+lacy = SkyCoord('19:23:39.759', '+14:31:05.08', unit=(u.hour, u.deg))

@@ -85,6 +85,7 @@ that are not included in the text:
         \ref{sec:temperature})
     \item Show a `core' mass histogram in Section \ref{sec:temperature}
     \item Repeat Section \ref{sec:W51e2e} for e8 and north
+    \item move Section \ref{sec:cheminterp} to discussion
 
 \end{enumerate}
 
@@ -671,16 +672,18 @@ rich chemistry.
 }{fig:chemmapsALMAmm14}{1}{18cm}
 
 \subsubsection{Chemical structure: Interpretation}
-These enhancements occur as factor of 3-10 increases in the peak brightness of
-most of the lines shown in Figure \ref{fig:chemmapse2}.  These enhancements
-could occur from increased total column density, increased abundance of the
-molecules, or increased excitation.
+\label{sec:cheminterp}
+\todo{Probably cut P1 here and move the whole thing to "Discussion"}
+The enhancements in noted lines occur as factor of 3-10 increases in the peak
+brightness of most of the lines shown in Figure \ref{fig:chemmapse2}.  These
+enhancements could occur from increased total column density, increased
+abundance of the molecules, or increased excitation.
 
 In Section \ref{sec:ch3ohtem}, we examine the \methanol abundance
 and excitation conditions. 
 The detection of highly excited \methanol lines, including
 $18_{3,15}-17_{4,14}$ ($E_U=447$ K) and $25_{3,22}-24_{4,20}$ ($E_U=802$ K),
-suggests that the excitation is part of the explanation for the brighter
+suggests that excitation is part of the explanation for the brighter
 molecular emission.  However, LTE modeling reveals that the \methanol abundance
 increases by a factor of $\sim5-10$ from the protocluster gas inward toward the
 e2e core.  This abundance gradient is likely present in other molecules as
@@ -735,11 +738,13 @@ column are shown in the top right of each plot.
 }{fig:ch3ohe2rot}{1}{18cm}
 
 To validate some of the rotational diagram fits, we examined the modeled
-spectra overlaid on the real.  These generally display significant
-discrepancies, especially at low J where self-absorption is evident.  There is
-clearly a low-temperature component slightly redshifted from the high-J peak
-that can be seen as a dip within the line profile (Figure
-\ref{fig:ch3ohe2epeaks}).
+spectra overlaid on the real (Figure \ref{fig:ch3ohe2epeaks}).  These generally
+display significant discrepancies, especially at low J where self-absorption is
+evident.  In Figure \ref{fig:ch3ohe2epeaks}, there is clearly a low-temperature
+component slightly redshifted from the high-J peak that can be seen as a dip
+within the line profile.  The presence of this unmodeled low-temperature
+component renders our \methanol temperature measurements uncertain.
+
 
 
 \FigureTwo
@@ -819,16 +824,18 @@ in this inner region is likely to be underestimated.
 {fig:ch3ohtemX}
 
 A few features illustrate the effects of thermal radiative feedback on the gas.
-The temperature jump starting inwards of  $r\sim1.5\arcsec$ (8100 AU) is
+The temperature jump starting inwards of  $r\sim1.5\arcsec$ (8100 AU; Figure
+\ref{fig:ch3ohtemX}b) is
 substantial, though the 100-200 K floor at greater radii is likely artificial as
 the low-J transitions are not consistent with a thermal distribution.
 There is an abundance enhancement at the inner radii, but it appears to be a
 radial bump rather than a pure increase.  The abundance enhancement is probably real,
-and is approximately a factor of $\sim5-10$; the inner deficit
+and is approximately a factor of $\sim5-10$.  The inner abundance dip
 is caused by two coincident effects: first, the \methanol column becomes underestimated
 because the \methanol is \emph{self}-absorbed, and second, the dust becomes
 optically thick, blocking additional \methanol emission, though this latter
-effect is somewhat self-regulating.
+effect is somewhat self-regulating since it also decreases the dust column (the
+denominator in the abundance expression).
 
 
 % presently, this section adds nothing to the paper-in-progress...
@@ -880,14 +887,20 @@ effect is somewhat self-regulating.
 % very optically thick, so the color no longer implies anything about the temperature.}
 % {fig:h2corgb}{1}{12cm}
 
-\subsection{Ionizing Radiation}
-This was covered in \citep{Ginsburg2016b}.  Ionizing radiation affects much
-of the cloud, but little of the high-density prestellar material.  There is no
-evidence of increased gas temperatures in the vicinity of \hii regions.  While
-in Section \ref{sec:nonionizingradiation} we identify chemically enhanced
-regions as those where radiative feedback has heated the dust and released ices
-into the gas phase, no such regions are observed surrounding the most luminous
-compact \hii regions.
+\subsection{Ionizing vs non-ionizing radiation}
+\label{sec:nonionizingradiation}
+The formed and forming protostars are producing a total $\gtrsim10^7$ \lsun of
+far infrared illumination \citep{Ginsburg2016b}.  This radiation heats the
+cloud's molecular gas, affecting the initial conditions of future star
+formation.
+
+The ionizing radiation in W51 was discussed in detail in \citep{Ginsburg2016b}.
+Ionizing radiation affects much of the cloud, but little of the high-density
+prestellar material.  There is no evidence of increased gas temperatures in the
+vicinity of \hii regions.  While in Section \ref{sec:nonionizingradiation} we
+identify chemically enhanced regions as those where radiative feedback has
+heated the dust and released ices into the gas phase, no such regions are
+observed surrounding the most luminous compact \hii regions.
 
 This lack of molecular brightness enhancement is only an indirect indication
 that the \hii regions do not affect the surrounding dense gas temperature.  A
@@ -896,20 +909,15 @@ require temperature measurements on the outskirts of the \hii regions, but this
 is not possible without prior detection of bright emission in thermometric
 transitions.
 
-\subsection{Non-ionizing Radiation}
-\label{sec:nonionizingradiation}
-The formed and forming protostars are producing a total $\gtrsim10^7$ \lsun of
-far infrared illumination \citep{Ginsburg2016b}.  This radiation heats the
-cloud's molecular gas, affecting the initial conditions of future star
-formation.
-
 The chemical maps shown in Section \ref{sec:chemistrymaps} show the volumes of
 gas clearly affected by newly-forming high-luminosity stars.  The
 \methanol-enhanced region around W51e2 extends 0.04 pc, or 8500 AU (see Section
-\ref{sec:ch3ohtem}). Other
-locally enhanced species, especially the nitrogenic molecules HNCO and
-\formamide, occupy a smaller and more asymmetric region around e2e and e2w 
-(Figure \ref{fig:e2methanolhnco}).
+\ref{sec:ch3ohtem}). Other locally enhanced species, especially the nitrogenic
+molecules HNCO and \formamide, occupy a smaller and more asymmetric region
+around e2e and e2w (Figure \ref{fig:e2methanolhnco}).  These chemically enhanced
+regions are most prominent around the weakest radio sources or regions with
+no radio detection; they are most likely heated by direct infrared radiation
+from these sources.
 
 \FigureTwo
 {figures/W51e2_ch3oh_hnco_continuum_aplpy_kucontours.pdf}
@@ -941,7 +949,7 @@ Figures \ref{fig:outflowscontinuume2}, \ref{fig:outflowscontinuumnorth},
 \subsubsection{The Lacy jet}
 A high-velocity outflow was discovered within the W51 IRS2 region by
 \citet{Lacy2007a}, and subsequently detected in H77$\alpha$ by
-\citet{Ginsburg2016b}.  We have now discovered the CO counterpart to this
+\citet{Ginsburg2016b}.  We have discovered the CO counterpart to this
 outflow, which comes from near the continuum source ALMAmm31.  Strangely,
 though, the outflow is not directly centered on the continuum source, but is
 slightly offset.  The outflow shows red- and blue-shifted flows that form the

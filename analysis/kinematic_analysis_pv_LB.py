@@ -13,7 +13,7 @@ import pyregion
 from line_to_image_list import line_to_image_list
 
 # use outflow_meta b/c higher precision than ds9 reg
-from outflow_meta import e2e, e8, north
+from outflow_meta import e2e, e8, north, lacy
 from line_point_offset import offset_to_point
 
 import pylab as pl
@@ -25,7 +25,7 @@ import pylab as pl
 
 for ii,direction in enumerate(('perpco', 'perpsio')):
     diskycoorddict = {}
-    for source in ('e2e','e8','north'):
+    for source in ('e2e','e8','north','lacy'):
         diskycoord_list = pyregion.open(paths.rpath("{0}_disk_pvextract.reg"
                                                     .format(source)))[ii].coord_list
         diskycoords = coordinates.SkyCoord(["{0} {1}".format(diskycoord_list[jj],
@@ -40,15 +40,16 @@ for ii,direction in enumerate(('perpco', 'perpsio')):
     diskycoorddict['e2'] = diskycoorddict['e2e']
 
 
-    for name, source, vrange in (
-        ('north', north, (45,75)),
-        ('e8', e8, (45,75)),
-        ('e2', e2e, (45,70)),
+    for name, cutoutname, source, vrange in (
+        ('lacy', 'northwest', lacy, (50,75)),
+        ('north', 'north', north, (45,75)),
+        ('e8', 'e8', e8, (45,75)),
+        ('e2', 'e2', e2e, (45,70)),
        ):
 
         diskycoords = diskycoorddict[name]
 
-        for fn in glob.glob(paths.lbpath("W51{0}cax*ALL_medsub_cutout.fits".format(name))):
+        for fn in glob.glob(paths.lbpath("W51{0}cax*ALL_medsub_cutout.fits".format(cutoutname))):
 
             print(fn)
             try:
@@ -69,7 +70,8 @@ for ii,direction in enumerate(('perpco', 'perpsio')):
                                                 rest_value=frq)
                 svcube = vcube.spectral_slab((vrange[0]-1)*u.km/u.s,
                                              (vrange[1]+1)*u.km/u.s)
-                if svcube.shape[0] <= 1:
+                if svcube.shape[0] <= 5:
+                    print("SKIPPING {3} {0} {2}: {1}".format(line, restfreq, direction, name))
                     continue
 
                 print("Extracting {3} {0} {2}: {1}".format(line, restfreq, direction, name))

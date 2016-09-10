@@ -177,7 +177,8 @@ north_red_fits_fn = paths.dpath('longbaseline/SiO_74to118kms_north.fits')
 north_rgb_cube_fits = 'north_outflow_SiO_redblue_cycle3green.fits'
 if not os.path.exists(north_rgb_cube_fits):
     # does not return anything
-    aplpy.make_rgb_cube([north_red_fits_fn, north_green_fits, north_blue_fits_fn], north_rgb_cube_fits)
+    aplpy.make_rgb_cube([north_red_fits_fn, north_green_fits,
+                         north_blue_fits_fn], north_rgb_cube_fits)
 
 north_rgb_cube_png = north_rgb_cube_fits[:-5]+"_asinhgreen.png"
 north_rgb_im = aplpy.make_rgb_image(data=north_rgb_cube_fits,

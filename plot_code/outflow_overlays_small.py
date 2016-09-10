@@ -10,8 +10,7 @@ import paths
 from astropy.io import fits
 from astropy.nddata import Cutout2D
 from astropy import wcs
-import paths
-from outflow_meta import e2e
+from outflow_meta import e2e, lacy
 
 e2_green_fits = '/Users/adam/work/w51/alma/cycle3goddi/W51e2.cont.image.pbcor.fits'
 north_green_fits = '/Users/adam/work/w51/alma/cycle3goddi/W51n.cont.image.pbcor.fits'
@@ -171,3 +170,45 @@ F.show_contour('../../alma/cycle3goddi/W51n.cont.image.pbcor.fits', levels=[0.00
 F.recenter(290.91564, 14.518128, radius=0.0005)
 F.save(paths.fpath("NACO_green_outflows_aplpy_zoomALMAmm31_cycle3hires.png"))
 F.save(paths.fpath("NACO_green_outflows_aplpy_zoomALMAmm31_cycle3hires.pdf"))
+
+
+
+
+
+
+
+red_fits_cutout_lacy_fn = paths.dpath('12m/moments/LacyJet_SO65m54_red70_95.fits')
+blue_fits_cutout_lacy_fn = paths.dpath('12m/moments/LacyJet_SO65m54_blue30_50.fits')
+green_fits = paths.dpath('W51_te_continuum_best.fits')
+
+lacy_rgb_cube_fits = 'lacy_outflow_SO_rgb.fits'
+if not os.path.exists(lacy_rgb_cube_fits):
+    # does not return anything
+    aplpy.make_rgb_cube([red_fits_cutout_lacy_fn, green_fits,
+                         blue_fits_cutout_lacy_fn], lacy_rgb_cube_fits)
+
+lacy_rgb_cube_png = lacy_rgb_cube_fits[:-5]+"_auto.png"
+rgb_im = aplpy.make_rgb_image(data=lacy_rgb_cube_fits, output=lacy_rgb_cube_png,
+                              vmax_g=0.075,
+                              vmax_b=1.5,
+                              vmax_r=1.5,
+                              vmin_g=0.0001,
+                              embed_avm_tags=True)
+
+fig1.clf()
+F = aplpy.FITSFigure(lacy_rgb_cube_png, figure=fig1)
+F.recenter(lacy.ra.deg, lacy.dec.deg, radius=0.0005)
+F.show_rgb(lacy_rgb_cube_png)
+F.add_scalebar((5000*u.au / (5400*u.pc)).to(u.deg,u.dimensionless_angles()))
+F.scalebar.set_label('5000 au / 0.025 pc')
+F.scalebar.set_color('w')
+F.save(paths.fpath("rgb_SO_continuum_outflows_aplpy_zoomLacy.png"))
+F.show_contour(paths.lbpath('W51ncax.cont.image.pbcor.fits'), levels=[0.001,
+                                                                   0.0020,
+                                                                   0.004,
+                                                                   0.008,
+                                                                   0.012],
+               colors=['w']*6, layer='alma_cont_cycle3hires')
+F.recenter(lacy.ra.deg, lacy.dec.deg, radius=0.0005)
+F.save(paths.fpath("rgb_SO_continuum_outflows_aplpy_zoomLacy_cycle3hires.png"))
+F.save(paths.fpath("rgb_SO_continuum_outflows_aplpy_zoomLacy_cycle3hires.pdf"))

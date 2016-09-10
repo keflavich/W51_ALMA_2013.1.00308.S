@@ -10,7 +10,7 @@ from spectral_cube import SpectralCube
 import pyregion
 
 # use outflow_meta b/c higher precision than ds9 reg
-from outflow_meta import e2e, e8, north
+from outflow_meta import e2e, e8, north, lacy
 from line_point_offset import offset_to_point
 
 import pylab as pl
@@ -36,7 +36,7 @@ import pylab as pl
 
 for ii,direction in enumerate(('perpco', 'perpsio')):
     diskycoorddict = {}
-    for source in ('e2e','e8','north'):
+    for source in ('e2e','e8','north','lacy'):
         diskycoord_list = pyregion.open(paths.rpath("{0}_disk_pvextract.reg"
                                                     .format(source)))[ii].coord_list
         diskycoords = coordinates.SkyCoord(["{0} {1}".format(diskycoord_list[jj],
@@ -50,18 +50,19 @@ for ii,direction in enumerate(('perpco', 'perpsio')):
 
     diskycoorddict['e2'] = diskycoorddict['e2e']
 
-    for name, source, vrange in (
-        ('north', north, (45,75)),
-        ('e8', e8, (45,75)),
-        ('e2', e2e, (45,70)),
+    for name, cutoutname, source, vrange in (
+        ('lacy', 'north', lacy, (50,75)),
+        ('north', 'north', north, (45,75)),
+        ('e8', 'e8', e8, (45,75)),
+        ('e2', 'e2', e2e, (45,70)),
        ):
 
         diskycoords = diskycoorddict[name]
 
-        for fn in glob.glob(paths.dpath("12m/cutouts/W51_b6_12M*{0}*fits".format(name))):
+        for fn in glob.glob(paths.dpath("12m/cutouts/W51_b6_12M*{0}*fits".format(cutoutname))):
 
             namesplit = fn.split(".")
-            if name not in namesplit[3]:
+            if cutoutname not in namesplit[3]:
                 # e2 matches Acetone21120...
                 continue
 
