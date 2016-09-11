@@ -1,0 +1,15 @@
+Notes about strange cores:
+
+e8mm: has vibrationally excited HC3N detected everywhere, and it is probably the brightest species
+e2w: has H30a detected
+
+name      red blue
+e8mm        y    y
+e2e         y    y
+e2nw        ?    ?
+eSmm3       y    y
+eSmm6       y    y
+ALMAmm14    y    y
+north       y    y
+ALMAmm31    y    y
+ALMAmm30    y    y
