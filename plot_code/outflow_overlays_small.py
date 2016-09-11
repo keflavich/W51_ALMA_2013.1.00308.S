@@ -257,6 +257,11 @@ F.recenter(lacy.ra.deg, lacy.dec.deg, radius=0.0005)
 F.save(paths.fpath("outflows/rgb_CO_continuum_outflows_aplpy_zoomLacy_cycle3hires.png"))
 F.save(paths.fpath("outflows/rgb_CO_continuum_outflows_aplpy_zoomLacy_cycle3hires.pdf"))
 
+F.hide_layer('alma_cont_cycle3hires')
+F.show_contour(h77a_green, levels=[0.0075, 0.015], colors=['w']*6,
+               layer='h77a_outflow')
+F.recenter(lacy.ra.deg, lacy.dec.deg, radius=0.002)
+F.save(paths.fpath("outflows/rgb_CO_continuum_outflows_aplpy_wideLacy_h77a.png"))
 
 
 
@@ -287,3 +292,9 @@ F.add_scalebar((1000*u.au / (5400*u.pc)).to(u.deg,u.dimensionless_angles()))
 F.scalebar.set_label('1000 au / 0.005 pc')
 F.scalebar.set_color('w')
 F.save(paths.fpath("outflows/rgb_SO_continuum_outflows_aplpy_zoomLacy_hires.png"))
+
+#F.hide_layer('alma_cont_cycle3hires')
+F.show_contour(h77a_green, levels=[0.0075, 0.015], colors=['w']*6,
+               layer='h77a_outflow')
+F.recenter(lacy.ra.deg, lacy.dec.deg, radius=0.002)
+F.save(paths.fpath("outflows/rgb_SO_continuum_outflows_aplpy_wideLacy_h77a.png"))
