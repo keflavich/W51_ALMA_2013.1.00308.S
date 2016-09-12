@@ -8,7 +8,8 @@ import masscalc
 outflow_tbl = Table.read(paths.tpath("outflow_co_photometry.ipac"), format='ascii.ipac')
 core_velo_tbl = Table.read(paths.tpath("core_velocities.ipac"), format="ascii.ipac")
 core_phot_tbl = Table.read(paths.tpath("continuum_photometry.ipac"), format='ascii.ipac')
-ppbeam = core_phot_tbl.meta['keywords']['ppbeam']['value']
+outflow_tbl.meta.update(core_phot_tbl.meta)
+ppbeam = core_phot_tbl.meta['keywords']['ppbeam_mm']['value']
 
 
 core_phot_tbl.rename_column('name','SourceID')
@@ -91,7 +92,8 @@ cores_merge = cores_merge['SourceID',
                          ]
                          
 
-cores_merge.write(paths.tpath('core_continuum_and_line.ipac'), format='ascii.ipac')
+cores_merge.write(paths.tpath('core_continuum_and_line.ipac'),
+                  format='ascii.ipac', overwrite=True)
 
 
 ### Add columns to the outflow table from the core table ###
@@ -114,7 +116,10 @@ outflow_tbl.add_column(newcol)
 #                 name='CoreVelocity')
 # outflow_tbl.add_column(newcol)
 
-outflow_tbl.write(paths.tpath('outflows_with_cores.ipac'), format='ascii.ipac')
+
+
+outflow_tbl.write(paths.tpath('outflows_with_cores.ipac'), format='ascii.ipac',
+                  overwrite=True)
 
 # exec other merge now
 with open(paths.apath('merge_spectral_fits_with_photometry.py')) as source_file:

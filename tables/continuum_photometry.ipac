@@ -1,8 +1,9 @@
-\column_conversion_factor=<Quantity nan 1 / cm2>
 \beam_area_sr=3.0230943813297665e-12
+\column_conversion_factor=<Quantity nan 1 / cm2>
+\ppbeam_mm=18.357923162719686
+\ppbeam_cm=12.861806527499521
 \mass_conversion_factor=<Quantity 708.2665893381508 solMass>
 \pixel_scale_as=0.100000000000008
-\ppbeam=12.861806527499521
 |                       name|           RA|          Dec|      peak|      sum|  npix|        beam_area|     peak_mass|peak_col|cont_flux0p2arcsec|KUbandcont_flux0p2arcsec|cont_flux0p4arcsec|KUbandcont_flux0p4arcsec|cont_flux0p6arcsec|KUbandcont_flux0p6arcsec|cont_flux0p8arcsec|KUbandcont_flux0p8arcsec|cont_flux1p0arcsec|KUbandcont_flux1p0arcsec|cont_flux1p5arcsec|KUbandcont_flux1p5arcsec|
 |                       char|       double|       double|    double|   double|double|           double|        double|  double|            double|                  double|            double|                  double|            double|                  double|            double|                  double|            double|                  double|            double|                  double|
 |                           |          deg|          deg| Jy / beam|Jy / beam|      |               sr|       solMass| 1 / cm2|                  |                        |                  |                        |                  |                        |                  |                        |                  |                        |                  |                        |

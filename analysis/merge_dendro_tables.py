@@ -70,4 +70,12 @@ cat = coordinates.SkyCoord(u.Quantity(dendro_merge['x_cen'].data, u.deg), u.Quan
 nearest = cat.match_to_catalog_sky(cat, 2)
 dendro_merge.add_column(Column(nearest[1], name='nndist'))
 
+
+# classify each object based on some fixed criteria
+#aperture = '0p2'
+#freefreedominated = (dendro_merge['KUbandcont_flux{0}arcsec'.format(aperture)] /
+#                     dendro_merge['cont_flux{0}arcsec'.format(aperture)]) > 0.5
+#hot = (dendro_merge
+
+
 dendro_merge.write(paths.tpath('dendro_merge_continuum_and_line.ipac'), format='ascii.ipac')

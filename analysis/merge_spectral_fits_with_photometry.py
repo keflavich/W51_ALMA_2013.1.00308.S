@@ -7,6 +7,7 @@ from astropy.table import Table, Column
 from astropy import table
 from astropy import units as u
 import masscalc
+import scipy.special
 
 spectral_line_fit_tbl = Table.read(paths.tpath('spectral_lines_and_fits.csv'))
 
@@ -62,4 +63,77 @@ temperature_corrected_aperturemass = Column([(masscalc.mass_conversion_factor(20
                                         unit=u.M_sun)
 cores_merge.add_column(temperature_corrected_aperturemass)
 
-cores_merge.write(paths.tpath('core_continuum_and_line.ipac'), format='ascii.ipac', overwrite=True)
+# classify each object based on some fixed criteria
+aperture = '0p2'
+freefreedominated = (cores_merge['KUbandcont_flux{0}arcsec'.format(aperture)] /
+                     cores_merge['cont_flux{0}arcsec'.format(aperture)]) > 0.5
+freefreecontaminated = (cores_merge['KUbandcont_flux{0}arcsec'.format(aperture)] /
+                        cores_merge['cont_flux{0}arcsec'.format(aperture)]) > 0.1
+
+hot = (cores_merge['BrightestFittedApMeanBrightnessWithcont'] > 50)
+cold = (cores_merge['BrightestFittedApMeanBrightnessWithcont'] < 20)
+
+# "concentration parameter" is the ratio of the smallest 1-fwhm aperture to the
+# annulus around it, divided by 3 because the area of that annulus is 3x the
+# area of the inner aperture
+concentration_parameter = (cores_merge['cont_flux0p2arcsec'] /
+                           ((cores_merge['cont_flux0p4arcsec'] -
+                             cores_merge['cont_flux0p2arcsec'])/3.))
+# basing the "threshold" on ALMAmm4 (concentrated, compact) vs ALMAmm6 (no
+# central source at all)
+compact = concentration_parameter > 2
+
+# approximate beam FHWM
+beam_fwhm = 0.2/(8*np.log(2))**0.5
+# apparently the integral of a 2D gaussian is approximately
+# int_-x^+x e^(-x^2/ (2*sigma**2)) = 2 pi sigma^2 * erf(x * pi / 2.)**2
+# or, in terms of FWHM,
+# int_-x^+x e^(-x^2/ (2*fwhm**2/2.35**2)) = 2 pi sigma^2 * erf(x * pi / 2.)**2
+# if x is 0.2" and the fwhm is 0.2", x = 2.35 sigma
+gaussian_0p2 = scipy.special.erf(0.2/beam_fwhm * (2./np.pi))**2
+gaussian_0p4 = scipy.special.erf(0.4/beam_fwhm * (2./np.pi))**2
+gaussian_0p6 = scipy.special.erf(0.6/beam_fwhm * (2./np.pi))**2
+
+print("Concentration of an unresolved source: {0}"
+      .format(gaussian_0p2/(gaussian_0p4-gaussian_0p2)))
+
+cores_merge.add_column(Column(data=compact.astype('int8'),
+                              name='is_compact'))
+cores_merge.add_column(Column(data=hot.astype('int8'),
+                              name='is_hot'))
+cores_merge.add_column(Column(data=cold.astype('int8'),
+                              name='is_cold'))
+cores_merge.add_column(Column(data=freefreedominated.astype('int8'),
+                              name='is_freefree'))
+                              
+
+category = [('F' if ffd else 'f' if ffc else '_') +
+            ('H' if ht else 'C' if cld else '_') +
+            ('c' if comp else '_')
+            for ffd, ffc, ht, cld, comp in zip(freefreedominated,
+                                               freefreecontaminated, hot, cold,
+                                               compact)]
+
+cores_merge.add_column(Column(data=category, name='Categories'))
+
+classification = ['HII' if ffd else 
+                  'DustyHII' if ffc else
+                  'StarlessCore' if (cld and comp) else
+                  'HotCore' if (ht and comp) else
+                  'ExtendedHotCore' if ht else
+                  'ExtendedColdCore' if cld else
+                  'UncertainCompact' if comp else
+                  'UncertainExtended'
+                  for ffd, ffc, ht, cld, comp in zip(freefreedominated,
+                                                     freefreecontaminated, hot, cold,
+                                                     compact)]
+                  
+cores_merge.add_column(Column(data=classification, name='Classification'))
+
+for category in np.unique(classification):
+    print("{0}: {1}".format(category, np.count_nonzero(np.array(classification)
+                                                       == category)))
+
+
+cores_merge.write(paths.tpath('core_continuum_and_line.ipac'),
+                  format='ascii.ipac', overwrite=True)

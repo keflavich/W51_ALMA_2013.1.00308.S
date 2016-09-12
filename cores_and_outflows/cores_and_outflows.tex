@@ -323,6 +323,11 @@ density, not directly of the mass, and so a direct comparison may not be
 appropriate.  We revisit this question after assessing the dust temperature in
 Section \ref{sec:temperature}.
 
+
+%\subsection{The source flux density distribution \& the core mass function}
+%\todo{maybe}
+
+
 %Not used any more: the fitting approach is better, it just took longer to
 %implement
 % \subsection{Spectral Lines \& Velocities}
@@ -466,6 +471,67 @@ M(20\textrm{K})$
 %%appropriately extracted from the high-resolution spectral data cube.
 %}
 %{fig:peaktb}{1}{10cm}
+
+
+\subsection{The nature of the continuum sources}
+Millimeter continuum sources in star-forming regions are usually assumed to be
+either protostars or starless cores.  However, in this high-mass star-forming
+region, we have to consider both those possibilities and potential free-free
+sources or high-luminosity main-sequence stars embedded in dust.
+
+We fit each of up to $\sim50$ lines (see Table ...) with Gaussian profiles to
+attempt to determine the relative line strengths toward each source.  Most
+sources were detected in at least $\sim5-10$ lines, though some of these are
+associated with interstellar rather than circumstellar material, i.e.,
+\formaldehyde, CO, $^{13}$CS.  For sources with detections in non-interstellar
+lines, we used the peak brightness temperature of the line as an estimated lower
+limit on the core temperature.
+
+In the continuum, we measured a `concentration parameter', which is the ratio
+of the flux density in a 0.2\arcsec aperture to that in a 0.2\arcsec-0.4\arcsec
+annulus divided by three to account for the annulus' larger area.  A uniform
+source with $r>0.4\arcsec$ source would have a concentration $C=1$ by this
+definition, while an unresolved point source would have a Gaussian profile
+resulting in $C=14$.  Only one source approaches this extreme, the HII region
+e5, while the rest have $C\leq7$.  We set the threshold for a `concentrated'
+source to be $C>2$, which is arbitrary, but does a reasonable job of
+distinguishing the sources with a clear central concentration from those that
+have none.
+
+Main sequence OB stars and their illuminated ionized nebulae are in principle
+easily identified by their free-free emission.  Starless cores, protostellar
+cores, and their variants are more difficult to identify, so we used a combination
+of temperature and concentration parameter to classify them.
+
+We classified each of the 75 hand-selected sources on the following parameters:
+\begin{enumerate}
+    \item Free-free dominated sources ($S_{15 GHz} > 0.5 S_{226 GHz}$) are \hii
+        regions
+    \item Free-free contaminated sources ($S_{15 GHz} > 0.1 S_{226 GHz}$) are
+        likely to be dust-dominated but with \hii region contamination; these
+        are either dusty sources superposed on or embedded in a large \hii
+        region or they are compact, dusty \hii regions
+    \item Starless core candidates were identified as those with cold peak
+        brightness temperatures $T_B < 20$ K and with a high concentration
+        parameter ($C>2$)
+    \item Hot core candidates are those with peak $T_B>50$ K and $C>2$
+    \item Extended cold core and hot core candidates are those with $T_B<20$ 
+        and $T_B>50$ K and $C<2$
+    \item The remaining sources with $S_{15 GHz} < 0.1 S_{226 GHz}$ and $50 >
+        T_B > 20$ K were classed as uncertain compact ($C>2$) or uncertain extended
+        $C<2$
+\end{enumerate}
+
+
+
+*demonstrate this* Generally, the obviously interstellar features are narrower.
+
+idea: concentration parameter, compare to power-law cores of varying indices.
+Protostar / core ratio on this basis?  Evolutionary indicator of subregions?
+
+
+
+
 
 \subsubsection{W51e2e mass and temperature estimates from continuum}
 \label{sec:W51e2e}
@@ -1112,27 +1178,13 @@ confused and asymmetric for simple interpretation.
 
 
 \section{Discussion}
-\subsection{The nature of the continuum sources}
-We have detected up to 113 distinct compact `sources' and characterized some of
+\subsection{The continuum sources}
+
+We have detected 113 distinct compact `sources' and characterized some of
 their basic properties assuming they consist purely of gas and dust, but this
 interpretation is incomplete.  At the least, all of the sources with peak
 surface brightnesses $T_{B,max} > 30$ K are likely to contain central heating
 sources, i.e., stars or protostars.
-
-We fit each of up to $\sim50$ lines (see Table ...) with Gaussian profiles to
-attempt to determine the line width of each source.  Most sources were detected
-in at least $\sim5-10$ lines, though some of these are associated with
-interstellar rather than circumstellar material, i.e., \formaldehyde, CO, $^{13}$CS,
-HC$_3$N.  In all cases where unambiguous Gaussian fits were acquired, the line
-widths are not consistent between different tracers.  
-
-*demonstrate this* Generally, the obviously interstellar features are narrower.
-
-idea: concentration parameter, compare to power-law cores of varying indices.
-Protostar / core ratio on this basis?  Evolutionary indicator of subregions?
-
-%\subsection{The source flux density distribution \& the core mass function}
-%\todo{maybe}
 
 \subsection{Limits on accretion onto HII regions}
 \citet{Peters2010a} and \citet{Klaassen2012a} proposed that ultra- and

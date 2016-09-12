@@ -7,6 +7,7 @@ from astropy import units as u
 from astropy import coordinates
 import powerlaw
 import pylab as pl
+import scipy
 from matplotlib.patches import Circle
 
 # can take time:
@@ -166,11 +167,11 @@ apertures = ('0p2', '0p4', '0p6', '0p8', '1p0', '1p5')
 for ii,aperture in enumerate(apertures):
     flux = (dendro_merge['cont_flux{0}arcsec'.format(aperture)] -
             dendro_merge['KUbandcont_flux{0}arcsec'.format(aperture)])
-    ff = (dendro_merge['KUbandcont_flux{0}arcsec'.format(aperture)] /
+    freefreedominated = (dendro_merge['KUbandcont_flux{0}arcsec'.format(aperture)] /
           dendro_merge['cont_flux{0}arcsec'.format(aperture)]) > 0.5
 
 
-    fit = powerlaw.Fit(flux[~ff])
+    fit = powerlaw.Fit(flux[~freefreedominated])
     print("Powerlaw fit for apertures {0}: {1}+/-{4}     xmin: {2}"
           "    n: {3}".format(aperture, fit.power_law.alpha,
                               fit.power_law.xmin, fit.power_law.n,
@@ -185,7 +186,7 @@ for ii,aperture in enumerate(apertures):
 
     ax = pl.subplot(7,1,ii+1)
     ax.set_ylabel("${0}''$".format(aperture.replace("p",".")))
-    H,L,P = ax.hist(flux[~ff], bins=bins,
+    H,L,P = ax.hist(flux[~freefreedominated], bins=bins,
                     #facecolor='none',
                     #alpha=0.5,
                     histtype='step',
@@ -359,6 +360,35 @@ ax4.set_xlim([0, 6])
 pl.legend(loc='best', fontsize=14)
 fig3.savefig(paths.fpath('coreplots/dendro_peakTB_vs_selfconsistentcontinuum.png'))
 
+
+fig6 = pl.figure(6)
+fig6.clf()
+
+flux02 = (dendro_merge['cont_flux0p2arcsec'] -
+          dendro_merge['KUbandcont_flux0p2arcsec'])
+flux04 = (dendro_merge['cont_flux0p4arcsec'] -
+          dendro_merge['KUbandcont_flux0p4arcsec'])
+flux06 = (dendro_merge['cont_flux0p6arcsec'] -
+          dendro_merge['KUbandcont_flux0p6arcsec'])
+
+beam_fwhm = 0.2/(8*np.log(2))**0.5
+# apparently the integral of a 2D gaussian is approximately
+# int_-x^+x e^(-x^2/ (2*sigma**2)) = 2 pi sigma^2 * erf(x * pi / 2.)**2
+# or, in terms of FWHM,
+# int_-x^+x e^(-x^2/ (2*fwhm**2/2.35**2)) = 2 pi sigma^2 * erf(x * pi / 2.)**2
+# if x is 0.2" and the fwhm is 0.2", x = 2.35 sigma
+gaussian_0p2 = scipy.special.erf(0.2/beam_fwhm * (2./np.pi))**2
+gaussian_0p4 = scipy.special.erf(0.4/beam_fwhm * (2./np.pi))**2
+gaussian_0p6 = scipy.special.erf(0.6/beam_fwhm * (2./np.pi))**2
+
+pl.plot(flux02/flux04, flux04/flux06, '.')
+pl.vlines(gaussian_0p2/gaussian_0p4, 0, 1, color='k', linestyle='--')
+pl.hlines(gaussian_0p4/gaussian_0p6, 0, 1, color='k', linestyle='--')
+#pl.xlabel("0.2\" aperture flux")
+pl.xlabel("0.2\" over 0.4\" concentration parameter")
+pl.ylabel("0.4\" over 0.6\" concentration parameter")
+pl.axis((0,1.1,0,1.1))
+#pl.ylim(0,1.5)
 
 
 fig4 = pl.figure(4)

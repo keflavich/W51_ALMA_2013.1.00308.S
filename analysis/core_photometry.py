@@ -41,7 +41,7 @@ units = {'peak':u.Jy/u.beam,
          'Dec': u.deg,
         }
 
-for reg in regions:
+for reg in ProgressBar(regions):
     if 'text' not in reg.attr[1]:
         continue
     if reg.name == 'point':
@@ -65,6 +65,7 @@ for reg in regions:
     results[name]['peak_col'] = masscalc.col_conversion_factor(beamomega=beam.sr.value)*results[name]['peak']
 
 
+    ppbeam_dict = {}
     for image, imname in ((contfile,''), (radio_image,'KUband')):
         data = image[0].data.squeeze()
         mywcs = wcs.WCS(image[0].header).celestial
@@ -73,6 +74,10 @@ for reg in regions:
         pixel_scale = np.abs(mywcs.pixel_scale_matrix.diagonal().prod())**0.5 * u.deg
         pixel_scale_as = pixel_scale.to(u.arcsec).value
         ppbeam = (beam.sr/(pixel_scale**2)).decompose().value
+        if imname == '':
+            ppbeam_dict['mm'] = ppbeam
+        else:
+            ppbeam_dict[imname] = ppbeam
 
         keys = ['{1}cont_flux{0}arcsec'.format(rr.value, imname) for rr in radii]
         for k in keys:
@@ -126,7 +131,8 @@ tbl = Table([Column(data=columns[k],
                     name=k)
              for k in ['name', 'RA', 'Dec', 'peak', 'sum', 'npix', 'beam_area',
                        'peak_mass', 'peak_col']+keys])
-tbl.meta = {'keywords': {'ppbeam': {'value': ppbeam},
+tbl.meta = {'keywords': {'ppbeam_mm': {'value': ppbeam_dict['mm']},
+                         'ppbeam_cm': {'value': ppbeam_dict['KUband']},
                          'beam_area_sr': {'value': beam.sr.value},
                          'pixel_scale_as': {'value': pixel_scale_as},
                          'mass_conversion_factor': {'value':
@@ -137,4 +143,5 @@ tbl.meta = {'keywords': {'ppbeam': {'value': ppbeam},
            }
 
 tbl.sort('peak_mass')
-tbl.write(paths.tpath("continuum_photometry.ipac"), format='ascii.ipac')
+tbl.write(paths.tpath("continuum_photometry.ipac"), format='ascii.ipac',
+          overwrite=True)
