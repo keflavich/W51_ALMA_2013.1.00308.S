@@ -26,7 +26,9 @@ def plot_whole_spectrum(spectra, line_id=line_ids, velocity=55*u.km/u.s,
 
         ax = fig.add_subplot(7,1,1)
         spectra[0].xarr.convert_to_unit(u.GHz)
+        spectra[0].xarr.convert_to_unit(u.GHz)
         spectra[0].plotter(axis=ax)
+        assert spectra[0].plotter.xlabel == 'Frequency (GHz)'
         spectra[0].plotter.line_ids(list(line_id.keys()),
                                     list(line_id.values()),
                                     velocity_offset=velocity,
@@ -92,7 +94,7 @@ if __name__ == "__main__":
     for row in myvtbl:
 
         speclist = [pyspeckit.Spectrum(fn) for fn in
-                    glob.glob(paths.spath("{0}_spw*fits".format(row['source'])))]
+                    glob.glob(paths.spath("{0}_spw*_peak.fits".format(row['source'])))]
 
         for sp in speclist:
             beam = radio_beam.Beam.from_fits_header(sp.header)
@@ -108,10 +110,11 @@ if __name__ == "__main__":
 
 
 
+    # default: show only line-to-image-list lines
     for row in myvtbl:
 
         speclist = [pyspeckit.Spectrum(fn) for fn in
-                    glob.glob(paths.spath("{0}_spw*fits".format(row['source'])))]
+                    glob.glob(paths.spath("{0}_spw*_peak.fits".format(row['source'])))]
 
         for sp in speclist:
             beam = radio_beam.Beam.from_fits_header(sp.header)
@@ -124,3 +127,48 @@ if __name__ == "__main__":
                             velocity=row['velocity']*u.km/u.s,
                            )
 
+
+    # Acetone lines (for identification purposes)
+    from astroquery.splatalogue import Splatalogue
+    acetone_lines = Splatalogue.query_lines(218*u.GHz, 235*u.GHz,
+                                            energy_max=800,
+                                            energy_type='eu_k',
+                                            chemical_name='Acetone')
+
+    from generic_lte_molecule_model import LTEModel
+    acetonemodel = LTEModel(chemical_name='Acetone')
+
+    for row in myvtbl:
+
+        speclist = [pyspeckit.Spectrum(fn) for fn in
+                    glob.glob(paths.spath("{0}_spw*_peak.fits".format(row['source'])))]
+
+        for sp in speclist:
+            beam = radio_beam.Beam.from_fits_header(sp.header)
+            sp.data *= beam.jtok(sp.xarr)
+            sp.unit='K'
+
+        acetone_line_ids = {"{0}_{1}".format(row['Species'], row['Resolved QNs']):
+                            (row['Freq-GHz'] if row['Freq-GHz']
+                             else row['Meas Freq-GHz'])*u.GHz
+                            for row in acetone_lines}
+
+        figname='fullspectra/Acetone_{0}.png'.format(row['source'])
+        plot_whole_spectrum(speclist,
+                            title=row['source'],
+                            line_id=acetone_line_ids,
+                            figname=figname,
+                            velocity=row['velocity']*u.km/u.s,
+                           )
+
+        spectra = pyspeckit.Spectra(speclist)
+        spectra.xarr.convert_to_unit(u.GHz)
+        mod = acetonemodel(spectra.xarr,  58*u.km/u.s, 5*u.km/u.s, 500*u.K,
+                           1e16*u.cm**-2)
+
+        for ii in range(1,8):
+            pl.subplot(7,1,ii)
+            pl.plot(spectra.xarr, mod, color='r', linewidth=1, alpha=0.5)
+
+        pl.savefig(paths.fpath(figname[:-4]+"_model.png"), dpi=300,
+                   bbox_inches='tight', bbox_extra_artists=[])
