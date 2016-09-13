@@ -13,6 +13,7 @@ except (SystemError,ImportError):
 class LTEModel(object):
     def __init__(self, chemical_name, energy_max=2500,
                  nu_min=216*u.GHz, nu_max=235*u.GHz):
+        Splatalogue.LINES_LIMIT=10000
         slaim = Splatalogue.query_lines(nu_min, nu_max, chemical_name=chemical_name,
                                         energy_max=energy_max, energy_type='eu_k',
                                         line_lists=['SLAIM'],

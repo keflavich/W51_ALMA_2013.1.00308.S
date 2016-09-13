@@ -1,6 +1,7 @@
 """
 Create a one-page, printable version of a whole spectrum, ideally with line IDs
 """
+import numpy as np
 import pyspeckit
 import line_to_image_list
 from astropy import units as u
@@ -128,8 +129,57 @@ if __name__ == "__main__":
                            )
 
 
+    # Methanol lines (for identification purposes - similar to ch3oh spectral
+    # fit overlays...)
+    Splatalogue.LINES_LIMIT=5000
+    methanol_lines = Splatalogue.query_lines(218*u.GHz, 235*u.GHz,
+                                            energy_max=3000,
+                                            energy_type='eu_k',
+                                            chemical_name='Methanol')
+
+    from generic_lte_molecule_model import LTEModel
+    methanolmodel = LTEModel(chemical_name='Methanol')
+
+    for row in myvtbl:
+
+        speclist = [pyspeckit.Spectrum(fn) for fn in
+                    glob.glob(paths.spath("{0}_spw*_peak.fits".format(row['source'])))]
+
+        for sp in speclist:
+            beam = radio_beam.Beam.from_fits_header(sp.header)
+            sp.data *= beam.jtok(sp.xarr)
+            sp.unit='K'
+
+        methanol_line_ids = {"{0}_{1}".format(row['Species'], row['Resolved QNs']):
+                            (row['Freq-GHz'] if row['Freq-GHz']
+                             else row['Meas Freq-GHz'])*u.GHz
+                            for row in methanol_lines}
+
+        figname='fullspectra/methanol_{0}.png'.format(row['source'])
+        plot_whole_spectrum(speclist,
+                            title=row['source'],
+                            line_id=methanol_line_ids,
+                            figname=figname,
+                            velocity=row['velocity']*u.km/u.s,
+                           )
+
+        spectra = pyspeckit.Spectra(speclist)
+        spectra.xarr.convert_to_unit(u.GHz)
+        mod = methanolmodel.lte_model(spectra.xarr,  row['velocity']*u.km/u.s,
+                                      5*u.km/u.s, 500*u.K, 1e16*u.cm**-2)
+
+        median = np.nanmedian(spectra.data)
+
+        for ii in range(1,8):
+            pl.subplot(7,1,ii)
+            pl.plot(spectra.xarr, mod+median, color='r', linewidth=1, alpha=0.5)
+
+        pl.savefig(paths.fpath(figname[:-4]+"_model.png"), dpi=300,
+                   bbox_inches='tight', bbox_extra_artists=[])
+
     # Acetone lines (for identification purposes)
     from astroquery.splatalogue import Splatalogue
+    Splatalogue.LINES_LIMIT=5000
     acetone_lines = Splatalogue.query_lines(218*u.GHz, 235*u.GHz,
                                             energy_max=800,
                                             energy_type='eu_k',
@@ -163,12 +213,15 @@ if __name__ == "__main__":
 
         spectra = pyspeckit.Spectra(speclist)
         spectra.xarr.convert_to_unit(u.GHz)
-        mod = acetonemodel(spectra.xarr,  58*u.km/u.s, 5*u.km/u.s, 500*u.K,
-                           1e16*u.cm**-2)
+        mod = acetonemodel.lte_model(spectra.xarr,  row['velocity']*u.km/u.s, 5*u.km/u.s,
+                                     500*u.K, 1e16*u.cm**-2)
+
+        median = np.nanmedian(spectra.data)
 
         for ii in range(1,8):
             pl.subplot(7,1,ii)
-            pl.plot(spectra.xarr, mod, color='r', linewidth=1, alpha=0.5)
+            pl.plot(spectra.xarr, mod+median, color='r', linewidth=1, alpha=0.5)
 
         pl.savefig(paths.fpath(figname[:-4]+"_model.png"), dpi=300,
                    bbox_inches='tight', bbox_extra_artists=[])
+

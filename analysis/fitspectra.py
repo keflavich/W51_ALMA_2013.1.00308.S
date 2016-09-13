@@ -21,6 +21,19 @@ line_table.sort('Species')
 
 regions = (pyregion.open(paths.rpath("cores.reg")))
 
+# check that it will finish before running everything
+for region in regions:
+    name = region.attr[1]['text']
+    if region.name == 'point':
+        # when we're using peak pixels from the photometry catalog, the 'point'
+        # objects can be skipped
+        continue
+
+    spectral_files = glob.glob(paths.spath('{0}_spw[0123]_peak.fits'.format(name)))
+    #background_spectral_files = glob.glob(paths.spath('{0}_spw[0123]_background_mean.fits'.format(name)))
+    assert len(spectral_files) == 4#len(background_spectral_files) == 4
+    vcen = velo_guesses.guesses[name]
+
 for region in regions:
     name = region.attr[1]['text']
     if region.name == 'point':
