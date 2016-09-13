@@ -368,16 +368,16 @@ fig4 = pl.figure(4)
 fig4.clf()
 ax=fig4.gca()
 
-isOK = np.isfinite(cores_merge['BrightestFittedApMeanBrightness'])
+isOK = np.isfinite(cores_merge['BrightestFittedPeakPixBrightness'])
 histdata = []
 
 # need to add back in continuum because we're concerned with the *absolute*
 # brightness.  MOVED TO merge_spectral...py
 #jtok_eq = u.brightness_temperature(cores_merge['beam_area'], 225*u.GHz)
 #cont_brightness = (u.beam * cores_merge['sum']/cores_merge['npix']).to(u.K, jtok_eq)
-#contincluded_line_brightness = cores_merge['BrightestFittedApMeanBrightness'] + cont_brightness
+#contincluded_line_brightness = cores_merge['BrightestFittedPeakPixBrightness'] + cont_brightness
 cont_brightness = cores_merge['MeanContinuumBrightness']
-contincluded_line_brightness = cores_merge['BrightestFittedApMeanBrightnessWithcont']
+contincluded_line_brightness = cores_merge['BrightestFittedPeakPixBrightnessWithcont']
 
 for linename in np.unique(cores_merge['BrightestFittedLine']):
     if linename == '-':
