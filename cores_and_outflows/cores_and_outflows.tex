@@ -3,78 +3,6 @@
 \begin{document}
 \title{Cores and Outflows and Chemistry in the W51 Protoclusters}
 
-This is not yet a paper.  It is a collection of paper ideas and some 
-preliminary analysis that will make it in to one or more papers.
-
-Data summary: the 7m and 12m data have all been delivered, but the UV coverage
-is non-optimal.  Importantly and unfortunately, no single-dish (total power)
-data were ever acquired.  APEX data with SHFI have been acquired but not
-reduced.  The original proposed project connecting cloud scales to core scales
-will not be possible until the single dish data are completed.
-
-
-Subprojects:
-\begin{enumerate}
-    \item Core identification and mass estimation and maybe even
-        core mass function constraints.  Lead: Ginsburg.  This document
-        is a quasi-draft of that work.
-    \item ``A multi-phase outflow from a high-mass protostar"
-        The Lacy jet is detected in both CO and RRLs.  This tells us something
-        about its proximity to the HII region IRS2, but what else can we learn
-        from it?  Lead: maybe Ginsburg.  Maybe this gets incorporated
-        into other papers.
-    \item Comparitive chemistry of the W51 cores.  Lead: Victor Rivilla \&
-        Maite Beltr{\'a}n, possibly with participation from Alvaro
-        Sanchez-Monge.
-        This project will involve identifying all of the lines in the W51 cores
-        and examining how the chemistry relates to physical parameters.
-        We will use LTE modeling tools (XCLASS, MADCUBA) for many species to
-        identify lines and determine abundances and temperatures
-\todo{Discuss with Victor \& Alvaro: Can the moderate-mass cores be
-chemically distinguished from the high-mass?  Do we know their masses well enough
-now to do this?}
-    \item \formaldehyde and CO turbulent cloud modeling / simulation comparison
-        (Loughnane).  A difficulty here is that combination of the 7m and 12m
-        data has not worked out very well yet, either for the lines or the
-        continuum, and that may render cloud-scale analysis quite difficult.
-    \item A study of the CO outflows.  Lead: Maybe Luke Maud?  Ciriaco Goddi
-        will be involved.  The $^{12}$CO and SO outflows are spectacular and
-        plentiful.  It is not obvious whether they can or should be
-        incorporated into this paper; at least, I am not presently prepared to
-        put in the effort to quantify the outflows properly.  Ciriaco is PI of
-        a long-baseline program that has resolved the e2/e8 and North cores
-        with $5\times$ better resolution than this program, and that data set
-        may therefore be better suited to a core-outflow association work.
-    \item Relative kinematics of ionized and molecular gas.  Lead: Galv{\'a}n-Madrid.
-        Kinematics similar to \citet{Keto2008a} using RRLs+molecular lines to determine
-        outflow vs infall
-        
-\end{enumerate}
-
-
-\section{Overview}
-\todo{This section is not part of any proposed paper text.}
-The work below will be incorporated into one or more papers as it proves useful.
-The figures \& text represent an initial exploration of the data.  There are some important notes
-that are not included in the text:
-\begin{itemize}
-    \item The data reduction has some substantial problems because of strange UV coverage
-        and stranger behavior of clean (for which I have opened many tickets).  It appears
-        impossible to get the noise below $\sim1 $ mJy around the bright sources, and detections
-        are unreliable below $\sim10$ mJy in these area (which I've tried to account for when doing
-        source extraction)
-    \item The 7m data does not combine well with the 12m data.  It seems to
-        cause major large-angular-scale artifacts.  I think this is a weighting
-        issue in which the 7m data have lower noise than the 12m data and are
-        therefore too heavily weighted, causing large "halos" where the large
-        angular scale dominates over the small, providing spuriously strong
-        detections.  In principle, this can be solved by downweighting the 7m data,
-        but it turns out CASA does not have that implemented (\texttt{innertaper}
-        is the relevant keyword)
-
-\end{itemize}
-
-
 \section{Paper 1 to-do list}
 \begin{enumerate}
     \item Make a photometry table - one from the hand-extracted, one from
@@ -88,6 +16,8 @@ that are not included in the text:
     \item move Section \ref{sec:cheminterp} to discussion
 
 \end{enumerate}
+
+\section{Introduction}
 
 \section{Observations}
 As part of ALMA Cycle 2 program 2013.1.00308.S, we observed a
