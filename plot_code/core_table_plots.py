@@ -247,10 +247,14 @@ fig5 = pl.figure(5)
 fig5.clf()
 #ax = fig5.gca()
 
+starless = cores_merge['Classification'] == 'StarlessCore'
+
 bins = np.logspace(-3,1.05, 20)
 
 ax = pl.subplot(7,1,1)
 
+H,L,P = ax.hist(core_phot_tbl['peak'][starless], bins=bins, facecolor='none',
+                histtype='stepfilled', hatch='/')
 H,L,P = ax.hist(core_phot_tbl['peak'], bins=bins, facecolor='none',
                 histtype='step')
 ax.set_xscale('log')
@@ -265,6 +269,19 @@ ax.set_xlabel("")
 max_yticks=3
 yloc = pl.MaxNLocator(max_yticks)
 ax.yaxis.set_major_locator(yloc)
+
+
+class_colors = {
+    'DustyHII': 'w',
+    'ExtendedColdCore': 'b',
+    'ExtendedHotCore': 'k',
+    #'HII': 'w',
+    'HotCore': 'g',
+    'StarlessCore': 'r',
+    'UncertainCompact': 'c',
+    'UncertainExtended': 'y',
+}
+
 
 apertures = ('0p2', '0p4', '0p6', '0p8', '1p0', '1p5')
 for ii,aperture in enumerate(apertures):
@@ -289,11 +306,32 @@ for ii,aperture in enumerate(apertures):
 
     ax = pl.subplot(7,1,ii+2)
     ax.set_ylabel("${0}''$".format(aperture.replace("p",".")))
+
+    #nice idea, but it looks awful
+    # histdata = [(cls, flux[cores_merge['Classification'] == cls])
+    #             for cls in class_colors]
+
+    # H,L,P = ax.hist([x[1] for x in histdata],
+    #                 label=[x[0] for x in histdata],
+    #                 color=[class_colors[x[0]] for x in histdata],
+    #                 stacked=True)
+
+    # do starless first b/c H.max() is used to set ylim
+    H,L,P = ax.hist(flux[starless & ~ff], bins=bins,
+                    facecolor='none',
+                    #alpha=0.5,
+                    histtype='stepfilled',
+                    hatch='/',
+                    label=aperture)
+
+
     H,L,P = ax.hist(flux[~ff], bins=bins,
                     #facecolor='none',
                     #alpha=0.5,
                     histtype='step',
                     label=aperture)
+
+
     if ii < 5:
         ax.set_xticklabels([])
         ax.get_xaxis().set_visible(False)
@@ -388,3 +426,94 @@ ax7.set_xlim((4,2000))
 ax7.set_xlabel("Mass at 20K [M$_\\odot$]")
 ax7.set_ylabel("Mass at peak $T_B$ [M$_\\odot$]")
 fig7.savefig(paths.fpath('coreplots/aperture_mass20K_vs_massTB.png'))
+
+
+
+fig8 = pl.figure(8)
+fig8.clf()
+
+bins = np.logspace(-0.5,3.5, 30)
+
+ax = pl.subplot(7,1,1)
+
+H,L,P = ax.hist(cores_merge['T_corrected_peakmass'][starless], bins=bins,
+                facecolor='none', histtype='stepfilled', hatch='/')
+H,L,P = ax.hist(cores_merge['T_corrected_peakmass'], bins=bins,
+                facecolor='none', histtype='step')
+ax.set_xscale('log')
+ax.set_ylim(0, H.max()+1)
+ax.set_xlim(0.3, 3000)
+ax.set_ylabel("Peak")
+
+ax.xaxis.set_ticklabels([])
+ax.set_xlabel("Mass at line-peak $T_B$ [$M_\\odot$]")
+ax.set_xlabel("")
+
+max_yticks=3
+yloc = pl.MaxNLocator(max_yticks)
+ax.yaxis.set_major_locator(yloc)
+
+
+apertures = ('0p2', '0p4', '0p6', '0p8', '1p0', '1p5')
+for ii,aperture in enumerate(apertures):
+    mass = (cores_merge['T_corrected_{0}aperturemass'.format(aperture)])
+    ff = (cores_merge['KUbandcont_flux{0}arcsec'.format(aperture)] /
+          cores_merge['cont_flux{0}arcsec'.format(aperture)]) > 0.5
+
+
+    fit = powerlaw.Fit(flux[~ff])
+    print("Powerlaw fit for apertures {0}: {1}+/-{4}     xmin: {2}"
+          "    n: {3}".format(aperture, fit.power_law.alpha,
+                              fit.power_law.xmin, fit.power_law.n,
+                              fit.power_law.sigma,
+                             ))
+    powerlaw_parameters[aperture] = {'alpha':fit.power_law.alpha,
+                                     'e_alpha':fit.power_law.sigma,
+                                     'xmin':fit.power_law.xmin,
+                                     'number':fit.power_law.n,
+                                    }
+
+    fit = powerlaw.Fit(flux[starless & ~ff])
+    print("Powerlaw fit for starless apertures {0}: {1}+/-{4}     xmin: {2}"
+          "    n: {3}".format(aperture, fit.power_law.alpha,
+                              fit.power_law.xmin, fit.power_law.n,
+                              fit.power_law.sigma,
+                             ))
+    powerlaw_parameters['starless'+aperture] = {'alpha':fit.power_law.alpha,
+                                                'e_alpha':fit.power_law.sigma,
+                                                'xmin':fit.power_law.xmin,
+                                                'number':fit.power_law.n, }
+
+
+    ax = pl.subplot(7,1,ii+2)
+    ax.set_ylabel("${0}''$".format(aperture.replace("p",".")))
+
+    # do starless first b/c H.max() is used to set ylim
+    H,L,P = ax.hist(mass[starless & ~ff], bins=bins,
+                    facecolor='none',
+                    #alpha=0.5,
+                    histtype='stepfilled',
+                    hatch='/',
+                    label=aperture)
+
+
+    H,L,P = ax.hist(mass[~ff], bins=bins,
+                    #facecolor='none',
+                    #alpha=0.5,
+                    histtype='step',
+                    label=aperture)
+
+
+    if ii < 5:
+        ax.set_xticklabels([])
+        ax.get_xaxis().set_visible(False)
+
+    yloc = pl.MaxNLocator(max_yticks)
+    ax.yaxis.set_major_locator(yloc)
+
+    ax.set_xscale('log')
+    ax.set_xlim(0.3, 3000)
+    ax.set_ylim(0, H.max()+1)
+ax.set_xlabel("Mass at peak $T_B$ [$M_\odot$]")
+pl.subplots_adjust(hspace=0)
+pl.savefig(paths.fpath("coreplots/core_mass_histogram_apertureradius.png"))

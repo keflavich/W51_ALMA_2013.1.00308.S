@@ -217,12 +217,16 @@ included.  The resulting catalog includes 113 sources.
 
 The `by-eye' core extraction approach, in which we placed ds9 regions on all
 sources that look `real', produced a more reliable but less complete (and less
-quantifiable) catalog.  This catalog is more useful in the regions around the
-bright sources e2 and north, since these regions are affected by substantial
-uncleaned PSF sidelobe artifacts.  In particular, the dendrogram catalog includes
-a number of sources around e2/e8 that, by eye, appear to be parts of continuous
-extended emission rather than local peaks; ``streaking'' artifacts in the
-reduced data result in their identification despite our threshold criteria.
+quantifiable) catalog containing 75 sources.  This catalog is more useful in
+the regions around the bright sources e2 and north, since these regions are
+affected by substantial uncleaned PSF sidelobe artifacts.  In particular, the
+dendrogram catalog includes a number of sources around e2/e8 that, by eye,
+appear to be parts of continuous extended emission rather than local peaks;
+``streaking'' artifacts in the reduced data result in their identification
+despite our threshold criteria.  The dendrogram extraction also identified
+sources within the IRS 2 \hii region that are not dust sources.  Dendrogram
+extraction missed a few clear sources in the low-noise regions away from
+W51 Main and IRS 2 because the identification criteria were too conservative.
 
 When extracting properties of the `by-eye' sources, we used variable sized
 circular apertures, where the apertures were selected to include all of the
@@ -264,7 +268,7 @@ The dashed circle shows a hypothetical ring of star formation.
 
 \subsection{Photometry}
 \label{sec:photometry}
-We created a catalog of the dendrogram sources including their peak and mean
+We created a catalog of the sources including their peak and mean
 flux density, their centroid, and their geometric properties.  For each source,
 we further extracted aperture photometry around the centroid in 6 apertures:
 0.2, 0.4, 0.6, 0.8, 1.0, and 1.5\arcsec.  We performed the same aperture
@@ -278,11 +282,6 @@ cataloged cores is $\sim0.3\arcsec$, which implies that the larger apertures
 double-count some pixels.  The smallest separation is
 0.26\arcsec, so the 0.2\arcsec aperture contains only unique pixels.
 
-We also extracted photometry for the hand-selected sources, extracting the flux
-density measurement from the specified aperture radius.  As with the dendrogram
-sources, we also extracted photometry from varying-sized apertures centered on
-the same source position to allow for more systematic direct comparison (e.g.,
-concentration parameters).  These measurements are reported in Table {...}.
 
 Except where noted below, the hand-selected sources are used for further
 analysis as they are more reliable.  However, to encourage reproducible results
@@ -301,7 +300,8 @@ in the y-axis label.  Free-free-dominated sources are excluded.}
 on the hand-extracted core positions.  The aperture size is listed 
 in the y-axis label.  For the top plot, labeled `Peak', this is the peak
 flux density in Jy/beam.  For the rest, it is the integrated flux density
-in the specified aperture.}
+in the specified aperture.  The unfilled data show all sources and the hashed
+data are for starless core candidates (Section \ref{sec:contsourcenature}).}
 {fig:fluxhistograms}
 {1}{16cm}
 
@@ -474,6 +474,7 @@ M(20\textrm{K})$
 
 
 \subsection{The nature of the continuum sources}
+\label{sec:contsourcenature}
 Millimeter continuum sources in star-forming regions are usually assumed to be
 either protostars or starless cores.  However, in this high-mass star-forming
 region, we have to consider both those possibilities and potential free-free
@@ -522,12 +523,16 @@ We classified each of the 75 hand-selected sources on the following parameters:
         $C<2$
 \end{enumerate}
 
+The classification is a broad guideline for further analysis.  It is not fully
+reliable.  For example, ALMAmm14 is classified as a `starless core candidate'
+even though it exhibits classic hot-core chemical signatures
 
 
-*demonstrate this* Generally, the obviously interstellar features are narrower.
 
-idea: concentration parameter, compare to power-law cores of varying indices.
-Protostar / core ratio on this basis?  Evolutionary indicator of subregions?
+%*demonstrate this* Generally, the obviously interstellar features are narrower.
+
+%idea: concentration parameter, compare to power-law cores of varying indices.
+%Protostar / core ratio on this basis?  Evolutionary indicator of subregions?
 
 
 

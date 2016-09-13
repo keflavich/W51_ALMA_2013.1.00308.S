@@ -39,6 +39,8 @@ units = {'peak':u.Jy/u.beam,
          'peak_col':u.cm**-2,
          'RA': u.deg,
          'Dec': u.deg,
+         'PeakRA': u.deg,
+         'PeakDec': u.deg,
         }
 
 for reg in ProgressBar(regions):
@@ -88,6 +90,11 @@ for reg in ProgressBar(regions):
         xc,yc = reg.coord_list[:2]
         position = coordinates.SkyCoord(xc, yc, frame='fk5', unit=(u.deg,u.deg))
         cutout = Cutout2D(data, position, size, mywcs, mode='partial')
+
+        yy,xx = np.indices(cutout.data.shape)
+        xcp, ycp = cutout.wcs.wcs_world2pix(position.ra.deg, position.dec.deg, 0)
+        rgrid = ((yy-ycp)**2+(xx-xcp)**2)**0.5
+
         for rr in radii:
             aperture = photutils.SkyCircularAperture(positions=position,
                                                      r=rr).to_pixel(cutout.wcs)
@@ -101,6 +108,19 @@ for reg in ProgressBar(regions):
             #flux_jy = (flux_jysr * (pixel_scale**2).to(u.sr).value)
             colname = '{1}cont_flux{0}arcsec'.format(rr.value, imname)
             results[name][colname].append(flux_jybeam/ppbeam)
+
+            # annoyingly, have to do this from scratch because photutils isn't
+            # granular enough
+            phot_mask = rgrid < (rr/pixel_scale).decompose()
+
+            #phot_cutout = photutils.aperture.get_cutouts(cutout.data, aperture)[0][1]
+            #assert phot_cutout.shape == cutouts.data.shape
+            brightest_pixel = np.unravel_index(np.argmax(cutout.data*phot_mask), cutout.data.shape)
+            brightest_position = cutout.wcs.wcs_pix2world(brightest_pixel[1],
+                                                          brightest_pixel[0],
+                                                          0)
+            results[name]['PeakRA'] = brightest_position[0]
+            results[name]['PeakDec'] = brightest_position[1]
 
 # invert the table to make it parseable by astropy...
 # (this shouldn't be necessary....)
@@ -129,7 +149,7 @@ keys = ['{1}cont_flux{0}arcsec'.format(rr.value, imname).replace(".",'p')
 
 tbl = Table([Column(data=columns[k],
                     name=k)
-             for k in ['name', 'RA', 'Dec', 'peak', 'sum', 'npix', 'beam_area',
+             for k in ['name', 'RA', 'Dec', 'PeakRA', 'PeakDec', 'peak', 'sum', 'npix', 'beam_area',
                        'peak_mass', 'peak_col']+keys])
 tbl.meta = {'keywords': {'ppbeam_mm': {'value': ppbeam_dict['mm']},
                          'ppbeam_cm': {'value': ppbeam_dict['KUband']},

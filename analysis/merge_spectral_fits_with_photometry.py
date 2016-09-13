@@ -12,6 +12,7 @@ import scipy.special
 spectral_line_fit_tbl = Table.read(paths.tpath('spectral_lines_and_fits.csv'))
 
 cores_merge = Table.read(paths.tpath('core_continuum_and_line.ipac'), format='ascii.ipac')
+ppbeam = cores_merge.meta['keywords']['ppbeam_mm']['value']
 
 molcld_exclude_names = ['13COv=0', 'C18O', 'H2CO', 'COv=0']
 molcld_exclude = np.array([any(nm in row['Species'] for nm in molcld_exclude_names)
@@ -57,11 +58,26 @@ cores_merge.add_column(Column(contincluded_line_brightness, 'BrightestFittedApMe
 
 temperature_corrected_aperturemass = Column([(masscalc.mass_conversion_factor(20).value
                                           if np.isnan(row['BrightestFittedApMeanBrightnessWithcont'])
+                                          or (row['BrightestFittedApMeanBrightnessWithcont'] < 20)
                                           else masscalc.mass_conversion_factor(row['BrightestFittedApMeanBrightnessWithcont']).value)
                                          * row['sum']/ppbeam for row in cores_merge],
                                         name='T_corrected_aperturemass',
                                         unit=u.M_sun)
 cores_merge.add_column(temperature_corrected_aperturemass)
+
+apertures = ('0p2', '0p4', '0p6', '0p8', '1p0', '1p5')
+for ap in apertures:
+    tcm = Column([(masscalc.mass_conversion_factor(20).value
+                   if np.isnan(row['BrightestFittedApMeanBrightnessWithcont'])
+                   or row['BrightestFittedApMeanBrightnessWithcont'] < 20 
+                   else
+                   masscalc.mass_conversion_factor(row['BrightestFittedApMeanBrightnessWithcont']).value)
+                  # already ppbeam corrected
+                  * row['cont_flux{0}arcsec'.format(ap)] for row in
+                  cores_merge],
+                 name='T_corrected_{0}aperturemass'.format(ap), unit=u.M_sun)
+    cores_merge.add_column(tcm)
+
 
 # classify each object based on some fixed criteria
 aperture = '0p2'
