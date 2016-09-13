@@ -115,7 +115,16 @@ for region in regions:
                 if (((sp_sl.specfit.parinfo['AMPLITUDE0'].value) >
                      (sp_sl.specfit.parinfo['AMPLITUDE0'].error*3)) and
                     (sp_sl.specfit.parinfo['WIDTH0'].value >
-                     (sp_sl.specfit.parinfo['WIDTH0'].error*3))):
+                     (sp_sl.specfit.parinfo['WIDTH0'].error*3)) and
+                    ((sp_sl.specfit.parinfo['AMPLITUDE0'].value) > -5
+                     and
+                     (sp_sl.specfit.parinfo['AMPLITUDE0'].value) < 5
+                    ) and
+                    ((sp_sl.specfit.parinfo['WIDTH0'].value) > 0
+                     and
+                     (sp_sl.specfit.parinfo['WIDTH0'].value) < 5
+                    )
+                   ):
 
                     if plotnum <= 49:
                         sp_sl.plotter(axis=pl.subplot(7,7,plotnum))
