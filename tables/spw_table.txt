@@ -1,0 +1,5 @@
+  SpwID  Name                           #Chans   Frame   Ch0(MHz)  ChanWid(kHz)  TotBW(kHz) CtrFreq(MHz) BBC Num  Corrs
+  0      ALMA_RB_06#BB_1#SW-01#FULL_RES   4096   TOPO  218619.301      -122.070    500000.0 218369.3624        1  XX  YY
+  1      ALMA_RB_06#BB_2#SW-01#FULL_RES   4080   TOPO  220355.073      -488.281   1992187.5 219359.2235        2  XX  YY
+  2      ALMA_RB_06#BB_3#SW-01#FULL_RES   4080   TOPO  230376.575       488.281   1992187.5 231372.4243        3  XX  YY
+  3      ALMA_RB_06#BB_4#SW-01#FULL_RES   4080   TOPO  232981.075       488.281   1992187.5 233976.9243        4  XX  YY
