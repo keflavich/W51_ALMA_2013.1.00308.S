@@ -1,5 +1,6 @@
 from astropy.table import Table, Column
 from astropy import units as u
+from latex_info import latexdict
 
 tbl = Table.read('spw_table.txt', format='ascii')
 
@@ -11,4 +12,17 @@ tbl.rename_column('ChanWid(kHz)', 'Channel Width')
 tbl['Channel Width'].unit = u.kHz
 
 tbl = tbl['SpwID', 'Minimum Frequency', 'Maximum Frequency', 'Channel Width']
-tbl.write('../cores_and_outflows/spwtable.tex', overwrite=True)
+
+latexdict['header_start'] = '\label{tab:spw}'
+latexdict['caption'] = 'Spectral Setup'
+#latexdict['tablefoot'] = ('\par\nJy-Kelvin gives the conversion factor from Jy '
+#                          'to Kelvin given the synthesized beam size and '
+#                          'observation frequency.')
+latexdict['col_align'] = 'l'*len(tbl.columns)
+#latexdict['tabletype'] = 'longtable'
+#latexdict['tabulartype'] = 'longtable'
+latexdict['units'] = {}
+
+tbl.write('../cores_and_outflows/spwtable.tex', latexdict=latexdict,
+          format='ascii.latex',
+          overwrite=True)

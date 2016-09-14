@@ -18,6 +18,7 @@
 \end{enumerate}
 
 \section{Introduction}
+We introduce...
 
 \section{Observations}
 As part of ALMA Cycle 2 program 2013.1.00308.S, we observed a
@@ -35,7 +36,7 @@ $\sim28$\arcsec.  The full UV coverage was from $\sim12$ to $\sim1500$ m
 this approximately shows the amount of data received at each baseline length.}
 {fig:uvcov}{1}{16cm}
 
-\todo{Add a spectral window table}
+\input{spwtable.tex}
 
 \subsection{Data Reduction}
 Data reduction was performed using CASA.  The QA2-produced data products were
@@ -56,9 +57,19 @@ attempted, but lead to instabilities.
 
 
 \subsubsection{Lines}
-We produced spectral image cubes of the lines listed in Table ....
+We produced spectral image cubes of the lines listed in Tables
+\ref{tab:linesspw0},
+\ref{tab:linesspw1},
+\ref{tab:linesspw2}, and
+\ref{tab:linesspw3}.
 
-\todo{Add a spectral line table}
+\input{linetable0.tex}
+
+\input{linetable1.tex}
+
+\input{linetable2.tex}
+
+\input{linetable3.tex}
 
 
 
@@ -1139,9 +1150,33 @@ will have all of their light reprocessed from UV/optical/NIR to the far-IR
 within a $<0.1$ pc sphere, providing a far-infrared background light capable of
 heating its surroundings.
 
-The different effects of ionizing vs thermal radiation can be seen directly in the
-three main massive star forming regions, e2, e8, and north.  
+The different effects of ionizing vs thermal radiation can be seen directly in
+the three main massive star forming regions, e2, e8, and north.  Figures
+\ref{fig:e2methanolhnco} and \ref{fig:northmethanolhnco} show both the
+highly-excited warm molecular gas in color and the free-free emission from
+ionized gas in contours.  As described in Section
+\ref{sec:nonionizingradiation}, the spatial differences indicate that the
+ionizing radiation sources - the exposed OB stars - have little effect on the
+star-forming collapsing and fragmenting gas.
 
+% subsubsection on the formation of the IMF?
+The low impact of photospheric radiation on collapsing gas suggests that
+second-generation star formation is relatively unaffected by its surroundings.
+Instead, the stars of the same generation - those currently embedded and
+accreting - have the dominant regulating effect on the gas.  The formation of
+the stellar initial mass function \emph{within clusters} is therefore
+predominantly self-regulated, with little external influence.
+
+% something about implications for star formation on galactic scales
+
+
+%\subsection{Question: Where does the radiation from the HII regions end up?}
+%The \hii regions show no signs of heating around them.  However, we know that
+%these must be $>10^4$ \lsun stars, and even the infrared radiation should be
+%rising with luminosity (or temperature).  While most of the energy might go
+%into ionizing the gas cloud, many of the photons must get reprocessed into the
+%infrared at some point.  If optical/NIR photons were escaping, we should be
+%able to see them unless the geometry is particularly unfavorable.
 
 %\subsection{The continuum sources}
 %
@@ -1166,7 +1201,8 @@ three main massive star forming regions, e2, e8, and north.
 %exhibit enhanced molecular emission in its surroundings
 
 
-\subsection{Outflows}
+\subsubsection{Outflows}
+\label{sec:outflowdiscussion}
 While the outflows described in Section \ref{sec:outflows} are impressive and
 plentiful, they are obviously not the dominant form of feedback, as their area
 filling factor is small compared to that of the various forms of radiative
@@ -1183,18 +1219,15 @@ it is completely dominated by the general `extended hot core' emission
 described in Section \ref{sec:chemistrymaps}.
 
 
-\subsection{Question: Where does the radiation from the HII regions end up?}
-The \hii regions show no signs of heating around them.  However, we know that
-these must be $>10^4$ \lsun stars, and even the infrared radiation should be
-rising with luminosity (or temperature).  While most of the energy might go
-into ionizing the gas cloud, many of the photons must get reprocessed into the
-infrared at some point.  If optical/NIR photons were escaping, we should be
-able to see them unless the geometry is particularly unfavorable.
+\section{Conclusions}
+We conclude.
+
+
 
 \input{solobib}
 
-\todo{idea: dust is more concentrated than gas (compare PSDs).  Can we do this to
-sims and determine which lines are thick?}
+%\todo{idea: dust is more concentrated than gas (compare PSDs).  Can we do this to
+%sims and determine which lines are thick?}
 
 \appendix
 
