@@ -96,6 +96,8 @@ if __name__ == "__main__":
 
         speclist = [pyspeckit.Spectrum(fn) for fn in
                     glob.glob(paths.spath("{0}_spw*_peak.fits".format(row['source'])))]
+        if len(speclist) == 0:
+            continue
 
         for sp in speclist:
             beam = radio_beam.Beam.from_fits_header(sp.header)
@@ -116,6 +118,8 @@ if __name__ == "__main__":
 
         speclist = [pyspeckit.Spectrum(fn) for fn in
                     glob.glob(paths.spath("{0}_spw*_peak.fits".format(row['source'])))]
+        if len(speclist) == 0:
+            continue
 
         for sp in speclist:
             beam = radio_beam.Beam.from_fits_header(sp.header)
@@ -144,6 +148,8 @@ if __name__ == "__main__":
 
         speclist = [pyspeckit.Spectrum(fn) for fn in
                     glob.glob(paths.spath("{0}_spw*_peak.fits".format(row['source'])))]
+        if len(speclist) == 0:
+            continue
 
         for sp in speclist:
             beam = radio_beam.Beam.from_fits_header(sp.header)
@@ -192,6 +198,8 @@ if __name__ == "__main__":
 
         speclist = [pyspeckit.Spectrum(fn) for fn in
                     glob.glob(paths.spath("{0}_spw*_peak.fits".format(row['source'])))]
+        if len(speclist) == 0:
+            continue
 
         for sp in speclist:
             beam = radio_beam.Beam.from_fits_header(sp.header)

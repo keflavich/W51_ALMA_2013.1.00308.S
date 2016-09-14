@@ -10,6 +10,8 @@ from astropy import wcs
 from matplotlib.patches import Circle
 import matplotlib
 
+raise("TODO: add more colors/hatches to colorcycle")
+
 pl.matplotlib.rc_file('pubfiguresrc')
 
 core_velo_tbl = Table.read(paths.tpath("core_velocities.ipac"), format="ascii.ipac")
