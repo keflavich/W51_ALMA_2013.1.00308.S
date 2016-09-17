@@ -9,10 +9,12 @@ from astropy.io import fits
 from astropy import wcs
 from matplotlib.patches import Circle
 import matplotlib
-
-raise("TODO: add more colors/hatches to colorcycle")
+from cycler import cycler
 
 pl.matplotlib.rc_file('pubfiguresrc')
+pl.mpl.rcParams['axes.color_cycle'] = ('338ADD', '9A44B6', 'A60628', '467821',
+                                       'CF4457', '188487', 'E24A33', 'b', 'r',
+                                       'g', 'm', 'k')
 
 core_velo_tbl = Table.read(paths.tpath("core_velocities.ipac"), format="ascii.ipac")
 core_phot_tbl = Table.read(paths.tpath("continuum_photometry.ipac"), format='ascii.ipac')
@@ -366,6 +368,7 @@ pl.xlabel("0.2\" aperture flux")
 pl.ylabel("0.2\" over 0.4\" concentration parameter")
 pl.ylim(0,1.5)
 
+
 fig4 = pl.figure(4)
 fig4.clf()
 ax=fig4.gca()
@@ -381,16 +384,38 @@ histdata = []
 cont_brightness = cores_merge['MeanContinuumBrightness']
 contincluded_line_brightness = cores_merge['BrightestFittedPeakPixBrightnessWithcont']
 
+linename_mapping = {'13CSv=0': '$^{13}$CS',
+                    'CH3CH2CNv=0':'CH$_3$CH$_2$CN',
+                    'CH3OCH3':'CH$_3$OCH$_3$',
+                    'CH3OCHOv=0':'CH$_3$OCHO',
+                    'CH3OHvt=0':'CH$_3$OH',
+                    'HC3Nv=0':'HC$_3$N',
+                    'NH2CHO':'NH$_2$CHO',
+                    'SO3&Sigma;v=0':'SO',
+                   }
+
 for linename in np.unique(cores_merge['BrightestFittedLine']):
     if linename == '-':
         continue
     match = linename==cores_merge['BrightestFittedLine']
-    histdata.append((linename,
+    histdata.append((linename_mapping[linename],
                      contincluded_line_brightness[match & isOK]))
 
-ax.hist([x[1] for x in histdata],
-        label=[x[0] for x in histdata],
-        stacked=True)
+histd, bins, patches = ax.hist([x[1] for x in histdata], label=[x[0] for x in
+                                                                histdata],
+                               stacked=True)
+for pp, hh in zip(patches, ('//', '\\\\', '--', '||')*4):
+    for art in pp:
+        fc = art.get_facecolor()
+        art.set_edgecolor(fc)
+        fc = fc[:3] + (0.5,)
+        art.set_facecolor(fc)
+        art.set_hatch(hh)
+        #art.set_linewidth(2)
+#stack_hist(ax=ax, stacked_data=[x[1] for x in histdata],
+#           sty_cycle=color_cycle+hatch_cycle,
+#           labels=[x[0] for x in histdata],)
+
 ax.legend(loc='best')
 ax.set_xlabel("$T_B$ [K]")
 fig4.savefig(paths.fpath('coreplots/brightest_line_histogram.png'))

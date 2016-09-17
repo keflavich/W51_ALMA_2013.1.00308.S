@@ -138,6 +138,9 @@ def make_rprof(regions, ploteach=False):
     pl.figure(nplots*3+1).clf()
     pl.figure(nplots*3+2).clf()
     pl.figure(nplots*3+3).clf()
+    # $ find ~/work/w51/alma/FITS/ -samefile ~/work/w51/alma/FITS/W51_te_continuum_best.fits
+    # /Users/adam/work/w51/alma/FITS//12m/continuum/selfcal_allspw_selfcal_3_mfs_deeper.image.pbcor.fits
+    # /Users/adam/work/w51/alma/FITS//W51_te_continuum_best.fits
     fn = "selfcal_allspw_selfcal_3_mfs_deeper.image.pbcor.fits"
     fh = fits.open(paths.dpath("12m/continuum/"+fn))
     mywcs = wcs.WCS(fh[0].header)
@@ -230,11 +233,11 @@ nplots = len(regions)
 pl.figure(nplots*3+2).savefig(paths.fpath("cumulative_radial_flux_massivecores.png"))
 pl.figure(nplots*3+3).savefig(paths.fpath("cumulative_radial_mass_massivecores.png"))
 
-regions = pyregion.open(paths.rpath("cores.reg"))
-make_rprof(regions, ploteach=False)
-nplots = 3
-pl.figure(nplots*3+2).savefig(paths.fpath("cumulative_radial_flux_allcores.png"))
-pl.figure(nplots*3+3).savefig(paths.fpath("cumulative_radial_mass_allcores.png"))
+#regions = pyregion.open(paths.rpath("cores.reg"))
+#make_rprof(regions, ploteach=False)
+#nplots = 3
+#pl.figure(nplots*3+2).savefig(paths.fpath("cumulative_radial_flux_allcores.png"))
+#pl.figure(nplots*3+3).savefig(paths.fpath("cumulative_radial_mass_allcores.png"))
 
 pl.draw()
 pl.show()

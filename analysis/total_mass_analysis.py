@@ -43,7 +43,7 @@ threshold_column = masscalc.dust.colofsnu(nu=masscalc.centerfreq,
                                           snu=threshold*u.beam,
                                           beamomega=beam.sr).to(u.cm**-2,
                                                                 u.dimensionless_angles())
-threshold_density = (masscalc.mass_conversion_factor(20) * threshold.to(u.mJy).value /
+threshold_density = (masscalc.mass_conversion_factor(20) * (threshold*u.beam).to(u.mJy).value /
                      (4/3.*np.pi) /
                      (beam.sr.value*masscalc.distance**2)**(1.5) /
                      (2.8*constants.m_p)).to(1/u.cm**3)
