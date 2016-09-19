@@ -62,6 +62,10 @@ for name, center, size in (('e2e', e2e, 7.5*u.arcsec),
     levels = [0.5,1,2,3,4,5,6,7,8,9,10,15]
     alphas = np.linspace(0.1, 0.9, len(levels))
 
+    FF.add_scalebar((0.1*u.pc / (5400*u.pc)).to(u.deg,u.dimensionless_angles()))
+    FF.scalebar.set_label('0.1 pc')
+    FF.scalebar.set_color('w')
+
     FF.show_contour(fits.PrimaryHDU(data=cutout_blue.data, header=cutout_blue.wcs.to_header()),
                     levels=levels,
                     filled=True,
@@ -71,4 +75,4 @@ for name, center, size in (('e2e', e2e, 7.5*u.arcsec),
                     levels=levels,
                     colors=[(1,0,0,ii) for ii in alphas])
 
-    fig1.savefig(paths.fpath("outflows_over_methanol_{0}.png".format(name)))
+    fig1.savefig(paths.fpath("outflows/outflows_over_methanol_{0}.png".format(name)))
