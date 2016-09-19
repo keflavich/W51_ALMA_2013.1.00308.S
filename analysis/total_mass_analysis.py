@@ -1,3 +1,4 @@
+# see also: dust_properties
 import os
 import numpy as np
 from astropy.convolution import convolve_fft, Gaussian2DKernel
@@ -117,23 +118,28 @@ print("Faintest point source 20K density: {0}, log={1}"
       .format(smallest_density, np.log10(smallest_density.value)))
 
 
+
+
+# this section repeats the analysis of dust_proerties, but it serves as a nice
+# independent check since I did it 6 months later.... give or take...
+beam_radius = ((beam.sr/(2*np.pi))**0.5 * masscalc.distance).to(u.pc,
+                                                                u.dimensionless_angles())
+
 # what luminosity is produced within the optically thick region?
 e2epeak = np.nanmax(data[1300:1500,800:1000])
 print("e2e peak flux: {0}".format(e2epeak))
 e2etbpeak = e2epeak * beam.jtok(masscalc.centerfreq) * u.beam/u.Jy
 print("e2e peak brightness tem: {0}".format(e2etbpeak))
-e2eradius = (beam.sr**0.5 * masscalc.distance).to(u.pc, u.dimensionless_angles())
 e2e_blackbody_luminosity = (constants.sigma_sb * e2etbpeak**4 *
-                            (4*np.pi*e2eradius**2)).to(u.L_sun)
+                            (4*np.pi*beam_radius**2)).to(u.L_sun)
 print("e2e blackbody luminosity: {0} = {0:e}".format(e2e_blackbody_luminosity,))
 
 e8peak = np.nanmax(data[1200:1300,800:1000])
 print("e8 peak flux: {0}".format(e8peak))
 e8tbpeak = e8peak * beam.jtok(masscalc.centerfreq) * u.beam/u.Jy
 print("e8 peak brightness tem: {0}".format(e8tbpeak))
-e8radius = (beam.sr**0.5 * masscalc.distance).to(u.pc, u.dimensionless_angles())
 e8_blackbody_luminosity = (constants.sigma_sb * e8tbpeak**4 *
-                           (4*np.pi*e8radius**2)).to(u.L_sun)
+                           (4*np.pi*beam_radius**2)).to(u.L_sun)
 print("e8 blackbody luminosity: {0} = {0:e}".format(e8_blackbody_luminosity,))
 
 
@@ -141,7 +147,6 @@ northpeak = np.nanmax(data[1900:2100,1900:2100])
 print("north peak flux: {0}".format(northpeak))
 northtbpeak = northpeak * beam.jtok(masscalc.centerfreq) * u.beam/u.Jy
 print("north peak brightness tem: {0}".format(northtbpeak))
-northradius = (beam.sr**0.5 * masscalc.distance).to(u.pc, u.dimensionless_angles())
 north_blackbody_luminosity = (constants.sigma_sb * northtbpeak**4 *
-                              (4*np.pi*northradius**2)).to(u.L_sun)
+                              (4*np.pi*beam_radius**2)).to(u.L_sun)
 print("north blackbody luminosity: {0} = {0:e}".format(north_blackbody_luminosity,))

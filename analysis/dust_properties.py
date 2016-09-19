@@ -1,3 +1,4 @@
+# see also: total_mass_analysis
 import numpy as np
 import pyregion
 import dust_emissivity
@@ -7,13 +8,12 @@ import radio_beam
 from astropy.io import fits
 from astropy import units as u
 from astropy import constants
-distance=5.4*u.kpc
+from masscalc import distance, centerfreq as freq
 
 im = fits.getdata(paths.dpath('W51_te_continuum_best.fits'))
 hd = fits.getheader(paths.dpath('W51_te_continuum_best.fits'))
 beam = radio_beam.Beam.from_fits_header(hd)
 
-freq = 225*u.GHz
 
 e2e_peak_flux = im[1350:1400,850:867].max()*u.Jy
 e2e_peak_tb = e2e_peak_flux.to(u.K, beam.jtok_equiv(freq))
