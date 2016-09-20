@@ -151,6 +151,8 @@ north_blackbody_luminosity = (constants.sigma_sb * northtbpeak**4 *
                               (4*np.pi*beam_radius**2)).to(u.L_sun)
 print("north blackbody luminosity: {0} = {0:e}".format(north_blackbody_luminosity,))
 
+print()
+print()
 
 
 
@@ -181,7 +183,7 @@ planck_whole_total = planck_217_flux[whole_w51_mask_planck].sum() / ppbeam_planc
 print("Total Planck flux in entire cloud: {0}".format(planck_whole_total))
 
 whole_w51_mask_BGPS = whole_w51_reg.get_mask(bgps_fh[0])
-whole_w51_bgps_sum = bgps_fh[0].data[whole_w51_mask_BGPS].sum() * u.Jy
+whole_w51_bgps_sum = bgps_fh[0].data[whole_w51_mask_BGPS].sum() * u.Jy / bgps_ppbeam
 whole_bgps_scaled_225 = whole_w51_bgps_sum*(masscalc.centerfreq/(271.4*u.GHz))**3.5
 whole_bgps_scaled_225_4 = whole_w51_bgps_sum*(masscalc.centerfreq/(271.4*u.GHz))**4.0
 whole_bgps_scaled_225_3 = whole_w51_bgps_sum*(masscalc.centerfreq/(271.4*u.GHz))**3.0
