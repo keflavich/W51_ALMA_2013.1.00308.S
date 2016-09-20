@@ -15,6 +15,7 @@ from dust_emissivity import dust
 because 218 is narrower
 """
 centerfreq = 226.6*u.GHz
+centerfreq_lb = 225*u.GHz # TODO: FIX THIS
 
 #def mass_conversion_factor(TK=20, d=distance.to(u.kpc).value):
 #    return 14.30 * (np.exp(13.01/TK) - 1)*d**2

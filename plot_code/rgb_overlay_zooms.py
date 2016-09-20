@@ -9,7 +9,7 @@ from astropy import log
 from vla_cont_cutout import fitsKu_cutout
 from outflow_meta import e1
 
-for suffix in ('auto','99.99'):
+for suffix in ('auto','99.99','max'):
     # note to self: rgb_cube_fits doesn't have to exist, it's just a prefix
     # for "name"
     for (rgb_cube_fits, rgb_cube_png, star_color, core_color, rlabel, glabel,
@@ -50,16 +50,16 @@ for suffix in ('auto','99.99'):
         F.scalebar.set_label('0.05 pc')
         F.scalebar.set_color('w')
 
-        # zoom on "e1 cluster"
-        F.recenter(e1.ra.deg, e1.dec.deg, radius=11./3600.)
-        F.set_tick_xspacing(6./3600)
-
         #F.set_tick_xspacing(0.0005)
         #F.add_label(0.05, 0.95, rlabel, relative=True, color='r', horizontalalignment='left')
         #F.add_label(0.05, 0.91, glabel, relative=True, color='g', horizontalalignment='left')
         #F.add_label(0.05, 0.87, blabel, relative=True, color='b', horizontalalignment='left')
-        F.save(paths.fpath("W51e2_{0}_aplpy.png".format(name)))
-        F.save(paths.fpath("W51e2_{0}_aplpy.pdf".format(name)))
+        F.save(paths.fpath("rgb_zooms/W51e2_{0}_aplpy.png".format(name)))
+        F.save(paths.fpath("rgb_zooms/W51e2_{0}_aplpy.pdf".format(name)))
+
+        # zoom on "e1 cluster"
+        F.recenter(e1.ra.deg, e1.dec.deg, radius=11./3600.)
+        F.set_tick_xspacing(6./3600)
 
         cmcontsrc = Table.read(paths.vpath('tables/EVLA_VLA_PointSourcePhotometry.ipac'),
                                format='ascii.ipac')
@@ -91,6 +91,15 @@ for suffix in ('auto','99.99'):
         F.save(paths.fpath("rgb_zooms/W51e1_{0}_aplpy_cores.pdf".format(name)), dpi=300)
 
         F.hide_layer('cores')
-        F.show_contour(fitsKu_cutout, colors=['w'], levels=[0.001, 0.005, 0.010, 0.05, 0.1])
+        F.show_contour(fitsKu_cutout, colors=['w'], levels=[0.001, 0.005, 0.010, 0.05, 0.1],
+                       layer='cmcontours')
         F.save(paths.fpath("rgb_zooms/W51e1_{0}_aplpy_cmcontours.png".format(name)), dpi=300)
         F.save(paths.fpath("rgb_zooms/W51e1_{0}_aplpy_cmcontours.pdf".format(name)), dpi=300)
+
+        F.hide_layer('cmcontours')
+        F.save(paths.fpath("rgb_zooms/W51e1_{0}_aplpy.png".format(name)), dpi=300)
+        F.save(paths.fpath("rgb_zooms/W51e1_{0}_aplpy.pdf".format(name)), dpi=300)
+
+        F.recenter(e1.ra.deg, e1.dec.deg, radius=5./3600.)
+        F.save(paths.fpath("rgb_zooms/W51e1_{0}_aplpy_5as.png".format(name)), dpi=300)
+        F.save(paths.fpath("rgb_zooms/W51e1_{0}_aplpy_5as.pdf".format(name)), dpi=300)

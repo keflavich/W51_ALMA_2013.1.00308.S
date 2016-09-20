@@ -75,10 +75,10 @@ print("Total mass minus protostars (20K): {0}".format(total_minus_protostars * m
 
 # determine BGPS total mass
 regions = pyregion.open(paths.rpath("12m_pointings.reg"))
-fh = fits.open("/Users/adam/work/w51/v2.0_ds2_l050_13pca_map20.fits")
-mask = regions.get_mask(fh[0])
-bgps_sum = fh[0].data[mask].sum()
-bgps_ppbeam = fh[0].header['PPBEAM']
+bgps_fh = fits.open("/Users/adam/work/w51/v2.0_ds2_l050_13pca_map20.fits")
+mask = regions.get_mask(bgps_fh[0])
+bgps_sum = bgps_fh[0].data[mask].sum() * u.Jy
+bgps_ppbeam = bgps_fh[0].header['PPBEAM']
 bgps_totalflux = bgps_sum/bgps_ppbeam
 print("Total flux (BGPS, 271 GHz): {0}".format(bgps_totalflux))
 bgps_scaled_225 = bgps_totalflux*(masscalc.centerfreq/(271.4*u.GHz))**3.5
@@ -86,7 +86,7 @@ bgps_scaled_225_4 = bgps_totalflux*(masscalc.centerfreq/(271.4*u.GHz))**4.0
 bgps_scaled_225_3 = bgps_totalflux*(masscalc.centerfreq/(271.4*u.GHz))**3.0
 print("Total flux (BGPS, 225 GHz, alpha=3.5): {0}".format(bgps_scaled_225))
 bgps_totalmass = masscalc.dust.massofsnu(nu=271.4*u.GHz,
-                                         snu=bgps_totalflux*u.Jy,
+                                         snu=bgps_totalflux,
                                          distance=masscalc.distance)
 print("Total mass (BGPS, 20K): {0}".format(bgps_totalmass))
 print("*total* Fraction of recovered flux alpha=3.5: {0}".format(total_signal / bgps_scaled_225))
@@ -150,3 +150,42 @@ print("north peak brightness tem: {0}".format(northtbpeak))
 north_blackbody_luminosity = (constants.sigma_sb * northtbpeak**4 *
                               (4*np.pi*beam_radius**2)).to(u.L_sun)
 print("north blackbody luminosity: {0} = {0:e}".format(north_blackbody_luminosity,))
+
+
+
+
+threecore_reg = pyregion.open(paths.rpath("three1ascores.reg"))
+threecore_mask = threecore_reg.get_mask(contfile[0])
+threecore_total = data[threecore_mask & (np.isfinite(data))].sum() / ppbeam
+print("Total flux in the three 'main cores': {0}".format(threecore_total))
+print("Fraction of total flux in the three 'main cores': {0}".format(threecore_total/total_signal))
+print(" Fraction of recovered flux from BGPS alpha=3.5: {0}".format(threecore_total / bgps_scaled_225))
+print(" Fraction of recovered flux from BGPS alpha=3: {0}".format(threecore_total / bgps_scaled_225_3))
+print(" Fraction of recovered flux from BGPS alpha=4: {0}".format(threecore_total / bgps_scaled_225_4))
+print("Area fraction in 'main cores': {0}".format(threecore_mask.sum()/mask.sum()))
+
+
+planck_217 = fits.open('../../planckwmap/PLCKI_C290.925+14.509_217GHz.fits')
+# https://wiki.cosmos.esa.int/planckpla/index.php/Effective_Beams
+beam = radio_beam.Beam(4.990*u.arcmin)
+planck_217_flux = (planck_217[0].data*u.K).to(u.Jy, beam.jtok_equiv(217*u.GHz))
+pixel_area_planck = np.abs(planck_217[0].header['CDELT1'] * planck_217[0].header['CDELT2'])*u.deg**2
+ppbeam_planck = (beam.sr/pixel_area_planck).decompose()
+planck_12mptg_mask = regions.get_mask(planck_217[0])
+planck_12mptg_total = planck_217_flux[planck_12mptg_mask].sum() / ppbeam_planck
+print("Total Planck flux in 12m ptg area: {0}".format(planck_12mptg_total))
+
+whole_w51_reg = pyregion.open(paths.rpath('whole_w51_cloud.reg'))
+whole_w51_mask_planck = whole_w51_reg.get_mask(planck_217[0])
+planck_whole_total = planck_217_flux[whole_w51_mask_planck].sum() / ppbeam_planck
+print("Total Planck flux in entire cloud: {0}".format(planck_whole_total))
+
+whole_w51_mask_BGPS = whole_w51_reg.get_mask(bgps_fh[0])
+whole_w51_bgps_sum = bgps_fh[0].data[whole_w51_mask_BGPS].sum() * u.Jy
+whole_bgps_scaled_225 = whole_w51_bgps_sum*(masscalc.centerfreq/(271.4*u.GHz))**3.5
+whole_bgps_scaled_225_4 = whole_w51_bgps_sum*(masscalc.centerfreq/(271.4*u.GHz))**4.0
+whole_bgps_scaled_225_3 = whole_w51_bgps_sum*(masscalc.centerfreq/(271.4*u.GHz))**3.0
+print("Whole BGPS flux total in W51: {0}".format(whole_w51_bgps_sum))
+print("Whole BGPS flux total in W51, scaled with alpha=3.0 to 225: {0}".format(whole_bgps_scaled_225_3))
+print("Whole BGPS flux total in W51, scaled with alpha=3.5 to 225: {0}".format(whole_bgps_scaled_225))
+print("Whole BGPS flux total in W51, scaled with alpha=4.0 to 225: {0}".format(whole_bgps_scaled_225_4))

@@ -9,6 +9,7 @@ import pylab as pl
 
 plot_kwargs = {'color':'r', 'linestyle':'--'}
 annotate_kwargs = {'color': 'r'}
+pl.close(1)
 
 velo = {'ALMAmm24_W51n': 60*u.km/u.s,
         'd2_W51n': 60*u.km/u.s,
@@ -35,9 +36,13 @@ for target in velo:
         sp.plotter(figure=pl.figure(1))
         sp.plotter(figure=pl.figure(1))
 
+        outname = paths.dpath('longbaseline/spectra/pngs/{target}_{0}.png'
+                              .format(fpre, target=target))
+        sp.plotter.savefig(outname, bbox_extra_artists=[])
+
         okfreqs = (frequencies > sp.xarr.min()) & (frequencies < sp.xarr.max())
-        print(frequencies)
-        print(okfreqs)
+        #print(frequencies)
+        #print(okfreqs)
 
         sp.plotter.line_ids(np.array(species_names)[okfreqs],
                             u.Quantity(frequencies)[okfreqs],
@@ -45,6 +50,5 @@ for target in velo:
                             plot_kwargs=plot_kwargs,
                             annotate_kwargs=annotate_kwargs)
         outname = paths.dpath('longbaseline/spectra/pngs/labeled_{target}_{0}.png'
-                              .format(fpre, target=target)
-                                                                                                                     )
+                              .format(fpre, target=target))
         sp.plotter.savefig(outname, bbox_extra_artists=[])

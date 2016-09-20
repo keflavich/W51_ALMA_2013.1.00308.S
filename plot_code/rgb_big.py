@@ -21,7 +21,8 @@ fnch3oh422 = paths.dpath('merge/moments/W51_b6_7M_12M.CH3OH422-312.image.pbcor_m
 #fits321 = fits.open(fn321)
 #fits322 = fits.open(fn322)
 
-def make_rgb(outname, redline='H2CO303_202', greenline='H2CO321_220', blueline='H2CO322_221',
+def make_rgb(outname, redline='H2CO303_202', greenline='H2CO321_220',
+             blueline='H2CO322_221',
              fntemplate=paths.dpath('merge/moments/W51_b6_7M_12M.{0}.image.pbcor_medsub_max.fits'),
              suffix="_auto",
              **kwargs):
@@ -76,15 +77,15 @@ for suffix, pct in (('_auto', 99.75),
             )
     make_rgb('ku_hc3n_ch3oh_rgb.fits',
              redline=fnku,
-             blueline='HC3N24-23',
-             greenline='CH3OH422-312',
+             greenline='HC3N24-23',
+             blueline='CH3OH422-312',
              suffix=suffix,
              pmax_g=pct, pmax_b=pct, pmax_r=pct,
             )
     make_rgb('hc3n_ch3oh_ocs_rgb.fits',
-             greenline='OCS18-17',
+             blueline='OCS18-17',
              redline='HC3N24-23',
-             blueline='CH3OH422-312',
+             greenline='CH3OH422-312',
              suffix=suffix,
              pmax_g=pct, pmax_b=pct, pmax_r=pct,
             )
@@ -97,6 +98,17 @@ make_rgb('ku_hc3n_ch3oh_rgb.fits',
          redline=fnku,
          blueline='HC3N24-23',
          greenline='CH3OH422-312')
+
+make_rgb('ku_hc3n_ch3oh_rgb.fits',
+         suffix="_max_log",
+         pmax_r=99.95,
+         pmax_b=99.9,
+         pmax_g=99.9999,
+         redline=fnku,
+         stretch_r='log',
+         blueline='HC3N24-23',
+         greenline='CH3OH422-312')
+
 make_rgb('ku_so_c18o_rgb.fits',
          greenline='SO65-54',
          redline=fnku,
