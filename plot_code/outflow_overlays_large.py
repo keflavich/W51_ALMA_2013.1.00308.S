@@ -22,6 +22,11 @@ rgb_cube_png = rgb_cube_fits[:-5]+"_loggreen.png"
 rgb_im = aplpy.make_rgb_image(data=rgb_cube_fits, output=rgb_cube_png,
                               stretch_g='log', embed_avm_tags=True)
 
+rgb_cube_png = rgb_cube_fits[:-5]+"_loggreen_max.png"
+rgb_im = aplpy.make_rgb_image(data=rgb_cube_fits, output=rgb_cube_png,
+                              pmax_g=99.99,
+                              stretch_g='log', embed_avm_tags=True)
+
 rgb_cube_png = rgb_cube_fits[:-5]+"_asinhgreen.png"
 rgb_im = aplpy.make_rgb_image(data=rgb_cube_fits, output=rgb_cube_png,
                               stretch_g='arcsinh', embed_avm_tags=True)

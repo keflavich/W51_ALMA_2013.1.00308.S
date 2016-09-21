@@ -212,6 +212,10 @@ F.recenter(290.91688, 14.518189, radius=0.0001)
 F.save(paths.fpath("outflows/W51north_cycle3green_SiO_outflows_aplpy_zoom.png"))
 F.save(paths.fpath("outflows/W51north_cycle3green_SiO_outflows_aplpy_zoom.pdf"))
 
+F.show_regions(paths.rpath('n_sio_vla.reg'))
+F.save(paths.fpath("outflows/W51north_cycle3green_SiO_outflows_aplpy_zoom_SiOmasers.png"))
+F.save(paths.fpath("outflows/W51north_cycle3green_SiO_outflows_aplpy_zoom_SiOmasers.pdf"))
+
 
 
 
