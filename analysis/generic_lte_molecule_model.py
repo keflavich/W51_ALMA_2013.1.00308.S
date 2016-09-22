@@ -12,16 +12,27 @@ except (SystemError,ImportError):
 
 class LTEModel(object):
     def __init__(self, chemical_name, energy_max=2500,
-                 nu_min=216*u.GHz, nu_max=235*u.GHz):
+                 nu_min=216*u.GHz, nu_max=235*u.GHz, line_lists=['SLAIM'],
+                 freq_type='Freq-GHz',
+                ):
         Splatalogue.LINES_LIMIT=10000
-        slaim = Splatalogue.query_lines(nu_min, nu_max, chemical_name=chemical_name,
-                                        energy_max=energy_max, energy_type='eu_k',
-                                        line_lists=['SLAIM'],
-                                        show_upper_degeneracy=True)
-        self.freqs = np.array(slaim['Freq-GHz'])*u.GHz
-        self.aij = slaim['Log<sub>10</sub> (A<sub>ij</sub>)']
-        self.deg = slaim['Upper State Degeneracy']
-        self.EU = (np.array(slaim['E_U (K)'])*u.K*constants.k_B).to(u.erg).value
+        linecat = Splatalogue.query_lines(nu_min, nu_max,
+                                          chemical_name=chemical_name,
+                                          energy_max=energy_max,
+                                          energy_type='eu_k',
+                                          line_lists=line_lists,
+                                          show_upper_degeneracy=True)
+        self.freqs = np.array(linecat[freq_type])*u.GHz
+        self.aij = linecat['Log<sub>10</sub> (A<sub>ij</sub>)']
+        self.deg = linecat['Upper State Degeneracy']
+        self.EU = (np.array(linecat['E_U (K)'])*u.K*constants.k_B).to(u.erg).value
+        self.all_EU = (Splatalogue.query_lines(1*u.Hz, 10000*u.GHz,
+                                               chemical_name=chemical_name,
+                                               energy_max=energy_max,
+                                               energy_type='eu_k',
+                                               line_lists=['SLAIM'],
+                                               show_upper_degeneracy=True)['E_U (K)']
+                       *u.K*constants.k_B).to(u.erg).value
 
     def lte_model(self, xarr, vcen, width, tex, column, background=None, tbg=2.73):
 
@@ -49,7 +60,7 @@ class LTEModel(object):
         #                                          temperature=tex)[ch3ocho.Id]
 
         # use a very approximate Q_rot instead of a well-determined one
-        Q = (self.deg * np.exp(-self.EU*u.erg / (constants.k_B * tex*u.K))).sum()
+        Q = (self.deg * np.exp(-self.all_EU*u.erg / (constants.k_B * tex*u.K))).sum()
 
         for A, g, nu, eu in zip(self.aij, self.deg, freqs_, self.EU):
             taudnu = lte_molecule.line_tau_cgs(tex,

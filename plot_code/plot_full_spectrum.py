@@ -147,6 +147,9 @@ if __name__ == "__main__":
 
     from generic_lte_molecule_model import LTEModel
     methanolmodel = LTEModel(chemical_name='Methanol')
+    # REQUIRES USING INTENSITY, not Aij
+    methanolmodel_osu = LTEModel(chemical_name='Methanol', line_lists=['OSU'],
+                                 freq_type='Meas Freq-GHz')
 
     for row in myvtbl:
 
