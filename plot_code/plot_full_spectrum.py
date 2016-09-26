@@ -139,17 +139,17 @@ if __name__ == "__main__":
     # Methanol lines (for identification purposes - similar to ch3oh spectral
     # fit overlays...)
     from astroquery.splatalogue import Splatalogue
-    Splatalogue.LINES_LIMIT=5000
+    Splatalogue.LINES_LIMIT=50000
     methanol_lines = Splatalogue.query_lines(218*u.GHz, 235*u.GHz,
-                                            energy_max=3000,
-                                            energy_type='eu_k',
-                                            chemical_name='Methanol')
+                                             energy_max=3000,
+                                             energy_type='eu_k',
+                                             chemical_name='032.*Methanol')
 
     from generic_lte_molecule_model import LTEModel
-    methanolmodel = LTEModel(chemical_name='Methanol')
+    methanolmodel = LTEModel(chemical_name='032.*Methanol')
     # REQUIRES USING INTENSITY, not Aij
-    methanolmodel_osu = LTEModel(chemical_name='Methanol', line_lists=['OSU'],
-                                 freq_type='Meas Freq-GHz')
+    methanolmodel_osu = LTEModel(chemical_name='032.*Methanol', line_lists=['OSU'],
+                                 freq_type='Meas Freq-GHz', energy_max=500000)
 
     for row in myvtbl:
 
@@ -178,8 +178,9 @@ if __name__ == "__main__":
 
         spectra = pyspeckit.Spectra(speclist)
         spectra.xarr.convert_to_unit(u.GHz)
-        mod = methanolmodel.lte_model(spectra.xarr,  row['velocity']*u.km/u.s,
-                                      5*u.km/u.s, 500*u.K, 1e16*u.cm**-2)
+        mod = methanolmodel_osu.lte_model(spectra.xarr,
+                                          row['velocity']*u.km/u.s, 5*u.km/u.s,
+                                          300*u.K, 5e17*u.cm**-2)
 
         median = np.nanmedian(spectra.data)
 

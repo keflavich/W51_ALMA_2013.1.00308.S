@@ -119,6 +119,8 @@ print("Faintest point source 20K density: {0}, log={1}"
 
 
 
+print()
+print()
 
 # this section repeats the analysis of dust_proerties, but it serves as a nice
 # independent check since I did it 6 months later.... give or take...
@@ -169,10 +171,10 @@ print("Area fraction in 'main cores': {0}".format(threecore_mask.sum()/mask.sum(
 
 planck_217 = fits.open('../../planckwmap/PLCKI_C290.925+14.509_217GHz.fits')
 # https://wiki.cosmos.esa.int/planckpla/index.php/Effective_Beams
-beam = radio_beam.Beam(4.990*u.arcmin)
-planck_217_flux = (planck_217[0].data*u.K).to(u.Jy, beam.jtok_equiv(217*u.GHz))
+beam_planck = radio_beam.Beam(4.990*u.arcmin)
+planck_217_flux = (planck_217[0].data*u.K).to(u.Jy, beam_planck.jtok_equiv(217*u.GHz))
 pixel_area_planck = np.abs(planck_217[0].header['CDELT1'] * planck_217[0].header['CDELT2'])*u.deg**2
-ppbeam_planck = (beam.sr/pixel_area_planck).decompose()
+ppbeam_planck = (beam_planck.sr/pixel_area_planck).decompose()
 planck_12mptg_mask = regions.get_mask(planck_217[0])
 planck_12mptg_total = planck_217_flux[planck_12mptg_mask].sum() / ppbeam_planck
 print("Total Planck flux in 12m ptg area: {0}".format(planck_12mptg_total))
@@ -191,3 +193,11 @@ print("Whole BGPS flux total in W51: {0}".format(whole_w51_bgps_sum))
 print("Whole BGPS flux total in W51, scaled with alpha=3.0 to 225: {0}".format(whole_bgps_scaled_225_3))
 print("Whole BGPS flux total in W51, scaled with alpha=3.5 to 225: {0}".format(whole_bgps_scaled_225))
 print("Whole BGPS flux total in W51, scaled with alpha=4.0 to 225: {0}".format(whole_bgps_scaled_225_4))
+
+
+print()
+
+kappa = masscalc.dust.kappa(masscalc.centerfreq)
+mincol = (kappa * (2.8 * constants.m_p)).to(u.cm**2)**-1
+minmass = ((beam.sr * masscalc.distance**2) / kappa).to(u.M_sun, u.dimensionless_angles())
+print("minimum optically thick mass in a beam: {0}".format(minmass))
