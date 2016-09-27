@@ -193,6 +193,7 @@ cores.
 %over an annulus with twice the radius of the source extraction.
 
 \subsection{The spatial distribution of cores}
+\label{sec:corespatialdistribution}
 The detected cores are not uniformly distributed across the observed region.
 The most notable feature in the spatial distribution is their alignment: most cores
 collect along approximately linear features.  This is especially evident
@@ -322,6 +323,7 @@ Section \ref{sec:temperature}.
 
 \subsection{Temperature estimation of the continuum sources}
 \label{sec:temperature}
+\label{sec:methanol}
 The temperature is a critical ingredient for determining the total mass of each
 continuum source or region. Since we do not have any means of directly
 determining the dust temperature, as the SED peak is well into the THz regime
@@ -533,6 +535,7 @@ respectively.
 
 
 \subsection{Radial mass profiles around the most massive cores}
+\label{sec:radialmass}
 In Figure \ref{fig:hmradprof}, we show the radial profiles extracted from the
 three high-mass protostellar cores in W51: W51 North, W51 e2e, and W51 e8.
 The plot shows the enclosed mass out to $\sim1\arcsec$ (5400 AU).  On larger
@@ -561,14 +564,17 @@ dust is also present but undetectable because it is hidden by the hotter dust.
 %heated by e2e is enormous, constituting an entire star cluster's
 %worth of material.
 
-\Figure{figures/cumulative_radial_flux_massivecores.png}
-{The cumulative flux density radial profiles centered on three
-massive protostellar cores.  They share similar profiles and
-are likely dominated by hot dust in their innermost regions,
-but they are more likely to be dominated by cooler dust in their
-outer, more massive regions.  The cumulative mass distribution may
-therefore be deceptive.}
-{fig:hmradprof}{1}{14cm}
+\FigureTwo
+{figures/cumulative_radial_flux_massivecores.png}
+{figures/cumulative_radial_mass_of_TCH3OH_massivecores.png}
+{The cumulative flux density radial profiles centered on three massive
+protostellar cores.  They share similar profiles and are likely dominated by
+hot dust in their innermost regions, but they are more likely to be dominated
+by cooler dust in their outer, more massive regions.  The cumulative mass
+distribution may therefore be deceptive.  In (a), we use a constant
+temperature.  In (b), we use the temperature map computed from \methanol in
+Section \ref{sec:methanol}.}
+{fig:hmradprof}{1}{8cm}
 
 %probably not worth doing
 % \subsection{The most massive prestellar cores in W51}
@@ -1273,7 +1279,7 @@ There is one counterexample in our sample.  The source d2 is a bright, compact
 does not appear to drive an outflow, so there is again no direct evidence of
 ongoing accretion.
 
-\subsection{Jeans analysis?}
+\subsection{Fragmentation: Jeans analysis}
 Fragmentation is one of the critical problems in high-mass star formation.
 Assuming typical initial conditions for molecular clouds, with temperatures of
 order 10 K, gas is expected to fragment into sub-solar mass cores, preventing
@@ -1286,6 +1292,10 @@ warm enough.  The high observed gas temperatures, $T\sim100-600$ K over
 $\sim10^4$ AU, around the high mass protostars indicate that their radiative
 feedback in the infrared has a dramatic effect on the gas.  
 
+We examined the temperature structure around the highest-mass cores in Section
+\ref{sec:temperature} and the mass structure in Section \ref{sec:radialmass}.
+We put these together to measure the Jeans mass, $M_J = (\pi / 6) c_s^3 G^{-3/2}
+\rho^{-1/2}$, in Figure \ref{fig:mjeans}
 
 \Figure{figures/azimuthalaverage_radial_mj_of_TCH3OH_massivecores.png}
 {The azimuthally averaged Jeans mass surrounding the three most massive cores.
