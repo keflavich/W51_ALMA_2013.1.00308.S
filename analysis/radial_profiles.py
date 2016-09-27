@@ -480,8 +480,8 @@ pl.figure(nplots*3+2).savefig(paths.fpath("cumulative_radial_flux_massivecores.p
 pl.figure(nplots*3+3).savefig(paths.fpath("cumulative_radial_mass_massivecores.png"))
 pl.figure(nplots*3+4).savefig(paths.fpath("cumulative_density_40K_massivecores.png"))
 pl.figure(nplots*3+5).savefig(paths.fpath("azimuthalaverage_density_40K_massivecores.png"))
-pl.figure(nplots*3+6).savefig(paths.fpath("azimuthalaverage_radial_mass_40K_massivecores.png"))
-pl.figure(nplots*3+7).savefig(paths.fpath("azimuthalaverage_radial_mass_of_TCH3OH_massivecores.png"))
+pl.figure(nplots*3+6).savefig(paths.fpath("azimuthalaverage_radial_mj_40K_massivecores.png"))
+pl.figure(nplots*3+7).savefig(paths.fpath("azimuthalaverage_radial_mj_of_TCH3OH_massivecores.png"))
 pl.figure(nplots*3+8).savefig(paths.fpath("cumulative_radial_mass_of_TCH3OH_massivecores.png"))
 
 #regions = pyregion.open(paths.rpath("cores.reg"))
