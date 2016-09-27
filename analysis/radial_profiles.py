@@ -138,6 +138,8 @@ def make_rprof(regions, ploteach=False):
     pl.figure(nplots*3+1).clf()
     pl.figure(nplots*3+2).clf()
     pl.figure(nplots*3+3).clf()
+    pl.figure(nplots*3+4).clf()
+    pl.figure(nplots*3+5).clf()
     # $ find ~/work/w51/alma/FITS/ -samefile ~/work/w51/alma/FITS/W51_te_continuum_best.fits
     # /Users/adam/work/w51/alma/FITS//12m/continuum/selfcal_allspw_selfcal_3_mfs_deeper.image.pbcor.fits
     # /Users/adam/work/w51/alma/FITS//W51_te_continuum_best.fits
@@ -208,12 +210,15 @@ def make_rprof(regions, ploteach=False):
             ax3.set_yticklabels(yticks_mass)
             ax3.set_ylabel("Cumulative Mass (M$_\\odot$, $T=40$ K)")
 
+
+
+        radii = ((bins*pixscale*u.deg)*masscalc.distance).to(u.pc,
+                                                             u.dimensionless_angles())
+        mass_40k_profile = (cumul_rprof * masscalc.mass_conversion_factor(TK=40) / u.beam).to(u.M_sun)
+
         pl.figure(nplots*3+3)
         #pl.title(fn.replace(".image.pbcor.fits",""))
-        pl.plot(((bins*pixscale*u.deg)*masscalc.distance).to(u.pc,
-                                                             u.dimensionless_angles()),
-                cumul_rprof * masscalc.mass_conversion_factor(TK=40),
-                label=name)
+        pl.plot(radii, mass_40k_profile, label=name)
         pl.ylabel("Cumulative Mass (M$_\\odot$, $T=40$ K)")
         pl.xlabel("Radius (pc)")
         if len(names) < 5:
@@ -225,6 +230,81 @@ def make_rprof(regions, ploteach=False):
 
             # Put a legend to the right of the current axis
             ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+
+        density_40k_profile = (mass_40k_profile / (4/3.*np.pi*radii**3) / (2.8*u.Da)).to(u.cm**-3)
+        print(density_40k_profile)
+        print(radii)
+
+        pl.figure(nplots*3+4)
+        #pl.title(fn.replace(".image.pbcor.fits",""))
+        pl.semilogy(radii, density_40k_profile, label=name)
+        pl.ylabel("Cumulative Density [n(H$_2$), $T=40$ K]")
+        pl.xlabel("Radius (pc)")
+        if len(names) < 5:
+            pl.legend(loc='best')
+        elif ii==len(names)-1:
+            ax = pl.gca()
+            box = ax.get_position()
+            ax.set_position([box.x0, box.y0, box.width * 0.6, box.height])
+
+            # Put a legend to the right of the current axis
+            ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+        angular_radii = bins*pixscale*3600.
+        azimuthal_average_flux = rprof/ppbeam
+        azimuthal_average_mass = azimuthal_average_flux * masscalc.mass_conversion_factor(TK=40) / u.beam
+        bindiff_as = np.diff(bins).mean() * pixscale * 3600.
+        bindiff_cm = bindiff_as * masscalc.distance / 206265.
+        bins_cm = (angular_radii * masscalc.distance / 206265.).to(u.cm)
+        sqdiffbins_cm = u.Quantity([bins_cm[0].to(u.cm).value**2] +
+                                   (bins_cm.to(u.cm)[1:]**2 -
+                                    bins_cm.to(u.cm)[:-1]**2).value.tolist(),
+                                   u.cm**2)
+        cudiffbins_cm = u.Quantity([bins_cm[0].to(u.cm).value**3] +
+                                   (bins_cm.to(u.cm)[1:]**3 -
+                                    bins_cm.to(u.cm)[:-1]**3).value.tolist(),
+                                   u.cm**3)
+        sqdiffbins_pix = [bins[0]**2] + (bins[1:]**2 - bins[:-1]**2).tolist()
+        azimuthal_average_density = (azimuthal_average_mass * sqdiffbins_pix /
+                                     (2.8*u.Da) /
+                                     (4/3.*np.pi*(cudiffbins_cm))).to(u.cm**-3)
+
+        pl.figure(nplots*3+5)
+        pl.semilogy(angular_radii, azimuthal_average_density, label=name)
+        pl.ylabel("Azimuthally Averaged Density [cm$^{-3}$]")
+        pl.xlabel("Radius (arcsec)")
+        if len(names) < 5:
+            pl.legend(loc='best')
+        elif ii==len(names)-1:
+            ax = pl.gca()
+            box = ax.get_position()
+            ax.set_position([box.x0, box.y0, box.width * 0.6, box.height])
+
+            # Put a legend to the right of the current axis
+            ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+        if ii == len(names) - 1:
+            ax = pl.gca()
+            #ax2 = ax.twiny()
+            ax3 = ax.twinx()
+            def tick_function(old_x):
+                newx = (old_x*u.arcsec*masscalc.distance).to(u.au, u.dimensionless_angles()).value
+                return ["%.1f" % z for z in newx]
+            new_tick_locations = np.arange(0,8000,1000)*u.au
+            new_tick_locs_as = (new_tick_locations/masscalc.distance).to(u.arcsec, u.dimensionless_angles())
+            ax2.set_xlim(ax.get_xlim())
+            ax2.set_xticks(new_tick_locs_as.value)
+            ax2.set_xticklabels(tick_function(new_tick_locs_as.value))
+            ax2.set_xlabel(r"Radius (au)")
+            #ax3.set_ylim(ax.get_ylim())
+            #yticks_mass = np.arange(0,6000,1000)
+            #yticks_Jy = yticks_mass/masscalc.mass_conversion_factor(TK=40).value
+            #ax3.set_yticks(yticks_Jy)
+            #ax3.set_yticklabels(yticks_mass)
+            #ax3.set_ylabel("Cumulative Mass (M$_\\odot$, $T=40$ K)")
+
+
 
 
 regions = pyregion.open(paths.rpath("hmcore_centroids.reg"))
