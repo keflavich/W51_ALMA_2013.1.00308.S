@@ -87,7 +87,7 @@ def make_rprof(regions, ploteach=False):
                 pl.plot(bins*pixscale*3600., rprof/ppbeam,
                         label=fn.split(".")[0], linestyle=linestyle)
                 pl.ylabel("Azimuthally Averaged Flux (Jy)")
-                pl.xlabel("Radius (arcsec)")
+                pl.xlabel("Radius [arcsec]")
 
                 cumul_rprof = np.nan_to_num(rprof*nr/ppbeam).cumsum()
 
@@ -96,7 +96,7 @@ def make_rprof(regions, ploteach=False):
                 pl.plot(bins*pixscale*3600., cumul_rprof,
                         label=fn.split(".")[0], linestyle=linestyle)
                 pl.ylabel("Cumulative Flux (Jy)")
-                pl.xlabel("Radius (arcsec)")
+                pl.xlabel("Radius [arcsec]")
                 if ii == 0:
                     ax = pl.gca()
                     ax2 = ax.twiny()
@@ -138,7 +138,7 @@ def make_rprof(regions, ploteach=False):
         nplots = 0
 
     pl.matplotlib.rc_file('pubfiguresrc')
-    for jj in range(nplots*3+1, nplots*3+9):
+    for jj in range(nplots*3+1, nplots*3+11):
         pl.figure(jj).clf()
     # $ find ~/work/w51/alma/FITS/ -samefile ~/work/w51/alma/FITS/W51_te_continuum_best.fits
     # /Users/adam/work/w51/alma/FITS//12m/continuum/selfcal_allspw_selfcal_3_mfs_deeper.image.pbcor.fits
@@ -160,7 +160,7 @@ def make_rprof(regions, ploteach=False):
         pl.plot(bins*pixscale*3600., rprof/ppbeam,
                 label=name)
         pl.ylabel("Azimuthally Averaged Flux (Jy)")
-        pl.xlabel("Radius (arcsec)")
+        pl.xlabel("Radius [arcsec]")
         if len(names) < 5:
             pl.legend(loc='best')
         elif ii==len(names)-1:
@@ -178,7 +178,7 @@ def make_rprof(regions, ploteach=False):
         pl.plot(bins*pixscale*3600., cumul_rprof,
                 label=name)
         pl.ylabel("Cumulative Flux (Jy)")
-        pl.xlabel("Radius (arcsec)")
+        pl.xlabel("Radius [arcsec]")
         if len(names) < 5:
             pl.legend(loc='best')
         elif ii==len(names)-1:
@@ -201,7 +201,7 @@ def make_rprof(regions, ploteach=False):
             ax2.set_xlim(ax.get_xlim())
             ax2.set_xticks(new_tick_locs_as.value)
             ax2.set_xticklabels(tick_function(new_tick_locs_as.value))
-            ax2.set_xlabel(r"Radius (au)")
+            ax2.set_xlabel(r"Radius [au]")
             ax3.set_ylim(ax.get_ylim())
             yticks_mass = np.arange(0,6000,1000)
             yticks_Jy = yticks_mass/masscalc.mass_conversion_factor(TK=40).value
@@ -272,7 +272,7 @@ def make_rprof(regions, ploteach=False):
         pl.figure(nplots*3+5)
         pl.semilogy(angular_radii, azimuthal_average_density, label=name)
         pl.ylabel("Azimuthally Averaged Density [cm$^{-3}$]")
-        pl.xlabel("Radius (arcsec)")
+        pl.xlabel("Radius [arcsec]")
         if len(names) < 5:
             pl.legend(loc='best')
         elif ii==len(names)-1:
@@ -296,7 +296,7 @@ def make_rprof(regions, ploteach=False):
             ax2.set_xlim(ax.get_xlim())
             ax2.set_xticks(new_tick_locs_as.value)
             ax2.set_xticklabels(tick_function(new_tick_locs_as.value))
-            ax2.set_xlabel(r"Radius (au)")
+            ax2.set_xlabel(r"Radius [au]")
             #ax3.set_ylim(ax.get_ylim())
             #yticks_mass = np.arange(0,6000,1000)
             #yticks_Jy = yticks_mass/masscalc.mass_conversion_factor(TK=40).value
@@ -313,7 +313,7 @@ def make_rprof(regions, ploteach=False):
         pl.figure(nplots*3+6)
         pl.semilogy(angular_radii, azimuthal_average_MJ_40k, label=name)
         pl.ylabel("Azimuthally Averaged $M_J$ at $T=40$K")
-        pl.xlabel("Radius (arcsec)")
+        pl.xlabel("Radius [arcsec]")
         if len(names) < 5:
             pl.legend(loc='best')
         elif ii==len(names)-1:
@@ -337,7 +337,7 @@ def make_rprof(regions, ploteach=False):
             ax2.set_xlim(ax.get_xlim())
             ax2.set_xticks(new_tick_locs_as.value)
             ax2.set_xticklabels(tick_function(new_tick_locs_as.value))
-            ax2.set_xlabel(r"Radius (au)")
+            ax2.set_xlabel(r"Radius [au]")
 
         source = 'e2' if name == 'e2e' else name
         temperature_map_fn = paths.dpath('12m/moments/CH3OH_{0}_cutout_temperaturemap.fits'.format(source))
@@ -407,7 +407,7 @@ def make_rprof(regions, ploteach=False):
         pl.figure(nplots*3+7)
         pl.plot(angular_radii, azimuthal_average_MJ, label=name)
         pl.ylabel("Azimuthally Averaged $M_J$ at $T(\\mathrm{CH}_3\\mathrm{OH})$")
-        pl.xlabel("Radius (arcsec)")
+        pl.xlabel("Radius [arcsec]")
         if len(names) < 5:
             pl.legend(loc='best')
         elif ii==len(names)-1:
@@ -431,7 +431,7 @@ def make_rprof(regions, ploteach=False):
             ax2.set_xlim(ax.get_xlim())
             ax2.set_xticks(new_tick_locs_as.value)
             ax2.set_xticklabels(tick_function(new_tick_locs_as.value))
-            ax2.set_xlabel(r"Radius (au)")
+            ax2.set_xlabel(r"Radius [au]")
 
 
         pl.figure(nplots*3+8)
@@ -439,7 +439,7 @@ def make_rprof(regions, ploteach=False):
         pl.plot(bins*pixscale*3600., mass_profile,
                 label=name)
         pl.ylabel("Cumulative Mass at T(CH$_3$OH)")
-        pl.xlabel("Radius (arcsec)")
+        pl.xlabel("Radius [arcsec]")
         if len(names) < 5:
             pl.legend(loc='best')
         elif ii==len(names)-1:
@@ -461,7 +461,7 @@ def make_rprof(regions, ploteach=False):
             ax2.set_xlim(ax.get_xlim())
             ax2.set_xticks(new_tick_locs_as.value)
             ax2.set_xticklabels(tick_function(new_tick_locs_as.value))
-            ax2.set_xlabel(r"Radius (au)")
+            ax2.set_xlabel(r"Radius [au]")
 
         pl.figure(nplots*3+9)
         #pl.title(fn.replace(".image.pbcor.fits",""))
@@ -471,6 +471,44 @@ def make_rprof(regions, ploteach=False):
         pl.ylabel("CH$_3$OH temperature")
         pl.xlabel("Radius (as)")
 
+
+        azimuthal_average_RJ = (c_s**1 /
+                                (constants.G**0.5 *
+                                 (2.8*u.Da*azimuthal_average_density)**0.5)
+                               ).to(u.au)
+
+        pl.figure(nplots*3+10)
+        pl.plot(angular_radii, azimuthal_average_RJ, label=name)
+        pl.plot([0,(7000*u.au/masscalc.distance).to(u.arcsec,
+                                                    u.dimensionless_angles()).value],
+                [0,7000], 'k--', alpha=0.5)
+        pl.ylabel("Azimuthally Averaged $R_J$ at $T(\\mathrm{CH}_3\\mathrm{OH})$ [au]")
+        pl.xlabel("Radius [arcsec]")
+        pl.ylim(0,3000)
+        if len(names) < 5:
+            pl.legend(loc='best')
+        elif ii==len(names)-1:
+            ax = pl.gca()
+            box = ax.get_position()
+            ax.set_position([box.x0, box.y0, box.width * 0.6, box.height])
+
+            # Put a legend to the right of the current axis
+            ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+        if ii == len(names) - 1:
+            ax = pl.gca()
+            #ax.set_ylim(1e7, 5e10)
+            ax2 = ax.twiny()
+            #ax3 = ax.twinx()
+            def tick_function(old_x):
+                newx = (old_x*u.arcsec*masscalc.distance).to(u.au, u.dimensionless_angles()).value
+                return ["%.1f" % z for z in newx]
+            new_tick_locations = np.arange(0,8000,1000)*u.au
+            new_tick_locs_as = (new_tick_locations/masscalc.distance).to(u.arcsec, u.dimensionless_angles())
+            ax2.set_xlim(ax.get_xlim())
+            ax2.set_xticks(new_tick_locs_as.value)
+            ax2.set_xticklabels(tick_function(new_tick_locs_as.value))
+            ax2.set_xlabel(r"Radius [au]")
 
 
 regions = pyregion.open(paths.rpath("hmcore_centroids.reg"))
@@ -483,6 +521,8 @@ pl.figure(nplots*3+5).savefig(paths.fpath("azimuthalaverage_density_40K_massivec
 pl.figure(nplots*3+6).savefig(paths.fpath("azimuthalaverage_radial_mj_40K_massivecores.png"))
 pl.figure(nplots*3+7).savefig(paths.fpath("azimuthalaverage_radial_mj_of_TCH3OH_massivecores.png"))
 pl.figure(nplots*3+8).savefig(paths.fpath("cumulative_radial_mass_of_TCH3OH_massivecores.png"))
+pl.figure(nplots*3+9).savefig(paths.fpath("azimuthalaverage_radial_TCH3OH_massivecores.png"))
+pl.figure(nplots*3+10).savefig(paths.fpath("azimuthalaverage_radial_rj_of_TCH3OH_massivecores.png"))
 
 #regions = pyregion.open(paths.rpath("cores.reg"))
 #make_rprof(regions, ploteach=False)
