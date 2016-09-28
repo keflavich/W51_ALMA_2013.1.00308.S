@@ -32,6 +32,8 @@
 \section{Introduction}
 We introduce...
 
+
+
 \section{Observations}
 As part of ALMA Cycle 2 program 2013.1.00308.S, we observed a
 $\sim2\arcmin\times1\arcmin$ region centered between W51 IRS2 and W51 e1/e2
@@ -47,6 +49,12 @@ $\sim28$\arcsec.  The full UV coverage was from $\sim12$ to $\sim1500$ m
 {A weighted histogram of the visibility weights as a function of UV distance;
 this approximately shows the amount of data received at each baseline length.}
 {fig:uvcov}{1}{16cm}
+
+Additionally, we will comment briefly on project 2015.1.01569.S (PI: Goddi),
+which observed two fields centered on e2e/e8 and north with very long baselines
+(resolution 0.04\arcsec) and provide additional insights that our 0.2\arcsec
+data do not yield alone.  Full details of that data set will be released in a
+future work.
 
 \input{spwtable.tex}
 
@@ -1281,6 +1289,7 @@ does not appear to drive an outflow, so there is again no direct evidence of
 ongoing accretion.
 
 \subsection{Fragmentation: Jeans analysis}
+\label{sec:fragmentation}
 Fragmentation is one of the critical problems in high-mass star formation.
 Assuming typical initial conditions for molecular clouds, with temperatures of
 order 10 K, gas is expected to fragment into sub-solar mass cores, preventing
@@ -1296,14 +1305,37 @@ feedback in the infrared has a dramatic effect on the gas.
 We examined the temperature structure around the highest-mass cores in Section
 \ref{sec:temperature} and the mass structure in Section \ref{sec:radialmass}.
 We put these together to measure the Jeans mass, $M_J = (\pi / 6) c_s^3 G^{-3/2}
-\rho^{-1/2}$, and length, $\lambda_J = c_s G^{-1/2} \rho^{-1/2}$, in Figure
+\rho^{-1/2}$, and length, $\lambda_J = c_s G^{-1/2} \rho^{-1/2}$ \todo{Anyone
+have strong opinions about the leading numerical constants?}, in Figure
 \ref{fig:mjeans}.  The Jeans mass is a few times higher than the peak of the
 stellar initial mass function (IMF), $M_{peak}=0.3$ \msun, implying that any
 fragments will be larger than the typical mass in star-forming regions.
 More importantly, though, the Jeans length is significantly smaller than the
 size scale on which it is inferred throughout the entire heated core.
 The gas throughout these MYSO cores is therefore Jeans-stable and will not
-spontaneously fragment: 
+spontaneously fragment.
+
+The high gas temperature therefore provides a mechanism for MYSOs to avoid
+the ``fragmentation-induced starvation'' problem discussed by
+\citet{Peters2010a,Peters2010c,Girichidis2012b}.  Apparently, stars above
+some mass are able to heat hundreds of \msun of material surrounding them
+to such a degree that it cannot fragment further, providing an enormous
+reservoir to feed from.
+
+Within this large reservoir, there are few currently-detected fragments.
+In our data, within 6500 AU of W51 north, there is only 1 (ALMAmm35), around
+e2e there is the HII region e2w and possibly 2-3 others between 5000 and 6500
+AU, and around e8 there are none.
+
+Further fragmentation below 1000 AU is possible, e.g., as seen in NGC 6334Imm1
+\citep{Brogan2016a}.  However, in the long baseline data to be presented in a
+future work (Goddi et al, in prep), very little additional fragmentation is
+observed.  A few more sources are detected toward e2e and north and many toward
+e8, but the nature of those more compact ($<200$ AU) sources suggests they are
+protostellar or stellar.  Additionally, unlike the centrally-clustered
+fragmentation seen in NGC 6334Imm1, the fragments appear spread out in W51.
+The main sources all have the majority of their flux in relatively smooth
+structures.
 
 \FigureTwo
 {figures/azimuthalaverage_radial_mj_of_TCH3OH_massivecores.png}
@@ -1321,8 +1353,9 @@ below which the gas is stable to the Jeans instability.}
 % regions than blowing away their surroundings...
 
 
+%-compare to ngc 6334i? (probably needs better resolution)
 
-
+% ? -optical depth map using $T_B$ and T(\methanol)
 
 % useful questions:
 % how much of the 'core' mass will end up in a single star?  single system?
