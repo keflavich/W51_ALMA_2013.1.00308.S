@@ -58,4 +58,4 @@ def round_to_n(x, n):
         return round(x, -int(np.floor(np.log10(x))) + (n - 1))
 
 def strip_trailing_zeros(x):
-    return x.strip('.0')
+    return x.rstrip('.0')
