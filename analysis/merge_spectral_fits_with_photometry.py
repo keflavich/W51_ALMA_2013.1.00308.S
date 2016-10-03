@@ -124,9 +124,9 @@ cores_merge.add_column(Column(data=freefreedominated.astype('int8'),
                               name='is_freefree'))
                               
 
-category = [('F' if ffd else 'f' if ffc else '_') +
-            ('H' if ht else 'C' if cld else '_') +
-            ('c' if comp else '_')
+category = [('F' if ffd else 'f' if ffc else '-') +
+            ('H' if ht else 'C' if cld else '-') +
+            ('c' if comp else '-')
             for ffd, ffc, ht, cld, comp in zip(freefreedominated,
                                                freefreecontaminated, hot, cold,
                                                compact)]

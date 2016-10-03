@@ -28,24 +28,28 @@
 \begin{enumerate}
     \item Make a photometry table - one from the hand-extracted, one from
         dendrogram-extracted?  Section \ref{sec:photometry}
-    \item Is any discussion of the gas kinematics warranted?  That should
-        perhaps be relegated to the (lack of?) disks paper
+        see make\_photometry\_table
+    %\item MOVE TO DISKS PAPER Is any discussion of the gas kinematics warranted?  That should
+    %    perhaps be relegated to the (lack of?) disks paper
     \item create Table ref{tab:linelist} = \ref{tab:linelist} (Section
         \ref{sec:temperature})
-    \item DONE Show a `core' mass histogram in Section \ref{sec:temperature}
-    \item DONE Repeat Section \ref{sec:W51e2e} for e8 and north
-    \item DONE - commented out: move Section \ref{sec:cheminterp} to discussion
-    \item Add a section ``building on Ginsburg+ 2016''
-        (what did I mean by this?  looking at the feedback in IRS2? nice idea
-        but no longer fits well with the dominant theme)
-    \item (maybe for the other paper): detailed SED study of e2w.  What is its
-        luminosity?  spectral type?  What about e2e?  the latter is more appropriate
-        for this paper
-    \item for the large scales, where is most of the luminosity?  What regions
-        generate most of the energy as perceived from $>$100pc distance?  I suspect
-        it is the IRS1 region, which has no star formation and maybe no stars...
+    %\item DONE Show a `core' mass histogram in Section \ref{sec:temperature}
+    %\item DONE Repeat Section \ref{sec:W51e2e} for e8 and north
+    %\item DONE - commented out: move Section \ref{sec:cheminterp} to discussion
+    %\item Add a section ``building on Ginsburg+ 2016''
+    %    (what did I mean by this?  looking at the feedback in IRS2? nice idea
+    %    but no longer fits well with the dominant theme)
+    %\item (for another paper): detailed SED study of e2w.  What is its
+    %    luminosity?  spectral type?  What about e2e?  the latter is more appropriate
+    %    for this paper
+    %\item for the large scales, where is most of the luminosity?  What regions
+    %    generate most of the energy as perceived from $>$100pc distance?  I suspect
+    %    it is the IRS1 region, which has no star formation and maybe no stars...
+    %    (probably best to do this with other data [SOFIA] in hand)
     \item Make a lower-limit temperature map from the peak brightness
         temperature of the full spectrum
+        [work begun in brightest\_molecule\_map, but not complete b/c need full data
+        on external HDs / orion to do this]
 
 \end{enumerate}
 
@@ -256,7 +260,7 @@ we further extracted aperture photometry around the centroid in 6 apertures:
 0.2, 0.4, 0.6, 0.8, 1.0, and 1.5\arcsec.  We performed the same aperture
 photometry on the W51 Ku-band images from \citet{Ginsburg2016a} to estimate
 the free-free contribution to the observed flux density measurements.  These
-measurements are reported in Table {...}.
+measurements are reported in Table \ref{tab:photometry}.
 
 The source flux density distribution is shown in Figure
 \ref{fig:fluxhistograms}.  The most common nearest-neighbor separation between
@@ -302,6 +306,8 @@ in the specified aperture.  The unfilled data show all sources and the hashed
 data are for starless core candidates (Section \ref{sec:contsourcenature}).}
 {fig:masshistograms}
 {1}{16cm}
+
+\input{photometry_table.tex}
 
 \subsubsection{Distribution Functions}
 \label{sec:distributionfunctions}
@@ -556,7 +562,7 @@ temperature, this estimate is a lower limit on the source luminosity.
 % derive a dust mass $M_{dust}\sim20$ \msun. 
 
 If we assume that the dust is optically thick throughout our beam, and assume
-an opacity constant $\kappa(226 \mathrm{GHz}}=120$ g \persc, the minimum mass
+an opacity constant $\kappa(226 \mathrm{GHz})=120$ g \persc, the minimum mass
 per beam to achieve $\tau\geq1$ is $M=18$ \msun beam$^{-1}$.  This  mass is not
 a strict limit in either direction: if the dust is indeed optically thick,
 there may be substantial hidden or undetected gas, while if the filling factor
@@ -1417,6 +1423,8 @@ examined the three most massive forming stars and the surrounding population of
 forming stars.  The following conclusions....
 
 \begin{itemize}
+    \item The first
+    \item The second
 \end{itemize}
 
 
