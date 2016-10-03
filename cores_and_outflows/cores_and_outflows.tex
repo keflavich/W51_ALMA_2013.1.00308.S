@@ -5,7 +5,23 @@
 \title{Thermal Feedback in the high-mass star and cluster forming region W51}
 
 \begin{abstract}
-    Massive stars form primarily in high-density regions ...
+    We present ALMA observations of a $2\times1$ pc area in the W51 high-mass
+    star-forming complex.  We identify dust continuum sources and measure the
+    gas and dust temperature through both rotational diagram modeling and
+    brightness-temperature-based limits.  The observed region contains three
+    high-mass YSOs that appear to be at the earliest stages of their formation,
+    with no signs of ionizing radiation from their central sources.  The new
+    data reveal  high gas and dust temperatures ($T > 100$ K) extending out to
+    about 5000 AU from each of these sources, indicating that the forming MYSOs
+    are able to heat a large volume of gas in which fragmentation is
+    suppressed.  No distinct fragments are observed within this heated zone,
+    though 75 sources representing either prestellar cores or some stage of
+    protostars are detected in the observed field.  We conclude that during the
+    process of forming, high-mass stars heat a large volume (and correspondingly
+    large mass) of gas, preventing it from fragmenting, and therefore keeping
+    a large reservoir available to feed from.  (The observations provide a solution
+    to the `fragmentation-induced starvation' scenario, which might otherwise have
+    limited massive star growth even further than direct feedback.)
 \end{abstract}
 
 \section{Paper 1 to-do list}
@@ -16,16 +32,20 @@
         perhaps be relegated to the (lack of?) disks paper
     \item create Table ref{tab:linelist} = \ref{tab:linelist} (Section
         \ref{sec:temperature})
-    \item Show a `core' mass histogram in Section \ref{sec:temperature}
-    \item Repeat Section \ref{sec:W51e2e} for e8 and north
-    \item move Section \ref{sec:cheminterp} to discussion
+    \item DONE Show a `core' mass histogram in Section \ref{sec:temperature}
+    \item DONE Repeat Section \ref{sec:W51e2e} for e8 and north
+    \item DONE - commented out: move Section \ref{sec:cheminterp} to discussion
     \item Add a section ``building on Ginsburg+ 2016''
+        (what did I mean by this?  looking at the feedback in IRS2? nice idea
+        but no longer fits well with the dominant theme)
     \item (maybe for the other paper): detailed SED study of e2w.  What is its
         luminosity?  spectral type?  What about e2e?  the latter is more appropriate
         for this paper
     \item for the large scales, where is most of the luminosity?  What regions
         generate most of the energy as perceived from $>$100pc distance?  I suspect
         it is the IRS1 region, which has no star formation and maybe no stars...
+    \item Make a lower-limit temperature map from the peak brightness
+        temperature of the full spectrum
 
 \end{enumerate}
 
@@ -243,6 +263,9 @@ The source flux density distribution is shown in Figure
 cataloged cores is $\sim0.3\arcsec$, which implies that the larger apertures
 double-count some pixels.  The smallest separation is
 0.26\arcsec, so the 0.2\arcsec aperture contains only unique pixels.
+The corresponding masses are shown in Figure \ref{fig:masshistograms}
+assuming the dust temperature is equal to the source's peak line
+brightness temperature (Section \ref{sec:temperature}).
 
 
 Except where noted below, the hand-selected sources are used for further
@@ -263,10 +286,22 @@ on the hand-extracted core positions.  The aperture size is listed
 in the y-axis label.  For the top plot, labeled `Peak', this is the peak
 flux density in Jy/beam.  For the rest, it is the integrated flux density
 in the specified aperture.  The unfilled data show all sources and the hashed
-data are for starless core candidates (Section \ref{sec:contsourcenature}).}
+data are for starless core candidates (Section \ref{sec:contsourcenature}).
+See Figure \ref{fig:masshistograms} for the corresponding masses.}
 {fig:fluxhistograms}
 {1}{16cm}
 
+\Figure{figures/core_mass_histogram_apertureradius.png}
+{Histograms of the core masses computed from the flux density measurements
+shown in Figure \ref{fig:fluxhistograms} using the peak brightness temperature 
+toward the center of that source as the dust temperature.
+The aperture size is listed in the y-axis label.  For the top plot, labeled
+`Peak', the mass is computed from peak
+flux density in Jy/beam.  For the rest, it is the integrated flux density
+in the specified aperture.  The unfilled data show all sources and the hashed
+data are for starless core candidates (Section \ref{sec:contsourcenature}).}
+{fig:masshistograms}
+{1}{16cm}
 
 \subsubsection{Distribution Functions}
 \label{sec:distributionfunctions}
@@ -515,29 +550,39 @@ luminosity, assuming a pure blackbody, is $L = 4\pi r^2 \sigma_{sb} T^4 =
 2.3\ee{4} \lsun$.  Since any systematic uncertainties imply a higher
 temperature, this estimate is a lower limit on the source luminosity.
 
-If we assume that $T_{dust} = T_{peak}$ and that the dust is optically thin, we
-derive a dust mass $M_{dust}\sim20$ \msun.  This  mass is not a strict limit in
-either direction: if the dust is optically thick, there may be substantial
-hidden or undetected gas, while if the filling factor is low, it may be much
-hotter and therefore lower in mass.  However, simulations and models both
-predict that the dust will become highly optically thick at radii
-$r\lesssim1000$ au \citep{Forgan2016a,Klassen2016a}, so it is likely that
-this measurement provides only a lower limit on the total gas mass surrounding
-the protostar.  If we directly assume that the dust is optically thick
-throughout our beam, and assume an opacity constant $\kappa=120$ g \persc,
-the minimum mass per beam to achieve $\tau\geq1$ is $N=18$ \msun beam$^{-1}$.
+% this mass estimation method is not self-consistent; T_dust = T_peak implies
+% tau >= 1
+% If we assume that $T_{dust} = T_{peak}$ and that the dust is optically thin, we
+% derive a dust mass $M_{dust}\sim20$ \msun. 
 
-For an independent measurement of the temperature that is not limited
-to the optically thick regions, we use the \methanol
-lines in band, calculating an LTE temperature that is $200 < T < 600$ K
-out to $r<2$\arcsec ($r<10^4$ au; Section \ref{sec:methanol}).  As noted
-in Section \ref{sec:methanol}, these temperatures may be overestimates
-when the low-J lines of \methanol are optically thick, but for now they
-are the best measurements we have available.
+If we assume that the dust is optically thick throughout our beam, and assume
+an opacity constant $\kappa(226 \mathrm{GHz}}=120$ g \persc, the minimum mass
+per beam to achieve $\tau\geq1$ is $M=18$ \msun beam$^{-1}$.  This  mass is not
+a strict limit in either direction: if the dust is indeed optically thick,
+there may be substantial hidden or undetected gas, while if the filling factor
+is lower than 1, the dust may be much hotter and therefore optically thin and
+lower  mass.  However, simulations and models both predict that the dust will
+become highly optically thick at radii $r\lesssim1000$ au
+\citep{Forgan2016a,Klassen2016a}, so it is likely that this measurement
+provides  a lower limit on the total gas mass surrounding the protostar.  
+
+For an independent measurement of the temperature that is not limited to the
+optically thick regions, we use the \methanol lines in band, calculating an LTE
+temperature that is $200 < T < 600$ K out to $r<2$\arcsec ($r<10^4$ au; Section
+\ref{sec:methanol}).  As noted in Section \ref{sec:methanol}, these
+temperatures may be overestimates when the low-J lines of \methanol are
+optically thick, but for now they are the best measurements we have available.
+If the dust temperature matches the methanol temperature, it would be optically
+thin ($\tau \lesssim 1/3$) and the mass would be only $\sim6$ \msun.  However,
+this latter estimate discounts any substructure at scales $<1000$ AU, which we
+know exists from the 2015.1.01596.S data.
 
 \subsubsection{W51 e8 and north mass and temperature from continuum}
 \label{sec:w51e8andnorth}
-
+% total_mass_analysis
+We repeat the above analysis for e8 and north.  They have peak flux densities
+of 0.35 and 0.44 Jy/beam respectively, corresponding to peak brightness
+temperatures of 205 and 256 K.
 The lower limit luminosities of W51 e8 and north in a single beam, assuming the
 brightest detected beam is optically thick, are 1.6\ee{4} and 3.9\ee{4} \lsun,
 respectively.
@@ -727,28 +772,6 @@ ALMAmm14 is one of the brightest sources outside of e2/e8/IRS2, but
 it is substantially fainter than those regions.  Still, it has a noticeably
 rich chemistry.
 }{fig:chemmapsALMAmm14}{1}{18cm}
-
-\subsubsection{Chemical structure: Interpretation}
-\label{sec:cheminterp}
-\todo{Probably cut P1 here and move the whole thing to "Discussion"}
-The enhancements in noted lines occur as factor of 3-10 increases in the peak
-brightness of most of the lines shown in Figure \ref{fig:chemmapse2}.  These
-enhancements could occur from increased total column density, increased
-abundance of the molecules, or increased excitation.
-
-In Section \ref{sec:ch3ohtem}, we examine the \methanol abundance
-and excitation conditions. 
-The detection of highly excited \methanol lines, including
-$18_{3,15}-17_{4,14}$ ($E_U=447$ K) and $25_{3,22}-24_{4,20}$ ($E_U=802$ K),
-suggests that excitation is part of the explanation for the brighter
-molecular emission.  However, LTE modeling reveals that the \methanol abundance
-increases by a factor of $\sim5-10$ from the protocluster gas inward toward the
-e2e core.  This abundance gradient is likely present in other molecules as
-well.  Given the enhanced abundance of \methanol, these sharp-edged bubbles
-probably represent sublimation zones in which substantial quantities of
-grain-processed materials are released into the gas phase.  The relatively
-sharp edges likely reflect the particular point where the temperature exceeds
-the sublimation temperature for each species.
 
 
 \subsection{\methanol temperatures \& columns in the hot cores}
@@ -1250,6 +1273,28 @@ predominantly self-regulated, with little external influence.
 %
 %d2 provides a counterpoint, however, as it is a hypercompact \hii region that *does*
 %exhibit enhanced molecular emission in its surroundings
+
+% \subsubsection{Chemical structure: Interpretation}
+% \label{sec:cheminterp}
+% %\todo{Probably cut P1 here and move the whole thing to "Discussion"}
+% %The enhancements in noted lines occur as factor of 3-10 increases in the peak
+% %brightness of most of the lines shown in Figure \ref{fig:chemmapse2}.  These
+% %enhancements could occur from increased total column density, increased
+% %abundance of the molecules, or increased excitation.
+% 
+% In Section \ref{sec:ch3ohtem}, we examined the \methanol abundance
+% and excitation conditions. 
+% The detection of highly excited \methanol lines, including
+% $18_{3,15}-17_{4,14}$ ($E_U=447$ K) and $25_{3,22}-24_{4,20}$ ($E_U=802$ K),
+% suggests that excitation is part of the explanation for the brighter
+% molecular emission.  However, LTE modeling reveals that the \methanol abundance
+% increases by a factor of $\sim5-10$ from the protocluster gas inward toward the
+% e2e core.  This abundance gradient is likely present in other molecules as
+% well.  Given the enhanced abundance of \methanol, these sharp-edged bubbles
+% probably represent sublimation zones in which substantial quantities of
+% grain-processed materials are released into the gas phase.  The relatively
+% sharp edges likely reflect the particular point where the temperature exceeds
+% the sublimation temperature for each species.
 
 
 \subsubsection{Outflows}
