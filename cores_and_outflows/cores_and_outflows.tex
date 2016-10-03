@@ -31,8 +31,8 @@
     %    see make\_photometry\_table
     %\item MOVE TO DISKS PAPER Is any discussion of the gas kinematics warranted?  That should
     %    perhaps be relegated to the (lack of?) disks paper
-    \item create Table ref{tab:linelist} = \ref{tab:linelist} (Section
-        \ref{sec:temperature})
+    % \item DONE create Table ref{tab:linelist} = \ref{tab:linelist} (Section
+    %     \ref{sec:temperature})
     %\item DONE Show a `core' mass histogram in Section \ref{sec:temperature}
     %\item DONE Repeat Section \ref{sec:W51e2e} for e8 and north
     %\item DONE - commented out: move Section \ref{sec:cheminterp} to discussion
@@ -432,11 +432,16 @@ Figure \ref{fig:peaktbhist} shows the distribution of peak line brightnesses
 for the continuum sources.  The spectra used to determine this brightness are
 the mean spectra over the continuum photometry aperture.  To obtain the peak
 line brightness, we fit Gaussian profiles to each identified line listed in
-Table \ref{tab:linelist}, rejecting those with poor fits.  The line
-brightnesses reported in the figure are the sum of the continuum-subtracted
-peak line brightness and the continuum brightness.  Excepting CO and
-\formaldehyde, which are excluded from the plot, \methanol is the brightest
-line toward most sources. 
+Tables \ref{tab:linesspw0}-\ref{tab:linesspw3}, rejecting those with poor fits.
+The line brightnesses reported in the figure are the sum of the
+continuum-subtracted peak line brightness and the continuum brightness.
+Excepting CO and \formaldehyde, which are excluded from the plot, \methanol is
+the brightest line toward most sources. 
+
+\include{linesspw0}
+\include{linesspw1}
+\include{linesspw2}
+\include{linesspw3}
 
 \Figure{figures/brightest_line_histogram.png}
 {Histogram of the brightest line toward each continuum source.
