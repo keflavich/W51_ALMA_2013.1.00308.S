@@ -138,9 +138,9 @@ determine their nature (\S \ref{sec:contsourcenature}).  We examine the most
 massive cores in Sections \ref{sec:W51e2e} and \ref{sec:w51e8andnorth} and then
 compute their radial mass profiles in \ref{sec:radialmass}.
 Section \ref{sec:massbudget} describes the mass and flux recovered on different
-spatial scales.
-Section \ref{sec:chemistrymaps} describes the observed (\S
-\ref{sec:chemistrymapsobs}) chemical distribution and
+spatial scales,
+Section \ref{sec:chemistrymaps}  the observed chemical distribution, and
+Section \ref{sec:methanol} the
 temperatures inferred from \methanol lines (\S \ref{sec:methanol}).
 Section \ref{sec:nonionizingradiation} shows that the heating is not coming
 from \hii regions.
@@ -498,8 +498,8 @@ brightness.  For some regions, especially the e8 filament and the hot cores,
 %noted in Section \ref{sec:morphology},
 the surface brightness is substantially
 brighter than is possible for a beam-filling, optically thick blackbody at 20
-K, providing a lower limit on the dust temperature ranging from 30 K (40
-mJy/beam) to 600 K (1 Jy/beam).  Toward most of this emission, optically-thick
+K, providing a lower limit on the dust temperature ranging from 20 K (35
+mJy/beam) to $\sim300$ K (0.5 Jy/beam).  Toward most of this emission, optically-thick
 free-free emission can be strongly ruled out as the driving mechanism using
 existing data that limits the free-free contribution to be $<50\%$ if it is
 optically thick, and negligible ($<<1\%$) if it is optically thin at radio wavelengths
@@ -594,8 +594,9 @@ shown in Figure \ref{fig:fluxhistograms} using the peak brightness temperature
 toward the center of that source as the dust temperature.
 The aperture size is listed in the y-axis label.  For the top plot, labeled
 `Peak', the mass is computed from peak
-flux density in Jy/beam.  For the rest, it is the integrated flux density
-in the specified aperture.  The unfilled data show all sources and the hashed
+flux density in Jy/beam.  For the rest, it is the integrated flux density in
+the specified aperture in Jy.  The unfilled data show all sources and the
+hashed
 data are for starless core candidates (Section \ref{sec:contsourcenature}).}
 {fig:masshistograms}
 {1}{16cm}
@@ -648,10 +649,12 @@ We classified each of the 75 hand-selected sources on the following parameters:
         and $T_B>50$ K and $C<2$
     \item The remaining sources with $S_{15 GHz} < 0.1 S_{226 GHz}$ and $50 >
         T_B > 20$ K were classed as uncertain compact ($C>2$) or uncertain extended
-        $C<2$
+        ($C<2$)
 \end{enumerate}
 
-The classification is a broad guideline for further analysis.   
+These classifications are set in the `Categories' column of Table
+\ref{tab:photometry}.  They serve as a broad guideline for further
+analysis.   
 
 
 
@@ -673,9 +676,10 @@ density toward W51 e2e is 0.38 Jy, which corresponds to a brightness
 temperature $T_B=225$ K.  This is a lower limit to the surface brightness of
 the millimeter core, since an optical depth $\tau<1$ or a filling factor of the
 emission $ff<1$ would both imply higher intrinsic temperatures.  The implied
-luminosity, assuming a pure blackbody, is $L = 4\pi r^2 \sigma_{sb} T^4 =
-2.3\ee{4} \lsun$.  Since any systematic uncertainties imply a higher
-temperature, this estimate is a lower limit on the source luminosity.
+luminosity, assuming blackbody emission from a spherical beam-filling source,
+is $L = 4\pi r^2 \sigma_{sb} T^4 = 2.3\ee{4} \lsun$.  Since any systematic
+uncertainties imply a higher temperature, this estimate is a lower limit on the
+source luminosity.
 
 % this mass estimation method is not self-consistent; T_dust = T_peak implies
 % tau >= 1
@@ -728,13 +732,13 @@ core.
 % scales up to XXXXX).
 
 All three sources show similar radial profiles, containing up to 3000 \msun
-within a very compact radius of 5400 AU (0.03 pc).  However, the temperature
-structure within these sources is certainly not homogeneous, and very likely a
+within a compact radius of 5400 AU (0.03 pc).  However, the temperature
+structure within these sources is certainly not homogeneous, and  likely a
 large fraction of the total flux comes from $T\gtrsim300$ K heated material
 \citep[Section \ref{sec:temperature}; ][]{Goddi2016a}.  If the observed dust were
 all at 600 K, the mass would be $\sim17\times$ lower, 100 \msun, which we treat
-as a strict lower bound as it is unlikely that the dust more than $\gtrsim1000$
-au is so warm.  Additionally, it is very likely that a substantial mass of cold
+as a strict lower bound as it is unlikely that the dust at more than $r\gtrsim1000$
+AU is so warm.  Additionally, it is  likely that a substantial mass of cold
 dust is also present but undetectable because it is hidden by the hotter dust.
 %\todo{This paragraph is somewhat redundant with Section \ref{sec:W51e2e}, but
 %still useful.  Perhaps blend these?}
@@ -784,15 +788,15 @@ An evolutionary indicator used for star-forming regions is the amount of mass
 at a given density; a more evolved (more efficiently star-forming) region will
 have more mass at high densities.  We cannot measure the dense gas fraction
 directly, but the amount of flux density recovered by an interferometer
-provides a reasonable approximation.
+provides an approximation.
 
 % total_mass_analysis
 For the ``total'' flux density in the region, we use the Bolocam Galactic Plane
 Survey observations \citep{Aguirre2011a,Ginsburg2013a}, which are the closest
 in frequency single-dish millimeter data available.  We assume a spectral index
 $\alpha=3.5$ to convert the BGPS flux density measurements at 271.4 GHz to the
-mean ALMA frequency of 226.6 GHz.  The ALMA data (\todo{specifically, the
-0.2\arcsec 12m-only data}) have a total flux 23.2 Jy above a very conservative
+mean ALMA frequency of 226.6 GHz.  The ALMA data (specifically, the
+0.2\arcsec resolution 12m-only data) have a total flux 23.2 Jy above a  conservative
 threshold of 10 mJy/beam in our
 mosaic; in the same area the BGPS data have a flux of 144 Jy, which scales down to
 76.5 Jy.  The recovery fraction is 30$\pm3$\%, where the error bar accounts
@@ -808,18 +812,24 @@ Even more impressive is the amount of the total flux density concentrated
 into the three `massive cores', W51 e2e, e8, and north.  These three contain
 12.3 Jy (within 1\arcsec or 5400 AU apertures) of the total 23.2 Jy in the
 observed field - more than half of the total ALMA flux density, or 15\% of the
-BGPS flux density.
+BGPS flux density.  In a \citet{Kroupa2001a} IMF, massive stars ($M>20$ \msun)
+account for only 0.15\% of the mass, so in order for the gas mass distribution
+to produce a `normal' stellar distribution, the high-mass-star-producing gas
+must be much brighter (hotter) than that making low-mass stars, or the gas must
+be substantially redistributed and fragmented as the region evolves.
+% In [47]: imf.kroupa.integrate(20, 1000)
+% Out[47]: (0.001422768266487118, 1.1342325281121882e-11)
 
 % \todo{TODO: determine the largest angular scale in the ALMA images.  Requires
 % using the simulations.}
 
 \subsection{Chemically Distinct Regions}
 \label{sec:chemistrymaps}
-\subsubsection{Observations}
+%\subsubsection{Observations}
 \label{sec:chemistrymapsobs}
 The ``hot cores'' in W51 (e2, e8, and North) are spatially well-resolved and
 multi-layered.  These cores are detected in lines of many different species
-spanning areas $\sim5\ee{3}-10^4$ au across.
+spanning areas $\sim5\ee{3}-10^4$ AU across.
 
 Surrounding W51e2e, there are relatively sharp-edged uniform-brightness regions
 in a few spectral lines over the range 51-60 \kms (Figure
@@ -838,10 +848,10 @@ By contrast, along the south end of the e8 filament, no such enhanced features
 are seen; only \formaldehyde and the lowest transition of \methanol are
 evident.
 
-The relative chemical structures of e2, e8, and IRS2 are relatively similar.
+The relative chemical structures of e2, e8, and IRS2 are  similar.
 The same species are detected in all of the central cores.  However, in e2,
 \dimethylether, \methylformate, \ethylcyanide, and Acetone (\acetone) are
-significantly more extended in e2 than in the other sources.
+significantly more extended than in the other sources.
 \gaucheethanol is detected in W51 North, but is weak in e8 and almost absent
 in e2 (Figures \ref{fig:chemmapse2}, \ref{fig:chemmapse8},
 \ref{fig:chemmapsnorth}, \ref{fig:chemmapsALMAmm14}).
@@ -858,6 +868,10 @@ the compact core. Finally, there are the species that trace the broader ISM in
 addition to the cores and outflows (\formaldehyde, $^{13}$CS, OCS, C$^{18}$O
 and SO).  Both HCOOH and N$_2$D+ are weak and associated only with the innermost
 e2e core.
+
+The presence of these complex species symmetrically distributed at large
+distances ($r\sim5000$ AU) from the central sources is an independent indication
+of the gas heating provided by these sources.
 
 \Figure{figures/chemical_m0_slabs_e2.png}
 {Moment 0 maps of the e2 region in 40 different lines over the range 51 to 60
@@ -878,8 +892,8 @@ centimeter emission in e2.
 \kms with continuum subtraction using the 30th percentile emission
 over the ranges 25-40 and 75-90 \kms.  All images are on the same scale, and
 the negative features show absorption against the continuum.  As in e2,
-there is extended emission in the CH$_3$OH and OCS lines, but in contrast,
-the othe CH$_3$Ox lines are more compact. SO is brighter than OCS in e8, 
+there is extended emission in the CH$_3$OH and OCS lines, but in contrast with e2,
+the other CH$_3$Ox lines are more compact. SO is brighter than OCS in e8, 
 whereas the opposite is true in e2.
 }{fig:chemmapse8}{1}{18cm}
 
@@ -905,12 +919,13 @@ rich chemistry.
 \subsection{\methanol temperatures \& columns in the hot cores}
 \label{sec:ch3ohtem}
 \label{sec:methanol}
-The extreme chemical regions appear to be associated with regions of
+The  chemically ehnanced regions appear to be associated with regions of
 elevated gas temperature.  We examine this directly by analyzing
 the excitation of lines for which we have detected multiple transitions with
-significant energy differences.  We do not use \formaldehyde for this analysis
+significant energy differences.  We do not use \formaldehyde  for this analysis 
+despite its usefulness as a thermometer
 because it is clearly optically thick (self-absorbed) in all lines in the
-regions of greatest interest.
+hot cores.
 
 We produce rotational diagrams for each spatial pixel covering all \methanol lines
 detected at high significance toward at least one position.  The detected lines
@@ -952,7 +967,9 @@ display significant discrepancies, especially at low J where self-absorption is
 evident.  In Figure \ref{fig:ch3ohe2epeaks}, there is clearly a low-temperature
 component slightly redshifted from the high-J peak that can be seen as a dip
 within the line profile.  The presence of this unmodeled low-temperature
-component renders our \methanol temperature measurements uncertain.
+component renders our \methanol temperature measurements uncertain.  Nevertheless,
+the general trend exhibited by \methanol temperatures matches expectations
+if there is a central heating source.
 
 
 
@@ -1108,17 +1125,17 @@ formation.
 The ionizing radiation in W51 was discussed in detail in \citep{Ginsburg2016b}.
 Ionizing radiation affects much of the cloud, but little of the high-density
 prestellar material.  There is no evidence of increased gas temperatures in the
-vicinity of \hii regions.  While in Section \ref{sec:nonionizingradiation} we
+vicinity of \hii regions.  While in Section \ref{sec:chemsitrymaps} we
 identify chemically enhanced regions as those where radiative feedback has
 heated the dust and released ices into the gas phase, no such regions are
 observed surrounding the most luminous compact \hii regions.
 
-This lack of molecular brightness enhancement is only an indirect indication
-that the \hii regions do not affect the surrounding dense gas temperature.  A
-direct proof that the ionizing sources are having no or minimal effect would
-require temperature measurements on the outskirts of the \hii regions, but this
-is not possible without prior detection of bright emission in thermometric
-transitions.
+% This lack of molecular brightness enhancement is only an indirect indication
+% that the \hii regions do not affect the surrounding dense gas temperature.  A
+% direct proof that the ionizing sources are having no or minimal effect would
+% require temperature measurements on the outskirts of the \hii regions, but this
+% is not possible without prior detection of bright emission in thermometric
+% transitions.
 
 The chemical maps shown in Section \ref{sec:chemistrymaps} show the volumes of
 gas clearly affected by newly-forming high-luminosity stars.  The
@@ -1172,8 +1189,8 @@ A high-velocity outflow was discovered within the W51 IRS2 region by
 \citet{Ginsburg2016b}.  We have discovered the CO counterpart to this
 outflow, which comes from near the continuum source ALMAmm31 (Figure
 \ref{fig:lacyjet}).  Strangely, though, the outflow is not directly centered on
-the continuum source, but is slightly offset.  The outflow shows red- and
-blue-shifted flows that form the base of the ionized outflow reported by
+the millimeter continuum source, but is slightly offset.  The outflow shows red- and
+blue-shifted lobes that form the base of the ionized outflow reported by
 \citet[][Figure \ref{fig:outflowscontinuumnorth}]{Lacy2007a}.
 
 %\todo{Make a figure of this \& describe data reduction if it is to be included.}
@@ -1222,8 +1239,8 @@ However, the association is only circumstantial.
 The dominant outflow in W51, which was previously detected by the SMA
 \citep{Shi2010a,Shi2010b}, comes from the source e2e.  This outflow is
 remarkable for its high velocity, extending nearly to the limit of our spectral
-coverage.  The ends of the flow cover at least $-50 < v_{lsr} < 160$ \kms, or a
-velocity $v\pm100$ \kms.  
+coverage in $^{12}$CO.  The ends of the flow cover at least $-50 < v_{lsr} <
+160$ \kms, or a velocity $v\pm100$ \kms.  
 
 The morphology is also notable.  Both ends of the outflow are sharply truncated
 at $\sim2.5\arcsec$ (0.07 pc) from e2e (Figure \ref{fig:outflowscontinuume2}).
@@ -1331,11 +1348,12 @@ erratic, with fewer clearly-connected red and blue lobes.}
 %}
 
 
+
 \section{Discussion}
 \label{sec:discussion}
 \subsection{The scales and types of feedback}
 \label{sec:feedbackscales}
-The most promiment features of our observations are the warm, chemically
+The most prominent features of our observations are the warm, chemically
 enhanced regions surrounding the highest dust concentrations, and the
 corresponding \emph{lack} of such features around the ionized nebulae.  This
 difference implies that the immediate star formation process - that of gas
