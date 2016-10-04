@@ -1,8 +1,8 @@
 # Region file format: DS9 version 4.1
 global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1
 fk5
-line(19:23:44.087,+14:30:32.62,19:23:43.854,+14:30:37.60) # line=0 0 text={e2}
-line(19:23:44.046,+14:30:25.96,19:23:43.779,+14:30:29.82) # line=0 0 text={e8}
-line(19:23:40.142,+14:31:04.19,19:23:39.906,+14:31:06.51) # line=0 0 text={north}
+line(19:23:44.166,+14:30:31.55,19:23:43.723,+14:30:38.80) # line=0 0 text={e2}
+line(19:23:44.119,+14:30:24.27,19:23:43.703,+14:30:31.68) # line=0 0 text={e8}
+line(19:23:40.208,+14:31:03.24,19:23:39.890,+14:31:07.35) # line=0 0 text={north}
 line(19:23:40.534,+14:30:57.38,19:23:39.742,+14:31:20.41) # line=0 0 text={northoutflow}
 line(19:23:39.911,+14:31:04.35,19:23:39.684,+14:31:05.94) # line=0 0 text={northwest}

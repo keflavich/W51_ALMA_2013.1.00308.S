@@ -102,6 +102,10 @@ F.scalebar.set_color('w')
 F.save(paths.fpath("outflows/W51e2_cycle3green_SiO_outflows_aplpy_zoom.png"))
 F.save(paths.fpath("outflows/W51e2_cycle3green_SiO_outflows_aplpy_zoom.pdf"))
 
+F.show_contour(e2_green_fits, levels=[0.0007], colors=['w']*10)
+F.save(paths.fpath("outflows/W51e2_cycle3green_SiO_outflows_aplpy_zoom_continuumcontours.png"))
+F.save(paths.fpath("outflows/W51e2_cycle3green_SiO_outflows_aplpy_zoom_continuumcontours.pdf"))
+
 
 fig1 = pl.figure(1)
 fig1.clf()
@@ -122,6 +126,9 @@ F.scalebar.set_color('w')
 F.save(paths.fpath("outflows/W51e2_cycle3green_SiO_outflows_faintercontinuum_aplpy_zoom.png"))
 F.save(paths.fpath("outflows/W51e2_cycle3green_SiO_outflows_faintercontinuum_aplpy_zoom.pdf"))
 
+F.show_contour(e2_green_fits, levels=[0.0007], colors=['w']*10)
+F.save(paths.fpath("outflows/W51e2_cycle3green_SiO_outflows_faintercontinuum_aplpy_zoom_continuumcontours.png"))
+F.save(paths.fpath("outflows/W51e2_cycle3green_SiO_outflows_faintercontinuum_aplpy_zoom_continuumcontours.pdf"))
 
 
 
@@ -171,6 +178,9 @@ F.scalebar.set_label('1000 au / 0.005 pc')
 F.save(paths.fpath("outflows/W51e8_cycle3green_SiO_outflows_aplpy_zoom.png"))
 F.save(paths.fpath("outflows/W51e8_cycle3green_SiO_outflows_aplpy_zoom.pdf"))
 
+F.show_contour(e2_green_fits, levels=[0.0007], colors=['w']*10)
+F.save(paths.fpath("outflows/W51e8_cycle3green_SiO_outflows_aplpy_zoom_continuumcontours.png"))
+F.save(paths.fpath("outflows/W51e8_cycle3green_SiO_outflows_aplpy_zoom_continuumcontours.pdf"))
 
 north_blue_fits_fn = paths.dpath('longbaseline/SiO_m32to55kms_north.fits')
 north_red_fits_fn = paths.dpath('longbaseline/SiO_74to118kms_north.fits')
@@ -216,6 +226,9 @@ F.show_regions(paths.rpath('n_sio_vla.reg'))
 F.save(paths.fpath("outflows/W51north_cycle3green_SiO_outflows_aplpy_zoom_SiOmasers.png"))
 F.save(paths.fpath("outflows/W51north_cycle3green_SiO_outflows_aplpy_zoom_SiOmasers.pdf"))
 
+F.show_contour(north_green_fits, levels=[0.0007], colors=['w']*10)
+F.save(paths.fpath("outflows/W51north_cycle3green_SiO_outflows_aplpy_zoom_SiOmasers_continuumcontours.png"))
+F.save(paths.fpath("outflows/W51north_cycle3green_SiO_outflows_aplpy_zoom_SiOmasers_continuumcontours.pdf"))
 
 
 

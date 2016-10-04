@@ -15,7 +15,7 @@ for spwid in (0,1,2,3):
                       unit=u.GHz,)
 
     EU = [set(Splatalogue.query_lines(freq*(1-0.001/3e5),
-                                      freq*(1+0.001*3e5))['E_U (K)'])
+                                      freq*(1+0.001/3e5))['E_U (K)'])
           for freq in u.Quantity(freq_col)]
 
     #spw_col = Column(data=[spw for _,_,_,spw in line_to_image_list
