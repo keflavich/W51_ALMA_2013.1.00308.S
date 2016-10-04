@@ -54,11 +54,111 @@
 \end{enumerate}
 
 \section{Introduction}
-We introduce...
+High-mass stars are the drivers of galaxy evolution, cycling enriched materials
+into the interstellar medium (ISM) and illuminating it.  During their formation
+process, however, these stars are nearly undetectable because of their rarity
+and their opaque surroundings.  We therefore know relatively little about how
+massive stars acquire their mass and what their immedate surroundings look like
+at this early time.
+
+Assuming the stellar initial mass function (IMF) is a universal (or nearly
+univeral) distribution, very massive stars (VMS; $M>50 \msun$) almost always form
+in clusters.  Their presence, and the strong feedback they produce, may
+directly influence how the IMF around them is formed.  If feedback from these
+stars is relevant while most of the  mass surrounding them is still in gas (not
+yet in stars), the mass function in such clusters cannot be determined by ISM
+properties alone. 
+% actually, this relies on stellar feedback \citep[e.g., as described in][]{Krumholz2011c}.
+
+Models of high-mass star formation universally have difficulty getting enough
+mass to a stellar radius to form very massive stars.  Generally, these models
+produce a high-mass star with enough luminosity to halt further
+\emph{spherical} accretion at a very early stage, with $M_* \sim 10-20\msun$.
+Radiation pressure provides a fundamental limit on how much mass can be
+accreted \citep{}, but geometric effects can circumvent this limit and allow
+further accretion
+\citep{Krumholz2005b,Krumholz2009a,Krumholz2009b,Kuiper2012a,Kuiper2013c,Rosen2016a}.
+Additionally, fragmentation-induced starvation can limit the amount of mass
+available to the most massive star, instead breaking up massive cores into many
+lower-mass fragments \citep{Peters2010a}.  These simulations still have limited
+physics and can only produce stars up to $M\sim80$ \msun even in the current
+best cases \citep{Kuiper2015a,Kuiper2016a}.
+
+Nature is clearly capable of producing such massive stars and some that are
+even larger.  Within the LMC, stars up to $M\sim300$ \msun have been
+spectroscopically identified \citep{Crowther2016a}, so we know it is possible
+to form these.  Within our own Galaxy, UV and optical characterization of these
+stars is not possible, but some infrared lines are indicators of such stars.
+\citet{Barbosa2008a} identified an O3 and an O4 star ($M\gtrsim50$ \msun)
+within the W51 IRS2 region, demonstrating that this region at least was in the
+past capable of forming such stars.
+
+The W51 cloud contains two protocluster regions, IRS2 and e1/e2, which each
+contain $M\gtrsim10^4$ \msun of gas and have far-infrared luminosities that
+indicate the presence of formed or forming massive stars
+\citep{Harvey1986a,Sievers1991a,Ginsburg2012a,Ginsburg2016b}.  Previous
+millimeter and centimeter observations have revealed the gas that is forming
+new stars and indicated that the new stars are likely to be massive
+\citep{Zhang1997a,Eisner2002a,Zapata2009a,Zapata2010a,Shi2010a,Shi2010b}.  The
+W51 protoclusters, while distant \citep[5.4 kpc][]{Sato2010a}, therefore
+provide a powerful laboratory for studying high-mass star formation in an
+environment where massive star feedback is already evident, but high-mass star
+formation is still ongoing.
+
+% we're proving this?
+This combination of feedback and ongoing formation is essential for testing
+components of high mass star formation theory that are relatively inaccessible
+to simulations.
+\citet{Krumholz2006a} suggest that accretion heating during the formation
+of high-mass stars can heat their cores to $\gtrsim100$ K and therefore
+suppress fragmentation into smaller stars as would be expected for cold cores.
+While simulations have verified the conclusion that early-stage accretion
+heating is important for low-mass star formation
+\citep{Krumholz2007c,Offner2011b, Bate2012a,Bate2014b}, there have been
+neither theoretical nor observational tests of this model for high-mass
+stars. 
+
+
+
+
+
+\todo{The major sectioning/subsectioning breakdown is awkward.} We present an
+observational study of the high-mass star-forming region W51.  In Section
+\ref{sec:observations}, we describe the observations and data reduction
+process.  Section \ref{sec:results} describes the analysis, including source
+identification (\S \ref{sec:sourceid}), spatial distribution (\S
+\ref{sec:corespatialdistribution}), photometry (\S \ref{sec:photometry}), and
+statistical distributions (\S \ref{sec:distributionfunctions}).  We then
+examine the source temperatures (\S \ref{sec:temperatures}) in order to
+determine their nature (\S \ref{sec:contsourcenature}).  We examine the most
+massive cores in Sections \ref{sec:W51e2e} and \ref{sec:w51e8andnorth} and then
+compute their radial mass profiles in \ref{sec:radialmass}.
+Section \ref{sec:massbudget} describes the mass and flux recovered on different
+spatial scales.
+Section \ref{sec:chemistrymaps} describes the observed (\S
+\ref{sec:chemistrymapsobs}) chemical distribution and
+temperatures inferred from \methanol lines (\S \ref{sec:methanol}).
+Section \ref{sec:nonionizingradiation} shows that the heating is not coming
+from \hii regions.
+Section \ref{sec:outflows} and its subsections describe outflows \todo{should
+this be relegated to an appendix?  It breaks the flow...}.
+%finally!  so many subsections!!!
+Section \ref{sec:discussion} discusses scales and types of feedback (\S
+\ref{sec:feedbackscales}), outflows (\S \ref{sec:outflowdiscussion}),
+\todo{accretion and outflows (\S \ref{sec:accretionandoutflows})},
+and fragmentation (\S \ref{sec:fragmentation}).  
+We conclude in Section \ref{sec:conclusion}.
+Additional interesting features in the W51 data not directly relevant
+to our main topic are discussed in Appendix \ref{sec:e5bubble}.
+
+
+
+
 
 
 
 \section{Observations}
+\label{sec:observations}
 As part of ALMA Cycle 2 program 2013.1.00308.S, we observed a
 $\sim2\arcmin\times1\arcmin$ region centered between W51 IRS2 and W51 e1/e2
 with a 37-pointing mosaic.  Two configurations of the 12m array were used,
@@ -183,7 +283,9 @@ We produced spectral image cubes of the lines listed in Tables
 
 
 \section{Results \& Analysis}
+\label{sec:results}
 \subsection{Source Identification}
+\label{sec:sourceid}
 % dendrogramming.py
 We used the \texttt{dendrogram} method described by \citet{Rosolowsky2008c} and
 implemented in \texttt{astrodendro} to identify sources.  We used a minimum
@@ -493,8 +595,9 @@ either protostars or starless cores.  However, in this high-mass star-forming
 region, we have to consider both those possibilities and potential free-free
 sources or high-luminosity main-sequence stars embedded in dust.
 
-We fit each of up to $\sim50$ lines (see Table ...) with Gaussian profiles to
-attempt to determine the relative line strengths toward each source.  Most
+We fit each of up to $\sim50$ lines (see Tables
+\ref{tab:linesspw0}-\ref{tab:linesspw3}) with Gaussian profiles to attempt to
+determine the relative line strengths toward each source.  Most
 sources were detected in at least $\sim5-10$ lines, though some of these are
 associated with interstellar rather than circumstellar material, i.e.,
 \formaldehyde, CO, $^{13}$CS.  For sources with detections in non-interstellar
@@ -701,6 +804,7 @@ BGPS flux density.
 \subsection{Chemically Distinct Regions}
 \label{sec:chemistrymaps}
 \subsubsection{Observations}
+\label{sec:chemistrymapsobs}
 The ``hot cores'' in W51 (e2, e8, and North) are spatially well-resolved and
 multi-layered.  These cores are detected in lines of many different species
 spanning areas $\sim5\ee{3}-10^4$ au across.
@@ -1216,7 +1320,9 @@ erratic, with fewer clearly-connected red and blue lobes.}
 
 
 \section{Discussion}
+\label{sec:discussion}
 \subsection{The scales and types of feedback}
+\label{sec:feedbackscales}
 The most promiment features of our observations are the warm, chemically
 enhanced regions surrounding the highest dust concentrations, and the
 corresponding \emph{lack} of such features around the ionized nebulae.  This
@@ -1331,6 +1437,8 @@ general `extended hot core' emission described in Section
 
 
 \subsection{The accreting phase of high-mass star formation}
+\label{sec:accretionandoutflows}
+\todo{This section may be eliminatable:}
 The strong outflows observed around the highest-mass forming stars, e2e, e8,
 and north are clear indications of ongoing accretion onto these sources.
 However, the bright \hii regions, including e2w, e1, and d2, all lack any sign
@@ -1362,7 +1470,10 @@ halt the growth of these stars and limit their final mass \citep{Peters2010a}.
 Thermal Jeans fragmentation can be limited or suppressed entirely if the gas is
 warm enough.  The high observed gas temperatures, $T\sim100-600$ K over
 $\sim10^4$ AU, around the high mass protostars indicate that their radiative
-feedback in the infrared has a dramatic effect on the gas.  
+feedback in the infrared has a dramatic effect on the gas.  The heated region
+qualitatively matches that of \citet{Krumholz2006a}, who described
+a core heated only by accretion luminosity down to $R=10$ AU and therefore
+gave a lower limit on the total heating. 
 
 We examined the temperature structure around the highest-mass cores in Section
 \ref{sec:temperature} and the mass structure in Section \ref{sec:radialmass}.
@@ -1422,7 +1533,24 @@ below which the gas is stable to the Jeans instability.}
 % useful questions:
 % how much of the 'core' mass will end up in a single star?  single system?
 
+% \subsection{The core mass function}
+% \todo{continue this}
+% Naively, with the conclusions of Section \ref{sec:fragmentation} in hand, one
+% might be tempted to conclude that the core-to-star mapping, which is a critical
+% component of core mass function (CMF) based theories, is constant with mass.
+% This conclusion cannot be safely drawn from our data, as the massive `core'
+% we have observed is far larger than any other source in our sample.
+%
+% Did e2w "create" e2e by heating a core and stopping fragmentation?
+% Is this a form of cooperative accretion?
+%
+% Does the core mass function actually work because accretion feedback heating
+% keeps the massive core warm and puffy?
+% Does the CMF fail because time-ordered star formation (e2w->e2e) means there
+% is no instantaneously observable CMF?
+
 \section{Conclusions}
+\label{sec:conclusion}
 
 We have presented ALMA observations of the high-mass protocluster W51.  We
 examined the three most massive forming stars and the surrounding population of
@@ -1443,6 +1571,7 @@ forming stars.  The following conclusions....
 \appendix
 
 \section{A bubble around e5}
+\label{sec:e5bubble}
 There is evidence of a bubble in the continuum around e5 with a radius of
 6.2\arcsec (0.16 pc; Figure \ref{fig:e5bubble}).  The bubble is completely
 absent in the centimeter continuum, so the observed emission is from dust.  The
