@@ -83,7 +83,7 @@ for region in regions:
             beam = radio_beam.Beam.from_fits_header(sp.header)
             if sp.xarr.in_range(frq):
 
-                
+
                 # not needed!
                 #sp.xarr.convert_to_unit(u.km/u.s, refX=frq)
                 assert sp.xarr.unit == u.GHz
@@ -103,7 +103,7 @@ for region in regions:
                 sp_sl.xarr.convert_to_unit(u.km/u.s, refX=frq)
                 # guess at the errors
                 sp_sl.error[:] = err
-                
+
                 # perform fit
                 sp_sl.specfit(fittype='vheightgaussian',
                               guesses=[0.0, 0.1, vcen, 2],

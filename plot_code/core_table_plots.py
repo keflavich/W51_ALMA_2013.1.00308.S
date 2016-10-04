@@ -10,6 +10,9 @@ from astropy import wcs
 from matplotlib.patches import Circle
 import matplotlib
 from cycler import cycler
+import os
+import contextlib
+devnull = open(os.devnull,'w')
 
 pl.matplotlib.rc_file('pubfiguresrc')
 pl.mpl.rcParams['axes.color_cycle'] = ('338ADD', '9A44B6', 'A60628', '467821',
@@ -39,7 +42,10 @@ fig2 = pl.figure(2)
 fig2.clf()
 ax2 = fig2.add_subplot(211)
 
-fit = powerlaw.Fit(core_phot_tbl['peak'])
+print()
+print("Core distribution: peak")
+with contextlib.redirect_stderr(devnull):
+    fit = powerlaw.Fit(core_phot_tbl['peak'])
 fit.plot_ccdf(color='k')
 fit.power_law.plot_ccdf(color='r', linestyle='--')
 ax2.set_ylabel("Fraction of sources")
@@ -56,7 +62,8 @@ ax2.set_xlabel("Peak $T_B$ [K]")
 
 ax3 = fig2.add_subplot(212)
 
-fit = powerlaw.Fit(core_phot_tbl['peak'])
+with contextlib.redirect_stderr(devnull):
+    fit = powerlaw.Fit(core_phot_tbl['peak'])
 # doesn't work at all fit.plot_pdf(color='k')
 ax3.hist(core_phot_tbl['peak'], bins=np.logspace(-3,-0.5,15),
          color='k', facecolor='none', histtype='step')
@@ -73,14 +80,18 @@ fig2 = pl.figure(2)
 fig2.clf()
 ax2 = fig2.add_subplot(211)
 
-fit = powerlaw.Fit(cores_merge['T_corrected_peakmass'])
+print()
+print("Core distribution: tem-corrected peak mass")
+with contextlib.redirect_stderr(devnull):
+    fit = powerlaw.Fit(cores_merge['T_corrected_peakmass'])
 fit.plot_ccdf(color='k')
 fit.power_law.plot_ccdf(color='r', linestyle='--')
 ax2.set_ylabel("Fraction of sources")
 
 ax3 = fig2.add_subplot(212)
 
-fit = powerlaw.Fit(cores_merge['T_corrected_peakmass'])
+with contextlib.redirect_stderr(devnull):
+    fit = powerlaw.Fit(cores_merge['T_corrected_peakmass'])
 # doesn't work at all fit.plot_pdf(color='k')
 bmin, bmax = 0.2, 6.0
 bins = np.logspace(np.log10(bmin),np.log10(bmax),15)
@@ -104,17 +115,21 @@ fig2 = pl.figure(2)
 fig2.clf()
 ax2 = fig2.add_subplot(211)
 
+print()
+print("Core distribution: 'masses to fit', which replaces <20K w/20K masses")
 masses_to_fit = np.where(cores_merge['T_corrected_aperturemass'] < cores_merge['ApertureMass20K'],
                          cores_merge['T_corrected_aperturemass'], cores_merge['ApertureMass20K'])
 
-fit = powerlaw.Fit(masses_to_fit)
+with contextlib.redirect_stderr(devnull):
+    fit = powerlaw.Fit(masses_to_fit)
 fit.plot_ccdf(color='k')
 fit.power_law.plot_ccdf(color='r', linestyle='--')
 ax2.set_ylabel("Fraction of sources")
 
 ax3 = fig2.add_subplot(212)
 
-fit = powerlaw.Fit(masses_to_fit)
+with contextlib.redirect_stderr(devnull):
+    fit = powerlaw.Fit(masses_to_fit)
 # doesn't work at all fit.plot_pdf(color='k')
 bmin, bmax = 0.1, 300.0
 bins = np.logspace(np.log10(bmin),np.log10(bmax),15)
@@ -287,6 +302,8 @@ class_colors = {
 }
 
 
+print()
+print("Fit each aperture excluding free-free fluxes")
 apertures = ('0p2', '0p4', '0p6', '0p8', '1p0', '1p5')
 for ii,aperture in enumerate(apertures):
     flux = (cores_merge['cont_flux{0}arcsec'.format(aperture)] -
@@ -295,7 +312,8 @@ for ii,aperture in enumerate(apertures):
           cores_merge['cont_flux{0}arcsec'.format(aperture)]) > 0.5
 
 
-    fit = powerlaw.Fit(flux[~ff])
+    with contextlib.redirect_stderr(devnull):
+        fit = powerlaw.Fit(flux[~ff])
     print("Powerlaw fit for apertures {0}: {1}+/-{4}     xmin: {2}"
           "    n: {3}".format(aperture, fit.power_law.alpha,
                               fit.power_law.xmin, fit.power_law.n,
@@ -481,6 +499,8 @@ yloc = pl.MaxNLocator(max_yticks)
 ax.yaxis.set_major_locator(yloc)
 
 
+print()
+print("Fit each aperture excluding free-free MASSES, THEN starless-only also ")
 apertures = ('0p2', '0p4', '0p6', '0p8', '1p0', '1p5')
 for ii,aperture in enumerate(apertures):
     mass = (cores_merge['T_corrected_{0}aperturemass'.format(aperture)])
@@ -488,8 +508,9 @@ for ii,aperture in enumerate(apertures):
           cores_merge['cont_flux{0}arcsec'.format(aperture)]) > 0.5
 
 
-    fit = powerlaw.Fit(flux[~ff])
-    print("Powerlaw fit for apertures {0}: {1}+/-{4}     xmin: {2}"
+    with contextlib.redirect_stderr(devnull):
+        fit = powerlaw.Fit(mass[~ff])
+    print("Powerlaw mass fit for apertures {0}: {1}+/-{4}     xmin: {2}"
           "    n: {3}".format(aperture, fit.power_law.alpha,
                               fit.power_law.xmin, fit.power_law.n,
                               fit.power_law.sigma,
@@ -500,8 +521,9 @@ for ii,aperture in enumerate(apertures):
                                      'number':fit.power_law.n,
                                     }
 
-    fit = powerlaw.Fit(flux[starless & ~ff])
-    print("Powerlaw fit for starless apertures {0}: {1}+/-{4}     xmin: {2}"
+    with contextlib.redirect_stderr(devnull):
+        fit = powerlaw.Fit(mass[starless & ~ff])
+    print("Powerlaw mass fit for starless apertures {0}: {1}+/-{4}     xmin: {2}"
           "    n: {3}".format(aperture, fit.power_law.alpha,
                               fit.power_law.xmin, fit.power_law.n,
                               fit.power_law.sigma,

@@ -21,7 +21,7 @@ molcld_exclude = np.array([any(nm in row['Species'] for nm in molcld_exclude_nam
 brightest_noncld_lines = []
 brightest_noncld_qns = []
 brightest_noncld_fluxes = []
-brightest_fitted_brightness = [] 
+brightest_fitted_brightness = []
 
 for row in cores_merge:
     src = row['SourceID']
@@ -69,7 +69,7 @@ apertures = ('0p2', '0p4', '0p6', '0p8', '1p0', '1p5')
 for ap in apertures:
     tcm = Column([(masscalc.mass_conversion_factor(20).value
                    if np.isnan(row['BrightestFittedPeakPixBrightnessWithcont'])
-                   or row['BrightestFittedPeakPixBrightnessWithcont'] < 20 
+                   or row['BrightestFittedPeakPixBrightnessWithcont'] < 20
                    else
                    masscalc.mass_conversion_factor(row['BrightestFittedPeakPixBrightnessWithcont']).value)
                   # already ppbeam corrected
@@ -122,7 +122,7 @@ cores_merge.add_column(Column(data=cold.astype('int8'),
                               name='is_cold'))
 cores_merge.add_column(Column(data=freefreedominated.astype('int8'),
                               name='is_freefree'))
-                              
+
 
 category = [('F' if ffd else 'f' if ffc else '-') +
             ('H' if ht else 'C' if cld else '-') +
@@ -133,7 +133,7 @@ category = [('F' if ffd else 'f' if ffc else '-') +
 
 cores_merge.add_column(Column(data=category, name='Categories'))
 
-classification = ['HII' if ffd else 
+classification = ['HII' if ffd else
                   'DustyHII' if ffc else
                   'StarlessCore' if (cld and comp) else
                   'HotCore' if (ht and comp) else
@@ -144,7 +144,7 @@ classification = ['HII' if ffd else
                   for ffd, ffc, ht, cld, comp in zip(freefreedominated,
                                                      freefreecontaminated, hot, cold,
                                                      compact)]
-                  
+
 cores_merge.add_column(Column(data=classification, name='Classification'))
 
 for category in np.unique(classification):

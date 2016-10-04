@@ -105,7 +105,7 @@ indicate the presence of formed or forming massive stars
 \citep{Harvey1986a,Sievers1991a,Ginsburg2012a,Ginsburg2016b}.  Previous
 millimeter and centimeter observations have revealed the gas that is forming
 new stars and indicated that the new stars are likely to be massive
-\citep{Zhang1997a,Eisner2002a,Zapata2009a,Zapata2010a,Shi2010b,Shi2010a}.  The
+\citep{Zhang1997a,Eisner2002a,Zapata2009a,Zapata2010a,Shi2010b,Shi2010a,Goddi2016a}.  The
 W51 protoclusters, while distant \citep[5.4 kpc;][]{Sato2010a}, therefore
 provide a powerful laboratory for studying high-mass star formation in an
 environment where massive star feedback is already evident, but 
@@ -193,7 +193,8 @@ were produced for different aspects of the analysis, one including the 7m array
 data and one including only 12m data.  Except where otherwise noted, the
 12m-only data were used in order to focus on the compact structures.
 
-Full details of the data reduction
+Full details of the data reduction, including all scripts used, can be found
+on the project's github repository\footnote{\url{https://github.com/keflavich/W51_ALMA_2013.1.00308.S}}.
 
 
 \subsubsection{Continuum}
@@ -204,14 +205,16 @@ iterations to a threshold of 5 mJy.  The lowest noise level in the image, away
 from bright sources, is $\sim0.2$ mJy/beam, but near the bright sources e2 and
 IRS2, the noise reached as high as $\sim2$ mJy/beam.  Deeper cleaning was
 attempted, but lead to instabilities.
+The combined image has a central frequency of about 226.6 GHz assuming a flat
+spectrum soure.
 
 
 \subsubsection{Lines}
 We produced spectral image cubes of the lines listed in Tables
-\ref{tab:linesspw0},
-\ref{tab:linesspw1},
-\ref{tab:linesspw2}, and
-\ref{tab:linesspw3}.
+\ref{tab:linesspw0}, \ref{tab:linesspw1}, \ref{tab:linesspw2}, and
+\ref{tab:linesspw3}.  For kinematic and moment analysis, the median value over
+the spectral range [25,30],[80,95] \kms was used to estimate and subtract the
+local continuum. 
 
 \input{linetable0.tex}
 
@@ -332,10 +335,10 @@ cores.
 %For spectral extraction, we also measured a background spectrum averaging
 %over an annulus with twice the radius of the source extraction.
 
-\subsection{The spatial distribution of cores}
+\subsection{The spatial distribution of continuum sources}
 \label{sec:corespatialdistribution}
-The detected cores are not uniformly distributed across the observed region.
-The most notable feature in the spatial distribution is their alignment: most cores
+The detected continuum sources are not uniformly distributed across the observed region.
+The most notable feature in the spatial distribution is their alignment: most continuum sources
 collect along approximately linear features.  This is especially evident
 in W51 IRS2, where the core density is very high and there is virtually no
 deviation from the line.  The e8 filament is also notably linear, though there
@@ -350,7 +353,7 @@ central bubble has swept gas into these filaments.  However, this ring has no
 counterparts in ionized gas, and there is little reason to expect such circular
 symmetry from a real cloud, so the star forming circle may be merely a figment.
 
-Whether it is physical or not, there is a notable lack of cores within the
+Whether it is physical or not, there is a notable lack of continuum sources within the
 circle.  There is no lack of molecular gas, however, as both CO and \formaldehyde
 emission fill the full field of view.
 
@@ -362,7 +365,7 @@ The dashed circle shows a hypothetical ring of star formation.
 
 \subsection{Photometry}
 \label{sec:photometry}
-We created a catalog of the sources including their peak and mean
+We created a catalog of the hand-extracted sources including their peak and mean
 flux density, their centroid, and their geometric properties.  For each source,
 we further extracted aperture photometry around the centroid in 6 apertures:
 0.2, 0.4, 0.6, 0.8, 1.0, and 1.5\arcsec.  We performed the same aperture
@@ -372,45 +375,48 @@ measurements are reported in Table \ref{tab:photometry}.
 
 The source flux density distribution is shown in Figure
 \ref{fig:fluxhistograms}.  The most common nearest-neighbor separation between
-cataloged cores is $\sim0.3\arcsec$, which implies that the larger apertures
-double-count some pixels.  The smallest separation is
-0.26\arcsec, so the 0.2\arcsec aperture contains only unique pixels.
-The corresponding masses are shown in Figure \ref{fig:masshistograms}
-assuming the dust temperature is equal to the source's peak line
-brightness temperature (Section \ref{sec:temperature}).
+cataloged sources is $\sim0.3\arcsec$, which implies that the larger apertures
+double-count some pixels.  The smallest separation is 0.26\arcsec, so the
+0.2\arcsec aperture contains almost only unique pixels.  The corresponding
+masses are shown in Figure \ref{fig:masshistograms} assuming the dust
+temperature is equal to the source's peak line brightness temperature (Section
+\ref{sec:temperature}).
 
 
 Except where noted below, the hand-selected sources are used for further
-analysis as they are more reliable.  However, to encourage reproducible results
-- which hand-extracted source positions defy - we also provide the
-algorithmically-extracted and selected dendrogram catalog.
+analysis as they are more reliable.
+%However, to encourage reproducible results
+%- which hand-extracted source positions defy - we also provide the
+%algorithmically-extracted and selected dendrogram catalog.
 
 \input{photometry_table.tex}
 
-\subsubsection{Distribution Functions}
-\label{sec:distributionfunctions}
-We fit power law distributions to each aperture's flux distribution using the
-packages \texttt{plfit} and \texttt{PowerLaw}
-\citep[https://github.com/keflavich/plfit,
-https://github.com/jeffalstott/powerlaw;][]{Clauset2007a,Alstott2014a}.  The
-powerlaws steepen slightly from $\alpha=2.0\pm0.12$ to $\alpha=2.2\pm0.16$ for
-larger apertures.  The minimum flux density represented by a power law
-increases from $\sim20$ mJy for the peak flux density distribution to 0.4 Jy
-for the largest aperture (14-280 \msun at 20K).  These slopes are shallower
-than the Salpeter-like slope for the mass function derived by
-\citep{Konyves2015a} for their sample, though with only modest significance
-($<3-\sigma$).  Of course, these measurements are of the continuum flux
-density, not directly of the mass, and so a direct comparison may not be
-appropriate.  We revisit this question after assessing the dust temperature in
-Section \ref{sec:temperature}.
+% \subsubsection{Distribution Functions}
+% \label{sec:distributionfunctions}
+% We fit power law distributions to each aperture's flux distribution using the
+% packages \texttt{plfit} and \texttt{PowerLaw}
+% \citep[https://github.com/keflavich/plfit,
+% https://github.com/jeffalstott/powerlaw;][]{Clauset2007a,Alstott2014a}.
+% 
+% The
+% powerlaws steepen slightly from $\alpha=2.0\pm0.12$ to $\alpha=2.2\pm0.16$ for
+% larger apertures.  The minimum flux density represented by a power law
+% increases from $\sim20$ mJy for the peak flux density distribution to 0.4 Jy
+% for the largest aperture (14-280 \msun at 20K).  These slopes are shallower
+% than the Salpeter-like slope for the mass function derived by
+% \citep{Konyves2015a} for their sample, though with only modest significance
+% ($<3-\sigma$).  Of course, these measurements are of the continuum flux
+% density, not directly of the mass, and so a direct comparison may not be
+% appropriate.  We revisit this question after assessing the dust temperature in
+% Section \ref{sec:temperature}.
 
 
-\Figure{figures/dendro_core_flux_histograms.png}
-{Histograms of the core flux densities measured with circular apertures centered
-on the dendrogram-extracted core centroids.  The aperture size is listed 
-in the y-axis label.  Free-free-dominated sources are excluded.}
-{fig:dendrofluxhistograms}
-{1}{16cm}
+%\Figure{figures/dendro_core_flux_histograms.png}
+%{Histograms of the core flux densities measured with circular apertures centered
+%on the dendrogram-extracted core centroids.  The aperture size is listed 
+%in the y-axis label.  Free-free-dominated sources are excluded.}
+%{fig:dendrofluxhistograms}
+%{1}{16cm}
 
 \Figure{figures/core_flux_histogram_apertureradius.png}
 {Histograms of the core flux densities measured with circular apertures centered
@@ -482,8 +488,7 @@ The average dust temperature, as estimated from Herschel Hi-Gal SED fits
 \citep{Molinari2016a,Wang2015a}, is 38 K when including the 70 \um data or 26 K
 when excluding it.  This average is obtained over a $\sim45\arcsec$ ($\sim 1$
 pc) beam and therefore is likely to be strongly biased toward the hottest dust
-in the HII regions and around the massive cores, which have
-temperatures reaching $>300$ K \citep{Goddi2016a}.  Despite these
+in the HII regions.  Despite these
 uncertainties, this bulk measurement provides us with a reasonable range to
 assume for the uncoupled, low-density dust, which (weakly) dominates the mass
 (see Section \ref{sec:massbudget}).
@@ -508,8 +513,10 @@ molecule is in local thermal equilibrium, as is expected if the density is high
 enough to be collisionally coupled to the dust, and it is optically thick, the
 brightness temperature provides an approximate measurement of the local
 temperature near the $\tau=1$ surface.  If any of these assumptions do not
-hold, $T_{B,max}$ will set a lower limit on the true gas temperature.  Only
-nonthermal (maser) emission would push $T_{B,max} > T_{gas}$.
+hold, $T_{B,max}$ will set a lower limit on the true gas temperature.  Only 
+two mechanisms can push $T_{B,max} > T_{dust}$: nonthermal (maser) emission or
+a dust-emitting region that has a smaller beam filling factor than the
+gas-emitting region.
 
 One potential problem with this approach is if the gas becomes optically thick
 before probing most of the dust.  Some transitions of more abundant molecules,
@@ -527,19 +534,17 @@ compact, optically thick, and/or cold.
 
 Figure \ref{fig:peaktbhist} shows the distribution of peak line brightnesses
 for the continuum sources.  The spectra used to determine this brightness are
-the mean spectra over the continuum photometry aperture.  To obtain the peak
-line brightness, we fit Gaussian profiles to each identified line listed in
-Tables \ref{tab:linesspw0}-\ref{tab:linesspw3}, rejecting those with poor fits.
-The line brightnesses reported in the figure are the sum of the
-continuum-subtracted peak line brightness and the continuum brightness.
-Excepting CO and \formaldehyde, which are excluded from the plot, \methanol is
-the brightest line toward most sources. 
+the spectra obtained from the brightest continuum pixel within the source
+aperture.  To obtain the peak line brightness, we fit Gaussian profiles to each
+identified line listed in Tables \ref{tab:linesspw0}-\ref{tab:linesspw3},
+rejecting those with poor fits.  The line brightnesses reported in the figure
+are the sum of the continuum-subtracted peak line brightness and the continuum
+brightness (i.e., they are the raw observed peak brightness).  Excepting CO and
+\formaldehyde, which are excluded from the plot, \methanol is the brightest
+line toward most sources. 
 
-\include{linesspw0}
-\include{linesspw1}
-\include{linesspw2}
-\include{linesspw3}
-
+% core_table_plots
+% from merge_spectral_fits_with_photometry
 \Figure{figures/brightest_line_histogram.png}
 {Histogram of the brightest line toward each continuum source.
 The bars are colored by the molecular species associated with the brightest
