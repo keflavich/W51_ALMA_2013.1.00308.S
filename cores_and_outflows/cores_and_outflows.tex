@@ -1423,27 +1423,43 @@ predominantly self-regulated, with little external influence.
 %d2 provides a counterpoint, however, as it is a hypercompact \hii region that *does*
 %exhibit enhanced molecular emission in its surroundings
 
-% \subsubsection{Chemical structure: Interpretation}
-% \label{sec:cheminterp}
-% %\todo{Probably cut P1 here and move the whole thing to "Discussion"}
-% %The enhancements in noted lines occur as factor of 3-10 increases in the peak
-% %brightness of most of the lines shown in Figure \ref{fig:chemmapse2}.  These
-% %enhancements could occur from increased total column density, increased
-% %abundance of the molecules, or increased excitation.
-% 
-% In Section \ref{sec:ch3ohtem}, we examined the \methanol abundance
-% and excitation conditions. 
-% The detection of highly excited \methanol lines, including
-% $18_{3,15}-17_{4,14}$ ($E_U=447$ K) and $25_{3,22}-24_{4,20}$ ($E_U=802$ K),
-% suggests that excitation is part of the explanation for the brighter
-% molecular emission.  However, LTE modeling reveals that the \methanol abundance
-% increases by a factor of $\sim5-10$ from the protocluster gas inward toward the
-% e2e core.  This abundance gradient is likely present in other molecules as
-% well.  Given the enhanced abundance of \methanol, these sharp-edged bubbles
-% probably represent sublimation zones in which substantial quantities of
-% grain-processed materials are released into the gas phase.  The relatively
-% sharp edges likely reflect the particular point where the temperature exceeds
-% the sublimation temperature for each species.
+\subsubsection{Hot core chemical structure}
+\label{sec:cheminterp}
+%\todo{Probably cut P1 here and move the whole thing to "Discussion"}
+%The enhancements in noted lines occur as factor of 3-10 increases in the peak
+%brightness of most of the lines shown in Figure \ref{fig:chemmapse2}.  These
+%enhancements could occur from increased total column density, increased
+%abundance of the molecules, or increased excitation.
+In Section \ref{sec:chemistrymaps}, we showed regions with enhanced emission
+in a variety of complex chemical species over a large volume.  While it is
+not generally correct to conclude that enhanced emission indicates enhanced
+abundance, the additional analysis of the \methanol abundance 
+in Section \ref{sec:ch3ohtem} suggests that there is a genuine enhancement in
+complex chemical abundances toward these hot cores.
+
+
+%In Section \ref{sec:ch3ohtem}, we examined the \methanol abundance
+%and excitation conditions. 
+%The detection of highly excited \methanol lines, including
+%$18_{3,15}-17_{4,14}$ ($E_U=447$ K) and $25_{3,22}-24_{4,20}$ ($E_U=802$ K),
+%suggests that excitation is part of the explanation for the brighter
+%molecular emission.  However, LTE modeling reveals that the \methanol abundance
+%increases by a factor of $\sim5-10$ from the protocluster gas inward toward the
+%e2e core.  This abundance gradient is likely present in other molecules as
+%well.
+
+We have not performed a detailed abundance analysis of multiple species, but we
+nonetheless suggest that these sharp-edged bubbles around the hot cores
+represent sublimation zones in which substantial quantities of grain-processed
+materials are released into the gas phase.  The relatively sharp edges likely
+reflect the particular point where the temperature exceeds the sublimation
+temperature for each species.
+
+Most of the lines identified in the hot cores e2e, e8, and north are also
+present in ALMAmm14.  However, their extent is greater toward the more luminous
+sources.  An examination of the relationship between the luminosity of the
+protostars and the extent of their chemically enhanced zones will be useful for
+identifying further very massive protostars.
 
 
 \subsubsection{Outflows}
@@ -1469,7 +1485,6 @@ general `extended hot core' emission described in Section
 
 \subsection{The accreting phase of high-mass star formation}
 \label{sec:accretionandoutflows}
-\todo{This section may be eliminatable:}
 The strong outflows observed around the highest-mass forming stars, e2e, e8,
 and north are clear indications of ongoing accretion onto these sources.
 However, the bright \hii regions, including e2w, e1, and d2, all lack any sign
@@ -1488,6 +1503,10 @@ There is one counterexample in our sample.  The source d2 is a bright, compact
 \hii region, but it is also surrounded by a molecular enhancement.  However, it
 does not appear to drive an outflow, so there is again no direct evidence of
 ongoing accretion.
+
+The correlation of the extended hot cores with outflow-driving source suggests
+that the heating is either from accretion luminosity or the high accretion
+rate is necessary to reprocess stellar photospheric light into the infrared.
 
 \subsection{Fragmentation: Jeans analysis}
 \label{sec:fragmentation}
@@ -1592,7 +1611,7 @@ examined the three most massive forming stars and the surrounding population of
 forming stars.  
 
 
-summary:
+The key observational results include:
 \begin{itemize}
     \item We demonstrated three techniques for estimating the temperature of
         dust continuum sources with ALMA: limits from dust brightness
@@ -1602,9 +1621,11 @@ summary:
         provide strong enough constraints to draw substantial physical conclusions.
     \item We cataloged and classified 75 continuum sources on the basis of their
         dust emission, line emission, and morphology.  
+    \item We identified chemically enhanced regions around high-mass protostars
+        and suggest they are desorption zones
 \end{itemize}
 
-conclusions:
+From these observations, we have inferred the following: 
 \begin{itemize}
     \item During the earliest stages of their formation, before they have 
         ignited \hii regions, high-mass protostars heat a large volume,
@@ -1621,7 +1642,21 @@ conclusions:
 
 
 
+\textbf{Acknowledgmenets}
+The National Radio Astronomy Observatory is a facility of the National Science
+Foundation operated under cooperative agreement by Associated Universities,
+Inc.
 
+\textbf{Code Packages Used}:
+
+\begin{itemize}
+    \item CASA \url{https://casa.nrao.edu/}
+    \item pyspeckit \url{http://pyspeckit.bitbucket.org} \citet{Ginsburg2011c}
+    \item aplpy \url{https://aplpy.github.io/}
+    \item wcsaxes \url{http://wcsaxes.readthedocs.org}
+    \item spectral cube \url{http://spectral-cube.readthedocs.org}
+    \item ds9 \url{http://ds9.si.edu}
+\end{itemize}
 
 \input{solobib}
 
