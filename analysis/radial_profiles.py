@@ -397,6 +397,12 @@ def make_rprof(regions, ploteach=False):
         mass_profile = (cumul_rprof * masscalc.mass_conversion_factor(TK=tem_rprof) / u.beam).to(u.M_sun)
         density_profile = (mass_profile / (4/3.*np.pi*radii**3) / (2.8*u.Da)).to(u.cm**-3)
 
+        density_alpha = ((np.log(density_profile[1:].value) -
+                          np.log(density_profile[:-1].value)) /
+                         (np.log(angular_radii[1:]) -
+                          np.log(angular_radii[:-1]))
+                        )
+
         c_s = ((constants.k_B * tem_rprof*u.K / (2.4*u.Da))**0.5).to(u.km/u.s)
         azimuthal_average_MJ = (np.pi/6. * c_s**3 /
                                 (constants.G**1.5 *
@@ -441,7 +447,7 @@ def make_rprof(regions, ploteach=False):
         pl.ylabel("Cumulative Mass at T(CH$_3$OH)")
         pl.xlabel("Radius [arcsec]")
         if len(names) < 5:
-            pl.legend(loc='best')
+            pl.legend(loc='upper left')
         elif ii==len(names)-1:
             ax = pl.gca()
             box = ax.get_position()
@@ -469,7 +475,7 @@ def make_rprof(regions, ploteach=False):
                 label=name)
         pl.legend(loc='best')
         pl.ylabel("CH$_3$OH temperature")
-        pl.xlabel("Radius (as)")
+        pl.xlabel("Radius [as]")
 
 
         azimuthal_average_RJ = (c_s**1 /
@@ -511,6 +517,12 @@ def make_rprof(regions, ploteach=False):
             ax2.set_xlabel(r"Radius [au]")
 
 
+        pl.figure(nplots*3+11)
+        pl.plot((angular_radii[1:]+angular_radii[:-1])/2., density_alpha)
+        pl.xlabel("Radius [as]")
+        pl.ylabel("Density Profile Exponent $\\kappa_\\rho$")
+
+
 regions = pyregion.open(paths.rpath("hmcore_centroids.reg"))
 make_rprof(regions, ploteach=True)
 nplots = len(regions)
@@ -523,6 +535,17 @@ pl.figure(nplots*3+7).savefig(paths.fpath("azimuthalaverage_radial_mj_of_TCH3OH_
 pl.figure(nplots*3+8).savefig(paths.fpath("cumulative_radial_mass_of_TCH3OH_massivecores.png"))
 pl.figure(nplots*3+9).savefig(paths.fpath("azimuthalaverage_radial_TCH3OH_massivecores.png"))
 pl.figure(nplots*3+10).savefig(paths.fpath("azimuthalaverage_radial_rj_of_TCH3OH_massivecores.png"))
+pl.figure(nplots*3+11).savefig(paths.fpath("radialprofileexponent_of_TCH3OH_massivecores.png"))
+
+fig = pl.figure(nplots*3+8)
+ax = fig.axes[0]
+xx = np.linspace(0,1.2)
+# power of R is +3 for volume conversion
+ax.plot(xx, 300*xx**1.0, 'k:', label='$\\rho\\propto R^{-2}$', alpha=0.5)
+ax.plot(xx, 300*xx**1.5, 'k--', label='$\\rho\\propto R^{-3/2}$', alpha=0.5)
+ax.plot(xx, 300*xx**2.0, 'k-', label='$\\rho\\propto R^{-1}$', alpha=0.5)
+pl.legend(loc='upper left')
+fig.savefig(paths.fpath("cumulative_radial_mass_of_TCH3OH_massivecores_withmodel.png"))
 
 #regions = pyregion.open(paths.rpath("cores.reg"))
 #make_rprof(regions, ploteach=False)
