@@ -28,6 +28,21 @@ def my_clean(vis, imagename, **kwargs):
  #         savemodel='none',
  #         overwrite=True)
 
+def my_exportfits(contimagename):
+    myimagebase = contimagename
+    impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb',
+            outfile=myimagebase+'.image.pbcor', overwrite=True)
+    exportfits(imagename=myimagebase+'.image.pbcor',
+               fitsimage=myimagebase+'.image.pbcor.fits', overwrite=True,
+               dropdeg=True)
+    exportfits(imagename=myimagebase+'.pb',
+               fitsimage=myimagebase+'.pb.fits', overwrite=True,
+               dropdeg=True)
+    exportfits(imagename=myimagebase+'.residual',
+               fitsimage=myimagebase+'.residual.fits', overwrite=True,
+               dropdeg=True)
+
+
 """
 Attempt to image the continuum with flagging
 """
@@ -60,7 +75,7 @@ my_clean(vis=mergevis,
       gridder = 'mosaic',
       savemodel='none',
       )
-exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
+my_exportfits(contimagename)
 
 
 contimagename = 'w51_spw3_continuum_7m12m_flagged_natural_taper_tclean'
@@ -84,7 +99,7 @@ my_clean(vis=mergevis,
       savemodel='none',
       uvtaper=['1.0arcsec'],
       )
-exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
+my_exportfits(contimagename)
 
 
 
@@ -108,7 +123,7 @@ my_clean(vis=mergevis,
       gridder = 'mosaic',
       savemodel='none',
       )
-exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
+my_exportfits(contimagename)
 
 contimagename = 'w51_spw3_continuum_7m12m_flagged_r0_dirty_tclean'
 
@@ -130,7 +145,7 @@ my_clean(vis=mergevis,
       gridder = 'mosaic',
       savemodel='none',
       )
-exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
+my_exportfits(contimagename)
 
 contimagename = 'w51_spw3_continuum_7m12m_flagged_r0_multiscale_tclean'
 
@@ -153,7 +168,7 @@ my_clean(vis=mergevis,
       gridder = 'mosaic',
       savemodel='none',
       )
-exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
+my_exportfits(contimagename)
 
 #contimagename = 'w51_spw3_continuum_7m12m_flagged_r0_MEM_tclean'
 #
@@ -176,7 +191,7 @@ exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, ov
 #      gridder = 'mosaic',
 #      savemodel='none',
 #      )
-#exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
+#my_exportfits(contimagename)
 
 
 contimagename = 'w51_spw3_continuum_7m12m_flagged_uniform_tclean'
@@ -199,5 +214,5 @@ my_clean(vis=mergevis,
       gridder = 'mosaic',
       savemodel='none',
       )
-exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
+my_exportfits(contimagename)
 
