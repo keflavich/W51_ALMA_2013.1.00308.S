@@ -73,7 +73,7 @@ contimagename = 'w51_spw3_continuum_7m12m_noflag_natural_tclean'
 for ext in extensions:
     rmtables(contimagename+ext)
 
-myclean(vis=mergevis,
+my_clean(vis=mergevis,
       imagename=contimagename,
       field='w51',
       phasecenter='',
@@ -121,7 +121,7 @@ contimagename = 'w51_spw3_continuum_7m12m_noflag_r0_tclean'
 for ext in extensions:
     rmtables(contimagename+ext)
 
-myclean(vis=mergevis,
+my_clean(vis=mergevis,
       imagename=contimagename,
       field='w51',
       phasecenter='',
@@ -144,7 +144,7 @@ contimagename = 'w51_spw3_continuum_7m12m_noflag_r0_dirty_tclean'
 for ext in extensions:
     rmtables(contimagename+ext)
 
-myclean(vis=mergevis,
+my_clean(vis=mergevis,
       imagename=contimagename,
       field='w51',
       phasecenter='',
@@ -167,7 +167,7 @@ contimagename = 'w51_spw3_continuum_7m12m_noflag_r0_multiscale_tclean'
 for ext in extensions:
     rmtables(contimagename+ext)
 
-myclean(vis=mergevis,
+my_clean(vis=mergevis,
       imagename=contimagename,
       field='w51',
       scales=[0,5,15,45],
@@ -191,7 +191,7 @@ my_exportfits(contimagename)
 #for ext in extensions:
 #    rmtables(contimagename+ext)
 #
-#myclean(vis=mergevis,
+#my_clean(vis=mergevis,
 #      imagename=contimagename,
 #      field='w51',
 #      scales=[0,3,6,9,12,15,18],
@@ -216,7 +216,7 @@ contimagename = 'w51_spw3_continuum_7m12m_noflag_uniform_tclean'
 for ext in extensions:
     rmtables(contimagename+ext)
 
-myclean(vis=mergevis,
+my_clean(vis=mergevis,
       imagename=contimagename,
       field='w51',
       phasecenter='',
