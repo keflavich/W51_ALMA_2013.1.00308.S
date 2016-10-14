@@ -1,4 +1,4 @@
-def clean(vis, imagename, **kwargs):
+def my_clean(vis, imagename, **kwargs):
     tclean(vis = vis,
            imagename = imagename,
            mask='auto-pb', # masks at minpb=0.2.  0.4 or 0.5 are desired, but very difficult to configure
@@ -53,12 +53,12 @@ extensions = ['.flux', '.image', '.mask', '.model', '.pbcor', '.psf',
               '.residual', '.flux.pbcoverage', '.sumwt', '.weight', '.pb',
               '.pbcoverage']
 
-contimagename = 'w51_spw3_continuum_7m12m_noflag_tclean'
+contimagename = 'w51_spw3_continuum_7m12m_noflag_natural_tclean'
 
 for ext in extensions:
     rmtables(contimagename+ext)
 
-clean(vis=mergevis,
+myclean(vis=mergevis,
       imagename=contimagename,
       field='w51',
       phasecenter='',
@@ -77,12 +77,36 @@ clean(vis=mergevis,
 exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
 
 
+contimagename = 'w51_spw3_continuum_7m12m_noflag_natural_taper_tclean'
+
+for ext in extensions:
+    rmtables(contimagename+ext)
+
+my_clean(vis=mergevis,
+      imagename=contimagename,
+      field='w51',
+      specmode='mfs',
+      deconvolver='clark',
+      imsize = [1280,1280],
+      cell= '0.15arcsec',
+      weighting = 'natural',
+      robust = 2.0,
+      niter = 10000,
+      threshold = '1.0mJy',
+      interactive = False,
+      gridder = 'mosaic',
+      savemodel='none',
+      uvtaper=['1.0arcsec'],
+      )
+exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, overwrite=True)
+
+
 contimagename = 'w51_spw3_continuum_7m12m_noflag_r0_tclean'
 
 for ext in extensions:
     rmtables(contimagename+ext)
 
-clean(vis=mergevis,
+myclean(vis=mergevis,
       imagename=contimagename,
       field='w51',
       phasecenter='',
@@ -105,7 +129,7 @@ contimagename = 'w51_spw3_continuum_7m12m_noflag_r0_dirty_tclean'
 for ext in extensions:
     rmtables(contimagename+ext)
 
-clean(vis=mergevis,
+myclean(vis=mergevis,
       imagename=contimagename,
       field='w51',
       phasecenter='',
@@ -128,7 +152,7 @@ contimagename = 'w51_spw3_continuum_7m12m_noflag_r0_multiscale_tclean'
 for ext in extensions:
     rmtables(contimagename+ext)
 
-clean(vis=mergevis,
+myclean(vis=mergevis,
       imagename=contimagename,
       field='w51',
       scales=[0,5,15,45],
@@ -152,7 +176,7 @@ exportfits(contimagename+".image", contimagename+".image.fits", dropdeg=True, ov
 #for ext in extensions:
 #    rmtables(contimagename+ext)
 #
-#clean(vis=mergevis,
+#myclean(vis=mergevis,
 #      imagename=contimagename,
 #      field='w51',
 #      scales=[0,3,6,9,12,15,18],
@@ -177,7 +201,7 @@ contimagename = 'w51_spw3_continuum_7m12m_noflag_uniform_tclean'
 for ext in extensions:
     rmtables(contimagename+ext)
 
-clean(vis=mergevis,
+myclean(vis=mergevis,
       imagename=contimagename,
       field='w51',
       phasecenter='',
