@@ -5,7 +5,7 @@ northcube = SpectralCube.read('/Volumes/passport/alma/w51/longbaseline/W51northc
 northvcube = northcube.with_spectral_unit(u.km/u.s, rest_value=217.10498*u.GHz,
                                           velocity_convention='radio')
 
-northslab = northvcube.spectral_slab(-20*u.km/u.s, 180*u.km/u.s)
+northslab = northvcube.spectral_slab(-100*u.km/u.s, 210*u.km/u.s)
 northmed = northslab.median(axis=0)
 northmslab = northslab-northmed
 
@@ -22,7 +22,7 @@ e2cube = SpectralCube.read('/Volumes/passport/alma/w51/longbaseline/W51e2cax.SPW
 e2vcube = e2cube.with_spectral_unit(u.km/u.s, rest_value=217.10498*u.GHz,
                                     velocity_convention='radio')
 
-e2slab = e2vcube.spectral_slab(-20*u.km/u.s, 180*u.km/u.s)
+e2slab = e2vcube.spectral_slab(-100*u.km/u.s, 210*u.km/u.s)
 e2slab.allow_huge_operations = True
 e2med = e2slab.median(axis=0)
 e2mslab = e2slab-e2med
@@ -35,12 +35,28 @@ e2siored.write('/Users/adam/work/w51/alma/FITS/longbaseline/SiO_74to118kms_e2.fi
 
 
 
+import pvextractor
+from pvextractor.pvregions import paths_from_regions
+import pyregion
+import paths
+reg = pyregion.open(paths.rpath('../regions/e2eoutflow_reference_vector.reg'))
+outflowcoords = paths_from_regions(reg)
+outflowpath = outflowcoords[0]
+outflowpath.width = 0.15*u.arcsec
+
+extracted = pvextractor.extract_pv_slice(e2slab, outflowpath)
+
+import aplpy
+FF = aplpy.FITSFigure(extracted)
+FF.show_grayscale()
+
+
 
 e8cube = SpectralCube.read('/Volumes/passport/alma/w51/longbaseline/W51e8cax.SPW0_ALL_medsub_cutout.fits')
 e8vcube = e8cube.with_spectral_unit(u.km/u.s, rest_value=217.10498*u.GHz,
                                     velocity_convention='radio')
 
-e8slab = e8vcube.spectral_slab(-20*u.km/u.s, 180*u.km/u.s)
+e8slab = e8vcube.spectral_slab(-100*u.km/u.s, 210*u.km/u.s)
 e8slab.allow_huge_operations = True
 e8med = e8slab.median(axis=0)
 e8mslab = e8slab-e8med
@@ -60,7 +76,7 @@ d2cube = SpectralCube.read('/Volumes/passport/alma/w51/longbaseline/W51northwest
 d2vcube = d2cube.with_spectral_unit(u.km/u.s, rest_value=217.10498*u.GHz,
                                     velocity_convention='radio')
 
-d2slab = d2vcube.spectral_slab(-20*u.km/u.s, 180*u.km/u.s)
+d2slab = d2vcube.spectral_slab(-100*u.km/u.s, 210*u.km/u.s)
 d2slab.allow_huge_operations = True
 d2med = d2slab.median(axis=0)
 d2mslab = d2slab-d2med

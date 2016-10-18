@@ -1,34 +1,36 @@
 # Region file format: DS9 version 4.1
 global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1
 fk5
-point(290.9438,14.497276) # point=x text={e16}
-point(290.94104,14.497291) # point=x text={e17}
-point(290.94243,14.496351) # point=x text={e18}
-point(290.9368,14.495844) # point=x text={e19}
-point(290.91105,14.501597) # point=x text={e15}
-point(290.89932,14.524392) # point=x text={d3_diffuse}
-point(290.91515,14.525169) # point=x text={d4e}
-point(290.91502,14.525121) # point=x text={d4w}
-point(290.92407,14.524325) # point=x text={d5}
-point(290.92859,14.508442) # point=x text={e12}
-point(290.92839,14.510261) # point=x text={e13}
-point(290.92754,14.511687) # point=x text={e14}
-point(290.93244,14.507254) # point=x color=blue text={e1}
-point(290.93294,14.509599) # point=x color=blue text={e2}
-point(290.93266,14.50686) # point=x color=blue text={e3}
-point(290.93297,14.508199) # point=x color=blue text={e4}
-point(290.92442,14.515768) # point=x color=blue text={e5}
-point(290.92414,14.517372) # point=x color=blue text={e6}
-point(290.9366,14.486519) # point=x color=blue text={e7}
-point(290.93294,14.507843) # point=x color=blue text={e8n}
-point(290.93296,14.507746) # point=x color=blue text={e8s}
-point(290.93316,14.5075) # point=x text={e10}
-point(290.93189,14.50745) # point=x text={e9}
-point(290.93991,14.507272) # point=x text={e11}
-point(290.92183,14.519886) # point=x text={d6}
-point(290.92858,14.507662) # point=x text={e20}
-point(290.92845,14.507714) # point=x text={e21}
-point(290.92941,14.5097) # point=x text={e23}
-point(290.92824,14.50768) # point=x text={e22}
-point(290.91592,14.518017) # point=x text={d2}
-point(290.92049,14.518521) # point=x text={d7}
+point(19:23:46.512,+14:29:50.19) # point=x text={e16}
+point(19:23:45.850,+14:29:50.25) # point=x text={e17}
+point(19:23:46.183,+14:29:46.86) # point=x text={e18}
+point(19:23:44.832,+14:29:45.04) # point=x text={e19}
+point(19:23:38.652,+14:30:05.75) # point=x text={e15}
+point(19:23:35.837,+14:31:27.81) # point=x text={d3_diffuse}
+point(19:23:39.636,+14:31:30.61) # point=x text={d4e}
+point(19:23:39.605,+14:31:30.44) # point=x text={d4w}
+point(19:23:41.777,+14:31:27.57) # point=x text={d5}
+point(19:23:42.862,+14:30:30.39) # point=x text={e12}
+point(19:23:42.814,+14:30:36.94) # point=x text={e13}
+point(19:23:42.610,+14:30:42.07) # point=x text={e14}
+point(19:23:43.786,+14:30:26.11) # point=x color=blue text={e1}
+point(19:23:43.906,+14:30:34.56) # point=x color=blue text={e2}
+point(19:23:43.838,+14:30:24.70) # point=x color=blue text={e3}
+point(19:23:43.913,+14:30:29.52) # point=x color=blue text={e4}
+point(19:23:41.861,+14:30:56.76) # point=x color=blue text={e5}
+point(19:23:41.794,+14:31:02.54) # point=x color=blue text={e6}
+point(19:23:44.784,+14:29:11.47) # point=x color=blue text={e7}
+point(19:23:43.906,+14:30:28.23) # point=x color=blue text={e8n}
+point(19:23:43.910,+14:30:27.89) # point=x color=blue text={e8s}
+point(19:23:43.958,+14:30:27.00) # point=x text={e10}
+point(19:23:43.654,+14:30:26.82) # point=x text={e9}
+point(19:23:45.578,+14:30:26.18) # point=x text={e11}
+point(19:23:41.239,+14:31:11.59) # point=x text={d6}
+point(19:23:42.859,+14:30:27.58) # point=x text={e20}
+point(19:23:42.828,+14:30:27.77) # point=x text={e21}
+point(19:23:43.058,+14:30:34.92) # point=x text={e23}
+point(19:23:42.778,+14:30:27.65) # point=x text={e22}
+point(19:23:39.821,+14:31:04.86) # point=x text={d2}
+point(19:23:40.918,+14:31:06.68) # point=x text={d7}
+point(19:23:43.962,+14:30:34.55) # point=x color=blue text={e2e}
+point(19:23:40.049,+14:31:05.47) # point=x text={north}
