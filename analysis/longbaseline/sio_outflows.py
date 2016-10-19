@@ -48,7 +48,8 @@ extracted = pvextractor.extract_pv_slice(e2slab, outflowpath)
 
 import aplpy
 FF = aplpy.FITSFigure(extracted)
-FF.show_grayscale()
+FF.show_grayscale(aspect='auto')
+FF.savefig(paths.fpath('outflows/SiO_PV_e2e.png'))
 
 
 
