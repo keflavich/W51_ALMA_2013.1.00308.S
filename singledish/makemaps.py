@@ -268,6 +268,7 @@ def process_data(data, gal, hdrs, dataset, scanblsub=False,
                  subtract_time_average=False,
                  pca_clean=False,
                  timewise_pca=True,
+                 flagdata=True,
                  pcakwargs={},
                  diagplotdir='diagnostic_plots/',
                  **kwargs):
@@ -357,40 +358,36 @@ def process_data(data, gal, hdrs, dataset, scanblsub=False,
     theoretical_rms = tsys/(2.*np.abs(freq_step*1.0e6)*exptime)**0.5
     # extra factor 3.0 to avoid overflagging; this means flagging
     # only 3-sigma outliers.
-    bad = noise > (theoretical_rms*noisefactor)
-
-    # SgrB2 has higher noise.  Don't flag it out.
-    sgrb2 = ((gal.l.wrap_at(180*u.deg).deg > 0.64) &
-             (gal.l.wrap_at(180*u.deg).deg<0.7) &
-             (gal.b.deg>-0.06) &
-             (gal.b.deg<-0.01))
-    bad[sgrb2] = False
+    if flagdata:
+        bad = noise > (theoretical_rms*noisefactor)
+    else:
+        bad = np.zeros_like(noise, dtype='bool')
 
     # pre-flagging diagnostic
     diagplot(dsub, tsys, noise, os.path.basename(dataset)+"_preflag", diagplotdir, freq=freq,
-             mask=mask, scans=scans, **kwargs)
+             mask=mask, scans=scans, theoretical_rms=theoretical_rms, **kwargs)
 
     if np.count_nonzero(bad) == bad.size:
         import ipdb
         ipdb.set_trace()
         raise ValueError("All data will be flagged out; something is amiss.")
 
-    dsub = dsub[True-bad]
-    obsids = obsids[True-bad]
-    tsys = tsys[True-bad]
-    noise = noise[True-bad]
+    dsub = dsub[~bad]
+    obsids = obsids[~bad]
+    tsys = tsys[~bad]
+    noise = noise[~bad]
 
-    gal = gal[True-bad]
+    gal = gal[~bad]
     hdrs = [h for h,b in zip(hdrs,bad) if not b]
     log.info("Flagged out %i bad values (%0.1f%%)." % (bad.sum(),bad.sum()/float(bad.size)))
 
     diagplot(dsub, tsys, noise, os.path.basename(dataset), diagplotdir, freq=freq, mask=mask,
-             scans=scans, **kwargs)
+             theoretical_rms=theoretical_rms[~bad], scans=scans, **kwargs)
     for xscan in np.unique(obsids):
         match = obsids == xscan
         diagplot(dsub[match], tsys[match], noise[match],
                  os.path.basename(dataset)+"_obs%i" % xscan, diagplotdir, freq=freq, mask=mask,
-                 **kwargs)
+                 theoretical_rms=theoretical_rms[~bad][match], **kwargs)
 
     return dsub,gal,hdrs
 
@@ -630,24 +627,22 @@ def make_blanks_freq(gal, header, cubefilename, clobber=True, pixsize=7.2*u.arcs
                                dtype='float32')
 
 
-def make_blanks_merge(cubefilename, lowhigh='low', clobber=True,
+def make_blanks_merge(cubefilename, clobber=True,
                       width=1.0*u.GHz, lowest_freq=None, pixsize=7.2*u.arcsec,
-                      restfreq=218222.192*u.MHz):
+                      restfreq=218222.192*u.MHz, cd_kms=0.25):
     # total size is 2.3 x 0.4 degrees
     # 1150x
     # center is 0.55 -0.075
-    naxis1 = 1150
-    naxis2 = 200
+    naxis1 = 100
+    naxis2 = 100
     # beam major/minor axis are the same, gaussian for 12m telescope
     # we convolved with a 10" FWHM Gaussian kernel, so we add that in quadrature
     bmaj_ = (1.22*restfreq.to(u.m,u.spectral())/(12*u.m))*u.radian
     bmaj = (bmaj_**2 + (10*u.arcsec)**2)**0.5
-    cd3 = ((1*u.km/u.s)/constants.c * 218.2*u.GHz).to(u.Hz).value
-    naxis3 = int(np.ceil(((width / (218.2*u.GHz) * constants.c) / (u.km/u.s)).decompose().value))
-    if lowest_freq is None:
-        lowest_freq = 216.8e9 if lowhigh=='low' else 218e9
+    cd3 = ((cd_kms*u.km/u.s)/constants.c * restfreq).to(u.Hz).value
+    naxis3 = int(np.ceil(((width / (restfreq) * constants.c) / (cd_kms*u.km/u.s)).decompose().value))
 
-    cubeheader, flatheader = makecube.generate_header(0.55, -0.075,
+    cubeheader, flatheader = makecube.generate_header(49.49, -0.37,
                                                       naxis1=naxis1,
                                                       naxis2=naxis2,
                                                       naxis3=naxis3,
@@ -660,7 +655,7 @@ def make_blanks_merge(cubefilename, lowhigh='low', clobber=True,
                                                       output_flatheader='header.txt',
                                                       output_cubeheader='cubeheader.txt',
                                                       cd3=cd3,
-                                                      crval3=lowest_freq,
+                                                      crval3=lowest_freq.to(u.Hz).value,
                                                       crpix3=1, clobber=True,
                                                       bunit="K",
                                                       restfreq=restfreq.to(u.Hz).value,
@@ -726,7 +721,7 @@ def data_diagplot(data, dataset, diagplotdir, ext='png', newfig=False,
     return axis
 
 def diagplot(data, tsys, noise, dataset, diagplotdir, freq=None, mask=None, ext='png',
-             newfig=False, **kwargs):
+             newfig=False, theoretical_rms=None, **kwargs):
     """
     Generate a set of diagnostic plots
 
@@ -745,6 +740,8 @@ def diagplot(data, tsys, noise, dataset, diagplotdir, freq=None, mask=None, ext=
         A boolean mask array with True = good values to be plotted
     ext : str
         The image extension to use when saving
+    theoretical_rms : float
+        The expected noise as a function of tsys
     """
 
     if newfig:
@@ -758,6 +755,13 @@ def diagplot(data, tsys, noise, dataset, diagplotdir, freq=None, mask=None, ext=
     pl.ylabel("Integration")
     pl.subplot(2,1,2)
     pl.plot(tsys, noise, '.',alpha=0.5)
+    if theoretical_rms is not None:
+        pl.plot(tsys, theoretical_rms, 'k--', zorder=-1, label='Thry RMS')
+        pl.plot(tsys, theoretical_rms*3, 'k.-', zorder=-1, label='Thry RMS*3')
+        pl.plot(tsys, theoretical_rms*5, 'k:', zorder=-1, label='Thry RMS*5')
+        leg = pl.legend(loc='best')
+        leg.get_frame().set_alpha(0.1)
+        leg.get_frame().set_facecolor('none')
     pl.xlabel("TSYS")
     pl.ylabel("Noise")
     figfilename = os.path.join(diagplotdir, os.path.basename(dataset)+"_tsys."+ext)
@@ -786,11 +790,10 @@ def diagplot(data, tsys, noise, dataset, diagplotdir, freq=None, mask=None, ext=
 
     data_diagplot(data, os.path.basename(dataset), diagplotdir, ext=ext, newfig=newfig, freq=freq, **kwargs)
 
-def build_cube_generic(window, freq=True, mergefile=None, datapath='./',
+def build_cube_generic(window, line, freq=True, mergefile=None, datapath='./',
                        outpath='./', datasets=[], scanblsub=False,
                        shapeselect=None,
                        sourcename=None,
-                       line=None,
                        tsysrange=[100,250],
                        excludefitrange=None,
                        downsample_factor=None,
@@ -818,17 +821,21 @@ def build_cube_generic(window, freq=True, mergefile=None, datapath='./',
         centered on the observed rest frequency.  This is ignored if mergefile
         is set
     """
-    if window not in ('low','high'):
-        raise ValueError()
+    #rcr = [-1000,0] if window == 'low' else [0,5000]
+    #xtel = 'AP-H201-F101' if window == 'high' else 'AP-H201-F102'
+    if window in ('low','high'):
+        xtel = 'AP-H201-X202' if window=='low' else 'AP-H201-X201'
+    else:
+        xtel = window
+
     if mergefile:
-        cubefilename=os.path.join(outpath,"{0}_{1}".format(mergefile, window))
+        #cubefilename=os.path.join(outpath,"{0}_{1}".format(mergefile, window))
+        cubefilename=os.path.join(outpath,mergefile)
     else:
         # assume that we want a cube for EACH data set
         cubefilename = None
 
-    #rcr = [-1000,0] if window == 'low' else [0,5000]
-    #xtel = 'AP-H201-F101' if window == 'high' else 'AP-H201-F102'
-    xtel = 'AP-H201-X202' if window=='low' else 'AP-H201-X201'
+
 
     all_data,all_hdrs,all_gal = {},{},{}
     for dataset in datasets:
@@ -874,8 +881,9 @@ def build_cube_generic(window, freq=True, mergefile=None, datapath='./',
 
         if not mergefile:
             cubefilename = os.path.join(outpath,
-                                        "{0}_{1}_cube".format(os.path.basename(dataset),
-                                                              window))
+                                        "{0}_{1}_{2}_cube"
+                                        .format(os.path.basename(dataset),
+                                                window, line).replace(" ",""))
             log.debug("Creating blanks for {0}".format(cubefilename))
             if freq:
                 make_blanks_freq(all_gal_vect, hdrs[0], cubefilename,
@@ -894,7 +902,7 @@ def build_cube_generic(window, freq=True, mergefile=None, datapath='./',
         hdrs = all_hdrs[dataset]
         gal  = all_gal[dataset]
 
-        data, gal, hdrs = process_data(data, gal, hdrs, dataset+"_"+xtel+"_"+line,
+        data, gal, hdrs = process_data(data, gal, hdrs, dataset+"_"+xtel+"_"+line.replace(" ",""),
                                        scanblsub=scanblsub, verbose=verbose,
                                        timewise_pca=timewise_pca,
                                        pca_clean=pca_clean, **kwargs)
@@ -1031,65 +1039,148 @@ def do_plait_h2comerge(mergepath=None, mergefile2=None):
  
 
 
+def make_individual_cubes_12CO():
 
-def make_low_mergecube(pca_clean={'2014':False,
-                                   '2013':False,
-                                   'ao':False},
-                        scanblsub={'2014':False, '2013':False, 'ao':False},
-                        timewise_pca={'2014': True, '2013':False, 'ao':True},
-                        mergefile1 = 'APEX_H2CO_merge_low',):
-    make_blanks_merge(os.path.join(mergepath,mergefile1), lowhigh='low')
+    # In [7]: set([(h['LINE'], h['XTEL'], h['RESTF'], h['FRES'] - h['FRES']%0.00001) for h in found_data[1]])
+    # Out[7]:
+    # {('H2CO_+_13CO ', 'AP-H201-X201', 219000.0, -0.076310000000000003),
+    #  ('H2CO_+_13CO ', 'AP-H201-X202', 219000.0, 0.076300000000000007),
+    #  ('H2CO_13CO_OS', 'AP-H201-X201', 232500.0, 0.076300000000000007),
+    #  ('H2CO_13CO_OS', 'AP-H201-X202', 232500.0, -0.076310000000000003)}
+    
 
-    for suff in ("_2014_bscans", "_2014_lscans", "_2013","_ao"):
-        make_blanks_merge(os.path.join(mergepath,mergefile1+suff),
-                          lowhigh='high', lowest_freq=216.9e9, width=2.0*u.GHz)
+    # no data: "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG01/E-098.C-0421A-2016-2016-07-31", "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG04/E-098.C-0421A-2016-2016-08-03",
+    datasets_H2CO_13CO_OS = ["/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG02/E-098.C-0421A-2016-2016-08-01",
+                             "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG03/E-098.C-0421A-2016-2016-08-02",
+                             "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG09/E-098.C-0421A-2016-2016-08-08",
+                             "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG10/E-098.C-0421A-2016-2016-08-09"]
+    build_cube_generic(window='low', datasets=datasets_H2CO_13CO_OS,
+                       sourcename='W51', line='H2CO_13CO_OS', blsub=False,
+                       datapath='/Volumes/passport/w51-apex/raw/',
+                       outpath='/Volumes/passport/w51-apex/processed/')
+    build_cube_generic(window='high', datasets=datasets_H2CO_13CO_OS,
+                       sourcename='W51', line='H2CO_13CO_OS', blsub=False,
+                       datapath='/Volumes/passport/w51-apex/raw/',
+                       outpath='/Volumes/passport/w51-apex/processed/',
+                       automask=False,
+                       noisefactor=10)
 
-    mapnames = ['MAP_{0:03d}'.format(ii) for ii in range(1,130)]
+def make_individual_cubes_H2CO():
+    datasets_H2CO_13CO = ["/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG02/E-098.C-0421A-2016-2016-08-01",
+                          "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG03/E-098.C-0421A-2016-2016-08-02",
+                         ]
+    build_cube_generic(window='AP-H201-X202', datasets=datasets_H2CO_13CO,
+                       sourcename='W51', line='H2CO_+_13CO ', blsub=False,
+                       datapath='/Volumes/passport/w51-apex/raw/',
+                       outpath='/Volumes/passport/w51-apex/processed/')
+    build_cube_generic(window='AP-H201-X201', datasets=datasets_H2CO_13CO,
+                       sourcename='W51', line='H2CO_+_13CO ', blsub=False,
+                       datapath='/Volumes/passport/w51-apex/raw/',
+                       outpath='/Volumes/passport/w51-apex/processed/')
 
-    log.info("Building cubes: "+str(mapnames)+" low bscans")
-    build_cube_2014(mapnames,
-                    mergefile=mergefile1+"_2014_bscans",
-                    posang=[140,160],
-                    outpath=mergepath,
-                    datapath=april2014path,
-                    lowhigh='low',
-                    pca_clean=pca_clean['2014'],
-                    timewise_pca=timewise_pca['2014'],
-                    scanblsub=scanblsub['2014'],
-                    datasets=datasets_2014)
 
-    log.info("Building cubes: "+str(mapnames)+" low lscans")
-    build_cube_2014(mapnames,
-                    mergefile=mergefile1+"_2014_lscans",
-                    posang=[50,70],
-                    outpath=mergepath,
-                    datapath=april2014path,
-                    lowhigh='low',
-                    pca_clean=pca_clean['2014'],
-                    timewise_pca=timewise_pca['2014'],
-                    scanblsub=scanblsub['2014'],
-                    datasets=datasets_2014)
 
-    log.info("Building Ao cubes")
-    # ('ao', 'high'): (218.0, 219.0),
-    build_cube_ao(window='low', mergefile=True, freq=True, outpath=mergepath,
-                  pca_clean=pca_clean['ao'], timewise_pca=timewise_pca['ao'],
-                  mergefilename=os.path.join(mergepath, mergefile1+"_ao"),
-                  scanblsub=scanblsub['ao'],
-                  datapath=aorawpath)
+def make_12CO_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
+                          mergefile1 = 'W51_12CO_merge',
+                          datasets_H2CO_13CO_OS = ["/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG02/E-098.C-0421A-2016-2016-08-01",
+                                                   "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG03/E-098.C-0421A-2016-2016-08-02",
+                                                   "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG09/E-098.C-0421A-2016-2016-08-08",
+                                                   "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG10/E-098.C-0421A-2016-2016-08-09"]
+                         ):
 
-    log.info("Building 2013 cubes")
-    # (2013, 'high'): (217.5, 220.0)
-    build_cube_2013(mergefile=mergefile1+"_2013",
-                    outpath=mergepath,
-                    datapath=june2013datapath,
-                    lowhigh='low',
-                    timewise_pca=timewise_pca['2013'],
-                    pca_clean=pca_clean['2013'],
-                    scanblsub=scanblsub['2013'])
+    make_blanks_merge(os.path.join(mergepath,mergefile1),
+                      restfreq=230.538*u.GHz,
+                      lowest_freq=230.49*u.GHz, width=2.51*u.GHz,
+                      pixsize=5.0*u.arcsec,
+                      cd_kms=0.25)
 
-    print("TODO: plait the low-frequency merge.")
-    print("TODO: possible merge the ao low/high into the low-merge?")
+    build_cube_generic(window='AP-H201-X201', datasets=datasets_H2CO_13CO_OS,
+                       sourcename='W51', line='H2CO_13CO_OS', blsub=False,
+                       mergefile=mergefile1,
+                       datapath='/Volumes/passport/w51-apex/raw/',
+                       outpath=mergepath,
+                       downsample_factor=10,
+                       noisefactor=10,
+                       automask=False,
+                       flagdata=False,
+                      )
+
+def make_232_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
+                          mergefile1 = 'W51_232GHz_merge',
+                          datasets_H2CO_13CO_OS = ["/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG02/E-098.C-0421A-2016-2016-08-01",
+                                                   "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG03/E-098.C-0421A-2016-2016-08-02",
+                                                   "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG09/E-098.C-0421A-2016-2016-08-08",
+                                                   "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG10/E-098.C-0421A-2016-2016-08-09"]
+                         ):
+
+    make_blanks_merge(os.path.join(mergepath,mergefile1),
+                      restfreq=232.500*u.GHz,
+                      lowest_freq=231.99*u.GHz, width=2.51*u.GHz,
+                      pixsize=5.0*u.arcsec,
+                      cd_kms=0.25)
+
+    build_cube_generic(window='AP-H201-X202', datasets=datasets_H2CO_13CO_OS,
+                       sourcename='W51', line='H2CO_13CO_OS', blsub=False,
+                       mergefile=mergefile1,
+                       downsample_factor=10,
+                       datapath='/Volumes/passport/w51-apex/raw/',
+                       outpath=mergepath,
+                      )
+
+def make_H2CO_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
+                        mergefile1='W51_217GHz_merge',
+                        datasets_H2CO_13CO=["/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG02/E-098.C-0421A-2016-2016-08-01",
+                                            "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG03/E-098.C-0421A-2016-2016-08-02",
+                                           ]
+                         ):
+    datasets_H2CO_13CO = ["/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG02/E-098.C-0421A-2016-2016-08-01",
+                          "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG03/E-098.C-0421A-2016-2016-08-02",
+                         ]
+
+    make_blanks_merge(os.path.join(mergepath,mergefile1),
+                      restfreq=218.2218*u.GHz,
+                      lowest_freq=216.99*u.GHz, width=2.51*u.GHz,
+                      pixsize=5.0*u.arcsec,
+                      cd_kms=0.25)
+
+    build_cube_generic(window='AP-H201-X202', datasets=datasets_H2CO_13CO,
+                       sourcename='W51', line='H2CO_+_13CO ', blsub=False,
+                       mergefile=mergefile1,
+                       downsample_factor=10,
+                       datapath='/Volumes/passport/w51-apex/raw/',
+                       outpath=mergepath,
+                      )
+
+
+def make_218_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
+                        mergefile1='W51_218GHz_merge',
+                        datasets_H2CO_13CO=["/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG02/E-098.C-0421A-2016-2016-08-01",
+                                            "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG03/E-098.C-0421A-2016-2016-08-02",
+                                           ]
+                         ):
+    datasets_H2CO_13CO = ["/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG02/E-098.C-0421A-2016-2016-08-01",
+                          "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG03/E-098.C-0421A-2016-2016-08-02",
+                         ]
+
+    make_blanks_merge(os.path.join(mergepath,mergefile1),
+                      restfreq=218.2218*u.GHz,
+                      lowest_freq=218.50*u.GHz, width=2.51*u.GHz,
+                      pixsize=5.0*u.arcsec,
+                      cd_kms=0.25)
+
+    build_cube_generic(window='AP-H201-X201', datasets=datasets_H2CO_13CO,
+                       sourcename='W51', line='H2CO_+_13CO ', blsub=False,
+                       mergefile=mergefile1,
+                       downsample_factor=10,
+                       datapath='/Volumes/passport/w51-apex/raw/',
+                       outpath=mergepath,
+                       noisefactor=10,
+                       automask=False,
+                       flagdata=False,
+                      )
+
+
+
 
 
 
@@ -2493,6 +2584,3 @@ def cal_date_overlap(dates1, calibration_factors=calibration_factors):
             d1,d2 = Time(k.split(":"))
             if dates1[0] < d2 and dates1[1] > d1:
                 return k
-
-
-#build_cube_generic(window='low', datasets=['../raw/E-098.C-0421A.2016AUG03/E-098.C-0421A-2016-2016-08-02'], sourcename='W51', line='H2CO_13CO_OS', blsub=False)
