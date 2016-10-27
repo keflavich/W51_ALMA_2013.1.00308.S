@@ -5,6 +5,8 @@ import glob
 import argparse
 import os
 
+assert os.path.exists('bibdesk.bib')
+
 name = 'cores_and_outflows'
 
 parser = argparse.ArgumentParser(description='Make latex files.')
@@ -50,10 +52,14 @@ def do_everything():
     print("Executing PDF command: {0}".format(pdfcmd))
     subprocess.call(pdfcmd)
     print("Executing bibtex command: {0}".format(bibcmd))
-    subprocess.call(bibcmd)
-    subprocess.call(pdfcmd)
-    subprocess.call(bibcmd)
-    subprocess.call(pdfcmd)
+    bibresult = subprocess.call(bibcmd)
+    assert bibresult == 0
+    pdfresult = subprocess.call(pdfcmd)
+    assert pdfresult == 0
+    bibresult = subprocess.call(bibcmd)
+    assert bibresult == 0
+    pdfresult = subprocess.call(pdfcmd)
+    assert pdfresult == 0
 
     if args.outfile == 'auto':
         outprefix = name+'_referee' if args.referee else name
