@@ -27,6 +27,7 @@ for spwid in (0,1,2,3):
 
     latexdict['header_start'] = '\label{{tab:linesspw{0}}}'.format(spwid)
     latexdict['caption'] = 'Spectral Lines in SPW {0}'.format(spwid)
+    latexdict['tablefoot'] = ''
     #latexdict['tablefoot'] = ('\par\nJy-Kelvin gives the conversion factor from Jy '
     #                          'to Kelvin given the synthesized beam size and '
     #                          'observation frequency.')
