@@ -719,9 +719,9 @@ temperature that is $200 < T < 600$ K out to $r<2$\arcsec ($r<10^4$ au; Section
 temperatures may be overestimates when the low-J lines of \methanol are
 optically thick, but for now they are the best measurements we have available.
 If the dust temperature matches the methanol temperature, it would be optically
-thin ($\tau \lesssim 1/3$) and the mass would be only $\sim6$ \msun.  However,
-this latter estimate discounts any substructure at scales $<1000$ AU, which we
-know exists from the 2015.1.01596.S data.
+thin ($\tau \lesssim 1/3$) and the central source dust mass would be only
+$\sim6$ \msun.  However, this latter estimate discounts any substructure at
+scales $<1000$ AU, which we know exists from the 2015.1.01596.S data.
 
 \subsubsection{W51 e8 and north mass and temperature from continuum}
 \label{sec:w51e8andnorth}
@@ -1324,7 +1324,7 @@ confused and asymmetric for simple interpretation.
 
 
 \Figure{{figures/e8_CO2-1_channelmaps}.png}
-{Channel maps of the e8 outflow in \twelveco 2-1.  The outflow here are more
+{Channel maps of the e8 outflow in \twelveco 2-1.  The outflows here are more
 erratic, with fewer clearly-connected red and blue lobes.}
 {fig:e8cooutflow}{1}{18cm}
 
@@ -1540,8 +1540,15 @@ does not appear to drive an outflow, so there is again no direct evidence of
 ongoing accretion.
 
 The correlation of the extended hot cores with outflow-driving source suggests
-that the heating is either from accretion luminosity or the high accretion
-rate is necessary to reprocess stellar photospheric light into the infrared.
+that the heating of these hot cores is either from accretion luminosity, or
+that the high accretion rate indicated by the presence of outflows is necessary
+to reprocess stellar photospheric light into the infrared.
+% rephrase, probably:
+% Gas must be heated by FIR radiation.  High-mass stars produce mostly UV
+% radiation.
+% A. High accretion results in high luminosity infrared, which heats the gas.
+% B. High accretion *reprocesses* stellar light into infrared, which heats the gas.
+% C. High accretion bloats the stars.
 
 \subsection{Fragmentation: Jeans analysis}
 \label{sec:fragmentation}
@@ -1614,6 +1621,79 @@ formation of massive stars, except this monolithic core is not a simple initial
 condition of the gas.  It is not clear how such cores are assembled in the first
 place, but the key requirement for their formation is that a high-mass protostar
 must form first. 
+
+\section{Comparison to high-mass star formation theories}
+\todo{REVISE THIS}
+Two general classes of star formation theory, ``competitive accretion'' and
+``turbulent core accretion'' have dominated the discussion of initial
+conditions in high-mass star formation.  In their extreme forms, they can be
+simplified to uniform seeds accreting different amounts of material
+over their lifetime in the case of competitive accretion and a single, initial,
+quasistatic high-mass gas core collapsing into a star in the case of turbulent
+core accretion.
+
+Our observations of high-mass hot cores extending to radii $\sim5000$ AU do
+not directly contradict either of these extremes, but instead suggests
+that the accretion models used within these theories must be modified.
+
+% Real point: feedback suppresses formation of new fragments.
+If there are many simultaneously formed low-mass fragments competing for
+material, as in competitive accretion, it appears that the formation of a
+dominant most massive star dramatically changes the conditions for accretion.
+This single central source heats material enough to reduce the efficiency of
+Bondi-Hoyle accretion by a factor of 10 for a stationary object, though the
+reduction is negligible for an object moving near the Virial velocity ($v_{vir}
+\gtrsim 5 \kms$ within the hot cores).  However, this extended warm region
+suppresses the formation of new small fragments, as was observed in simulations
+with much weaker feedback by \citet{Bate2009a}. 
+It is not clear whether the mass accumulated around the most massive protostars
+at present came from large radii, as in \citet{Smith2009f}, but it is certainly
+possible.
+
+If the turbulent core model is used to describe these sources, a few obvious
+issues arise.  First, the core structure is not a simple power-law with
+$\kappa_\rho=1.5$, as usually assumed \citep{McKee2003a,Zhang2011a}.  Figure
+\ref{fig:kapparho} shows instead that the core is internally flatter and
+externally steeper than this assumption.  Of course, the observations do not
+correspond to the initial conditions, so this comparison could more fairly be
+made with a later `snapshot' from those models.  Second, the more sophisticated
+models of evolution from an initial turbulent core suggest that most of the
+stellar (and accretion) radiation should escape via growing outflow cavities
+\citep{Zhang2011a,Zhang2013h,Zhang2014e}.  The symmetry seen in the hot core
+around e2e and its lack of correspondence with the outflowing material (Figure
+\ref{fig:outflowonmethanol}) indicates that a large fraction of the stellar or
+accretion radiation is going directly into the core and not escaping along the
+poles.
+
+The presence of these large-scale, massive, hot cores raises a few questions
+that are not presently well-addressed by any class of theories.  If the hot
+cores successfully suppress further fragmentation in their envelopes, does that
+imply that these cores will collapse into single stars?  If so, do the cores in
+any way correspond to `initial conditions', or are the cores created by the
+stars that form within them?  This is more than merely a semantical question,
+as the evolutionary progress within the `turbulent core' model depends on the
+initial core structure, and the presence of nearby fragments governs whether
+`competitive accretion' can occur at all.
+
+\todo{this is mostly just spitballing; it probably ought to be removed:}
+There are also some curious implications for `isolated' massive star formation.
+The stars we see forming are clearly not isolated - they are embedded within
+fairly rich clusters of massive stars we can see already, and they are very likely
+to be surrounded by substantial clusters of lower-mass stars.  However, \emph{during
+their formation process}, they may be the only accreting stars around - their
+thermal feedback may prevent any neighbors from forming simultaneously.  This
+`enforced isolation' might be a way for massive star formation to proceed
+similarly independent of the size of their parent cloud, assuming they can be
+formed at all.
+
+\Figure{figures/outflows_over_methanol_e2e.png}
+{The e2e core as seen in the \methanol \todo{10?xx} line with
+the integrated \twelveco outflow overlaid in red and blue.  The `core'
+is circularly symmetric, while the outflow is clearly bipolar.}
+{fig:outflowonmethanol}{1}{10cm}
+
+%\todo{Do I need a plot of gravitational pressure / thermal pressure vs radius?
+%probably yes.}
 
 %\section{An evolutionary sequence...}
 
