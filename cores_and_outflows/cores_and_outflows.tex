@@ -694,7 +694,10 @@ emission $ff<1$ would both imply higher intrinsic temperatures.  The implied
 luminosity, assuming blackbody emission from a spherical beam-filling source,
 is $L = 4\pi r^2 \sigma_{sb} T^4 = 2.3\ee{4} \lsun$.  Since any systematic
 uncertainties imply a higher temperature, this estimate is a lower limit on the
-source luminosity.
+source luminosity.  Such a luminosity corresponds to a B0.5V, 15 \msun
+star with effective temperature $4\ee{4}$ K \citep{Pecault2013a}, however, see
+Section \ref{sec:stellarproperties}.
+% http://www.pas.rochester.edu/~emamajek/EEM_dwarf_UBVIJHK_colors_Teff.txt
 
 % this mass estimation method is not self-consistent; T_dust = T_peak implies
 % tau >= 1
@@ -723,6 +726,14 @@ thin ($\tau \lesssim 1/3$) and the central source dust mass would be only
 $\sim6$ \msun.  However, this latter estimate discounts any substructure at
 scales $<1000$ AU, which we know exists from the 2015.1.01596.S data.
 
+An upper limit on the radio continuum emission from W51e2e is $S_{14.5 GHz} <
+0.6$ mJy/beam in a FWHM=$0.34\arcsec$ beam, or $T_{B,max} < 30$ K
+\citep{Ginsburg2016b}.  Assuming emission from an optically thick \hii region
+with $T_e = 8500$ K \citep{Ginsburg2015a}, the upper limit on the emitting
+radius is $R_{\hii} < 110 AU$.  Similar limits are obtained from other
+frequencies in those data.
+
+
 \subsubsection{W51 e8 and north mass and temperature from continuum}
 \label{sec:w51e8andnorth}
 % total_mass_analysis
@@ -734,6 +745,14 @@ brightest detected beam is optically thick, are 1.6\ee{4} and 3.9\ee{4} \lsun,
 respectively.
 
 
+W51 North has an upper limit similar to that of W51e2e, but somewhat less
+restrictive because the noise in that region is substantially higher.  W51 e8,
+by contrast with the others, has a clear detection at cm wavelengths.  The
+source e8n, which is offset from the peak mm emission by 0.13\arcsec (700 AU),
+has $S_{25 GHz}=4.7$ mJy/beam, corresponding to $T_B=135$ K, which implies an
+optically thick \hii region size $R=180$ AU.  This could be part of an ionized
+jet or an ionizing binary companion, but its offset from the central mm source
+suggests that it is not a simple spherically symmetric HC\hii region.
 
 
 \subsection{Radial mass profiles around the most massive cores}
@@ -1549,6 +1568,17 @@ to reprocess stellar photospheric light into the infrared.
 % A. High accretion results in high luminosity infrared, which heats the gas.
 % B. High accretion *reprocesses* stellar light into infrared, which heats the gas.
 % C. High accretion bloats the stars.
+
+\subsection{The accreting stars}
+\label{sec:stellarproperties}
+In Sections \ref{sec:w51e2e} and \ref{sec:w51e8andnorth}, we noted that the
+\emph{lower limit} luminosities for the three most massive cores correspond
+to early B-type photospheres.  Such stars should emit enough radiation to ignite
+luminous compact \hii regions, $Q_{lyc}=5\ee{45}$ \pers \citep{Vacca1996a}.
+The upper limits on the presence of such an \hii region are constraining,
+with $R<100 AU$, which is consistent with the presence of these stars.
+
+variability -> Stellar bloating \citep{Smith2012h, Hosokawa2016a}
 
 \subsection{Fragmentation: Jeans analysis}
 \label{sec:fragmentation}
