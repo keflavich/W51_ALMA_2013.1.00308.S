@@ -565,8 +565,10 @@ if __name__ == "__main__":
                                     replace_bad=replace_bad)
 
             pl.figure(1).clf()
-            pl.imshow(tmap, vmin=0, vmax=600, cmap='hot')
-            cb = pl.colorbar()
+            im = pl.imshow(tmap, vmin=0, vmax=600, cmap='hot')
+            # contour at T=350K = 170F, "well done"
+            pl.contour(tmap, levels=[350], colors=['b'], linewidth=0.5, alpha=0.75)
+            cb = pl.colorbar(mappable=im)
             cb.set_label("Temperature (K)")
             pl.savefig(paths.fpath("chemistry/ch3oh_temperature_map_{0}.png".format(sourcename)))
             pl.figure(3).clf()
