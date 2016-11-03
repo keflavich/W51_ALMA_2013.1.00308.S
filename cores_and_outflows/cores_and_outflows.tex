@@ -34,7 +34,9 @@
     %limited massive star growth even further than direct feedback.)
 }
 
+\ifpdf
 \maketitle
+\fi
 
 %\section{Paper 1 to-do list}
 %\begin{enumerate}
@@ -983,7 +985,9 @@ but comparable upper-state energy levels, allowing us to probe higher column
 densities than would otherwise be possible.
 
 % ch3oh_rotational_diagram_maps
-\FigureTwo{figures/ch3oh_temperature_map_e2.png}{figures/ch3oh_column_map_e2.png}
+\FigureTwo
+{figures/ch3oh_temperature_map_e2.png}
+{figures/ch3oh_column_map_e2.png}
 {Methanol temperature and column density maps around e2.  The central regions around
 the cores appear to have lower column densities because the lines become
 optically thick and self-absorbed.  The contour in the temperature map is at
@@ -1694,6 +1698,38 @@ cores have been present before high-mass star formation initiated, resting
 at $T\sim20$ K as in a typical molecular cloud, they would have been subject
 to Jeans fragmentation on a much smaller scale, and would have formed a cluster
 of smaller stars.
+
+\subsection{High-mass star formation within clusters}
+Since massive ($M\gtrsim250$ \msun) hot cores presently exist, and they
+appear to be the precursors to a next generation of high mass stars, there
+is a clear route to high-mass star formation given the presence of 
+strong feedback sources.   However, this raises the question of what
+the initial conditions were that initiated this formation.  Did the
+current generation of forming massive stars start life the same way
+as previous generations?
+
+One possibility hinted at by the density of hyper- and ultra-compact \hii
+regions around each of the massive cores is that they did not.  Heating from
+previous generations of moderate mass stars could have warmed the gas,
+suppressing fragmentation into the sub-solar mass objects typical in local
+clouds until enough gas was present to collapse into a substantially larger
+object.  This toy model is analagous to the `cooperative accretion' mode
+suggested by \citet{Zinnecker2007a}, but at a much earlier stage in the cluster
+development when the gas is still molecular and dusty and therefore capable of
+efficient cooling.
+
+In this scenario, the highest mass stars would only be capable of forming
+within dense, clustered environments.  The IMF would be built up by an inverse
+hierarchy, with progressively larger stars capable of forming over time until
+the gas is either exhausted \citep{Ginsburg2016b} or expelled.
+
+However, some of the assumptions in this scenario contradict our observations.
+If the previous generation were responsible for substantial gas heating, we
+would expect to see warm gas surrounding the \hchii regions.  Instead, we see
+these stars barely interacting with the dense gas.  Perhaps these stars are
+only effective at dense gas heating before they ignite Lyman continuum emission
+and blow out cavities, and afterward they are merely uninteractive witnesses to
+continued collapse.
 
 \section{Comparison to high-mass star formation theories}
 \todo{REVISE THIS}
