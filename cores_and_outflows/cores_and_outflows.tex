@@ -190,15 +190,17 @@ $\sim2\arcmin\times1\arcmin$ region centered between W51 IRS2 and W51 e1/e2
 with a 37-pointing mosaic.  Two configurations of the 12m array were used,
 achieving a resolution of 0.2\arcsec.  Additionally, a 12-pointing mosaic was
 performed using the 7m array, hypothetically probing scales up to
-$\sim28$\arcsec.  The full UV coverage was from $\sim12$ to $\sim1500$ m
-(figure \ref{fig:uvcov}).
+$\sim28$\arcsec.  The full UV coverage was from $\sim12$ to $\sim1500$ m.
+The spectral windows (SPWs) covered are listed in Table \ref{tab:spw},
+and the lines they cover described in Section \ref{sec:obslines}.
+%(figure \ref{fig:uvcov}).
 
 % figure produced directly in CASA; not included in repository b/c
 % it requries having access to the full data set
-\Figure{figures/visibility_weight_vs_uvdist_linear.png}
-{A weighted histogram of the visibility weights as a function of UV distance;
-this approximately shows the amount of data received at each baseline length.}
-{fig:uvcov}{1}{16cm}
+% \Figure{figures/visibility_weight_vs_uvdist_linear.png}
+% {A weighted histogram of the visibility weights as a function of UV distance;
+% this approximately shows the amount of data received at each baseline length.}
+% {fig:uvcov}{1}{16cm}
 
 Additionally, we will comment briefly on project 2015.1.01569.S (PI: Goddi),
 which observed two fields centered on e2e/e8 and north with very long baselines
@@ -221,17 +223,23 @@ on the project's github repository\footnote{\url{https://github.com/keflavich/W5
 
 \subsubsection{Continuum}
 A continuum image combining all 4 spectral windows was produced using
-\texttt{tclean}.  We phase self-calibrated the data on baselines longer than
-100m to increase the dynamic range.  The final image was cleaned with 50000
-iterations to a threshold of 5 mJy.  The lowest noise level in the image, away
-from bright sources, is $\sim0.2$ mJy/beam, but near the bright sources e2 and
-IRS2, the noise reached as high as $\sim2$ mJy/beam.  Deeper cleaning was
-attempted, but lead to instabilities.
-The combined image has a central frequency of about 226.6 GHz assuming a flat
-spectrum soure.
+\texttt{tclean}.  We identified line-rich channels from a spectrum of source e8
+and flagged them out prior to imaging.  We then phase self-calibrated the data
+on baselines longer than 100m to increase the dynamic range.  The final image
+was cleaned with 50000 iterations to a threshold of 5 mJy.  The lowest noise
+level in the image, away from bright sources, is $\sim0.2$ mJy/beam
+($M\sim0.14$ \msun at $T=20$ K using the extrapolation of
+\citet{Ossenkopf1994a} opacity from \citet{Aguirre2011a} with $\beta=1.75$),
+but near the bright sources e2 and IRS2, the noise reached as high as $\sim2$
+mJy/beam.  Deeper cleaning was attempted, but lead to instabilities.  The
+combined image has a central frequency of about 226.6 GHz assuming a flat
+spectrum source; a steep-spectrum source, with $\alpha=4$, would have a central
+frequency closer to 227 GHz, a difference that is negligible for all further
+analysis.
 
 
 \subsubsection{Lines}
+\label{sec:obslines}
 We produced spectral image cubes of the lines listed in Tables
 \ref{tab:linesspw0}, \ref{tab:linesspw1}, \ref{tab:linesspw2}, and
 \ref{tab:linesspw3}.  For kinematic and moment analysis, the median value over
