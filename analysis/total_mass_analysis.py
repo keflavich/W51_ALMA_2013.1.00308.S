@@ -64,6 +64,28 @@ print("Filament line mass: {0}".format(flux_of_filament *
                                       )
      )
 
+print("Total mass(40K): {0}".format(total_signal * masscalc.mass_conversion_factor(TK=40)*u.M_sun/u.Jy))
+threshold_column_40 = masscalc.dust.colofsnu(nu=masscalc.centerfreq,
+                                             snu=threshold*u.beam,
+                                             beamomega=beam.sr,
+                                             temperature=40*u.K).to(u.cm**-2,
+                                                                u.dimensionless_angles())
+print("Threshold column (40K): {0:e}".format(threshold_column_40))
+threshold_density_40 = (masscalc.mass_conversion_factor(TK=40) * (threshold*u.beam).to(u.mJy).value /
+                        (4/3.*np.pi) /
+                        (beam.sr.value*masscalc.distance**2)**(1.5) /
+                        (2.8*constants.m_p)).to(1/u.cm**3)
+print("Threshold density (40K): {0:e}".format(threshold_density_40))
+flux_of_filament = 132*u.Jy/u.beam/ppbeam
+print("Total *filament* mass(40K): {0}".format(flux_of_filament * masscalc.mass_conversion_factor(TK=40)*u.M_sun/u.Jy))
+print("Total *filament* mass(100K): {0}".format(flux_of_filament * masscalc.mass_conversion_factor(TK=100)*u.M_sun/u.Jy))
+print("Filament line mass: {0}".format(flux_of_filament *
+                                       masscalc.mass_conversion_factor() *
+                                       u.M_sun/u.Jy /
+                                       (0.0027*u.deg*masscalc.distance).to(u.pc, u.dimensionless_angles())
+                                      )
+     )
+
 dendro_merge = Table.read(paths.tpath('dendro_merge_continuum_and_line.ipac'), format='ascii.ipac')
 corelike = dendro_merge['corelike'] == 'True'
 dendro_protostars_pt2 = dendro_merge['cont_flux0p2arcsec'].sum()*u.Jy
