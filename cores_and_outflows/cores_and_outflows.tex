@@ -23,10 +23,14 @@
     some stage of protostars are detected in the observed field.  During the
     process of forming, high-mass stars heat a large volume (and
     correspondingly large mass) of gas, preventing it from fragmenting, and
-    therefore keep a large reservoir available to feed from.  By contrast, more
+    therefore keep a large reservoir available to feed from.
+    By contrast, more
     mature massive stars that illuminate compact \hii regions have little
     effect on their surrounding dense gas, hinting that these sources have
     completed most or all of their accretion.  
+    These warm cores are presently stable against Jeans fragmentation, but
+    at their current density and lower temperature, they would not have been,
+    so they must have been assembled from a larger volume of gas.
     %These observations support a variant of a 
     %monolithic core accretion model for high-mass star formation, 
     %(The observations provide a solution
@@ -76,8 +80,9 @@ massive stars acquire their mass and what their immedate surroundings look like
 at this early time.
 
 Assuming the stellar initial mass function (IMF) is a universal (or nearly
-univeral) distribution,  massive stars O-stars (with $M>50 \msun$) almost
-always form in a clustered fashion (in proto-clusters or proto-associations).
+univeral) distribution \citep{Bastian2010a},  massive stars O-stars (with $M>50
+\msun$) almost always form in a clustered fashion \citep[in proto-clusters or
+proto-associations][]{deWit04a,deWit05a,Parker2007a}. %bressert2012? dewit todo
 Their presence, and the strong feedback they produce, may directly influence
 how the IMF around them is formed.  If feedback from these stars is relevant
 while most of the  mass surrounding them is still in gas (not yet in stars),
@@ -315,8 +320,8 @@ local continuum.
 % dendrogramming.py
 We used the \texttt{dendrogram} method described by \citet{Rosolowsky2008c} and
 implemented in \texttt{astrodendro} to identify sources.  We used a minimum
-value of 1 mJy/beam ($\sim5-\sigma$) and a minimum $\Delta=0.4$ mJy/beam
-($\sim2-\sigma$) with minimum 10 pixels (each pixel is 0.05\arcsec).  This
+value of 1 mJy/beam ($\sim5\sigma$) and a minimum $\Delta=0.4$ mJy/beam
+($\sim2\sigma$) with minimum 10 pixels (each pixel is 0.05\arcsec).  This
 cataloging yielded over 8000 candidate sources, of which the majority are noise
 or artifacts around the brightest sources.  To filter out these bad sources,
 we created a noise map taking the local RMS of the \texttt{tclean}-produced
@@ -966,7 +971,7 @@ rich chemistry.
 \subsection{\methanol temperatures \& columns in the hot cores}
 \label{sec:ch3ohtem}
 \label{sec:methanol}
-The  chemically ehnanced regions appear to be associated with regions of
+The  chemically enhanced regions appear to be associated with regions of
 elevated gas temperature.  We examine this directly by analyzing
 the excitation of lines for which we have detected multiple transitions with
 significant energy differences.  We do not use \formaldehyde  for this analysis 
@@ -1173,13 +1178,13 @@ far infrared illumination \citep{Ginsburg2016b}.  This radiation heats the
 cloud's molecular gas, affecting the initial conditions of future star
 formation.
 
-The ionizing radiation in W51 was discussed in detail in \citep{Ginsburg2016b}.
-Ionizing radiation affects much of the cloud, but little of the high-density
-prestellar material.  There is no evidence of increased gas temperatures in the
-vicinity of \hii regions.  While in Section \ref{sec:chemistrymaps} we
-identify chemically enhanced regions as those where radiative feedback has
-heated the dust and released ices into the gas phase, no such regions are
-observed surrounding the most luminous compact \hii regions.
+The ionizing radiation in W51 was discussed in detail in \citet{Ginsburg2016b}.
+Ionizing radiation affects much of the cloud volume, but little of the
+high-density prestellar material:  there is no evidence of increased gas
+temperatures in the vicinity of \hii regions.  While in Section
+\ref{sec:chemistrymaps} we identify chemically enhanced regions as those where
+radiative feedback has heated the dust and released ices into the gas phase, no
+such regions are observed surrounding the compact \hii regions.
 
 % This lack of molecular brightness enhancement is only an indirect indication
 % that the \hii regions do not affect the surrounding dense gas temperature.  A
@@ -1190,7 +1195,7 @@ observed surrounding the most luminous compact \hii regions.
 
 The chemical maps shown in Section \ref{sec:chemistrymaps} show the volumes of
 gas clearly affected by newly-forming high-luminosity stars.  The
-\methanol-enhanced region around W51e2 extends 0.04 pc, or 8500 AU (see Section
+\methanol-enhanced region around W51e2e extends 0.04 pc, or 8500 AU (see Section
 \ref{sec:ch3ohtem}). Other locally enhanced species, especially the nitrogenic
 molecules HNCO and \formamide, occupy a smaller and more asymmetric region
 around e2e and e2w (Figure \ref{fig:e2methanolhnco}).  These chemically enhanced
@@ -1221,8 +1226,705 @@ and 225 GHz continuum (blue) toward  north, as in Figure
 tracing the diffuse IRS 2 \hii region.}
 {fig:northmethanolhnco}{1}{8.5cm}
 
-
 \subsection{Outflows}
+\label{sec:mainoutflows}
+While many outflows were detected, we defer their discussion to Appendix
+\ref{sec:outflows}, as the details of these flows is not relevant to the main
+point of the paper.  However, we note that out of the dozen or so outflows
+detected, \emph{none} come from radio continuum sources (\hii regions).  All
+outflows that have a clear origin come from millimeter-detected,
+centimeter-faint sources, suggesting that these sources are accreting and are
+not emitting ionizing radiation.
+
+% \todo{What direct tests can be used to show that \hii regions aren't heating
+% their surroundings?  \formaldehyde is good, in principle, but maybe not in
+% practice because of the possible optical depth issues.  Radio \ammonia might be
+% OK, but it might also be affected by imaging artifacts from the bright radio
+% sources.}
+
+
+
+%incorrect, and discussed in sec:ch3ohtem in detail
+% The extraordinarily high column densities of \methanol make direct temperature
+% estimation impossible; many or all of the observed \methanol lines are almost
+% certainly optically thick.  Fitted rotational diagrams resulted in negative
+% temperatures throughout the \methanol-enhanced region, implying that the levels
+% are not thermally populated.  However, the total column densities from these
+% rotational diagram fits are reasonable lower-limits on the column, and they
+% exceed $N(\methanol)\gtrsim10^{20}$ \persc.
+% (demonstrate this?)
+
+% \todo{If we assume $T_{ex}=100$ K, can we use the $5_{-4,2}-6_{-4,3}$ line
+% to measure the column density?}
+% Out of the five clearly detected \methanol lines, the $5_{-4,2}-6_{-4,3}$
+% line seems to be subthermally excited and/or optically thin...
+
+
+
+% \todo{How does the \methanol brightness/column profile compare with the dust
+% brightness/column?  Is it going up faster?  By how much?}
+% answered in fig:ch3ohtemX
+
+
+%Is there any evidence that the main-sequence stars that illuminate the \hii
+%regions in W51 \citep{Ginsburg2016b} affect the pre-star-forming gas throughout
+%W51?
+%\todo{Our ALMA program was designed to answer this question by measuring the
+%temperature in the dense prestellar \formaldehyde-rich gas.  Naively, the data
+%say "yes, the temperatures are all ridiculously high, $T>100$ K", but that
+%can't be.  The \formaldehyde temperatures suggest that temperature is correlated
+%with density, which unfortunately suggests instead that the \formaldehyde
+%line optical depth is correlated with density.  It is therefore not straightforward
+%to systematically examine the thermal feedback effects from MYSOs.}
+%
+%\todo{Notes from chatting with Wing-Fai Thi:  \methanol has a similar condensation
+%temperature to water, so the desorbed region is probably $\sim90-100$ K.  HNCO
+%has a much \emph{lower} desorption temperature, so if it was coming from grain
+%surfaces, it should be more widespread than \methanol.  Since it is not, the
+%enhancement is most likely due to gas-phase chemistry.}
+%
+%\todo{
+%However, Ewine van Dishoeck pointed out that HNCO and \formamide can be mixed
+%into ices that evaporate at a much higher temperature, consistent with the
+%structure we observe.
+%}
+
+
+
+\section{Discussion}
+\label{sec:discussion}
+\subsection{The scales and types of feedback}
+\label{sec:feedbackscales}
+The most prominent features of our observations are the warm, chemically
+enhanced regions surrounding the highest dust concentrations, and the
+corresponding \emph{lack} of such features around the ionized nebulae.  This
+difference implies that the immediate star formation process - that of gas
+collapse and fragmentation from a molecular cloud - is primarily affected by
+feedback from stars that are presently accreting and therefore emitting most of
+their radiation in the infrared, \emph{not} from previous generations of
+now-exposed stellar photospheres.
+
+On the scales relevant to the fragmentation process, i.e., the $\sim0.1$ pc
+scales of prestellar cores, this decoupling can be explained simply.  Stellar
+light is produced mostly in the UV, optical, and near-infrared.  As soon as a
+star is exposed, either by consuming or destroying its natal core, that light
+is able to stream to relatively large ($\gtrsim1$ pc) scales before being
+absorbed.  At that point, the stellar radiation is poorly coupled to the scales
+of direct star formation.  By contrast, stars embedded in their natal cores
+will have all of their light reprocessed from UV/optical/NIR to the far-IR
+within a $<0.1$ pc sphere, providing a far-infrared background light capable of
+heating its surroundings.
+
+The different effects of ionizing vs thermal radiation can be seen directly in
+the three main massive star forming regions, e2, e8, and north.  Figures
+\ref{fig:e2methanolhnco} and \ref{fig:northmethanolhnco} show both the
+highly-excited warm molecular gas in color and the free-free emission from
+ionized gas in contours.  As described in Section
+\ref{sec:nonionizingradiation}, the spatial differences indicate that the
+ionizing radiation sources - the exposed OB stars - have little effect on the
+star-forming collapsing and fragmenting gas.
+
+% subsubsection on the formation of the IMF?
+The low impact of photospheric radiation on collapsing gas suggests that
+second-generation star formation is relatively unaffected by its surroundings.
+Instead, the stars of the same generation - those currently embedded and
+accreting - have the dominant regulating effect on the gas temperature.  To the
+extent that gas temperature governs the IMF, then, the formation of the IMF
+\emph{within clusters} is therefore predominantly self-regulated, with little
+external influence.
+
+% something about implications for star formation on galactic scales
+
+
+%\subsection{Question: Where does the radiation from the HII regions end up?}
+%The \hii regions show no signs of heating around them.  However, we know that
+%these must be $>10^4$ \lsun stars, and even the infrared radiation should be
+%rising with luminosity (or temperature).  While most of the energy might go
+%into ionizing the gas cloud, many of the photons must get reprocessed into the
+%infrared at some point.  If optical/NIR photons were escaping, we should be
+%able to see them unless the geometry is particularly unfavorable.
+
+%\subsection{The continuum sources}
+%
+%We have detected 75 distinct compact `sources' and characterized some of
+%their basic properties assuming they consist purely of gas and dust, but this
+%interpretation is incomplete.  At the least, all of the sources with peak
+%surface brightnesses $T_{B,max} > 30$ K are likely to contain central heating
+%sources, i.e., stars or protostars.
+%
+%\subsection{Limits on accretion onto HII regions}
+%\citet{Peters2010a} and \citet{Klaassen2012a} proposed that ultra- and
+%hyper-compact \hii regions may be variably accreting.  When accretion is most
+%active, the \hii region is confined and shrinks or may even be turned off.
+%When accretion is slower or weaker, the \hii region expands, following
+%approximately Str{\"o}mgren expansion \todo{make sure that's actually what they
+%say...}.  
+%
+%The observed lack of warm molecular gas around compact \hii regions suggests
+%that they have not recently been accreting...
+%
+%d2 provides a counterpoint, however, as it is a hypercompact \hii region that *does*
+%exhibit enhanced molecular emission in its surroundings
+
+\subsubsection{Hot core chemical structure}
+\label{sec:cheminterp}
+%\todo{Probably cut P1 here and move the whole thing to "Discussion"}
+%The enhancements in noted lines occur as factor of 3-10 increases in the peak
+%brightness of most of the lines shown in Figure \ref{fig:chemmapse2}.  These
+%enhancements could occur from increased total column density, increased
+%abundance of the molecules, or increased excitation.
+In Section \ref{sec:chemistrymaps}, we showed regions with enhanced emission
+in a variety of complex chemical species over a large volume.  While it is
+not generally correct to conclude that enhanced emission indicates enhanced
+abundance, the additional analysis of the \methanol abundance 
+in Section \ref{sec:ch3ohtem} suggests that there is a genuine enhancement in
+complex chemical abundances toward these hot cores.
+
+
+%In Section \ref{sec:ch3ohtem}, we examined the \methanol abundance
+%and excitation conditions. 
+%The detection of highly excited \methanol lines, including
+%$18_{3,15}-17_{4,14}$ ($E_U=447$ K) and $25_{3,22}-24_{4,20}$ ($E_U=802$ K),
+%suggests that excitation is part of the explanation for the brighter
+%molecular emission.  However, LTE modeling reveals that the \methanol abundance
+%increases by a factor of $\sim5-10$ from the protocluster gas inward toward the
+%e2e core.  This abundance gradient is likely present in other molecules as
+%well.
+
+We have not performed a detailed abundance analysis of multiple species, but we
+nonetheless suggest that these sharp-edged bubbles around the hot cores
+represent sublimation zones in which substantial quantities of grain-processed
+materials are released into the gas phase.  The relatively sharp edges likely
+reflect the particular point where the temperature exceeds the sublimation
+temperature for each species \citep{Garrod2006a}, though some species
+may appear at temperatures above or below their sublimation temperature
+if they are mixed into ices that have a different sublimation temperature.
+
+Most of the lines identified in the hot cores e2e, e8, and north are also
+present in ALMAmm14.  However, their extent is greater toward the more luminous
+sources.  An examination of the relationship between the luminosity of the
+protostars and the extent of their chemically enhanced zones will be useful for
+identifying further very massive protostars.
+
+
+\subsubsection{Outflows}
+\label{sec:outflowdiscussion}
+While the outflows described in Section \ref{sec:outflows} are impressive and
+plentiful, they are obviously not the dominant form of feedback, as their area
+filling factor is small compared to that of the various forms of radiative
+feedback.  A low area filling factor implies a substantially smaller volume
+filling factor and therefore a lower overall effect on the cloud.  However,
+these outflows likely do punch holes through protostellar envelopes and the
+surrounding cloud material, allowing radiation to escape.
+
+The detection of widespread high-J \methanol emission around the highest-mass
+protostars suggests that the use of \methanol as a bulk outflow tracer as
+suggested by \citet{Kristensen2015a} is not viable in regions with forming
+high-mass stars.  While mid-J \methanol emission is detected associated with
+the outflow (e.g., the J=10-9 transition), it is completely dominated by the
+general `extended hot core' emission described in Section
+\ref{sec:chemistrymaps}.
+
+None of the outflows initiate in \uchii or \hchii regions.  While a clear
+origin cannot be determined for all of the outflows, it is clear that no cm
+continuum sources lay at the base of any.  The lack of molecular outflows
+toward these sources implies that they are accreting at most weakly or are
+accreting (and ejecting) only atomic or ionized material.
+
+\subsection{The accreting phase of high-mass star formation}
+\label{sec:accretionandoutflows}
+The strong outflows observed around the highest-mass forming stars, e2e, e8,
+and north are clear indications of ongoing accretion onto these sources.
+However, the bright \hii regions, including e2w, e1, and d2, all lack any sign
+of an outflow or a surrounding rotating molecular structure.  Most of these
+sources lack any surrounding molecular material at all.
+%; e2w is an exception, being embedded in the e2e core, but it shows signs
+% that it may be escaping from the core, rather than being its focus
+
+Some models of high-mass star formation suggest that accretion continues
+through the ionized (\hii region) phase \citep[e.g.][]{Keto2007a}.  The lack of
+molecular material around the majority of the compact \hii regions in W51
+suggests instead that most of the accretion is done by the time an \hii region
+ignites.
+
+There is one counterexample in our sample.  The source d2 is a bright, compact
+\hii region, but it is also surrounded by a molecular enhancement.  However, it
+does not appear to drive an outflow, so there is again no direct evidence of
+ongoing accretion.
+
+The correlation of the extended hot cores with outflow-driving source suggests
+that the heating of these hot cores is either from accretion luminosity, or
+that the high accretion rate indicated by the presence of outflows is necessary
+to reprocess stellar photospheric light into the infrared.
+% rephrase, probably:
+% Gas must be heated by FIR radiation.  High-mass stars produce mostly UV
+% radiation.
+% A. High accretion results in high luminosity infrared, which heats the gas.
+% B. High accretion *reprocesses* stellar light into infrared, which heats the gas.
+% C. High accretion bloats the stars.
+
+\subsection{The accreting stars}
+\label{sec:stellarproperties}
+In Sections \ref{sec:w51e2e} and \ref{sec:w51e8andnorth}, we noted that the
+\emph{lower limit} luminosities for the three most massive cores correspond to
+early B-type photospheres.  Such stars should emit enough radiation to ignite
+luminous compact \hii regions.%, $Q_{lyc}=5\ee{45}$ \pers \citep{Vacca1996a}.
+The upper limits on the presence of such an \hii region are constraining, with
+$R<100 AU$, which is consistent with the presence of these stars, but
+inconsistent with any hotter or more luminous (spectral type $<$B0.5V).
+If the stellar luminosities are an order of magnitude or more higher,
+which is possible given the low-resolution constraints on the bolometric luminosity
+\citep{Ginsburg2016a,Sievers1991a}
+and likely if a large fraction of the stellar radiation is escaping along outflow
+cavities \citep{Kuiper2012a,Zhang2013h}, the luminosity would be too large and
+the UV radiation too small to be consistent with a main-sequence OB star.
+
+Since we can provide only upper limits on the UV radiation, it is possible
+that there is none at all.  The very large mass reservoir suggests that high
+accretion rates are possible, and the bright molecular outflows show that
+accretion is proceeding vigorously (though we have not quantified the rate).  
+Rapid accretion, and in particular rapid and \emph{variable} accretion,
+can change the properties of the underlying star, bloating the star
+and reducing its effective photospheric temperature \citep{Hosokawa2009a,
+Smith2012h, Hosokawa2016a}.  Such stars can achieve radii $R\gtrsim200 \rsun
+\sim 1$ AU while retaining photospheric temperatures $T\lesssim5000$ K.
+\todo{We hope to explore this possibility further in a
+subsequent paper.}
+
+\subsection{Fragmentation: Jeans analysis}
+\label{sec:fragmentation}
+Fragmentation is one of the critical problems in high-mass star formation.
+Assuming typical initial conditions for molecular clouds, with temperatures of
+order 10 K, gas is expected to fragment into sub-solar mass cores, preventing
+material from accreting onto single high-mass stars \citep{Krumholz2015a}.
+Even after high-mass stars successfully form, further fragmentation could
+halt the growth of these stars and limit their final mass \citep{Peters2010a}.
+
+Thermal Jeans fragmentation can be limited or suppressed entirely if the gas is
+warm enough.  The high observed gas temperatures, $T\sim100-600$ K over
+$\sim10^4$ AU, around the high mass protostars indicate that their radiative
+feedback in the infrared has a dramatic effect on the gas.  The heated region
+qualitatively matches that of \citet{Krumholz2006a}, who described
+a core heated only by accretion luminosity down to $R=10$ AU and therefore
+gave a lower limit on the total heating. 
+
+We examined the temperature structure around the highest-mass cores in Section
+\ref{sec:temperature} and the mass structure in Section \ref{sec:radialmass}.
+We put these together to measure the Jeans mass, $M_J = (\pi / 6) c_s^3 G^{-3/2}
+\rho^{-1/2}$, and length, $\lambda_J = c_s G^{-1/2} \rho^{-1/2}$ \todo{Anyone
+have strong opinions about the leading numerical constants?}, in Figure
+\ref{fig:mjeans}.
+The Jeans length
+is comparable to the hot core size, so no fragmentation should be occurring.
+Additionally, the Jeans mass is anywhere from 3-10$\times$ higher than the
+(mass-weighted) peak of the stellar initial mass function (IMF),
+$M_{peak}\approx0.4$ \msun, at most radii.  The core is therefore $\sim100$
+Jeans masses, but stable against further fragmentation.
+%implying that any fragments would be
+%larger than the typical mass in star-forming regions.
+%this is wrong
+% More importantly, though, the Jeans length is significantly smaller than the
+% size scale on which it is inferred throughout the entire heated core.
+% The gas throughout these MYSO cores is therefore Jeans-stable and will not
+% spontaneously fragment.
+
+The high gas temperature therefore provides a mechanism for MYSOs to avoid
+the ``fragmentation-induced starvation'' problem discussed by
+\citet{Peters2010a,Peters2010c,Girichidis2012b}.  Apparently, stars above
+some mass are able to heat hundreds of \msun of material surrounding them
+to such a degree that it cannot fragment further, providing an enormous
+reservoir to feed from.
+
+Within this large reservoir, there are few currently-detected fragments.
+In our data, within 6500 AU of W51 north, there is only 1 (ALMAmm35), around
+e2e there is the HII region e2w and possibly 2-3 others between 5000 and 6500
+AU, and around e8 there are none.  Admittedly, our data are not very sensitive
+in the areas immediately surrounding these cores because of dynamic
+range limitations, but the higher Jeans mass
+noted above suggests that any fragments that do exist should be more massive
+and therefore more detectable.
+
+Further fragmentation below 1000 AU is possible, e.g., as seen in NGC 6334Imm1
+\citep{Brogan2016a}.  However, in the long baseline data to be presented in a
+future work (Goddi et al, in prep), very little additional fragmentation is
+observed.  A few more sources are detected toward e2e and north and many toward
+e8, but the nature of those more compact ($<200$ AU) sources suggests they are
+protostellar or stellar.  Additionally, unlike the centrally-clustered
+fragmentation seen in NGC 6334Imm1, the fragments that are detected appear
+spread out in W51.
+%not really true
+% The main sources all have the majority of their flux in relatively smooth
+% structures.
+
+\FigureTwo
+{figures/azimuthalaverage_radial_mj_of_TCH3OH_massivecores.png}
+{figures/azimuthalaverage_radial_rj_of_TCH3OH_massivecores.png}
+{The azimuthally averaged (a) Jeans mass and (b) Jeans length surrounding the
+three most massive cores.  We used the \methanol temperature from
+\ref{sec:methanol}, Figure \ref{fig:hmradprof}b in both the Jeans mass
+calculation and the dust-based mass determination.
+The density used for the mass calculation is assumed to be distributed
+over spherical shells.
+%The dashed lines show the average mass per $\sim1000$ AU
+%beam 
+%The Jeans mass decreases
+%toward the center at least in part because of the density increase, while the
+%temperature only rises slowly.  
+In (b), the dashed black line shows the $R_J=R$ line.  When $R_J > R$,
+the gas is on average stable against fragmentation on the measured length
+scale.  Since the medium is clearly \emph{not} isothermal or uniform density,
+though, this only shows a rough approximation of the stability.
+}
+{fig:mjeans}{1}{10cm}
+
+By suppressing fragmentation in their surroundings, accreting massive stars are
+able to sustain their mass reservoir.  They effectively create their own cores.
+Given the current structure of the observed cores and their marginal stability
+against fragmentation, it is unlikely that these cores could have existed at
+all without the presence of a central heating source.  Should these $>200$
+\msun cores have been present before high-mass star formation initiated,
+resting at $T\sim20$ K as in a typical molecular cloud, they would have been
+subject to Jeans fragmentation on a much smaller scale and would have formed a
+cluster of smaller stars.  This implies that the mass currently in the core had
+to be assembled from larger scales while suppressing or slowing collapse on
+smaller scales, which is essentially the opposite of inside-out collapse.
+
+\subsection{High-mass star formation within dense protoclusters}
+Since massive ($M\gtrsim250$ \msun) hot cores presently exist, and they
+appear to be the precursors to a next generation of high mass stars, there
+is a clear route to high-mass star formation given the presence of 
+strong feedback sources.   However, this raises the question of what
+the initial conditions were.  Did the
+current generation of forming massive stars start life the same way
+as previous generations?
+
+One possibility hinted at by the density of hyper- and ultra-compact \hii
+regions around each of the massive cores is that they did not.  Heating from
+previous generations of moderate mass stars could have warmed the gas,
+suppressing fragmentation into the sub-solar mass objects typical in local
+clouds until enough gas was present to collapse into a substantially larger
+object.  This toy model is analagous to the `cooperative accretion' mode
+suggested by \citet{Zinnecker2007a}, but at a much earlier stage in the cluster
+development when the gas is still molecular and dusty and therefore capable of
+efficient cooling.  It is also similar to the results of \citet{Krumholz2011a},
+in which radiative heating drove up the peak of the IMF; in this case, though,
+we suggest that the affected region is smaller (not the whole cloud) and that
+the ``top-heavy IMF'' is a solution, not a problem.
+
+In this scenario, the highest mass stars (probably ``very massive stars'',
+$M\gtrsim50$ \msun) would only be capable of forming within dense, clustered
+environments, since larger stars would be prevented from forming by earlier
+fragmentation elsewhere.  The IMF would then be built up by an inverse
+hierarchy, with progressively larger stars capable of forming over time until
+the gas is either exhausted \citep{Ginsburg2016b} or expelled.
+
+However, some of the assumptions in this scenario contradict our observations.
+If the previous generation were responsible for substantial gas heating, we
+might expect to see warm gas surrounding the \hchii regions.  Instead, we see
+these stars barely interacting with the dense gas.  However, it is possible
+that these stars are only effective at dense gas heating \emph{before} they ignite
+Lyman continuum emission and blow out cavities, and afterward they are merely
+uninteractive witnesses to continued collapse.
+
+The alternatives to this hypothesis are that the initial conditions were
+entirely set within the gas on these current scales, which seems implausible,
+or that the current high density of main-sequence stars (i.e., the observed
+\hchii regions) originated from a broader, lower-density distribution and
+dynamically collapsed into their current clustered state.  If the
+stars illuminating \hchii regions formed somewhat earlier in a more distributed
+manner and fell into a common central potential, they would have had little
+effect on the dense gas temperature.
+
+\subsection{Comparison to high-mass star formation theories}
+Two general classes of star formation theory, ``competitive accretion'' and
+``turbulent core accretion'' have dominated the discussion of  high-mass star
+formation, though they are
+not fully complementary theories \citep{Schilke2016a}.  In their extreme forms,
+they can be simplified to uniform seeds accreting different amounts of material
+over their lifetime in the case of competitive accretion and a single, initial,
+quasistatic high-mass gas core collapsing into a star in the case of turbulent
+core accretion.
+
+Our observations of high-mass hot cores extending to radii $\sim5000$ AU do
+not directly contradict either of these extremes, but instead suggests
+that the accretion models used within these theories must be modified.
+
+% Real point: feedback suppresses formation of new fragments.
+If there are many simultaneously formed low-mass fragments competing for
+material, as in competitive accretion, it appears that the formation of a
+dominant most massive star dramatically changes the conditions for accretion.
+This single central source heats material enough to reduce the efficiency of
+Bondi-Hoyle accretion by a factor of 10 for a stationary object, though the
+reduction is negligible for an object moving near the Virial velocity ($v_{vir}
+\gtrsim 5 \kms$ within the hot cores).  However, this extended warm region
+suppresses the formation of new small fragments, as has been observed in simulations
+with much weaker feedback \citep[e.g.][]{Bate2009a}. 
+It is not clear whether the mass accumulated around the most massive protostars
+at present came from large radii, as in \citet{Smith2009f}, but it is certainly
+possible.
+
+If the turbulent core model is used to describe these sources, a few obvious
+issues arise.  First, the core structure is not a simple power-law with
+$\kappa_\rho=1.5$, as usually assumed \citep{McKee2003a,Zhang2011a}.  Figure
+\ref{fig:kapparho} shows instead that the core is internally flatter and
+externally steeper than this assumption.  Of course, the observations do not
+correspond to the initial conditions, so this comparison could more fairly be
+made with a later `snapshot' from those models.  Second, the more sophisticated
+models of evolution from an initial turbulent core suggest that most of the
+stellar (and accretion) radiation should escape via growing outflow cavities
+\citep{Zhang2011a,Zhang2013h,Zhang2014e}.  The circular symmetry seen in the
+hot core around e2e and its lack of correspondence with the outflowing material
+(Figure \ref{fig:outflowonmethanol}) indicates that a large fraction of the
+stellar or accretion radiation is going directly into the core and not escaping
+along the poles.
+
+The presence of these large-scale, massive, hot cores raises a few questions
+that are not presently well-addressed by any class of theories.  If the hot
+cores successfully suppress further fragmentation in their envelopes, does that
+imply that these cores will collapse into single stars?  If so, do the cores in
+any way correspond to `initial conditions', or are the cores created by the
+stars that form within them?  This is more than merely a semantical question,
+as the evolutionary progress within the `turbulent core' model depends on the
+initial core structure, and the presence of nearby fragments governs whether
+`competitive accretion' can occur at all.
+
+\todo{this is mostly just spitballing; it probably ought to be removed:}
+There are also some curious implications for `isolated' massive star formation.
+The stars we see forming are clearly not isolated - they are embedded within
+fairly rich clusters of massive stars we can see already, and they are very likely
+to be surrounded by substantial clusters of lower-mass stars.  However, \emph{during
+their formation process}, they may be the only accreting stars around - their
+thermal feedback may prevent any neighbors from forming simultaneously.  This
+`enforced isolation' might be a way for massive star formation to proceed
+similarly independent of the size of their parent cloud, assuming they can be
+formed at all.
+
+% methanol_and_outflow.py
+\Figure{figures/outflows_over_methanol_e2e.png}
+{The e2e core as seen in the \methanol $8_{0,8}-7_{1,6}$ line with
+the integrated \twelveco outflow overlaid in red and blue.  The `core'
+is circularly symmetric, while the outflow is clearly bipolar.}
+{fig:outflowonmethanol}{1}{10cm}
+
+%\todo{Do I need a plot of gravitational pressure / thermal pressure vs radius?
+%probably yes.}
+
+%\section{An evolutionary sequence...}
+
+% Expanding HII regions are more likely due to stars leaving their dense gas
+% regions than blowing away their surroundings...
+
+
+%-compare to ngc 6334i? (probably needs better resolution)
+
+% ? -optical depth map using $T_B$ and T(\methanol)
+
+% useful questions:
+% how much of the 'core' mass will end up in a single star?  single system?
+
+% \subsection{The core mass function}
+% \todo{continue this}
+% Naively, with the conclusions of Section \ref{sec:fragmentation} in hand, one
+% might be tempted to conclude that the core-to-star mapping, which is a critical
+% component of core mass function (CMF) based theories, is constant with mass.
+% This conclusion cannot be safely drawn from our data, as the massive `core'
+% we have observed is far larger than any other source in our sample.
+%
+% Did e2w "create" e2e by heating a core and stopping fragmentation?
+% Is this a form of cooperative accretion?
+%
+% Does the core mass function actually work because accretion feedback heating
+% keeps the massive core warm and puffy?
+% Does the CMF fail because time-ordered star formation (e2w->e2e) means there
+% is no instantaneously observable CMF?
+
+%\subsection{Possible additional discussion points}
+%-Can we determine whether the luminosity is powered by accretion or fusion?
+
+\subsection{Low-mass star formation in and around the MYSOs}
+\citet[TODO: Cyganowski 2016a][]{Cyganowski2016a} observed a region in which
+high-mass and low-mass star formation is occurring concurrently.  The same
+is almost certainly occurring in W51.  
+\todo{Is there more to say here?}
+
+
+\section{Conclusions}
+\label{sec:conclusion}
+
+We have presented ALMA observations of the high-mass protocluster W51.  We
+examined the three most massive forming stars and the surrounding population of
+forming stars.  
+
+
+The key observational results include:
+\begin{itemize}
+    \item We demonstrated three techniques for estimating the temperature of
+        dust continuum sources with ALMA: limits from dust brightness
+        temperature, limits from line brightness temperature, and LTE modeling
+        of \methanol lines.  While these methods do not necessarily agree
+        or provide direct and accurate measurements of the temperature, they
+        provide strong enough constraints to draw substantial physical conclusions.
+    \item We cataloged and classified 75 continuum sources on the basis of their
+        dust emission, line emission, and morphology.  
+    \item We identified chemically enhanced regions around high-mass protostars
+        and suggest they are desorption zones
+\end{itemize}
+
+From these observations, we have inferred the following: 
+\begin{itemize}
+    \item During the earliest stages of their formation, before they have 
+        ignited \hii regions, high-mass protostars heat a large volume,
+        and correspondingly large mass, of gas around them.
+    \item Older massive stars, those with surrounding \hii regions, appear
+        to have little effect on the temperature of dense gas around them.
+        While some are embedded within larger hot cores, they do not appear to
+        be the main
+        heating sources.  Their luminosity must therefore escape without
+        being fully reprocessed into infrared radiation.
+    \item Heated massive cores surrounding the highest-mass protostars in
+        W51 show no evidence of ongoing fragmentation and are warm enough
+        to suppress Jeans fragmentation.  Hot massive cores therefore serve as
+        a mass reservoir for accretion onto possibly single massive stars.
+\end{itemize}
+
+
+
+\textbf{Acknowledgments}
+The National Radio Astronomy Observatory is a facility of the National Science
+Foundation operated under cooperative agreement by Associated Universities,
+Inc.
+This paper makes use of the following ALMA data: 2013.1.00308.S 
+and 2015.1.01596.S.
+ALMA is a partnership of ESO (representing its member states), NSF (USA) and
+NINS (Japan), together with NRC (Canada), NSC and ASIAA (Taiwan), and KASI
+(Republic of Korea), in cooperation with the Republic of Chile. The Joint ALMA
+Observatory is operated by ESO, AUI/NRAO and NAOJ.
+JMDK gratefully acknowledges funding in the form of an
+Emmy Noether Research Group from the Deutsche Forschungsgemeinschaft (DFG),
+grant number KR4801/1-1.
+
+\textbf{Code Packages Used}:
+
+\begin{itemize}
+    \item CASA \url{https://casa.nrao.edu/}
+    \item pyspeckit \url{http://pyspeckit.bitbucket.org} \citet{Ginsburg2011c}
+    \item aplpy \url{https://aplpy.github.io/}
+    \item wcsaxes \url{http://wcsaxes.readthedocs.org}
+    \item spectral cube \url{http://spectral-cube.readthedocs.org}
+    \item ds9 \url{http://ds9.si.edu}
+    \item \texttt{dust\_emissivity} \url{dust_emissivity.readthedocs.org}
+\end{itemize}
+
+\input{solobib}
+
+%\todo{idea: dust is more concentrated than gas (compare PSDs).  Can we do this to
+%sims and determine which lines are thick?}
+
+\appendix
+
+\section{A bubble around e5}
+\label{sec:e5bubble}
+There is evidence of a bubble in the continuum around e5 with a radius of
+6.2\arcsec (0.16 pc; Figure \ref{fig:e5bubble}).  The bubble is completely
+absent in the centimeter continuum, so the observed emission is from dust.  The
+bubble edge can be seen from 58 \kms to 63 \kms in \ceighteeno and
+\formaldehyde, though it is not continuous in any single velocity channel.
+There is a collection of compact sources (protostars or cores) along the
+southeast edge of the bubble.
+
+The presence of such a bubble in dense gas, but its absence in ionizing gas, is
+surprising.  The most likely mechanism for blowing such a bubble is ionizing
+radiative feedback, especially around a source that is currently a hypercompact
+HII region, but since no free-free emission is evident within or on the edge of
+the bubble, it is at least not presently driving the bubble.  A plausible
+explanation for this discrepancy is that e5 was an exposed O-star within the
+past Myr, but has since begun accreting heavily and therefore had its HII
+region shrunk.  This model is marginally supported by the presence of a `pillar'
+of dense material pointing from e5 toward the south.
+
+The total flux in the north half of the `bubble', which shows no signs of
+free-free contamination, is about 1.5 Jy.  The implied mass in just this
+fragment of the bubble is about $M\sim350$ \msun for a relatively high assumed
+temperature $T=50$ K.  The total mass of the bubble is closer to $M\sim1000$
+\msun, though it may be lower ($\sim500$ \msun) if the southern half is
+dominated by free-free emission.
+
+With such a large mass, the implied density of the original cloud, assuming it
+was uniformly distributed over a 0.2 pc sphere, is $n(\hh) \approx 2-5\ee{5}$
+\percc.
+
+% this analysis courtesy Jim Dale
+To evaluate the plausibility of the \hii-region origin of the bubble, we compare
+to classical equations for \hii regions.
+The Str\"omgren radius is \\
+\begin{eqnarray}
+R_{\rm s}=\left(\frac{3Q_{\rm H}}{4\pi\alpha_{\rm B} n^{2}}\right)^{\frac{1}{3}}.
+\end{eqnarray} 
+For $Q_{\rm H}\sim10^{49}$ \pers, $\alpha_{\rm B}=3\times10^{-13}$\,cm$^{3}$\,s$^{-1}$, $R_{\rm s}\approx0.01$\,pc.\\
+\\
+The Spitzer solution for HII region expansion gives\\
+\begin{eqnarray}
+R_{\rm HII}(t)=R_{\rm s}\left(1+\frac{7}{4}\frac{c_{\rm II}t}{R_{\rm s}}\right)^{\frac{4}{7}}.
+\end{eqnarray} 
+With $c_{\rm II}=7.5$\,km\,s$^{-1}$ and $t=10^{4}$\,yr,
+$R_{\rm HII}(t)\approx0.04$\,pc, while at $t=10^5$\,yr, it is $R_{\rm
+HII}\approx0.16$\,pc, which is comparable to the observed radius
+($r_{obs} \sim 0.13-0.19$ pc)\\
+\\
+Whitworth et al. 1994 give the fragmentation timescale as
+\begin{eqnarray}
+t_{\rm frag}\sim1.56\left(\frac{c_{\rm s}}{0.2{\rm km\,s}^{-1}}\right)^{\frac{7}{11}}\left(\frac{Q_{\rm H}}{10^{49}{\rm s}^{-1}}\right)^{-\frac{1}{11}}\left(\frac{n}{10^{3}{\rm cm}^{-3}}\right)^{-\frac{5}{11}}{\rm Myr}.
+\end{eqnarray} 
+Plugging in our numbers gives $t_{\rm frag}\approx1.0\times10^{5}$\,yr, or
+$10\times$ longer than the expansion time.\\
+\\
+% The corresponding radius at which fragmentation occurs is\\
+% \begin{eqnarray}
+% R_{\rm frag}\sim5.8\left(\frac{c_{\rm s}}{0.2{\rm km\,s}^{-1}}\right)^{\frac{4}{11}}\left(\frac{Q_{\rm H}}{10^{49}{\rm s}^{-1}}\right)^{\frac{1}{11}}\left(\frac{n}{10^{3}{\rm cm}^{-3}}\right)^{-\frac{6}{11}}{\rm pc},
+% \end{eqnarray}
+% which gives us $R_{\rm frag}\approx0.17$\,pc.\\
+
+These values are consistent with a late O-type star having been exposed,
+driving an \hii region, for $\sim10^4-10^5$ year, after which a substantial
+increase in the accretion rate quenched the ionizing radiation from the star,
+trapping it into a hypercompact ($r<0.005$ pc) configuration.  The
+recombination timescale is short enough that the ionized gas would disappear
+almost immediately after the continuous ionizing radiation source was hidden.
+This is essentially the scenario laid out in \citet{de-Pree2014a} as an
+explanation for the compact \hii region lifetime problem.  In this case,
+however, it also seems that the \hii region has effectively driven the
+``collect'' phase of what will presumably end in a collect-and-collapse style
+triggering event.
+
+Technically, it is possible that e5 actually represents an optically thick
+high-mass-loss-rate wind rather than an ultracompact HII region. 
+%but I think we
+%can rule this out on physical plausibility considerations if we compare to 
+%wind models.
+For example, $\eta$ Car would have a flux of $\sim0.5$ Jy at 2 cm
+and $\sim5$ Jy at 1 mm at the distance of W51.  While we cannot rule out
+this possibility, it would render the association of e5 with the `bubble'
+purely coincidental.
+
+\FigureTwo{figures/e5_bubble.png}{figures/e5_bubble_robust2.png}
+{The bubble around source e5.  The bubble interior shows no sign of centimeter
+emission, though the lower-left region of the shell - just south of the
+``cores'' - coincides with part of the W51 Main ionized shell.  The source of
+the ionization is not obvious.
+({\it Left}): A robust -2.0 image with a small (0.2\arcsec) beam and poor
+recovery of large angular scale emission.  This image highlights the presence
+of protostellar cores on the left edge of the bubble and along a filament just
+south of the central source.
+({\it Right}): A robust +2.0 image with a larger (0.4\arcsec) beam and better
+recovery of large angular scales.  The contours show radio continuum (14.5 GHz)
+emission at 1.5, 3, and 6 mJy/beam.  While some of the detected 1.4 mm emission
+in the south could be free-free emission, the eastern and northern parts of the
+shell show no emission down to the 50 $\mu$Jy noise level of the Ku-band map,
+confirming that they consist only of dust emission.
+}{fig:e5bubble}{1}{8cm}
+
+
+\section{Outflows}
 \label{sec:outflows}
 We detected many outflows, primarily in CO 2-1 and SO $6_5-5_4$.  The flows are
 weakly detected in some other lines, e.g. \formaldehyde, but we defer
@@ -1353,669 +2055,6 @@ confused and asymmetric for simple interpretation.
 {Channel maps of the e8 outflow in \twelveco 2-1.  The outflows here are more
 erratic, with fewer clearly-connected red and blue lobes.}
 {fig:e8cooutflow}{1}{18cm}
-
-
-
-% \todo{What direct tests can be used to show that \hii regions aren't heating
-% their surroundings?  \formaldehyde is good, in principle, but maybe not in
-% practice because of the possible optical depth issues.  Radio \ammonia might be
-% OK, but it might also be affected by imaging artifacts from the bright radio
-% sources.}
-
-
-
-%incorrect, and discussed in sec:ch3ohtem in detail
-% The extraordinarily high column densities of \methanol make direct temperature
-% estimation impossible; many or all of the observed \methanol lines are almost
-% certainly optically thick.  Fitted rotational diagrams resulted in negative
-% temperatures throughout the \methanol-enhanced region, implying that the levels
-% are not thermally populated.  However, the total column densities from these
-% rotational diagram fits are reasonable lower-limits on the column, and they
-% exceed $N(\methanol)\gtrsim10^{20}$ \persc.
-% (demonstrate this?)
-
-% \todo{If we assume $T_{ex}=100$ K, can we use the $5_{-4,2}-6_{-4,3}$ line
-% to measure the column density?}
-% Out of the five clearly detected \methanol lines, the $5_{-4,2}-6_{-4,3}$
-% line seems to be subthermally excited and/or optically thin...
-
-
-
-% \todo{How does the \methanol brightness/column profile compare with the dust
-% brightness/column?  Is it going up faster?  By how much?}
-% answered in fig:ch3ohtemX
-
-
-%Is there any evidence that the main-sequence stars that illuminate the \hii
-%regions in W51 \citep{Ginsburg2016b} affect the pre-star-forming gas throughout
-%W51?
-%\todo{Our ALMA program was designed to answer this question by measuring the
-%temperature in the dense prestellar \formaldehyde-rich gas.  Naively, the data
-%say "yes, the temperatures are all ridiculously high, $T>100$ K", but that
-%can't be.  The \formaldehyde temperatures suggest that temperature is correlated
-%with density, which unfortunately suggests instead that the \formaldehyde
-%line optical depth is correlated with density.  It is therefore not straightforward
-%to systematically examine the thermal feedback effects from MYSOs.}
-%
-%\todo{Notes from chatting with Wing-Fai Thi:  \methanol has a similar condensation
-%temperature to water, so the desorbed region is probably $\sim90-100$ K.  HNCO
-%has a much \emph{lower} desorption temperature, so if it was coming from grain
-%surfaces, it should be more widespread than \methanol.  Since it is not, the
-%enhancement is most likely due to gas-phase chemistry.}
-%
-%\todo{
-%However, Ewine van Dishoeck pointed out that HNCO and \formamide can be mixed
-%into ices that evaporate at a much higher temperature, consistent with the
-%structure we observe.
-%}
-
-
-
-\section{Discussion}
-\label{sec:discussion}
-\subsection{The scales and types of feedback}
-\label{sec:feedbackscales}
-The most prominent features of our observations are the warm, chemically
-enhanced regions surrounding the highest dust concentrations, and the
-corresponding \emph{lack} of such features around the ionized nebulae.  This
-difference implies that the immediate star formation process - that of gas
-collapse and fragmentation from a molecular cloud - is primarily affected by
-feedback from other forming stars, \emph{not} from previous generations of
-now-exposed stellar photospheres.
-
-On the scales relevant to the fragmentation process, i.e., the $\sim0.1$ pc
-scales of prestellar cores, this decoupling can be explained simply.  Stellar
-light is produced mostly in the UV, optical, and near-infrared.  As soon as a
-star is exposed, either by consuming or destroying its natal core, that light
-is able to stream to relatively large ($\gtrsim1$ pc) scales before being
-absorbed.  At that point, the stellar radiation is poorly coupled to the scales
-of direct star formation.  By contrast, stars embedded in their natal cores
-will have all of their light reprocessed from UV/optical/NIR to the far-IR
-within a $<0.1$ pc sphere, providing a far-infrared background light capable of
-heating its surroundings.
-
-The different effects of ionizing vs thermal radiation can be seen directly in
-the three main massive star forming regions, e2, e8, and north.  Figures
-\ref{fig:e2methanolhnco} and \ref{fig:northmethanolhnco} show both the
-highly-excited warm molecular gas in color and the free-free emission from
-ionized gas in contours.  As described in Section
-\ref{sec:nonionizingradiation}, the spatial differences indicate that the
-ionizing radiation sources - the exposed OB stars - have little effect on the
-star-forming collapsing and fragmenting gas.
-
-% subsubsection on the formation of the IMF?
-The low impact of photospheric radiation on collapsing gas suggests that
-second-generation star formation is relatively unaffected by its surroundings.
-Instead, the stars of the same generation - those currently embedded and
-accreting - have the dominant regulating effect on the gas.  The formation of
-the stellar initial mass function \emph{within clusters} is therefore
-predominantly self-regulated, with little external influence.
-
-% something about implications for star formation on galactic scales
-
-
-%\subsection{Question: Where does the radiation from the HII regions end up?}
-%The \hii regions show no signs of heating around them.  However, we know that
-%these must be $>10^4$ \lsun stars, and even the infrared radiation should be
-%rising with luminosity (or temperature).  While most of the energy might go
-%into ionizing the gas cloud, many of the photons must get reprocessed into the
-%infrared at some point.  If optical/NIR photons were escaping, we should be
-%able to see them unless the geometry is particularly unfavorable.
-
-%\subsection{The continuum sources}
-%
-%We have detected 75 distinct compact `sources' and characterized some of
-%their basic properties assuming they consist purely of gas and dust, but this
-%interpretation is incomplete.  At the least, all of the sources with peak
-%surface brightnesses $T_{B,max} > 30$ K are likely to contain central heating
-%sources, i.e., stars or protostars.
-%
-%\subsection{Limits on accretion onto HII regions}
-%\citet{Peters2010a} and \citet{Klaassen2012a} proposed that ultra- and
-%hyper-compact \hii regions may be variably accreting.  When accretion is most
-%active, the \hii region is confined and shrinks or may even be turned off.
-%When accretion is slower or weaker, the \hii region expands, following
-%approximately Str{\"o}mgren expansion \todo{make sure that's actually what they
-%say...}.  
-%
-%The observed lack of warm molecular gas around compact \hii regions suggests
-%that they have not recently been accreting...
-%
-%d2 provides a counterpoint, however, as it is a hypercompact \hii region that *does*
-%exhibit enhanced molecular emission in its surroundings
-
-\subsubsection{Hot core chemical structure}
-\label{sec:cheminterp}
-%\todo{Probably cut P1 here and move the whole thing to "Discussion"}
-%The enhancements in noted lines occur as factor of 3-10 increases in the peak
-%brightness of most of the lines shown in Figure \ref{fig:chemmapse2}.  These
-%enhancements could occur from increased total column density, increased
-%abundance of the molecules, or increased excitation.
-In Section \ref{sec:chemistrymaps}, we showed regions with enhanced emission
-in a variety of complex chemical species over a large volume.  While it is
-not generally correct to conclude that enhanced emission indicates enhanced
-abundance, the additional analysis of the \methanol abundance 
-in Section \ref{sec:ch3ohtem} suggests that there is a genuine enhancement in
-complex chemical abundances toward these hot cores.
-
-
-%In Section \ref{sec:ch3ohtem}, we examined the \methanol abundance
-%and excitation conditions. 
-%The detection of highly excited \methanol lines, including
-%$18_{3,15}-17_{4,14}$ ($E_U=447$ K) and $25_{3,22}-24_{4,20}$ ($E_U=802$ K),
-%suggests that excitation is part of the explanation for the brighter
-%molecular emission.  However, LTE modeling reveals that the \methanol abundance
-%increases by a factor of $\sim5-10$ from the protocluster gas inward toward the
-%e2e core.  This abundance gradient is likely present in other molecules as
-%well.
-
-We have not performed a detailed abundance analysis of multiple species, but we
-nonetheless suggest that these sharp-edged bubbles around the hot cores
-represent sublimation zones in which substantial quantities of grain-processed
-materials are released into the gas phase.  The relatively sharp edges likely
-reflect the particular point where the temperature exceeds the sublimation
-temperature for each species.
-
-Most of the lines identified in the hot cores e2e, e8, and north are also
-present in ALMAmm14.  However, their extent is greater toward the more luminous
-sources.  An examination of the relationship between the luminosity of the
-protostars and the extent of their chemically enhanced zones will be useful for
-identifying further very massive protostars.
-
-
-\subsubsection{Outflows}
-\label{sec:outflowdiscussion}
-While the outflows described in Section \ref{sec:outflows} are impressive and
-plentiful, they are obviously not the dominant form of feedback, as their area
-filling factor is small compared to that of the various forms of radiative
-feedback.  A low area filling factor implies a substantially smaller volume
-filling factor and therefore a lower overall effect on the cloud.  However,
-these outflows likely do punch holes through protostellar envelopes and the
-surrounding cloud material, allowing radiation to escape.
-
-The detection of widespread high-J \methanol emission around the highest-mass
-protostars suggests that the use of \methanol as a bulk outflow tracer as
-suggested by \citet{Kristensen2015a} is not viable in regions with forming
-high-mass stars.  While mid-J \methanol emission is detected associated with
-the outflow (e.g., the J=10-9 transition), it is completely dominated by the
-general `extended hot core' emission described in Section
-\ref{sec:chemistrymaps}.
-
-None of the outflows initiate in \uchii or \hchii regions.  While a clear
-origin cannot be determined for all of the outflows, it is clear that no cm
-continuum sources lay at the base of any.  The lack of molecular outflows
-toward these sources implies that they are accreting at most weakly or are
-accreting (and ejecting) only atomic or ionized material.
-
-\subsection{The accreting phase of high-mass star formation}
-\label{sec:accretionandoutflows}
-The strong outflows observed around the highest-mass forming stars, e2e, e8,
-and north are clear indications of ongoing accretion onto these sources.
-However, the bright \hii regions, including e2w, e1, and d2, all lack any sign
-of an outflow or a surrounding rotating molecular structure.  Most of these
-sources lack any surrounding molecular material at all.
-%; e2w is an exception, being embedded in the e2e core, but it shows signs
-% that it may be escaping from the core, rather than being its focus
-
-Some models of high-mass star formation suggest that accretion continues
-through the ionized (\hii region) phase \citep{Keto2007a}.  The lack of
-molecular material around the majority of the compact \hii regions in W51
-suggests instead that most of the accretion is done by the time an \hii region
-ignites.
-
-There is one counterexample in our sample.  The source d2 is a bright, compact
-\hii region, but it is also surrounded by a molecular enhancement.  However, it
-does not appear to drive an outflow, so there is again no direct evidence of
-ongoing accretion.
-
-The correlation of the extended hot cores with outflow-driving source suggests
-that the heating of these hot cores is either from accretion luminosity, or
-that the high accretion rate indicated by the presence of outflows is necessary
-to reprocess stellar photospheric light into the infrared.
-% rephrase, probably:
-% Gas must be heated by FIR radiation.  High-mass stars produce mostly UV
-% radiation.
-% A. High accretion results in high luminosity infrared, which heats the gas.
-% B. High accretion *reprocesses* stellar light into infrared, which heats the gas.
-% C. High accretion bloats the stars.
-
-\subsection{The accreting stars}
-\label{sec:stellarproperties}
-In Sections \ref{sec:w51e2e} and \ref{sec:w51e8andnorth}, we noted that the
-\emph{lower limit} luminosities for the three most massive cores correspond to
-early B-type photospheres.  Such stars should emit enough radiation to ignite
-luminous compact \hii regions, $Q_{lyc}=5\ee{45}$ \pers \citep{Vacca1996a}.
-The upper limits on the presence of such an \hii region are constraining, with
-$R<100 AU$, which is consistent with the presence of these stars, but
-inconsistent with any hotter or more luminous (spectral type $<$B0.5V).
-If the stellar luminosities are an order of magnitude or more higher,
-which is possible given the low-resolution constraints on the bolometric luminosity
-\citep{Ginsburg2016a,Sievers1991a}
-and likely if a large fraction of the stellar radiation is escaping along outflow
-cavities \citep{Kuiper2012a,Zhang2013h}, the luminosity would be too large and
-the UV radiation too small to be consistent with a main-sequence OB star.
-
-Since we can provide only upper limits on the UV radiation, it is possible
-that there is none at all.  The very large mass reservoir suggests that high
-accretion rates are possible, and the bright molecular outflows show that
-accretion is proceeding vigorously (though we have not quantified the rate).  
-Rapid accretion, and in particular rapid and \emph{variable} accretion,
-can change the properties of the underlying star, bloating the star
-and reducing its effective photospheric temperature \citep{Hosokawa2009a,
-Smith2012h, Hosokawa2016a}.  Such stars can achieve radii $R\gtrsim200 \rsun
-\sim 1$ AU while retaining photospheric temperatures $T\lesssim5000$ K.
-
-\subsection{Fragmentation: Jeans analysis}
-\label{sec:fragmentation}
-Fragmentation is one of the critical problems in high-mass star formation.
-Assuming typical initial conditions for molecular clouds, with temperatures of
-order 10 K, gas is expected to fragment into sub-solar mass cores, preventing
-material from accreting onto single high-mass stars \citep{Krumholz2015a}.
-Even after high-mass stars successfully form, further fragmentation could
-halt the growth of these stars and limit their final mass \citep{Peters2010a}.
-
-Thermal Jeans fragmentation can be limited or suppressed entirely if the gas is
-warm enough.  The high observed gas temperatures, $T\sim100-600$ K over
-$\sim10^4$ AU, around the high mass protostars indicate that their radiative
-feedback in the infrared has a dramatic effect on the gas.  The heated region
-qualitatively matches that of \citet{Krumholz2006a}, who described
-a core heated only by accretion luminosity down to $R=10$ AU and therefore
-gave a lower limit on the total heating. 
-
-We examined the temperature structure around the highest-mass cores in Section
-\ref{sec:temperature} and the mass structure in Section \ref{sec:radialmass}.
-We put these together to measure the Jeans mass, $M_J = (\pi / 6) c_s^3 G^{-3/2}
-\rho^{-1/2}$, and length, $\lambda_J = c_s G^{-1/2} \rho^{-1/2}$ \todo{Anyone
-have strong opinions about the leading numerical constants?}, in Figure
-\ref{fig:mjeans}.  The Jeans mass is a few times higher than the peak of the
-stellar initial mass function (IMF), $M_{peak}=0.3$ \msun, implying that any
-fragments will be larger than the typical mass in star-forming regions.
-More importantly, fragments of such mass cannot be assembled in this core,
-as they would be larger than the core at any given radius; the Jeans length
-is comparable to the hot core size and suggests that only one total fragment
-(the core itself) should exist.
-%this is wrong
-% More importantly, though, the Jeans length is significantly smaller than the
-% size scale on which it is inferred throughout the entire heated core.
-% The gas throughout these MYSO cores is therefore Jeans-stable and will not
-% spontaneously fragment.
-
-The high gas temperature therefore provides a mechanism for MYSOs to avoid
-the ``fragmentation-induced starvation'' problem discussed by
-\citet{Peters2010a,Peters2010c,Girichidis2012b}.  Apparently, stars above
-some mass are able to heat hundreds of \msun of material surrounding them
-to such a degree that it cannot fragment further, providing an enormous
-reservoir to feed from.
-
-Within this large reservoir, there are few currently-detected fragments.
-In our data, within 6500 AU of W51 north, there is only 1 (ALMAmm35), around
-e2e there is the HII region e2w and possibly 2-3 others between 5000 and 6500
-AU, and around e8 there are none.
-
-Further fragmentation below 1000 AU is possible, e.g., as seen in NGC 6334Imm1
-\citep{Brogan2016a}.  However, in the long baseline data to be presented in a
-future work (Goddi et al, in prep), very little additional fragmentation is
-observed.  A few more sources are detected toward e2e and north and many toward
-e8, but the nature of those more compact ($<200$ AU) sources suggests they are
-protostellar or stellar.  Additionally, unlike the centrally-clustered
-fragmentation seen in NGC 6334Imm1, the fragments appear spread out in W51.
-The main sources all have the majority of their flux in relatively smooth
-structures.
-
-\FigureTwo
-{figures/azimuthalaverage_radial_mj_of_TCH3OH_massivecores.png}
-{figures/azimuthalaverage_radial_rj_of_TCH3OH_massivecores.png}
-{The azimuthally averaged (a) Jeans mass and (b) Jeans length surrounding the
-three most massive cores.  We used the \methanol temperature from
-\ref{sec:methanol}, Figure \ref{fig:hmradprof}b in both the Jeans mass
-calculation and the dust-based mass determination.
-The density used for the mass calculation is assumed to be distributed
-over spherical shells.
-%The dashed lines show the average mass per $\sim1000$ AU
-%beam 
-%The Jeans mass decreases
-%toward the center at least in part because of the density increase, while the
-%temperature only rises slowly.  
-In (b), the dashed black line shows the $R_J=R$ line.  When $R_J > R$,
-the gas is on average stable against Jeans collapse on the measured length
-scale.  Since the medium is clearly \emph{not} isothermal or uniform density,
-though, this only shows a rough approximation of the stability.
-}
-{fig:mjeans}{1}{10cm}
-
-By suppressing fragmentation in their surroundings, accreting massive stars are
-able to sustain their mass reservoir.  They effectively create their own cores.
-Our observations therefore support a monolithic core accretion model for the
-formation of massive stars, except this monolithic core is not a simple initial
-condition of the gas.  It is not clear how such cores are assembled in the first
-place, but the key requirement for their formation is that a high-mass protostar
-must form first.  
-
-Given the current structure of the observed cores and their marginal stability
-against fragmentation, it is unlikely that these cores could have existed at
-all without the presence of a central massive star.  Should these $>200$ \msun
-cores have been present before high-mass star formation initiated, resting
-at $T\sim20$ K as in a typical molecular cloud, they would have been subject
-to Jeans fragmentation on a much smaller scale, and would have formed a cluster
-of smaller stars.
-
-\subsection{High-mass star formation within dense protoclusters}
-Since massive ($M\gtrsim250$ \msun) hot cores presently exist, and they
-appear to be the precursors to a next generation of high mass stars, there
-is a clear route to high-mass star formation given the presence of 
-strong feedback sources.   However, this raises the question of what
-the initial conditions were that initiated this formation.  Did the
-current generation of forming massive stars start life the same way
-as previous generations?
-
-One possibility hinted at by the density of hyper- and ultra-compact \hii
-regions around each of the massive cores is that they did not.  Heating from
-previous generations of moderate mass stars could have warmed the gas,
-suppressing fragmentation into the sub-solar mass objects typical in local
-clouds until enough gas was present to collapse into a substantially larger
-object.  This toy model is analagous to the `cooperative accretion' mode
-suggested by \citet{Zinnecker2007a}, but at a much earlier stage in the cluster
-development when the gas is still molecular and dusty and therefore capable of
-efficient cooling.
-
-In this scenario, the highest mass stars would only be capable of forming
-within dense, clustered environments.  The IMF would be built up by an inverse
-hierarchy, with progressively larger stars capable of forming over time until
-the gas is either exhausted \citep{Ginsburg2016b} or expelled.
-
-However, some of the assumptions in this scenario contradict our observations.
-If the previous generation were responsible for substantial gas heating, we
-would expect to see warm gas surrounding the \hchii regions.  Instead, we see
-these stars barely interacting with the dense gas.  Perhaps these stars are
-only effective at dense gas heating before they ignite Lyman continuum emission
-and blow out cavities, and afterward they are merely uninteractive witnesses to
-continued collapse.
-
-The alternatives to this hypothesis are that the initial conditions were
-entirely set within the gas on these current scales, which seems implausible,
-or that the current high density of main-sequence stars originated from a
-broader, lower-density distribution.  If the stars illuminating \hchii regions
-formed somewhat earlier in a more distributed manner and fell into a common
-central potential, they may have had little effect on the dense gas
-temperature.
-
-\section{Comparison to high-mass star formation theories}
-\todo{REVISE THIS}
-Two general classes of star formation theory, ``competitive accretion'' and
-``turbulent core accretion'' have dominated the discussion of initial
-conditions in high-mass star formation.  In their extreme forms, they can be
-simplified to uniform seeds accreting different amounts of material
-over their lifetime in the case of competitive accretion and a single, initial,
-quasistatic high-mass gas core collapsing into a star in the case of turbulent
-core accretion.
-
-Our observations of high-mass hot cores extending to radii $\sim5000$ AU do
-not directly contradict either of these extremes, but instead suggests
-that the accretion models used within these theories must be modified.
-
-% Real point: feedback suppresses formation of new fragments.
-If there are many simultaneously formed low-mass fragments competing for
-material, as in competitive accretion, it appears that the formation of a
-dominant most massive star dramatically changes the conditions for accretion.
-This single central source heats material enough to reduce the efficiency of
-Bondi-Hoyle accretion by a factor of 10 for a stationary object, though the
-reduction is negligible for an object moving near the Virial velocity ($v_{vir}
-\gtrsim 5 \kms$ within the hot cores).  However, this extended warm region
-suppresses the formation of new small fragments, as was observed in simulations
-with much weaker feedback by \citet{Bate2009a}. 
-It is not clear whether the mass accumulated around the most massive protostars
-at present came from large radii, as in \citet{Smith2009f}, but it is certainly
-possible.
-
-If the turbulent core model is used to describe these sources, a few obvious
-issues arise.  First, the core structure is not a simple power-law with
-$\kappa_\rho=1.5$, as usually assumed \citep{McKee2003a,Zhang2011a}.  Figure
-\ref{fig:kapparho} shows instead that the core is internally flatter and
-externally steeper than this assumption.  Of course, the observations do not
-correspond to the initial conditions, so this comparison could more fairly be
-made with a later `snapshot' from those models.  Second, the more sophisticated
-models of evolution from an initial turbulent core suggest that most of the
-stellar (and accretion) radiation should escape via growing outflow cavities
-\citep{Zhang2011a,Zhang2013h,Zhang2014e}.  The symmetry seen in the hot core
-around e2e and its lack of correspondence with the outflowing material (Figure
-\ref{fig:outflowonmethanol}) indicates that a large fraction of the stellar or
-accretion radiation is going directly into the core and not escaping along the
-poles.
-
-The presence of these large-scale, massive, hot cores raises a few questions
-that are not presently well-addressed by any class of theories.  If the hot
-cores successfully suppress further fragmentation in their envelopes, does that
-imply that these cores will collapse into single stars?  If so, do the cores in
-any way correspond to `initial conditions', or are the cores created by the
-stars that form within them?  This is more than merely a semantical question,
-as the evolutionary progress within the `turbulent core' model depends on the
-initial core structure, and the presence of nearby fragments governs whether
-`competitive accretion' can occur at all.
-
-\todo{this is mostly just spitballing; it probably ought to be removed:}
-There are also some curious implications for `isolated' massive star formation.
-The stars we see forming are clearly not isolated - they are embedded within
-fairly rich clusters of massive stars we can see already, and they are very likely
-to be surrounded by substantial clusters of lower-mass stars.  However, \emph{during
-their formation process}, they may be the only accreting stars around - their
-thermal feedback may prevent any neighbors from forming simultaneously.  This
-`enforced isolation' might be a way for massive star formation to proceed
-similarly independent of the size of their parent cloud, assuming they can be
-formed at all.
-
-% methanol_and_outflow.py
-\Figure{figures/outflows_over_methanol_e2e.png}
-{The e2e core as seen in the \methanol $8_{0,8}-7_{1,6}$ line with
-the integrated \twelveco outflow overlaid in red and blue.  The `core'
-is circularly symmetric, while the outflow is clearly bipolar.}
-{fig:outflowonmethanol}{1}{10cm}
-
-%\todo{Do I need a plot of gravitational pressure / thermal pressure vs radius?
-%probably yes.}
-
-%\section{An evolutionary sequence...}
-
-% Expanding HII regions are more likely due to stars leaving their dense gas
-% regions than blowing away their surroundings...
-
-
-%-compare to ngc 6334i? (probably needs better resolution)
-
-% ? -optical depth map using $T_B$ and T(\methanol)
-
-% useful questions:
-% how much of the 'core' mass will end up in a single star?  single system?
-
-% \subsection{The core mass function}
-% \todo{continue this}
-% Naively, with the conclusions of Section \ref{sec:fragmentation} in hand, one
-% might be tempted to conclude that the core-to-star mapping, which is a critical
-% component of core mass function (CMF) based theories, is constant with mass.
-% This conclusion cannot be safely drawn from our data, as the massive `core'
-% we have observed is far larger than any other source in our sample.
-%
-% Did e2w "create" e2e by heating a core and stopping fragmentation?
-% Is this a form of cooperative accretion?
-%
-% Does the core mass function actually work because accretion feedback heating
-% keeps the massive core warm and puffy?
-% Does the CMF fail because time-ordered star formation (e2w->e2e) means there
-% is no instantaneously observable CMF?
-
-%\subsection{Possible additional discussion points}
-%-Can we determine whether the luminosity is powered by accretion or fusion?
-
-
-\section{Conclusions}
-\label{sec:conclusion}
-
-We have presented ALMA observations of the high-mass protocluster W51.  We
-examined the three most massive forming stars and the surrounding population of
-forming stars.  
-
-
-The key observational results include:
-\begin{itemize}
-    \item We demonstrated three techniques for estimating the temperature of
-        dust continuum sources with ALMA: limits from dust brightness
-        temperature, limits from line brightness temperature, and LTE modeling
-        of \methanol lines.  While these methods do not necessarily agree
-        or provide direct and accurate measurements of the temperature, they
-        provide strong enough constraints to draw substantial physical conclusions.
-    \item We cataloged and classified 75 continuum sources on the basis of their
-        dust emission, line emission, and morphology.  
-    \item We identified chemically enhanced regions around high-mass protostars
-        and suggest they are desorption zones
-\end{itemize}
-
-From these observations, we have inferred the following: 
-\begin{itemize}
-    \item During the earliest stages of their formation, before they have 
-        ignited \hii regions, high-mass protostars heat a large volume,
-        and correspondingly large mass, of gas around them.
-    \item Older massive stars, those with surrounding \hii regions, appear
-        to have little effect on the temperature of dense gas around them.
-        While some are embedded within larger hot cores, they do not appear to
-        be the main
-        heating sources.  Their luminosity must therefore escape without
-        being fully reprocessed into infrared radiation.
-    \item Heated massive cores surrounding the highest-mass protostars in
-        W51 show no evidence of ongoing fragmentation and are warm enough
-        to suppress Jeans fragmentation.  Hot massive cores therefore serve as
-        a mass reservoir for accretion onto possibly single massive stars.
-\end{itemize}
-
-
-
-\textbf{Acknowledgmenets}
-The National Radio Astronomy Observatory is a facility of the National Science
-Foundation operated under cooperative agreement by Associated Universities,
-Inc.
-This paper makes use of the following ALMA data: 2013.1.00308.S 
-and 2015.1.01596.S.
-ALMA is a partnership of ESO (representing its member states), NSF (USA) and
-NINS (Japan), together with NRC (Canada), NSC and ASIAA (Taiwan), and KASI
-(Republic of Korea), in cooperation with the Republic of Chile. The Joint ALMA
-Observatory is operated by ESO, AUI/NRAO and NAOJ.
-
-\textbf{Code Packages Used}:
-
-\begin{itemize}
-    \item CASA \url{https://casa.nrao.edu/}
-    \item pyspeckit \url{http://pyspeckit.bitbucket.org} \citet{Ginsburg2011c}
-    \item aplpy \url{https://aplpy.github.io/}
-    \item wcsaxes \url{http://wcsaxes.readthedocs.org}
-    \item spectral cube \url{http://spectral-cube.readthedocs.org}
-    \item ds9 \url{http://ds9.si.edu}
-\end{itemize}
-
-\input{solobib}
-
-%\todo{idea: dust is more concentrated than gas (compare PSDs).  Can we do this to
-%sims and determine which lines are thick?}
-
-\appendix
-
-\section{A bubble around e5}
-\label{sec:e5bubble}
-There is evidence of a bubble in the continuum around e5 with a radius of
-6.2\arcsec (0.16 pc; Figure \ref{fig:e5bubble}).  The bubble is completely
-absent in the centimeter continuum, so the observed emission is from dust.  The
-bubble edge can be seen from 58 \kms to 63 \kms in \ceighteeno and
-\formaldehyde, though it is not continuous in any single velocity channel.
-There is a collection of compact sources (protostars or cores) along the
-southeast edge of the bubble.
-
-The presence of such a bubble in dense gas, but its absence in ionizing gas, is
-surprising.  The most likely mechanism for blowing such a bubble is ionizing
-radiative feedback, especially around a source that is currently a hypercompact
-HII region, but since no free-free emission is evident within or on the edge of
-the bubble, it is at least not presently driving the bubble.  A plausible
-explanation for this discrepancy is that e5 was an exposed O-star within the
-past Myr, but has since begun accreting heavily and therefore had its HII
-region shrunk.  This model is marginally supported by the presence of a `pillar'
-of dense material pointing from e5 toward the south.
-
-The total flux in the north half of the `bubble', which shows no signs of
-free-free contamination, is about 1.5 Jy.  The implied mass in just this
-fragment of the bubble is about $M\sim350$ \msun for a relatively high assumed
-temperature $T=50$ K.  The total mass of the bubble is closer to $M\sim1000$
-\msun, though it may be lower ($\sim500$ \msun) if the southern half is
-dominated by free-free emission.
-
-With such a large mass, the implied density of the original cloud, assuming it
-was uniformly distributed over a 0.2 pc sphere, is $n(\hh) \approx 2-5\ee{5}$
-\percc.
-
-% this analysis courtesy Jim Dale
-To evaluate the plausibility of the \hii-region origin of the bubble, we compare
-to classical equations for \hii regions.
-The Str\"omgren radius is \\
-\begin{eqnarray}
-R_{\rm s}=\left(\frac{3Q_{\rm H}}{4\pi\alpha_{\rm B} n^{2}}\right)^{\frac{1}{3}}.
-\end{eqnarray} 
-For $Q_{\rm H}\sim10^{49}$ \pers, $\alpha_{\rm B}=3\times10^{-13}$\,cm$^{3}$\,s$^{-1}$, $R_{\rm s}\approx0.01$\,pc.\\
-\\
-The Spitzer solution for HII region expansion gives\\
-\begin{eqnarray}
-R_{\rm HII}(t)=R_{\rm s}\left(1+\frac{7}{4}\frac{c_{\rm II}t}{R_{\rm s}}\right)^{\frac{4}{7}}.
-\end{eqnarray} 
-With $c_{\rm II}=7.5$\,km\,s$^{-1}$ and $t=10^{4}$\,yr,
-$R_{\rm HII}(t)\approx0.04$\,pc, while at $t=10^5$\,yr, it is $R_{\rm
-HII}\approx0.16$\,pc, which is comparable to the observed radius
-($r_{obs} \sim 0.13-0.19$ pc)\\
-\\
-Whitworth et al. 1994 give the fragmentation timescale as
-\begin{eqnarray}
-t_{\rm frag}\sim1.56\left(\frac{c_{\rm s}}{0.2{\rm km\,s}^{-1}}\right)^{\frac{7}{11}}\left(\frac{Q_{\rm H}}{10^{49}{\rm s}^{-1}}\right)^{-\frac{1}{11}}\left(\frac{n}{10^{3}{\rm cm}^{-3}}\right)^{-\frac{5}{11}}{\rm Myr}.
-\end{eqnarray} 
-Plugging in our numbers gives $t_{\rm frag}\approx1.0\times10^{5}$\,yr, or
-$10\times$ longer than the expansion time.\\
-\\
-% The corresponding radius at which fragmentation occurs is\\
-% \begin{eqnarray}
-% R_{\rm frag}\sim5.8\left(\frac{c_{\rm s}}{0.2{\rm km\,s}^{-1}}\right)^{\frac{4}{11}}\left(\frac{Q_{\rm H}}{10^{49}{\rm s}^{-1}}\right)^{\frac{1}{11}}\left(\frac{n}{10^{3}{\rm cm}^{-3}}\right)^{-\frac{6}{11}}{\rm pc},
-% \end{eqnarray}
-% which gives us $R_{\rm frag}\approx0.17$\,pc.\\
-
-These values are consistent with a late O-type star having been exposed,
-driving an \hii region, for $\sim10^4-10^5$ year, after which a substantial
-increase in the accretion rate quenched the ionizing radiation from the star,
-trapping it into a hypercompact ($r<0.005$ pc) configuration.  The
-recombination timescale is short enough that the ionized gas would disappear
-almost immediately after the continuous ionizing radiation source was hidden.
-This is essentially the scenario laid out in \citet{de-Pree2014a} as an
-explanation for the compact \hii region lifetime problem.  In this case,
-however, it also seems that the \hii region has effectively driven the
-``collect'' phase of what will presumably end in a collect-and-collapse style
-triggering event.
-
-Technically, it is possible that e5 actually represents an optically thick
-high-mass-loss-rate wind rather than an ultracompact HII region. 
-%but I think we
-%can rule this out on physical plausibility considerations if we compare to 
-%wind models.
-For example, $\eta$ Car would have a flux of $\sim0.5$ Jy at 2 cm
-and $\sim5$ Jy at 1 mm at the distance of W51.  While we cannot rule out
-this possibility, it would render the association of e5 with the `bubble'
-purely coincidental.
-
-\FigureTwo{figures/e5_bubble.png}{figures/e5_bubble_robust2.png}
-{The bubble around source e5.  The bubble interior shows no sign of centimeter
-emission, though the lower-left region of the shell - just south of the
-``cores'' - coincides with part of the W51 Main ionized shell.  The source of
-the ionization is not obvious.
-({\it Left}): A robust -2.0 image with a small (0.2\arcsec) beam and poor
-recovery of large angular scale emission.  This image highlights the presence
-of protostellar cores on the left edge of the bubble and along a filament just
-south of the central source.
-({\it Right}): A robust +2.0 image with a larger (0.4\arcsec) beam and better
-recovery of large angular scales.  The contours show radio continuum (14.5 GHz)
-emission at 1.5, 3, and 6 mJy/beam.  While some of the detected 1.4 mm emission
-in the south could be free-free emission, the eastern and northern parts of the
-shell show no emission down to the 50 $\mu$Jy noise level of the Ku-band map,
-confirming that they consist only of dust emission.
-}{fig:e5bubble}{1}{8cm}
 
 
 

@@ -224,14 +224,19 @@ ylim = np.where(y)[0].min(),np.where(y)[0].max()
 fig2 = pl.figure(2)
 fig2.clf()
 ax2 = fig2.add_subplot(1,1,1, projection=mywcs)
+ax2.imshow(ffile[0].data, cmap='gray_r', vmax=0.025, vmin=0.0001)
+
+
+not_freefree = ~(cores_merge['is_freefree'].astype('bool'))
 
 coords = coordinates.SkyCoord(cores_merge['RA'], cores_merge['Dec'],
-                              frame='fk5')
+                              frame='fk5')[not_freefree]
 ax2.contour(img, levels=[0.5], colors='k')
 sc = ax2.scatter(coords.ra.deg, coords.dec.deg, marker='.',
-                 s=120,
-                 transform=ax2.get_transform('fk5'), c=cores_merge['mean_velo'],
-                 edgecolors='none',
+                 s=30*cores_merge['T_corrected_peakmass'][not_freefree],
+                 transform=ax2.get_transform('fk5'), c=cores_merge['mean_velo'][not_freefree],
+                 edgecolors='k',
+                 alpha=0.5,
                  cmap=pl.cm.jet)
 cb = pl.colorbar(mappable=sc, ax=ax2)
 cb.set_label('Velocity (km s$^{-1}$)')
