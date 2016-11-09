@@ -23,15 +23,15 @@ corners = {reg.attr[1]['text']: {'lowerleft': coordinates.SkyCoord([reg.coord_li
           }
 
 files = {'e2':[
-"/Volumes/INTENSO/w51-longbaseline/W51e2cax.SPW1_ALL_medsub_cutout.fits",
-"/Volumes/INTENSO/w51-longbaseline/W51e2cax.SPW2_ALL_medsub_cutout.fits",
-"/Volumes/INTENSO/w51-longbaseline/W51e2cax.SPW3_ALL_medsub_cutout.fits",
-"/Volumes/INTENSO/w51-longbaseline/W51e2cax.SPW4_ALL_medsub_cutout.fits",
-"/Volumes/INTENSO/w51-longbaseline/W51e2cax.SPW5_ALL_medsub_cutout.fits",
-"/Volumes/INTENSO/w51-longbaseline/W51e2cax.SPW6_ALL_medsub_cutout.fits",
-"/Volumes/INTENSO/w51-longbaseline/W51e2cax.SPW7_ALL_medsub_cutout.fits",
-"/Volumes/INTENSO/w51-longbaseline/W51e2cax.SPW8_ALL_medsub_cutout.fits",
-"/Volumes/INTENSO/w51-longbaseline/W51e2cax.SPW9_ALL_medsub_cutout.fits",
+"/Volumes/passport/alma/w51/longbaseline/W51e2cax.SPW1_ALL_medsub_cutout.fits",
+"/Volumes/passport/alma/w51/longbaseline/W51e2cax.SPW2_ALL_medsub_cutout.fits",
+"/Volumes/passport/alma/w51/longbaseline/W51e2cax.SPW3_ALL_medsub_cutout.fits",
+"/Volumes/passport/alma/w51/longbaseline/W51e2cax.SPW4_ALL_medsub_cutout.fits",
+"/Volumes/passport/alma/w51/longbaseline/W51e2cax.SPW5_ALL_medsub_cutout.fits",
+"/Volumes/passport/alma/w51/longbaseline/W51e2cax.SPW6_ALL_medsub_cutout.fits",
+"/Volumes/passport/alma/w51/longbaseline/W51e2cax.SPW7_ALL_medsub_cutout.fits",
+"/Volumes/passport/alma/w51/longbaseline/W51e2cax.SPW8_ALL_medsub_cutout.fits",
+"/Volumes/passport/alma/w51/longbaseline/W51e2cax.SPW9_ALL_medsub_cutout.fits",
 ],}
 files['e8'] = [x.replace('e2cax','e8cax') for x in files['e2']]
 files['north'] = [x.replace('e2cax','northcax') for x in files['e2']]
@@ -52,8 +52,8 @@ for source,stretch in zip(('northwest','north','e2','e8',),
     tr_x, tr_y = contwcs.celestial.wcs_world2pix(upperright.ra, upperright.dec, 0)
     assert tr_y > bl_y+2
     assert tr_x > bl_x+2
-    cont_cut = fits.PrimaryHDU(data=cont[0].data.squeeze()[bl_y:tr_y, bl_x:tr_x],
-                               header=contwcs.celestial[bl_y:tr_y, bl_x:tr_x].to_header())
+    cont_cut = fits.PrimaryHDU(data=cont[0].data.squeeze()[int(bl_y):int(tr_y), int(bl_x):int(tr_x)],
+                               header=contwcs.celestial[int(bl_y):int(tr_y), int(bl_x):int(tr_x)].to_header())
     assert cont_cut.data.size > 0
 
     vrange = vrange_[source]
