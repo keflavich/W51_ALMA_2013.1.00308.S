@@ -360,333 +360,10 @@ detectable symmetric emission around a central peak up to a maximum radius
 $r\sim0.6$\arcsec.  This approach is necessary, as some of the sources are not
 centrally peaked and are therefore likely to be spatially resolved starless
 cores.
-% can probably argue safely that the 'background' is filtered out as much
-% as we would want...
-%For spectral extraction, we also measured a background spectrum averaging
-%over an annulus with twice the radius of the source extraction.
 
-\subsection{The spatial distribution of continuum sources}
-\label{sec:corespatialdistribution}
-The detected continuum sources are not uniformly distributed across the observed region.
-The most notable feature in the spatial distribution is their alignment: most continuum sources
-collect along approximately linear features.  This is especially evident
-in W51 IRS2, where the core density is very high and there is virtually no
-deviation from the line.  The e8 filament is also notably linear, though there
-area few sources detected just off the filament. 
-
-On a larger scale, the e8 filament points toward e2, apparently tracing a
-slightly longer filamentary structure.  With some imagination, this might be
-extended along the entire northeast ridge to eventually connect in a broad
-half-circle with the IRS2 filament (Figure \ref{fig:corepositions}).  This
-morphology hints at a possible sequential star formation event, where some
-central bubble has swept gas into these filaments.  However, this ring has no
-counterparts in ionized gas, and there is little reason to expect such circular
-symmetry from a real cloud, so the star forming circle may be merely a figment.
-
-Whether it is physical or not, there is a notable lack of continuum sources within the
-circle.  There is no lack of molecular gas, however, as both CO and \formaldehyde
-emission fill the full field of view.
-
-\Figure{figures/core_spatial_distribution.png}
-{The spatial distribution of the hand-identified core sample.
-The black outer contour shows the observed field of view.
-The dashed circle shows a hypothetical ring of star formation.
-}{fig:corepositions}{1}{16cm}
-
-\subsection{Photometry}
-\label{sec:photometry}
-We created a catalog of the hand-extracted sources including their peak and mean
-flux density, their centroid, and their geometric properties.  For each source,
-we further extracted aperture photometry around the centroid in 6 apertures:
-0.2, 0.4, 0.6, 0.8, 1.0, and 1.5\arcsec.  We performed the same aperture
-photometry on the W51 Ku-band images from \citet{Ginsburg2016a} to estimate
-the free-free contribution to the observed flux density measurements.  These
-measurements are reported in Table \ref{tab:photometry}.
-
-The source flux density distribution is shown in Figure
-\ref{fig:fluxhistograms}.  The most common nearest-neighbor separation between
-cataloged sources is $\sim0.3\arcsec$, which implies that the larger apertures
-double-count some pixels.  The smallest separation is 0.26\arcsec, so the
-0.2\arcsec aperture contains almost only unique pixels.  The corresponding
-masses are shown in Figure \ref{fig:masshistograms} assuming the dust
-temperature is equal to the source's peak line brightness temperature (Section
-\ref{sec:temperature}).
-
-
-Except where noted below, the hand-selected sources are used for further
-analysis as they are more reliable.
-%However, to encourage reproducible results
-%- which hand-extracted source positions defy - we also provide the
-%algorithmically-extracted and selected dendrogram catalog.
-
-\input{photometry_table_1.tex}
-\input{photometry_table_2.tex}
-
-% \subsubsection{Distribution Functions}
-% \label{sec:distributionfunctions}
-% We fit power law distributions to each aperture's flux distribution using the
-% packages \texttt{plfit} and \texttt{PowerLaw}
-% \citep[https://github.com/keflavich/plfit,
-% https://github.com/jeffalstott/powerlaw;][]{Clauset2007a,Alstott2014a}.
-% 
-% The
-% powerlaws steepen slightly from $\alpha=2.0\pm0.12$ to $\alpha=2.2\pm0.16$ for
-% larger apertures.  The minimum flux density represented by a power law
-% increases from $\sim20$ mJy for the peak flux density distribution to 0.4 Jy
-% for the largest aperture (14-280 \msun at 20K).  These slopes are shallower
-% than the Salpeter-like slope for the mass function derived by
-% \citep{Konyves2015a} for their sample, though with only modest significance
-% ($<3-\sigma$).  Of course, these measurements are of the continuum flux
-% density, not directly of the mass, and so a direct comparison may not be
-% appropriate.  We revisit this question after assessing the dust temperature in
-% Section \ref{sec:temperature}.
-
-
-%\Figure{figures/dendro_core_flux_histograms.png}
-%{Histograms of the core flux densities measured with circular apertures centered
-%on the dendrogram-extracted core centroids.  The aperture size is listed 
-%in the y-axis label.  Free-free-dominated sources are excluded.}
-%{fig:dendrofluxhistograms}
-%{1}{16cm}
-
-\Figure{figures/core_flux_histogram_apertureradius.png}
-{Histograms of the core flux densities measured with circular apertures centered
-on the hand-extracted core positions.  The aperture size is listed 
-in the y-axis label.  For the top plot, labeled `Peak', this is the peak
-flux density in Jy/beam.  For the rest, it is the integrated flux density
-in the specified aperture.  The unfilled data show all sources and the hashed
-data are for starless core candidates (Section \ref{sec:contsourcenature}).
-See Figure \ref{fig:masshistograms} for the corresponding masses.}
-{fig:fluxhistograms}
-{1}{16cm}
-
-
-%\subsection{The source flux density distribution \& the core mass function}
-%\todo{maybe}
-
-
-%Not used any more: the fitting approach is better, it just took longer to
-%implement
-% \subsection{Spectral Lines \& Velocities}
-% \label{sec:losvelo}
-% To determine the line-of-sight velocity of each source, we extracted a spectrum
-% from an 0.5\arcsec aperture centered on the source and from a 0.5-1.0\arcsec
-% annulus around it.  We then searched each spectrum for the brightest pixel and
-% associated it with the likeliest spectral line.  We repeated this in each of
-% our 4 spectral windows, then averaged the 4 velocities to get an estimate of
-% the source velocity.   This process also allowed us to identify the brightest
-% lines in each window and the brightest overall line observed, which we use
-% later for temperature estimation.
-
-
-% \subsection{Dense Gas Kinematics}
-% \label{sec:kinematics}
-% We examine the gas kinematics throughout the cloud, but especially near the 
-% massive cores.
-% 
-% The ambient cloud, which consists of gas that has not yet condensed into
-% compact prestellar objects, is evident in absorption against the mm cores at
-% 55-58 \kms (toward e2) and 57-60 \kms (toward e8).  Narrower velocity
-% components related to the known high-velocity streams are detected around 68
-% \kms toward both sources.  These absorption features are seen in all 
-% \formaldehyde transitions, \methanol $4_{2,2}-3_{1,2}$, OCS 18-17,
-% but it was less obvious or absent in HNCO $10_{1,10}-9_{1,9}$ and OCS 19-18.
-% 
-% In the material surrounding the e2 and e8 ``cores'', one particularly notable
-% feature is that the cores themselves show a redshifted centroid velocity
-% relative to their surroundings in nearly all of the bright lines (H2CO, OCS,
-% SO, \ceighteeno).  The observed shift is up to $\lesssim2$ \kms.  The shift is
-% a sign of infall.  Given the high continuum brightness, the cores are likely
-% optically thick in the continuum (Section \ref{sec:} XXX), therefore obscuring
-% all molecular emission behind them.  We are seeing only gas in the
-% foreground, and this gas is clearly moving toward the cores.
-% 
-% The source ALMAmm14 shows a similar kinematic signature....
-
-
-\subsection{Temperature estimation of the continuum sources}
-\label{sec:temperature}
-The temperature is a critical ingredient for determining the total mass of each
-continuum source or region. Since we do not have any means of directly
-determining the dust temperature, as the SED peak is well into the THz regime
-and inaccessible with any existing instruments at the requisite resolution, we
-employ alternative indicators.  Above a density $n\gtrsim10^5-10^6$ \percc,
-the gas and dust become strongly collisionally coupled, meaning the gas
-temperature should accurately reflect the dust temperature.  Below this density,
-the two may be decoupled.
-
-The average dust temperature, as estimated from Herschel Hi-Gal SED fits
-\citep{Molinari2016a,Wang2015a}, is 38 K when including the 70 \um data or 26 K
-when excluding it.  This average is obtained over a $\sim45\arcsec$ ($\sim 1$
-pc) beam and therefore is likely to be strongly biased toward the hottest dust
-in the HII regions.  Despite these
-uncertainties, this bulk measurement provides us with a reasonable range to
-assume for the uncoupled, low-density dust, which (weakly) dominates the mass
-(see Section \ref{sec:massbudget}).
-
-One constraint on the dust temperature we can employ is the absolute surface
-brightness.  For some regions, especially the e8 filament and the hot cores,
-%noted in Section \ref{sec:morphology},
-the surface brightness is substantially
-brighter than is possible for a beam-filling, optically thick blackbody at 20
-K, providing a lower limit on the dust temperature ranging from 20 K (35
-mJy/beam) to $\sim300$ K (0.5 Jy/beam).  Toward most of this emission, optically-thick
-free-free emission can be strongly ruled out as the driving mechanism using
-existing data that limits the free-free contribution to be $<50\%$ if it is
-optically thick, and negligible ($<<1\%$) if it is optically thin at radio wavelengths
-\citep{Ginsburg2016b, Goddi2016a}.
-%(Ginsburg et al, 2016; Goddi2016a).
-
-To gain a more detailed measurement of the dust temperature in regions where it
-is likely to be coupled to the gas, we use the peak brightness temperature
-$T_{B,max}$ of spectral lines along the line of sight.  If the observed
-molecule is in local thermal equilibrium, as is expected if the density is high
-enough to be collisionally coupled to the dust, and it is optically thick, the
-brightness temperature provides an approximate measurement of the local
-temperature near the $\tau=1$ surface.  If any of these assumptions do not
-hold, $T_{B,max}$ will set a lower limit on the true gas temperature.  Only 
-two mechanisms can push $T_{B,max} > T_{dust}$: nonthermal (maser) emission or
-a dust-emitting region that has a smaller beam filling factor than the
-gas-emitting region.
-
-One potential problem with this approach is if the gas becomes optically thick
-before probing most of the dust.  Some transitions of more abundant molecules,
-e.g., CO and \formaldehyde, are likely to be affected by this issue.  However,
-many of the molecules included in the observations have lower abundances and
-are likely to be optically thin along most of the line of sight.
-
-Some sources have no detected line emission aside from the molecular cloud
-species CO and \formaldehyde.  The minimum density requirement imposed by a
-continuum detection at our limit of 1.6 mJy is $n>10^{7.5}$ \percc for a
-spherical source.  At such high density, it is unlikely that the species are
-undetected because they are subthermally excited.  More likely, the
-line-nondetection sources have an underyling emission source that is very
-compact, optically thick, and/or cold.
-
-Figure \ref{fig:peaktbhist} shows the distribution of peak line brightnesses
-for the continuum sources.  The spectra used to determine this brightness are
-the spectra obtained from the brightest continuum pixel within the source
-aperture.  To obtain the peak line brightness, we fit Gaussian profiles to each
-identified line listed in Tables \ref{tab:linesspw0}-\ref{tab:linesspw3},
-rejecting those with poor fits.  The line brightnesses reported in the figure
-are the sum of the continuum-subtracted peak line brightness and the continuum
-brightness (i.e., they are the raw observed peak brightness).  Excepting CO and
-\formaldehyde, which are excluded from the plot, \methanol is the brightest
-line toward most sources. 
-
-% core_table_plots
-% from merge_spectral_fits_with_photometry
-\Figure{figures/brightest_line_histogram.png}
-{Histogram of the brightest line toward each continuum source.
-The bars are colored by the molecular species associated with the brightest
-line that is not associated with extended molecular cloud emission,
-i.e., CO and its isotopologues and \formaldehyde are excluded.}
-{fig:peaktbhist}{1}{10cm}
-
-We use these peak line brightness temperatures to compute the `corrected'
-masses of the continuum sources.  For sources with $T_{B,max} < 20$ K, we
-assume $T_{dust} = 20$ K to avoid producing unreasonably high masses; in such
-sources the lines are likely to be optically thin and/or subthermally excited.
-The correction is illustrated in Figure \ref{fig:moftbvsm20k}.
-
-\Figure{figures/aperture_mass20K_vs_massTB.png}
-{The mass computed assuming the dust temperature is the peak brightness
-temperature vs. that computed assuming $T_{dust}=20$ K  for the aperture extracted
-continuum sources.
-%The faded sources in the top left of the diagram are those with $M(T_{B,max}) >
-%M(20\textrm{K})$; the circles along the dashed line show their $M(20\mathrm{K})$.
-The dashed line shows $M(T_{B,max}) =
-M(20\textrm{K})$ and the dashed line shows $M(T_{B,max}) = 0.1 
-M(20\textrm{K})$ 
-}{fig:moftbvsm20k}{1}{10cm}
-
-This section has provided some simple temperature estimates across all of the
-detected continuum sources.  In Section \ref{sec:ch3ohtem}, we will examine
-the thermal structure of the hot cores in more detail.
-
-%\Figure{figures/dendro_peakTB_vs_selfconsistentcontinuum.png}
-%{The peak line brightness vs the continuum brightness of our target sources
-%within $\sim1\arcsec$ beams.  The points are color-coded by the brightest
-%observed line.  The dashed line shows where the brightness temperature of the
-%continuum matches that of the lines; technically this means that it should be
-%impossible for any point to be below the line.  
-%%However, in this
-%%iteration of the plot, the lines are extracted from broader apertures than the
-%%continuum, so the continuum peak brightness is capable of being higher than the
-%%line peak brightness.  TODO: replace this plot once spectra have been
-%%appropriately extracted from the high-resolution spectral data cube.
-%}
-%{fig:peaktb}{1}{10cm}
-
-
-\Figure{figures/core_mass_histogram_apertureradius.png}
-{Histograms of the core masses computed from the flux density measurements
-shown in Figure \ref{fig:fluxhistograms} using the peak brightness temperature 
-toward the center of that source as the dust temperature.
-The aperture size is listed in the y-axis label.  For the top plot, labeled
-`Peak', the mass is computed from peak
-flux density in Jy/beam.  For the rest, it is the integrated flux density in
-the specified aperture in Jy.  The unfilled data show all sources and the
-hashed
-data are for starless core candidates (Section \ref{sec:contsourcenature}).}
-{fig:masshistograms}
-{1}{16cm}
-
-\subsection{The nature of the continuum sources}
-\label{sec:contsourcenature}
-Millimeter continuum sources in star-forming regions are usually assumed to be
-either protostars or starless cores.  However, in this high-mass star-forming
-region, we have to consider both those possibilities and potential free-free
-sources or high-luminosity main-sequence stars embedded in dust.
-
-We fit each of up to $\sim50$ lines (see Tables
-\ref{tab:linesspw0}-\ref{tab:linesspw3}) with Gaussian profiles to attempt to
-determine the relative line strengths toward each source.  Most
-sources were detected in at least $\sim5-10$ lines, though some of these are
-associated with interstellar rather than circumstellar material, i.e.,
-\formaldehyde, CO, $^{13}$CS.  For sources with detections in non-interstellar
-lines, we used the peak brightness temperature of the line as an estimated lower
-limit on the core temperature.
-
-In the continuum, we measured a `concentration parameter', which is the ratio
-of the flux density in a 0.2\arcsec aperture to that in a 0.2\arcsec-0.4\arcsec
-annulus divided by three to account for the annulus' larger area.  A uniform
-source with $r>0.4\arcsec$ source would have a concentration $C=1$ by this
-definition, while an unresolved point source would have a Gaussian profile
-resulting in $C=14$.  Only one source approaches this extreme, the HII region
-e5, while the rest have $C\leq7$.  We set the threshold for a `concentrated'
-source to be $C>2$, which is arbitrary, but does a reasonable job of
-distinguishing the sources with a clear central concentration from those that
-have none.
-
-Main sequence OB stars and their illuminated ionized nebulae are in principle
-easily identified by their free-free emission.  Starless cores, protostellar
-cores, and their variants are more difficult to identify, so we used a combination
-of temperature and concentration parameter to classify them.
-
-We classified each of the 75 hand-selected sources on the following parameters:
-\begin{enumerate}
-    \item Free-free dominated sources ($S_{15 GHz} > 0.5 S_{226 GHz}$) are \hii
-        regions
-    \item Free-free contaminated sources ($S_{15 GHz} > 0.1 S_{226 GHz}$) are
-        likely to be dust-dominated but with \hii region contamination; these
-        are either dusty sources superposed on or embedded in a large \hii
-        region or they are compact, dusty \hii regions
-    \item Starless core candidates were identified as those with cold peak
-        brightness temperatures $T_B < 20$ K and with a high concentration
-        parameter ($C>2$)
-    \item Hot core candidates are those with peak $T_B>50$ K and $C>2$
-    \item Extended cold core and hot core candidates are those with $T_B<20$ 
-        and $T_B>50$ K and $C<2$
-    \item The remaining sources with $S_{15 GHz} < 0.1 S_{226 GHz}$ and $50 >
-        T_B > 20$ K were classed as uncertain compact ($C>2$) or uncertain extended
-        ($C<2$)
-\end{enumerate}
-
-These classifications are set in the `Categories' column of Table
-\ref{tab:photometry}.  They serve as a broad guideline for further
-analysis.   
-
+Further information about and general discussion of the continuum sources is 
+in Appendix \ref{sec:contsrcs}.  For the rest of this section, we focus
+on only the few brightest sources.
 
 
 %*demonstrate this* Generally, the obviously interstellar features are narrower.
@@ -771,76 +448,6 @@ jet or an ionizing binary companion, but its offset from the central mm source
 suggests that it is not a simple spherically symmetric HC\hii region.
 
 
-\subsection{Radial mass profiles around the most massive cores}
-\label{sec:radialmass}
-In Figure \ref{fig:hmradprof}, we show the radial profiles extracted from the
-three high-mass protostellar cores in W51: W51 North, W51 e2e, and W51 e8.
-The plot shows the enclosed mass out to $\sim1\arcsec$ (5400 AU).  On larger
-spatial scales, the enclosed mass rises more shallowly, indicating the end of the
-core.
-% too hard to measure this (though our data are capable of recovering spatial
-% scales up to XXXXX).
-
-All three sources show similar radial profiles, containing up to 3000 \msun
-within a compact radius of 5400 AU (0.03 pc).  However, the temperature
-structure within these sources is certainly not homogeneous, and  likely a
-large fraction of the total flux comes from $T\gtrsim300$ K heated material
-\citep[Section \ref{sec:temperature}; ][]{Goddi2016a}.  If the observed dust were
-all at 600 K, the mass would be $\sim17\times$ lower, 100 \msun, which we treat
-as a strict lower bound as it is unlikely that the dust at more than $r\gtrsim1000$
-AU is so warm.  Additionally, it is  likely that a substantial mass of cold
-dust is also present but undetectable because it is hidden by the hotter dust.
-%\todo{This paragraph is somewhat redundant with Section \ref{sec:W51e2e}, but
-%still useful.  Perhaps blend these?}
-
-%In the broader region surrounding W51e2e, out to a radius $\sim8000$ au, the
-%total mass is $M\approx1400 (T / 100 \mathrm{K})^{-1}$ \msun  (Figure
-%\ref{fig:hmradprof}).  On these larger scales, this moderately cooler ($T=100$
-%K) assumed temperature and optically thin dust are more reasonable, though
-%a factor of 2-5 increase in temperature may be warranted.  Nonetheless, the mass
-%heated by e2e is enormous, constituting an entire star cluster's
-%worth of material.
-
-\FigureTwo
-{figures/cumulative_radial_flux_massivecores.png}
-{figures/cumulative_radial_mass_of_TCH3OH_massivecores.png}
-{The cumulative flux density radial profiles centered on three massive
-protostellar cores.  They share similar profiles and are likely dominated by
-hot dust in their innermost regions, but they are more likely to be dominated
-by cooler dust in their outer, more massive regions.  The cumulative mass
-distribution may therefore be deceptive.  In (a), we use a constant
-temperature.  In (b), we use the temperature map computed from \methanol in
-Section \ref{sec:methanol}.}
-{fig:hmradprof}{1}{8cm}
-
-
-\Figure{figures/radialprofileexponent_of_TCH3OH_massivecores.png}
-{\todo{This figure is meant for discussion, not necessarily final publication.}
-The radial mass profile exponent $\kappa_\rho$ as a function of radius.
-The `fiducial value' used in the McKee/Tan model is $\kappa_\rho=-1.5$ (where
-I've flipped the sign...), but importantly it is \emph{constant} at $t=0$.
-What are the consequences of a non-constant $\kappa_\rho$?}
-{fig:kapparho}{1}{12cm}
-
-
-%probably not worth doing
-% \subsection{The most massive prestellar cores in W51}
-% % may be repeated from temperature section above
-% To place limits on the most massive prestellar cores, we need to know the
-% temperature of the dust in all of the bright ($>15$ mJy; 10 \msun at 20 K)
-% sources.  We do not have any direct means of evaluating the dust temperature,
-% but we can infer at
-% least a lower limit on it by determining the peak brightness temperature of an
-% optically thick line that is excited at densities $n\gtrsim10^5$ \percc, at
-% which the dust and gas are coupled.
-% 
-% To accomplish this, we have found the brightest lines across the full $\sim6$
-% GHz spectra and measured their peak brightness temperature.
-% 
-% \todo{TODO: use coarser resolution (2\arcsec = 0.1 pc?) data to extract ``cores''
-% where no smaller (protostellar) cores are detected.  Try to estimate their masses.
-% These are the best candidate ``prestellar" cores, though likely anything this
-% large is likely to be a massive cluster...}
 
 \subsection{The mass and light budget on different spatial scales}
 \label{sec:massbudget}
@@ -1178,6 +785,51 @@ denominator in the abundance expression).
 % white zones around W51 e2, e8, and north are areas where all three lines become
 % very optically thick, so the color no longer implies anything about the temperature.}
 % {fig:h2corgb}{1}{12cm}
+
+\subsection{Radial mass profiles around the most massive cores}
+\label{sec:radialmass}
+In Figure \ref{fig:hmradprof}, we show the radial profiles extracted from the
+three high-mass protostellar cores in W51: W51 North, W51 e2e, and W51 e8.
+The plot shows the enclosed mass out to $\sim1\arcsec$ (5400 AU).  On larger
+spatial scales, the enclosed mass rises more shallowly, indicating the end of the
+core.
+% too hard to measure this (though our data are capable of recovering spatial
+% scales up to XXXXX).
+
+All three sources show similar radial profiles, containing up to 3000 \msun
+within a compact radius of 5400 AU (0.03 pc).  However, the temperature
+structure within these sources is certainly not homogeneous, and  likely a
+large fraction of the total flux comes from $T\gtrsim300$ K heated material
+\citep[Section \ref{sec:temperature}; ][]{Goddi2016a}.  If the observed dust were
+all at 600 K, the mass would be $\sim17\times$ lower, 100 \msun, which we treat
+as a strict lower bound as it is unlikely that the dust at more than $r\gtrsim1000$
+AU is so warm.  Additionally, it is  likely that a substantial mass of cold
+dust is also present but undetectable because it is hidden by the hotter dust.
+
+\FigureTwo
+{figures/cumulative_radial_flux_massivecores.png}
+{figures/cumulative_radial_mass_of_TCH3OH_massivecores.png}
+{The cumulative (a) flux density radial profile and (b) mass radial profile
+centered on three massive protostellar cores.  They share similar profiles and
+are likely dominated by hot dust in their innermost regions, but they are more
+likely to be dominated by cooler dust in their outer, more massive regions.
+The cumulative mass distribution may therefore be deceptive.  In (a), we use a
+constant temperature to convert from flux to mass.  In (b), we use the
+temperature map computed from \methanol in
+Section \ref{sec:methanol}.}
+{fig:hmradprof}{1}{8cm}
+
+
+\Figure{figures/radialprofileexponent_of_TCH3OH_massivecores.png}
+{
+The radial mass profile exponent $\kappa_\rho$ as a function of radius.  The
+`fiducial value' used in the \citet{McKee2003a} model is $\kappa_\rho=1.5$, but
+importantly it is \emph{constant} at $t=0$.  A non-constant $\kappa_\rho$
+indicates that collapse is not self-similar, and the flattening toward smaller
+radii suggests that it is slower than freefall collapse.}
+{fig:kapparho}{1}{12cm}
+
+
 
 \subsection{Ionizing vs non-ionizing radiation}
 \label{sec:nonionizingradiation}
@@ -2063,6 +1715,339 @@ confused and asymmetric for simple interpretation.
 {Channel maps of the e8 outflow in \twelveco 2-1.  The outflows here are more
 erratic, with fewer clearly-connected red and blue lobes.}
 {fig:e8cooutflow}{1}{18cm}
+
+\section{Details of the extracted sources}
+\label{sec:contsrcs}
+We provide additional information and details about the continuum
+source extraction, along with complete catalogs, in this Appendix.
+
+\subsection{The spatial distribution of continuum sources}
+\label{sec:corespatialdistribution}
+The detected continuum sources are not uniformly distributed across the
+observed region.  The most notable feature in the spatial distribution is their
+alignment: most continuum sources collect along approximately linear features.
+This is especially evident in W51 IRS2, where the core density is very high and
+there is virtually no deviation from the line.  The e8 filament is also notably
+linear, though there area few sources detected just off the filament. 
+
+On a larger scale, the e8 filament points toward e2, apparently tracing a
+slightly longer filamentary structure.  With some imagination, this might be
+extended along the entire northeast ridge to eventually connect in a broad
+half-circle with the IRS2 filament (Figure \ref{fig:corepositions}).  This
+morphology hints at a possible sequential star formation event, where some
+central bubble has swept gas into these filaments.  However, this ring has no
+counterparts in ionized gas, and there is little reason to expect such circular
+symmetry from a real cloud, so the star forming circle may be merely a figment.
+
+Whether it is physical or not, there is a notable lack of continuum sources within the
+circle.  There is no lack of molecular gas, however, as both CO and \formaldehyde
+emission fill the full field of view.
+
+\Figure{figures/core_spatial_distribution.png}
+{The spatial distribution of the hand-identified core sample.
+The black outer contour shows the observed field of view.
+The dashed circle shows a hypothetical ring of star formation.
+}{fig:corepositions}{1}{16cm}
+
+
+\subsection{Photometry}
+\label{sec:photometry}
+We created a catalog of the hand-extracted sources including their peak and mean
+flux density, their centroid, and their geometric properties.  For each source,
+we further extracted aperture photometry around the centroid in 6 apertures:
+0.2, 0.4, 0.6, 0.8, 1.0, and 1.5\arcsec.  We performed the same aperture
+photometry on the W51 Ku-band images from \citet{Ginsburg2016a} to estimate
+the free-free contribution to the observed flux density measurements.  These
+measurements are reported in Table \ref{tab:photometry}.
+
+The source flux density distribution is shown in Figure
+\ref{fig:fluxhistograms}.  The most common nearest-neighbor separation between
+cataloged sources is $\sim0.3\arcsec$, which implies that the larger apertures
+double-count some pixels.  The smallest separation is 0.26\arcsec, so the
+0.2\arcsec aperture contains almost only unique pixels.  The corresponding
+masses are shown in Figure \ref{fig:masshistograms} assuming the dust
+temperature is equal to the source's peak line brightness temperature (Section
+\ref{sec:temperature}).
+
+
+Except where noted below, the hand-selected sources are used for further
+analysis as they are more reliable.
+%However, to encourage reproducible results
+%- which hand-extracted source positions defy - we also provide the
+%algorithmically-extracted and selected dendrogram catalog.
+
+\input{photometry_table_1.tex}
+\input{photometry_table_2.tex}
+
+% \subsubsection{Distribution Functions}
+% \label{sec:distributionfunctions}
+% We fit power law distributions to each aperture's flux distribution using the
+% packages \texttt{plfit} and \texttt{PowerLaw}
+% \citep[https://github.com/keflavich/plfit,
+% https://github.com/jeffalstott/powerlaw;][]{Clauset2007a,Alstott2014a}.
+% 
+% The
+% powerlaws steepen slightly from $\alpha=2.0\pm0.12$ to $\alpha=2.2\pm0.16$ for
+% larger apertures.  The minimum flux density represented by a power law
+% increases from $\sim20$ mJy for the peak flux density distribution to 0.4 Jy
+% for the largest aperture (14-280 \msun at 20K).  These slopes are shallower
+% than the Salpeter-like slope for the mass function derived by
+% \citep{Konyves2015a} for their sample, though with only modest significance
+% ($<3-\sigma$).  Of course, these measurements are of the continuum flux
+% density, not directly of the mass, and so a direct comparison may not be
+% appropriate.  We revisit this question after assessing the dust temperature in
+% Section \ref{sec:temperature}.
+
+
+%\Figure{figures/dendro_core_flux_histograms.png}
+%{Histograms of the core flux densities measured with circular apertures centered
+%on the dendrogram-extracted core centroids.  The aperture size is listed 
+%in the y-axis label.  Free-free-dominated sources are excluded.}
+%{fig:dendrofluxhistograms}
+%{1}{16cm}
+
+\Figure{figures/core_flux_histogram_apertureradius.png}
+{Histograms of the core flux densities measured with circular apertures centered
+on the hand-extracted core positions.  The aperture size is listed 
+in the y-axis label.  For the top plot, labeled `Peak', this is the peak
+flux density in Jy/beam.  For the rest, it is the integrated flux density
+in the specified aperture.  The unfilled data show all sources and the hashed
+data are for starless core candidates (Section \ref{sec:contsourcenature}).
+See Figure \ref{fig:masshistograms} for the corresponding masses.}
+{fig:fluxhistograms}
+{1}{16cm}
+
+% can probably argue safely that the 'background' is filtered out as much
+% as we would want...
+%For spectral extraction, we also measured a background spectrum averaging
+%over an annulus with twice the radius of the source extraction.
+
+
+%\subsection{The source flux density distribution \& the core mass function}
+%\todo{maybe}
+
+
+%Not used any more: the fitting approach is better, it just took longer to
+%implement
+% \subsection{Spectral Lines \& Velocities}
+% \label{sec:losvelo}
+% To determine the line-of-sight velocity of each source, we extracted a spectrum
+% from an 0.5\arcsec aperture centered on the source and from a 0.5-1.0\arcsec
+% annulus around it.  We then searched each spectrum for the brightest pixel and
+% associated it with the likeliest spectral line.  We repeated this in each of
+% our 4 spectral windows, then averaged the 4 velocities to get an estimate of
+% the source velocity.   This process also allowed us to identify the brightest
+% lines in each window and the brightest overall line observed, which we use
+% later for temperature estimation.
+
+
+% \subsection{Dense Gas Kinematics}
+% \label{sec:kinematics}
+% We examine the gas kinematics throughout the cloud, but especially near the 
+% massive cores.
+% 
+% The ambient cloud, which consists of gas that has not yet condensed into
+% compact prestellar objects, is evident in absorption against the mm cores at
+% 55-58 \kms (toward e2) and 57-60 \kms (toward e8).  Narrower velocity
+% components related to the known high-velocity streams are detected around 68
+% \kms toward both sources.  These absorption features are seen in all 
+% \formaldehyde transitions, \methanol $4_{2,2}-3_{1,2}$, OCS 18-17,
+% but it was less obvious or absent in HNCO $10_{1,10}-9_{1,9}$ and OCS 19-18.
+% 
+% In the material surrounding the e2 and e8 ``cores'', one particularly notable
+% feature is that the cores themselves show a redshifted centroid velocity
+% relative to their surroundings in nearly all of the bright lines (H2CO, OCS,
+% SO, \ceighteeno).  The observed shift is up to $\lesssim2$ \kms.  The shift is
+% a sign of infall.  Given the high continuum brightness, the cores are likely
+% optically thick in the continuum (Section \ref{sec:} XXX), therefore obscuring
+% all molecular emission behind them.  We are seeing only gas in the
+% foreground, and this gas is clearly moving toward the cores.
+% 
+% The source ALMAmm14 shows a similar kinematic signature....
+
+
+\subsection{Temperature estimation of the continuum sources}
+\label{sec:temperature}
+The temperature is a critical ingredient for determining the total mass of each
+continuum source or region. Since we do not have any means of directly
+determining the dust temperature, as the SED peak is well into the THz regime
+and inaccessible with any existing instruments at the requisite resolution, we
+employ alternative indicators.  Above a density $n\gtrsim10^5-10^6$ \percc,
+the gas and dust become strongly collisionally coupled, meaning the gas
+temperature should accurately reflect the dust temperature.  Below this density,
+the two may be decoupled.
+
+The average dust temperature, as estimated from Herschel Hi-Gal SED fits
+\citep{Molinari2016a,Wang2015a}, is 38 K when including the 70 \um data or 26 K
+when excluding it.  This average is obtained over a $\sim45\arcsec$ ($\sim 1$
+pc) beam and therefore is likely to be strongly biased toward the hottest dust
+in the HII regions.  Despite these
+uncertainties, this bulk measurement provides us with a reasonable range to
+assume for the uncoupled, low-density dust, which (weakly) dominates the mass
+(see Section \ref{sec:massbudget}).
+
+One constraint on the dust temperature we can employ is the absolute surface
+brightness.  For some regions, especially the e8 filament and the hot cores,
+%noted in Section \ref{sec:morphology},
+the surface brightness is substantially
+brighter than is possible for a beam-filling, optically thick blackbody at 20
+K, providing a lower limit on the dust temperature ranging from 20 K (35
+mJy/beam) to $\sim300$ K (0.5 Jy/beam).  Toward most of this emission, optically-thick
+free-free emission can be strongly ruled out as the driving mechanism using
+existing data that limits the free-free contribution to be $<50\%$ if it is
+optically thick, and negligible ($<<1\%$) if it is optically thin at radio wavelengths
+\citep{Ginsburg2016b, Goddi2016a}.
+%(Ginsburg et al, 2016; Goddi2016a).
+
+To gain a more detailed measurement of the dust temperature in regions where it
+is likely to be coupled to the gas, we use the peak brightness temperature
+$T_{B,max}$ of spectral lines along the line of sight.  If the observed
+molecule is in local thermal equilibrium, as is expected if the density is high
+enough to be collisionally coupled to the dust, and it is optically thick, the
+brightness temperature provides an approximate measurement of the local
+temperature near the $\tau=1$ surface.  If any of these assumptions do not
+hold, $T_{B,max}$ will set a lower limit on the true gas temperature.  Only 
+two mechanisms can push $T_{B,max} > T_{dust}$: nonthermal (maser) emission or
+a dust-emitting region that has a smaller beam filling factor than the
+gas-emitting region.
+
+One potential problem with this approach is if the gas becomes optically thick
+before probing most of the dust.  Some transitions of more abundant molecules,
+e.g., CO and \formaldehyde, are likely to be affected by this issue.  However,
+many of the molecules included in the observations have lower abundances and
+are likely to be optically thin along most of the line of sight.
+
+Some sources have no detected line emission aside from the molecular cloud
+species CO and \formaldehyde.  The minimum density requirement imposed by a
+continuum detection at our limit of 1.6 mJy is $n>10^{7.5}$ \percc for a
+spherical source.  At such high density, it is unlikely that the species are
+undetected because they are subthermally excited.  More likely, the
+line-nondetection sources have an underyling emission source that is very
+compact, optically thick, and/or cold.
+
+Figure \ref{fig:peaktbhist} shows the distribution of peak line brightnesses
+for the continuum sources.  The spectra used to determine this brightness are
+the spectra obtained from the brightest continuum pixel within the source
+aperture.  To obtain the peak line brightness, we fit Gaussian profiles to each
+identified line listed in Tables \ref{tab:linesspw0}-\ref{tab:linesspw3},
+rejecting those with poor fits.  The line brightnesses reported in the figure
+are the sum of the continuum-subtracted peak line brightness and the continuum
+brightness (i.e., they are the raw observed peak brightness).  Excepting CO and
+\formaldehyde, which are excluded from the plot, \methanol is the brightest
+line toward most sources. 
+
+% core_table_plots
+% from merge_spectral_fits_with_photometry
+\Figure{figures/brightest_line_histogram.png}
+{Histogram of the brightest line toward each continuum source.
+The bars are colored by the molecular species associated with the brightest
+line that is not associated with extended molecular cloud emission,
+i.e., CO and its isotopologues and \formaldehyde are excluded.}
+{fig:peaktbhist}{1}{10cm}
+
+We use these peak line brightness temperatures to compute the `corrected'
+masses of the continuum sources.  For sources with $T_{B,max} < 20$ K, we
+assume $T_{dust} = 20$ K to avoid producing unreasonably high masses; in such
+sources the lines are likely to be optically thin and/or subthermally excited.
+The correction is illustrated in Figure \ref{fig:moftbvsm20k}.
+
+\Figure{figures/aperture_mass20K_vs_massTB.png}
+{The mass computed assuming the dust temperature is the peak brightness
+temperature vs. that computed assuming $T_{dust}=20$ K  for the aperture extracted
+continuum sources.
+%The faded sources in the top left of the diagram are those with $M(T_{B,max}) >
+%M(20\textrm{K})$; the circles along the dashed line show their $M(20\mathrm{K})$.
+The dashed line shows $M(T_{B,max}) =
+M(20\textrm{K})$ and the dashed line shows $M(T_{B,max}) = 0.1 
+M(20\textrm{K})$ 
+}{fig:moftbvsm20k}{1}{10cm}
+
+This section has provided some simple temperature estimates across all of the
+detected continuum sources.  In Section \ref{sec:ch3ohtem}, we  examine
+the thermal structure of the hot cores in more detail.
+
+%\Figure{figures/dendro_peakTB_vs_selfconsistentcontinuum.png}
+%{The peak line brightness vs the continuum brightness of our target sources
+%within $\sim1\arcsec$ beams.  The points are color-coded by the brightest
+%observed line.  The dashed line shows where the brightness temperature of the
+%continuum matches that of the lines; technically this means that it should be
+%impossible for any point to be below the line.  
+%%However, in this
+%%iteration of the plot, the lines are extracted from broader apertures than the
+%%continuum, so the continuum peak brightness is capable of being higher than the
+%%line peak brightness.  TODO: replace this plot once spectra have been
+%%appropriately extracted from the high-resolution spectral data cube.
+%}
+%{fig:peaktb}{1}{10cm}
+
+
+\Figure{figures/core_mass_histogram_apertureradius.png}
+{Histograms of the core masses computed from the flux density measurements
+shown in Figure \ref{fig:fluxhistograms} using the peak brightness temperature 
+toward the center of that source as the dust temperature.
+The aperture size is listed in the y-axis label.  For the top plot, labeled
+`Peak', the mass is computed from peak
+flux density in Jy/beam.  For the rest, it is the integrated flux density in
+the specified aperture in Jy.  The unfilled data show all sources and the
+hashed
+data are for starless core candidates (Section \ref{sec:contsourcenature}).}
+{fig:masshistograms}
+{1}{16cm}
+
+\subsection{The nature of the continuum sources}
+\label{sec:contsourcenature}
+Millimeter continuum sources in star-forming regions are usually assumed to be
+either protostars or starless cores.  However, in this high-mass star-forming
+region, we have to consider both those possibilities and potential free-free
+sources or high-luminosity main-sequence stars embedded in dust.
+
+We fit each of up to $\sim50$ lines (see Tables
+\ref{tab:linesspw0}-\ref{tab:linesspw3}) with Gaussian profiles to attempt to
+determine the relative line strengths toward each source.  Most
+sources were detected in at least $\sim5-10$ lines, though some of these are
+associated with interstellar rather than circumstellar material, i.e.,
+\formaldehyde, CO, $^{13}$CS.  For sources with detections in non-interstellar
+lines, we used the peak brightness temperature of the line as an estimated lower
+limit on the core temperature.
+
+In the continuum, we measured a `concentration parameter', which is the ratio
+of the flux density in a 0.2\arcsec aperture to that in a 0.2\arcsec-0.4\arcsec
+annulus divided by three to account for the annulus' larger area.  A uniform
+source with $r>0.4\arcsec$ source would have a concentration $C=1$ by this
+definition, while an unresolved point source would have a Gaussian profile
+resulting in $C=14$.  Only one source approaches this extreme, the HII region
+e5, while the rest have $C\leq7$.  We set the threshold for a `concentrated'
+source to be $C>2$, which is arbitrary, but does a reasonable job of
+distinguishing the sources with a clear central concentration from those that
+have none.
+
+Main sequence OB stars and their illuminated ionized nebulae are in principle
+easily identified by their free-free emission.  Starless cores, protostellar
+cores, and their variants are more difficult to identify, so we used a combination
+of temperature and concentration parameter to classify them.
+
+We classified each of the 75 hand-selected sources on the following parameters:
+\begin{enumerate}
+    \item Free-free dominated sources ($S_{15 GHz} > 0.5 S_{226 GHz}$) are \hii
+        regions
+    \item Free-free contaminated sources ($S_{15 GHz} > 0.1 S_{226 GHz}$) are
+        likely to be dust-dominated but with \hii region contamination; these
+        are either dusty sources superposed on or embedded in a large \hii
+        region or they are compact, dusty \hii regions
+    \item Starless core candidates were identified as those with cold peak
+        brightness temperatures $T_B < 20$ K and with a high concentration
+        parameter ($C>2$)
+    \item Hot core candidates are those with peak $T_B>50$ K and $C>2$
+    \item Extended cold core and hot core candidates are those with $T_B<20$ 
+        and $T_B>50$ K and $C<2$
+    \item The remaining sources with $S_{15 GHz} < 0.1 S_{226 GHz}$ and $50 >
+        T_B > 20$ K were classed as uncertain compact ($C>2$) or uncertain extended
+        ($C<2$)
+\end{enumerate}
+
+These classifications are set in the `Categories' column of Table
+\ref{tab:photometry}.  They serve as a broad guideline for further
+analysis.   
 
 
 
