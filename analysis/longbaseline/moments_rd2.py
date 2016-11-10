@@ -102,20 +102,20 @@ for source,stretch in zip(('northwest','north','e2','e8',),
                 m0.FITSFigure.show_contour(cont_cut, levels=[0.0015, 0.006, 0.012],
                                            colors=['r']*3)
                 m0.FITSFigure.save(paths.fpath('longbaseline/moments/{1}_{0}_mom0.png'.format(linename, source)))
-                m0.write(paths.dpath('longbaseline/moments/{1}_{0}_mom0.fits'.format(linename, source)))
+                m0.write(paths.dpath('longbaseline/moments/{1}_{0}_mom0.fits'.format(linename, source)), overwrite=True)
 
                 mx.quicklook()
                 mx.FITSFigure.show_contour(cont_cut, levels=[0.0015, 0.006, 0.012],
                                            colors=['c']*3)
                 mx.FITSFigure.save(paths.fpath('longbaseline/moments/{1}_{0}_max.png'.format(linename, source)))
-                mx.write(paths.dpath('longbaseline/moments/{1}_{0}_max.fits'.format(linename, source)))
+                mx.write(paths.dpath('longbaseline/moments/{1}_{0}_max.fits'.format(linename, source)), overwrite=True)
 
                 mx.FITSFigure.show_contour(blumax.hdu, levels=[0.005, 0.0075, 0.010],
                                            colors=['b']*3)
                 mx.FITSFigure.show_contour(redmax.hdu, levels=[0.005, 0.0075, 0.010],
                                            colors=['r']*3)
                 mx.FITSFigure.save(paths.fpath('longbaseline/moments/{1}_{0}_max_outflow.png'.format(linename, source)))
-                mx.write(paths.dpath('longbaseline/moments/{1}_{0}_max_outflow.fits'.format(linename, source)))
+                mx.write(paths.dpath('longbaseline/moments/{1}_{0}_max_outflow.fits'.format(linename, source)), overwrite=True)
                 
                 # mask out low significance pixels
                 m1emi[(mx < slabstd*2) & (mn > -slabstd*2)] = np.nan
