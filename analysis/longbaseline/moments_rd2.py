@@ -15,6 +15,10 @@ import pyregion
 import paths
 import pylab as pl
 
+#raise ValueError("TODO: fix the cutout regions and make sure the cubes are cut out"
+#                 "from the same region as the continuum.   A change to the region "
+#                 "file below has resulted in a mismatch in the emi/abs masks below")
+
 regions = pyregion.open(paths.rpath("e2e8northcutouts.reg"))
 
 corners = {reg.attr[1]['text']: {'lowerleft': coordinates.SkyCoord([reg.coord_list[:2]], frame='fk5', unit=(u.deg, u.deg)),
@@ -43,13 +47,20 @@ vrange_ = {'e2': (56-8, 56+8),
            'e8': (56-8, 56+8),
           }
 
-for source,stretch in zip(('northwest','north','e2','e8',),
+for source,stretch in zip(('e8','e2','north','northwest',),
                           ((57,63), (58,62), (53,58), (54,58))):
+
+    cube0 = SpectralCube.read(files[source][0]).with_spectral_unit(u.GHz)
+    bl_ra, bl_dec = cube0.wcs.celestial.wcs_pix2world(-0.5, -0.5, 0)
+    tr_ra, tr_dec = cube0.wcs.celestial.wcs_pix2world(cube0.shape[2]-0.5, cube0.shape[1]-0.5, 0)
+
     cont = fits.open(paths.dpath('longbaseline/W51{0}cax.cont.image.pbcor.fits').format('n' if 'north' in source else 'e2'))
     contwcs = wcs.WCS(cont[0].header)
-    lowerleft, upperright = corners[source]['lowerleft'],corners[source]['upperright'],
-    bl_x, bl_y = contwcs.celestial.wcs_world2pix(lowerleft.ra, lowerleft.dec, 0)
-    tr_x, tr_y = contwcs.celestial.wcs_world2pix(upperright.ra, upperright.dec, 0)
+    #lowerleft, upperright = corners[source]['lowerleft'],corners[source]['upperright'],
+    #bl_x, bl_y = contwcs.celestial.wcs_world2pix(lowerleft.ra, lowerleft.dec, 0)
+    #tr_x, tr_y = contwcs.celestial.wcs_world2pix(upperright.ra, upperright.dec, 0)
+    bl_x, bl_y = contwcs.celestial.wcs_world2pix(bl_ra, bl_dec, 0)
+    tr_x, tr_y = contwcs.celestial.wcs_world2pix(tr_ra, tr_dec, 0)
     assert tr_y > bl_y+2
     assert tr_x > bl_x+2
     cont_cut = fits.PrimaryHDU(data=cont[0].data.squeeze()[int(bl_y):int(tr_y), int(bl_x):int(tr_x)],
@@ -60,6 +71,13 @@ for source,stretch in zip(('northwest','north','e2','e8',),
 
     for fn in files[source]:
         cube = SpectralCube.read(fn).with_spectral_unit(u.GHz)
+        if cube.shape[1:] != cont_cut.shape:
+            raise ValueError("Mismatch")
+            #bl_x, bl_y = cube.wcs.celestial.wcs_world2pix(lowerleft.ra, lowerleft.dec, 0)
+            #tr_x, tr_y = cube.wcs.celestial.wcs_world2pix(upperright.ra, upperright.dec, 0)
+            #line_cut = cube[int(bl_y):int(tr_y), int(bl_x):int(tr_x)]
+            #assert line_cut.shape[1:] == cont_cut.shape
+            #cube = line_cut
 
         for linename, freq, _, _ in line_to_image_list.line_to_image_list:
             frq = float(freq.strip("GHz"))*u.GHz
