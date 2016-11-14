@@ -3,7 +3,7 @@ Make moment maps of cutouts
 
 Meant to operate on full-window cubes
 """
-import re
+import os
 import numpy as np
 from astropy import units as u
 from astropy import coordinates
@@ -50,27 +50,30 @@ vrange_ = {'e2': (56-8, 56+8),
 for source,stretch in zip(('e8','e2','north','northwest',),
                           ((57,63), (58,62), (53,58), (54,58))):
 
-    cube0 = SpectralCube.read(files[source][0]).with_spectral_unit(u.GHz)
-    bl_ra, bl_dec = cube0.wcs.celestial.wcs_pix2world(-0.5, -0.5, 0)
-    tr_ra, tr_dec = cube0.wcs.celestial.wcs_pix2world(cube0.shape[2]-0.5, cube0.shape[1]-0.5, 0)
-
-    cont = fits.open(paths.dpath('longbaseline/W51{0}cax.cont.image.pbcor.fits').format('n' if 'north' in source else 'e2'))
-    contwcs = wcs.WCS(cont[0].header)
-    #lowerleft, upperright = corners[source]['lowerleft'],corners[source]['upperright'],
-    #bl_x, bl_y = contwcs.celestial.wcs_world2pix(lowerleft.ra, lowerleft.dec, 0)
-    #tr_x, tr_y = contwcs.celestial.wcs_world2pix(upperright.ra, upperright.dec, 0)
-    bl_x, bl_y = contwcs.celestial.wcs_world2pix(bl_ra, bl_dec, 0)
-    tr_x, tr_y = contwcs.celestial.wcs_world2pix(tr_ra, tr_dec, 0)
-    assert tr_y > bl_y+2
-    assert tr_x > bl_x+2
-    cont_cut = fits.PrimaryHDU(data=cont[0].data.squeeze()[int(bl_y):int(tr_y), int(bl_x):int(tr_x)],
-                               header=contwcs.celestial[int(bl_y):int(tr_y), int(bl_x):int(tr_x)].to_header())
-    assert cont_cut.data.size > 0
-
-    vrange = vrange_[source]
-
     for fn in files[source]:
+
+
         cube = SpectralCube.read(fn).with_spectral_unit(u.GHz)
+
+        bl_ra, bl_dec = cube.wcs.celestial.wcs_pix2world(-0.5, -0.5, 0)
+        tr_ra, tr_dec = cube.wcs.celestial.wcs_pix2world(cube.shape[2]-0.5, cube.shape[1]-0.5, 0)
+
+        cont = fits.open(paths.dpath('longbaseline/W51{0}cax.cont.image.pbcor.fits').format('n' if 'north' in source else 'e2'))
+        contwcs = wcs.WCS(cont[0].header)
+        #lowerleft, upperright = corners[source]['lowerleft'],corners[source]['upperright'],
+        #bl_x, bl_y = contwcs.celestial.wcs_world2pix(lowerleft.ra, lowerleft.dec, 0)
+        #tr_x, tr_y = contwcs.celestial.wcs_world2pix(upperright.ra, upperright.dec, 0)
+        bl_x, bl_y = contwcs.celestial.wcs_world2pix(bl_ra, bl_dec, 0)
+        tr_x, tr_y = contwcs.celestial.wcs_world2pix(tr_ra, tr_dec, 0)
+        assert tr_y > bl_y+2
+        assert tr_x > bl_x+2
+        cont_cut = fits.PrimaryHDU(data=cont[0].data.squeeze()[int(bl_y):int(tr_y), int(bl_x):int(tr_x)],
+                                   header=contwcs.celestial[int(bl_y):int(tr_y), int(bl_x):int(tr_x)].to_header())
+        assert cont_cut.data.size > 0
+
+        vrange = vrange_[source]
+
+
         if cube.shape[1:] != cont_cut.shape:
             raise ValueError("Mismatch")
             #bl_x, bl_y = cube.wcs.celestial.wcs_world2pix(lowerleft.ra, lowerleft.dec, 0)
@@ -80,6 +83,13 @@ for source,stretch in zip(('e8','e2','north','northwest',),
             #cube = line_cut
 
         for linename, freq, _, _ in line_to_image_list.line_to_image_list:
+
+            first_output = paths.dpath('longbaseline/moments/{1}_{0}_mom0.fits'.format(linename, source))
+            if os.path.exists(first_output):
+                print("Skipping {1},{0}: already complete.".format(fn, linename))
+                continue
+
+
             frq = float(freq.strip("GHz"))*u.GHz
 
             vcube = cube.with_spectral_unit(u.km/u.s, velocity_convention='radio',
