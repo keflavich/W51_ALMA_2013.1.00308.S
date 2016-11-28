@@ -138,7 +138,7 @@ def make_rprof(regions, ploteach=False):
         nplots = 0
 
     pl.matplotlib.rc_file('pubfiguresrc')
-    for jj in range(nplots*3+1, nplots*3+12+1):
+    for jj in range(nplots*3+1, nplots*3+14+1):
         pl.figure(jj).clf()
     # $ find ~/work/w51/alma/FITS/ -samefile ~/work/w51/alma/FITS/W51_te_continuum_best.fits
     # /Users/adam/work/w51/alma/FITS//12m/continuum/selfcal_allspw_selfcal_3_mfs_deeper.image.pbcor.fits
@@ -394,6 +394,7 @@ def make_rprof(regions, ploteach=False):
                                                        return_nr=True,
                                                        interpnan=True,
                                                       )
+        azimuthal_average_temperature = tem_rprof
 
         mass_map = (cutout.data * masscalc.mass_conversion_factor(TK=temcutout.data) ).to(u.M_sun)
         yy,xx = np.indices(cutout.data.shape)
@@ -418,6 +419,18 @@ def make_rprof(regions, ploteach=False):
                                 (constants.G**1.5 *
                                  (2.8*u.Da*azimuthal_average_density)**0.5)
                                ).to(u.M_sun)
+
+        cumulative_mass_weighted_temperature = ((azimuthal_average_mass *
+                                                 azimuthal_average_temperature).cumsum()
+                                                / mass_profile)
+        cumulative_c_s = ((constants.k_B *
+                           cumulative_mass_weighted_temperature*u.K /
+                           (2.4*u.Da))**0.5).to(u.km/u.s)
+        cumulative_profile_MJ = (np.pi/6. * cumulative_c_s**3 /
+                                (constants.G**1.5 *
+                                 (2.8*u.Da*density_profile)**0.5)
+                               ).to(u.M_sun)
+
 
 
         pl.figure(nplots*3+7)
@@ -492,6 +505,7 @@ def make_rprof(regions, ploteach=False):
         pl.xlabel("Radius [as]")
 
 
+        # Jeans length
         azimuthal_average_RJ = (c_s**1 /
                                 (constants.G**0.5 *
                                  (2.8*u.Da*azimuthal_average_density)**0.5)
@@ -572,9 +586,95 @@ def make_rprof(regions, ploteach=False):
             #ax3.set_yticklabels(yticks_mass)
             #ax3.set_ylabel("Cumulative Mass (M$_\\odot$, $T=40$ K)")
 
+        pl.figure(nplots*3+13)
+        pl.plot(angular_radii, cumulative_profile_MJ, label=name)
+        pl.ylabel("$M_J(r<R)$ at T=T(CH$_3$OH) [$M_\odot$]")
+        pl.xlabel("Radius [arcsec]")
+        if len(names) < 5:
+            pl.legend(loc='best')
+        elif ii==len(names)-1:
+            ax = pl.gca()
+            box = ax.get_position()
+            ax.set_position([box.x0, box.y0, box.width * 0.6, box.height])
+
+            # Put a legend to the right of the current axis
+            ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+        if ii == len(names) - 1:
+            ax = pl.gca()
+            ax.set_ylim(0, 2)
+            ax2 = ax.twiny()
+            #ax3 = ax.twinx()
+            def tick_function(old_x):
+                newx = (old_x*u.arcsec*masscalc.distance).to(u.au, u.dimensionless_angles()).value
+                return ["%.1f" % z for z in newx]
+            new_tick_locations = np.arange(0,8000,1000)*u.au
+            new_tick_locs_as = (new_tick_locations/masscalc.distance).to(u.arcsec, u.dimensionless_angles())
+            ax2.set_xlim(ax.get_xlim())
+            ax2.set_xticks(new_tick_locs_as.value)
+            ax2.set_xticklabels(tick_function(new_tick_locs_as.value))
+            ax2.set_xlabel(r"Radius [au]")
+            #ax3.set_ylim(ax.get_ylim())
+            #yticks_mass = np.arange(0,6000,1000)
+            #yticks_Jy = yticks_mass/masscalc.mass_conversion_factor(TK=40).value
+            #ax3.set_yticks(yticks_Jy)
+            #ax3.set_yticklabels(yticks_mass)
+            #ax3.set_ylabel("Cumulative Mass (M$_\\odot$, $T=40$ K)")
+
+        pl.figure(nplots*3+14)
+        line, = pl.plot(angular_radii, azimuthal_average_MJ, label=name)
+        pl.plot(angular_radii, azimuthal_average_mass,
+                linestyle='--', color=line.get_color())
+        pl.ylabel("Mass at T=T(CH$_3$OH) [$M_\odot$]")
+        pl.xlabel("Radius [arcsec]")
+
+        handles, labels = ax.get_legend_handles_labels()
+        if '$\\bar{M}$' not in labels:
+            handles.append(pl.matplotlib.lines.Line2D([],[],
+                                                      color='k', linestyle='--'))
+            labels.append('$\\bar{M}$')
+        if '$M_J$' not in labels:
+            handles.append(pl.matplotlib.lines.Line2D([],[],
+                                                      color='k', linestyle='-'))
+            labels.append('$M_J$')
+
+
+        if ii == len(names) - 1:
+            ax = pl.gca()
+            ax.set_ylim(0, 5)
+            ax2 = ax.twiny()
+            #ax3 = ax.twinx()
+            def tick_function(old_x):
+                newx = (old_x*u.arcsec*masscalc.distance).to(u.au, u.dimensionless_angles()).value
+                return ["%.1f" % z for z in newx]
+            new_tick_locations = np.arange(0,8000,1000)*u.au
+            new_tick_locs_as = (new_tick_locations/masscalc.distance).to(u.arcsec, u.dimensionless_angles())
+            ax2.set_xlim(ax.get_xlim())
+            ax2.set_xticks(new_tick_locs_as.value)
+            ax2.set_xticklabels(tick_function(new_tick_locs_as.value))
+            ax2.set_xlabel(r"Radius [au]")
+            #ax3.set_ylim(ax.get_ylim())
+            #yticks_mass = np.arange(0,6000,1000)
+            #yticks_Jy = yticks_mass/masscalc.mass_conversion_factor(TK=40).value
+            #ax3.set_yticks(yticks_Jy)
+            #ax3.set_yticklabels(yticks_mass)
+            #ax3.set_ylabel("Cumulative Mass (M$_\\odot$, $T=40$ K)")
+
+            box = ax.get_position()
+            ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+            ax2.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+
+            # Put a legend to the right of the current axis
+            ax.legend(handles, labels, loc='center left', bbox_to_anchor=(1, 0.5))
+
+
+
+    return locals()
 
 regions = pyregion.open(paths.rpath("hmcore_centroids.reg"))
-make_rprof(regions, ploteach=True)
+variables = make_rprof(regions, ploteach=True)
+for k,v in variables.items():
+    globals()[k] = v
 nplots = len(regions)
 pl.figure(nplots*3+2).savefig(paths.fpath("cumulative_radial_flux_massivecores.png"))
 pl.figure(nplots*3+3).savefig(paths.fpath("cumulative_radial_mass_massivecores.png"))
@@ -587,6 +687,8 @@ pl.figure(nplots*3+8).savefig(paths.fpath("cumulative_radial_mass_of_TCH3OH_mass
 pl.figure(nplots*3+9).savefig(paths.fpath("azimuthalaverage_radial_TCH3OH_massivecores.png"))
 pl.figure(nplots*3+10).savefig(paths.fpath("azimuthalaverage_radial_rj_of_TCH3OH_massivecores.png"))
 pl.figure(nplots*3+11).savefig(paths.fpath("radialprofileexponent_of_TCH3OH_massivecores.png"))
+pl.figure(nplots*3+13).savefig(paths.fpath("cumulative_MJ_of_TCH3OH_massivecores.png"))
+pl.figure(nplots*3+14).savefig(paths.fpath("azimuthalaverage_radial_mj_and_mbar_of_TCH3OH_massivecores.png"))
 
 fig = pl.figure(nplots*3+8)
 ax = fig.axes[0]
