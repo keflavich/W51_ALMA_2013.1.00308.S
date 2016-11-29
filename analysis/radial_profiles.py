@@ -138,7 +138,7 @@ def make_rprof(regions, ploteach=False):
         nplots = 0
 
     pl.matplotlib.rc_file('pubfiguresrc')
-    for jj in range(nplots*3+1, nplots*3+14+1):
+    for jj in range(nplots*3+1, nplots*3+15+1):
         pl.figure(jj).clf()
     # $ find ~/work/w51/alma/FITS/ -samefile ~/work/w51/alma/FITS/W51_te_continuum_best.fits
     # /Users/adam/work/w51/alma/FITS//12m/continuum/selfcal_allspw_selfcal_3_mfs_deeper.image.pbcor.fits
@@ -399,30 +399,40 @@ def make_rprof(regions, ploteach=False):
         mass_map = (cutout.data * masscalc.mass_conversion_factor(TK=temcutout.data) ).to(u.M_sun)
         yy,xx = np.indices(cutout.data.shape)
         rr_map = ((xx-cutout.data.shape[1]/2.)**2 + (yy-cutout.data.shape[0]/2.)**2)
-        mass_profile = (cumul_rprof * masscalc.mass_conversion_factor(TK=tem_rprof) / u.beam).to(u.M_sun)
+        mass_profile = (cumul_rprof *
+                        masscalc.mass_conversion_factor(TK=tem_rprof) /
+                        u.beam).to(u.M_sun)
         density_profile = (mass_profile / (4/3.*np.pi*radii**3) /
                            (2.8*u.Da)).to(u.cm**-3)
 
-        azimuthal_average_mass = azimuthal_average_flux * masscalc.mass_conversion_factor(TK=tem_rprof) / u.beam
+        azimuthal_average_mass = (azimuthal_average_flux *
+                                  masscalc.mass_conversion_factor(TK=tem_rprof)
+                                  / u.beam)
 
         # how accurate is this?  We are measuring mass in cylindrical annuli,
         # but we are assuming the underlying source structure is spherical
         # See Cores.ipynb (in notes/, not in this repo) for a detailed
         # analysis...
         azimuthal_average_density = (azimuthal_average_mass * sqdiffbins_pix /
-                                    (2.8*u.Da) /
-                                    (4/3.*np.pi*(cudiffbins_cm))).to(u.cm**-3)
+                                     (2.8*u.Da) /
+                                     (4/3.*np.pi*(cudiffbins_cm))).to(u.cm**-3)
 
 
         # this is not a good approximation for the spherial density profile...
         # see cores.ipynb.
         # Really should be this number +1 (so see the +1 below)
         # Also, negatived...
-        density_alpha = 1-((np.log(density_profile[1:].value) -
-                            np.log(density_profile[:-1].value)) /
-                           (np.log(angular_radii[1:]) -
-                            np.log(angular_radii[:-1]))
-                          )
+        density_alpha_ = 1-((np.log(density_profile[1:].value) -
+                             np.log(density_profile[:-1].value)) /
+                            (np.log(angular_radii[1:]) -
+                             np.log(angular_radii[:-1]))
+                           )
+        # from cores.ipynb, this actually gets (close to) the right answer
+        density_alpha = -((np.log(azimuthal_average_density[1:].value) -
+                           np.log(azimuthal_average_density[:-1].value)) /
+                          (np.log(angular_radii[1:]) -
+                           np.log(angular_radii[:-1]))
+                         )
 
         c_s = ((constants.k_B * tem_rprof*u.K / (2.4*u.Da))**0.5).to(u.km/u.s)
         azimuthal_average_MJ = (np.pi/6. * c_s**3 /
@@ -449,7 +459,7 @@ def make_rprof(regions, ploteach=False):
         # WRONG         alpha=0.75, color=line.get_color())
         #pl.plot(rr_map*pixscale*3600., mass_map, 'k.', alpha=0.25)
         pl.axis([0,1.2,0.0,5.0])
-        pl.ylabel("Azimuthally Averaged $M$ at $T(\\mathrm{CH}_3\\mathrm{OH})$ [$M_\\odot$]")
+        pl.ylabel("Azimuthally Averaged $M_J$ at $T(\\mathrm{CH}_3\\mathrm{OH})$ [$M_\\odot$]")
         pl.xlabel("Radius [arcsec]")
         if len(names) < 5:
             pl.legend(loc='best')
@@ -556,7 +566,9 @@ def make_rprof(regions, ploteach=False):
 
 
         pl.figure(nplots*3+11)
-        pl.plot((angular_radii[1:]+angular_radii[:-1])/2., density_alpha)
+        line, = pl.plot((angular_radii[1:]+angular_radii[:-1])/2., density_alpha)
+        pl.plot((angular_radii[1:]+angular_radii[:-1])/2., density_alpha_, '--',
+                color=line.get_color(), alpha=0.5)
         pl.xlabel("Radius [as]")
         pl.ylabel("Density Profile Exponent $\\kappa_\\rho$")
 
@@ -678,6 +690,28 @@ def make_rprof(regions, ploteach=False):
             ax.legend(handles, labels, loc='center left', bbox_to_anchor=(1, 0.5))
 
 
+        pl.figure(nplots*3+15)
+        pl.subplot(2,2,1)
+        pl.semilogy(angular_radii, azimuthal_average_density, label=name)
+        pl.ylabel("Azimuthally Averaged Density at T=T(CH$_3$OH) [cm$^{-3}$]")
+        pl.subplot(2,2,3)
+        pl.semilogy(angular_radii, density_profile, label=name)
+        pl.ylabel("Cumulative Average Density at T=T(CH$_3$OH) [cm$^{-3}$]")
+        pl.xlabel("Radius [arcsec]")
+        pl.subplot(2,2,2)
+        pl.plot(azimuthal_average_density, density_profile, label=name)
+        pl.plot(sorted(azimuthal_average_density.value),
+                sorted(azimuthal_average_density.value), 'k--')
+        pl.xlabel("Azimuthally Averaged Density at T=T(CH$_3$OH) [cm$^{-3}$]",
+                  fontsize=12)
+        pl.ylabel("Cumulative Average Density at T=T(CH$_3$OH) [cm$^{-3}$]",
+                  fontsize=12)
+        pl.subplot(2,2,4)
+        pl.ylabel("Azimuthal / Cumulative", fontsize=12)
+        pl.plot(angular_radii, azimuthal_average_density / density_profile,
+                label=name)
+        #pl.plot(angular_radii, [1.0] * len(angular_radii), 'k--')
+        pl.xlabel("Radius [arcsec]")
 
     return locals()
 
@@ -699,6 +733,7 @@ pl.figure(nplots*3+10).savefig(paths.fpath("azimuthalaverage_radial_rj_of_TCH3OH
 pl.figure(nplots*3+11).savefig(paths.fpath("radialprofileexponent_of_TCH3OH_massivecores.png"))
 pl.figure(nplots*3+13).savefig(paths.fpath("cumulative_MJ_of_TCH3OH_massivecores.png"))
 pl.figure(nplots*3+14).savefig(paths.fpath("azimuthalaverage_radial_mj_and_mbar_of_TCH3OH_massivecores.png"))
+pl.figure(nplots*3+15).savefig(paths.fpath("compare_cumulative_to_average_density.png"))
 
 fig = pl.figure(nplots*3+8)
 ax = fig.axes[0]

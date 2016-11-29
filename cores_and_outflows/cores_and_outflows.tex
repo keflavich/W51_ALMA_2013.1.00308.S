@@ -828,14 +828,14 @@ Section \ref{sec:methanol}.}
 {fig:hmradprof}{1}{8cm}
 
 
-\Figure{figures/radialprofileexponent_of_TCH3OH_massivecores.png}
-{
-The radial mass profile exponent $\kappa_\rho$ as a function of radius.  The
-`fiducial value' used in the \citet{McKee2003a} model is $\kappa_\rho=1.5$, but
-importantly it is \emph{constant} at $t=0$.  A non-constant $\kappa_\rho$
-indicates that collapse is not self-similar, and the flattening toward smaller
-radii suggests that it is slower than freefall collapse.}
-{fig:kapparho}{1}{12cm}
+% \Figure{figures/radialprofileexponent_of_TCH3OH_massivecores.png}
+% {
+% The radial mass profile exponent $\kappa_\rho$ as a function of radius.  The
+% `fiducial value' used in the \citet{McKee2003a} model is $\kappa_\rho=1.5$, but
+% importantly it is \emph{constant} at $t=0$.  A non-constant $\kappa_\rho$
+% indicates that collapse is not self-similar, and the flattening toward smaller
+% radii suggests that it is slower than freefall collapse.}
+% {fig:kapparho}{1}{12cm}
 
 
 
@@ -1231,24 +1231,26 @@ spread out in W51.
 % The main sources all have the majority of their flux in relatively smooth
 % structures.
 
-\FigureTwo
-{figures/azimuthalaverage_radial_mj_of_TCH3OH_massivecores.png}
-{figures/azimuthalaverage_radial_rj_of_TCH3OH_massivecores.png}
-{The azimuthally averaged (a) Jeans mass and (b) Jeans length surrounding the
+\Figure
+{figures/azimuthalaverage_radial_mj_and_mbar_of_TCH3OH_massivecores.png}
+%{figures/azimuthalaverage_radial_rj_of_TCH3OH_massivecores.png}
+{The azimuthally averaged Jeans mass surrounding the
 three most massive cores.  We used the \methanol temperature from
 \ref{sec:methanol}, Figure \ref{fig:hmradprof}b in both the Jeans mass
 calculation and the dust-based mass determination.
 The density used for the mass calculation is assumed to be distributed
-over spherical shells.
+over spherical shells.  The dashed lines show the measured mean mass per
+$\sim1000$ AU beam at each radius.  Since these masses are lower than
+the local Jeans mass, the gas is stable against fragmentation.
 %The dashed lines show the average mass per $\sim1000$ AU
 %beam 
 %The Jeans mass decreases
 %toward the center at least in part because of the density increase, while the
 %temperature only rises slowly.  
-In (b), the dashed black line shows the $R_J=R$ line.  When $R_J > R$,
-the gas is on average stable against fragmentation on the measured length
-scale.  Since the medium is clearly \emph{not} isothermal or uniform density,
-though, this only shows a rough approximation of the stability.
+%In (b), the dashed black line shows the $R_J=R$ line.  When $R_J > R$,
+%the gas is on average stable against fragmentation on the measured length
+%scale.  Since the medium is clearly \emph{not} isothermal or uniform density,
+%though, this only shows a rough approximation of the stability.
 }
 {fig:mjeans}{1}{10cm}
 
@@ -1338,15 +1340,22 @@ It is not clear whether the mass accumulated around the most massive protostars
 at present came from large radii, as in \citet{Smith2009f}, but it is certainly
 possible.
 
+% TODO: consider dropping kapparho discussion entirely; the measurements are
+% pretty damned unreliable.
 If the turbulent core model is used to describe these sources, a few obvious
 issues arise.  First, the core structure is not a simple power-law with
-$\kappa_\rho=1.5$, as usually assumed \citep{McKee2003a,Zhang2011a}.  Figure
-\ref{fig:kapparho} shows instead that the core is internally flatter and
-externally steeper than this assumption.  Of course, the observations do not
-correspond to the initial conditions, so this comparison could more fairly be
-made with a later `snapshot' from those models.  Second, the more sophisticated
-models of evolution from an initial turbulent core suggest that most of the
-stellar (and accretion) radiation should escape via growing outflow cavities
+$\kappa_\rho=1.5$, as usually assumed
+\citep{McKee2003a,Zhang2011a}\footnote{The parameter $\kappa_\rho$ governs the
+density profile under an assumed power-law configuration, $\rho(r) =
+r^{-\kappa_{\rho}}$}; instead we find that the profile varies across the core,
+steepening from the center to the exterior.
+% Figure \ref{fig:kapparho} shows instead that the core is
+% overall steeper. 
+Of course, the observations do not correspond to the initial
+conditions, so this comparison could more fairly be made with a later
+`snapshot' from those models.  Second, the more sophisticated models of
+evolution from an initial turbulent core suggest that most of the stellar (and
+accretion) radiation should escape via growing outflow cavities
 \citep{Zhang2011a,Zhang2013h,Zhang2014e}.  The circular symmetry seen in the
 hot core around e2e and its lack of correspondence with the outflowing material
 (Figure \ref{fig:outflowonmethanol}) indicates that a large fraction of the
@@ -2064,6 +2073,8 @@ These classifications are set in the `Categories' column of Table
 \ref{tab:photometry}.  They serve as a broad guideline for further
 analysis.   
 
+
+\section{Intersection of cylindrical and spherical annuli in a power-law density profile}
 
 
 \end{document}
