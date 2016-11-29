@@ -400,7 +400,8 @@ def make_rprof(regions, ploteach=False):
         yy,xx = np.indices(cutout.data.shape)
         rr_map = ((xx-cutout.data.shape[1]/2.)**2 + (yy-cutout.data.shape[0]/2.)**2)
         mass_profile = (cumul_rprof * masscalc.mass_conversion_factor(TK=tem_rprof) / u.beam).to(u.M_sun)
-        density_profile = (mass_profile / (4/3.*np.pi*radii**3) / (2.8*u.Da)).to(u.cm**-3)
+        density_profile = (mass_profile / (4/3.*np.pi*radii**3) /
+                           (2.8*u.Da)).to(u.cm**-3)
 
         azimuthal_average_mass = azimuthal_average_flux * masscalc.mass_conversion_factor(TK=tem_rprof) / u.beam
 
@@ -413,11 +414,15 @@ def make_rprof(regions, ploteach=False):
                                     (4/3.*np.pi*(cudiffbins_cm))).to(u.cm**-3)
 
 
-        density_alpha = ((np.log(density_profile[1:].value) -
-                          np.log(density_profile[:-1].value)) /
-                         (np.log(angular_radii[1:]) -
-                          np.log(angular_radii[:-1]))
-                        )
+        # this is not a good approximation for the spherial density profile...
+        # see cores.ipynb.
+        # Really should be this number +1 (so see the +1 below)
+        # Also, negatived...
+        density_alpha = 1-((np.log(density_profile[1:].value) -
+                            np.log(density_profile[:-1].value)) /
+                           (np.log(angular_radii[1:]) -
+                            np.log(angular_radii[:-1]))
+                          )
 
         c_s = ((constants.k_B * tem_rprof*u.K / (2.4*u.Da))**0.5).to(u.km/u.s)
         azimuthal_average_MJ = (np.pi/6. * c_s**3 /
