@@ -403,6 +403,11 @@ def make_rprof(regions, ploteach=False):
         density_profile = (mass_profile / (4/3.*np.pi*radii**3) / (2.8*u.Da)).to(u.cm**-3)
 
         azimuthal_average_mass = azimuthal_average_flux * masscalc.mass_conversion_factor(TK=tem_rprof) / u.beam
+
+        # how accurate is this?  We are measuring mass in cylindrical annuli,
+        # but we are assuming the underlying source structure is spherical
+        # See Cores.ipynb (in notes/, not in this repo) for a detailed
+        # analysis...
         azimuthal_average_density = (azimuthal_average_mass * sqdiffbins_pix /
                                     (2.8*u.Da) /
                                     (4/3.*np.pi*(cudiffbins_cm))).to(u.cm**-3)
@@ -505,11 +510,11 @@ def make_rprof(regions, ploteach=False):
         pl.xlabel("Radius [as]")
 
 
-        # Jeans length
+        # Jeans length (radius = length/2)
         azimuthal_average_RJ = (c_s**1 /
                                 (constants.G**0.5 *
                                  (2.8*u.Da*azimuthal_average_density)**0.5)
-                               ).to(u.au)
+                               ).to(u.au) / 2.
 
         pl.figure(nplots*3+10)
         pl.plot(angular_radii, azimuthal_average_RJ, label=name)
