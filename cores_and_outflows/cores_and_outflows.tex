@@ -1067,11 +1067,11 @@ complex chemical abundances toward these hot cores.
 
 We have not performed a detailed abundance analysis of multiple species, but we
 nonetheless suggest that these sharp-edged bubbles around the hot cores
-represent sublimation zones in which substantial quantities of grain-processed
-materials are released into the gas phase.  The relatively sharp edges likely
-reflect the particular point where the temperature exceeds the sublimation
-temperature for each species \citep{Garrod2006a}, though some species
-may appear at temperatures above or below their sublimation temperature
+represent desorption (sublimation) zones in which substantial quantities of
+grain-processed materials are released into the gas phase.  The relatively
+sharp edges likely reflect the particular point where the temperature exceeds
+the sublimation temperature for each species \citep{Garrod2006a}, though some
+species may appear at temperatures above or below their sublimation temperature
 if they are mixed into ices that have a different sublimation temperature.
 
 Most of the lines identified in the hot cores e2e, e8, and north are also
@@ -1185,16 +1185,26 @@ gave a lower limit on the total heating.
 We examined the temperature structure around the highest-mass cores in Section
 \ref{sec:temperature} and the mass structure in Section \ref{sec:radialmass}.
 We put these together to measure the Jeans mass, $M_J = (\pi / 6) c_s^3
-G^{-3/2} \rho^{-1/2}$, and length, $\lambda_J = c_s G^{-1/2} \rho^{-1/2}$, in
+G^{-3/2} \rho^{-1/2}$
+, and length, $\lambda_J = c_s G^{-1/2} \rho^{-1/2}$, 
+in
 Figure \ref{fig:mjeans}.  These plots show the \emph{radially averaged} $M_J$
-and $R_J=\lambda_J/2$, i.e., they show the Jeans mass and length if the medium
-were of uniform density and temperature at the spherical-shell-average density and
-azimuthal average temperature at each plotted radius.  \todo{Interpretation of these
-plots is not straightforward, though: if we assume the `core' is spherically symmetric,
-the intersection of our telescope beam (which is approximately cylindrical) with the
-core is nontrivial: if the core has a profile $\kappa_\rho < 3$, the observed
-mass will  exceed the spherical shell mass, while if $\kappa_\rho > 3$,
-it will be an underestimate.}
+and $R_J=\lambda_J/2$,
+i.e., they show the Jeans mass if the medium
+were of uniform density and temperature at the spherical-shell-average density
+and azimuthal average temperature at each plotted radius.
+The mass figure shows that the gas is stable on a beam size scale ($\sim1000$ AU),
+but the length figure shows that on larger scales, the gas is unstable to
+fragmentation.  However, on these larger scales, the Jeans length is about
+the same as the hot core size, and the gas density and temperature structure is
+highly non-uniform, violating the key assumptions of the Jeans analysis.  
+% \todo{Interpretation
+% of these plots is not straightforward, though: if we assume the `core' is
+% spherically symmetric, the intersection of our telescope beam (which is
+% approximately cylindrical) with the core is nontrivial: if the core has a
+% profile $\kappa_\rho < 3$, the observed mass will  exceed the spherical shell
+% mass, while if $\kappa_\rho > 3$, it will be an underestimate.}
+
 % The Jeans length
 % is comparable to the hot core size, so no fragmentation should be occurring.
 % Additionally, the Jeans mass is anywhere from 3-10$\times$ higher than the
@@ -1209,6 +1219,13 @@ it will be an underestimate.}
 % The gas throughout these MYSO cores is therefore Jeans-stable and will not
 % spontaneously fragment.
 
+% If the gas at $R\sim5000$ AU is gravitationally unstable but is infalling at a
+% speed $v \gtrsim 8 \kms$, it will reach the central core before a single
+% free-fall time has passed, implying that the material will not successfully
+% fragment.  If the exterior of the core is collapsing at such a high velocity,
+% though, the implied accretion rate is $\sim0.1$ \msun \peryr.  
+
+
 The high gas temperature therefore provides a mechanism for MYSOs to avoid
 the ``fragmentation-induced starvation'' problem discussed by
 \citet{Peters2010a,Peters2010c,Girichidis2012b}.  Apparently, stars above
@@ -1221,9 +1238,10 @@ In our data, within 6500 AU of W51 north, there is only 1 (ALMAmm35), around
 e2e there is the HII region e2w and possibly 2-3 others between 5000 and 6500
 AU, and around e8 there are none.  Admittedly, our data are not very sensitive
 in the areas immediately surrounding these cores because of dynamic
-range limitations, but the higher Jeans mass
-noted above suggests that any fragments that do exist should be more massive
-and therefore more detectable.
+range limitations, and it is not obvious that we should detect cores on such
+a bright and high-column background.  Nonetheless, the lack of compact core
+detections around the most massive sources is consistent with the interpretation
+that fragmentation is suppressed.
 
 Further fragmentation below 1000 AU is possible, e.g., as seen in NGC 6334Imm1
 \citep{Brogan2016a}.  However, in the long baseline data to be presented in a
@@ -1232,14 +1250,15 @@ observed.  A few more sources are detected toward e2e and north and many toward
 e8, but the nature of those more compact ($<200$ AU) sources suggests they are
 protostellar or stellar.  Additionally, unlike the centrally-clustered
 fragmentation seen in NGC 6334Imm1, the fragments that are detected appear
-spread out in W51.
+spread out in W51, indicating they may not be within the larger hot cores but
+somewhere else along the line of sight.
 %not really true
 % The main sources all have the majority of their flux in relatively smooth
 % structures.
 
-\Figure
+\FigureTwo
 {figures/azimuthalaverage_radial_mj_and_mbar_of_TCH3OH_massivecores.png}
-%{figures/azimuthalaverage_radial_rj_of_TCH3OH_massivecores.png}
+{figures/azimuthalaverage_radial_rj_of_TCH3OH_massivecores.png}
 {The azimuthally averaged Jeans mass surrounding the
 three most massive cores.  We used the \methanol temperature from
 \ref{sec:methanol}, Figure \ref{fig:hmradprof}b in both the Jeans mass
@@ -1286,7 +1305,7 @@ regions around each of the massive cores is that they did not.  Heating from
 previous generations of moderate mass stars could have warmed the gas,
 suppressing fragmentation into the sub-solar mass objects typical in local
 clouds until enough gas was present to collapse into a substantially larger
-object.  This toy model is analagous to the `cooperative accretion' mode
+object.  This toy model is analogous to the `cooperative accretion' mode
 suggested by \citet{Zinnecker2007a}, but at a much earlier stage in the cluster
 development when the gas is still molecular and dusty and therefore capable of
 efficient cooling.  It is also similar to the results of \citet{Krumholz2011a},

@@ -15,6 +15,7 @@ import itertools
 import masscalc
 import dust_emissivity
 import reproject
+from label_lines import labelLine
 
 ffiles = """
 selfcal_allspw_mfs.image.pbcor.fits
@@ -271,7 +272,7 @@ def make_rprof(regions, ploteach=False):
 
         pl.figure(nplots*3+5)
         pl.semilogy(angular_radii, azimuthal_average_density_40K, label=name)
-        pl.ylabel("Azimuthally Averaged Density at T=40K [cm$^{-3}$]")
+        pl.ylabel("Azimuthally Averaged Density\nat T=40K [cm$^{-3}$]")
         pl.xlabel("Radius [arcsec]")
         if len(names) < 5:
             pl.legend(loc='best')
@@ -313,7 +314,7 @@ def make_rprof(regions, ploteach=False):
 
         pl.figure(nplots*3+6)
         pl.semilogy(angular_radii, azimuthal_average_MJ_40k, label=name)
-        pl.ylabel("Azimuthally Averaged $M_J$ at $T=40$K")
+        pl.ylabel("Azimuthally Averaged $M_J$\nat $T=40$K")
         pl.xlabel("Radius [arcsec]")
         if len(names) < 5:
             pl.legend(loc='best')
@@ -459,7 +460,7 @@ def make_rprof(regions, ploteach=False):
         # WRONG         alpha=0.75, color=line.get_color())
         #pl.plot(rr_map*pixscale*3600., mass_map, 'k.', alpha=0.25)
         pl.axis([0,1.2,0.0,5.0])
-        pl.ylabel("Azimuthally Averaged $M_J$ at $T(\\mathrm{CH}_3\\mathrm{OH})$ [$M_\\odot$]")
+        pl.ylabel("Azimuthally Averaged $M_J$\nat $T(\\mathrm{CH}_3\\mathrm{OH})$ [$M_\\odot$]")
         pl.xlabel("Radius [arcsec]")
         if len(names) < 5:
             pl.legend(loc='best')
@@ -536,7 +537,7 @@ def make_rprof(regions, ploteach=False):
         pl.plot([0,(7000*u.au/masscalc.distance).to(u.arcsec,
                                                     u.dimensionless_angles()).value],
                 [0,7000], 'k--', alpha=0.5)
-        pl.ylabel("Azimuthally Averaged $R_J$ at $T(\\mathrm{CH}_3\\mathrm{OH})$ [au]")
+        pl.ylabel("Azimuthally Averaged $R_J$\nat $T(\\mathrm{CH}_3\\mathrm{OH})$ [au]")
         pl.xlabel("Radius [arcsec]")
         pl.ylim(0,8000)
         if len(names) < 5:
@@ -575,7 +576,7 @@ def make_rprof(regions, ploteach=False):
 
         pl.figure(nplots*3+12)
         pl.semilogy(angular_radii, azimuthal_average_density, label=name)
-        pl.ylabel("Azimuthally Averaged Density at T=T(CH$_3$OH) [cm$^{-3}$]")
+        pl.ylabel("Azimuthally Averaged Density\nat T=T(CH$_3$OH) [cm$^{-3}$]")
         pl.xlabel("Radius [arcsec]")
         if len(names) < 5:
             pl.legend(loc='best')
@@ -590,17 +591,61 @@ def make_rprof(regions, ploteach=False):
         if ii == len(names) - 1:
             ax = pl.gca()
             ax.set_ylim(1e6, 2e9)
+            ax.set_xlim(0,1.2)
             ax2 = ax.twiny()
-            #ax3 = ax.twinx()
             def tick_function(old_x):
                 newx = (old_x*u.arcsec*masscalc.distance).to(u.au, u.dimensionless_angles()).value
                 return ["%.1f" % z for z in newx]
-            new_tick_locations = np.arange(0,8000,1000)*u.au
+            new_tick_locations = np.arange(0,7000,1000)*u.au
             new_tick_locs_as = (new_tick_locations/masscalc.distance).to(u.arcsec, u.dimensionless_angles())
             ax2.set_xlim(ax.get_xlim())
             ax2.set_xticks(new_tick_locs_as.value)
             ax2.set_xticklabels(tick_function(new_tick_locs_as.value))
             ax2.set_xlabel(r"Radius [au]")
+
+            ax3 = ax.twinx()
+            def tick_function(old_x):
+                newx = ((constants.G * 2.8*u.Da * (old_x*u.cm**-3))**-0.5).to(u.kyr).value
+                return ["%.1f" % z for z in newx]
+            new_tick_locations = [1.3,1.5,2,3,5]*u.kyr
+            new_tick_locs_dens = ((new_tick_locations**2 * constants.G *
+                                   2.8*u.Da)**-1).to(u.cm**-3)
+            ax3.set_ylim(ax.get_ylim())
+            ax3.set_yticks(new_tick_locs_dens.value)
+            ax3.set_yticklabels(tick_function(new_tick_locs_dens.value))
+            ax3.set_ylabel(r"$t_{ff}$ [kyr]")
+
+            # start from 0.05 arcsec
+            xlim = u.Quantity([0.05, ax.get_xlim()[1]], u.arcsec)
+            xax_as = np.linspace(xlim[0], xlim[1], 100)
+            xax_m = (xax_as *
+                     masscalc.distance).to(u.m, u.dimensionless_angles())
+            yax_s = ((ax.get_ylim() * u.cm**-3 * 2.8 * u.Da * constants.G)**-0.5).to(u.s)
+
+            # plot 1 km/s line
+            line_1 = (((xax_m / (7.5*u.km/u.s))**2 * constants.G *
+                       2.8*u.Da)**-1).to(u.cm**-3)
+            line_2 = (((xax_m / (5*u.km/u.s))**2 * constants.G *
+                       2.8*u.Da)**-1).to(u.cm**-3)
+            line_3 = (((xax_m / (10*u.km/u.s))**2 * constants.G *
+                       2.8*u.Da)**-1).to(u.cm**-3)
+
+            line, = pl.plot(xax_as.value, line_1.value, 'k:',
+                            label='7.5 km s$^{-1}$',
+                            zorder=-10)
+            labelLine(line, 0.45, "7.5 km s$^{-1}$")
+            line, = pl.plot(xax_as.value, line_2.value, 'k:',
+                            label='5 km s$^{-1}$',
+                            zorder=-10)
+            labelLine(line, 0.6, "5 km s$^{-1}$")
+            line, = pl.plot(xax_as.value, line_3.value, 'k-.',
+                            label='10 km s$^{-1}$',
+                            zorder=-10)
+            labelLine(line, 0.7, "10 km s$^{-1}$")
+
+            #ax.set_xlim(0,1.2)
+
+
             #ax3.set_ylim(ax.get_ylim())
             #yticks_mass = np.arange(0,6000,1000)
             #yticks_Jy = yticks_mass/masscalc.mass_conversion_factor(TK=40).value
@@ -693,18 +738,18 @@ def make_rprof(regions, ploteach=False):
         pl.figure(nplots*3+15)
         pl.subplot(2,2,1)
         pl.semilogy(angular_radii, azimuthal_average_density, label=name)
-        pl.ylabel("Azimuthally Averaged Density at T=T(CH$_3$OH) [cm$^{-3}$]")
+        pl.ylabel("Azimuthally Averaged Density\nat T=T(CH$_3$OH) [cm$^{-3}$]")
         pl.subplot(2,2,3)
         pl.semilogy(angular_radii, density_profile, label=name)
-        pl.ylabel("Cumulative Average Density at T=T(CH$_3$OH) [cm$^{-3}$]")
+        pl.ylabel("Cumulative Average Density\nat T=T(CH$_3$OH) [cm$^{-3}$]")
         pl.xlabel("Radius [arcsec]")
         pl.subplot(2,2,2)
         pl.plot(azimuthal_average_density, density_profile, label=name)
         pl.plot(sorted(azimuthal_average_density.value),
                 sorted(azimuthal_average_density.value), 'k--')
-        pl.xlabel("Azimuthally Averaged Density at T=T(CH$_3$OH) [cm$^{-3}$]",
+        pl.xlabel("Azimuthally Averaged Density\nat T=T(CH$_3$OH) [cm$^{-3}$]",
                   fontsize=12)
-        pl.ylabel("Cumulative Average Density at T=T(CH$_3$OH) [cm$^{-3}$]",
+        pl.ylabel("Cumulative Average Density\nat T=T(CH$_3$OH) [cm$^{-3}$]",
                   fontsize=12)
         pl.subplot(2,2,4)
         pl.ylabel("Azimuthal / Cumulative", fontsize=12)
