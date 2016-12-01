@@ -243,8 +243,8 @@ cb.set_label('Velocity (km s$^{-1}$)')
 ax2.set_xlim(*xlim)
 ax2.set_ylim(*ylim)
 #ax2.set_xlim(*ax2.get_xlim()[::-1])
-ax2.set_ylabel('Right Ascension')
-ax2.set_xlabel('Declination')
+ax2.set_xlabel('Right Ascension')
+ax2.set_ylabel('Declination')
 ax2.set_aspect(1)
 
 # bigger circle; doesn't fit south sources as well
