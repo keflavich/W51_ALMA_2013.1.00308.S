@@ -130,6 +130,14 @@ e8_100k_total_mass = dust_emissivity.dust.massofsnu(freq, e8_total_flux,
 print("e8 cluster total mass, assuming T={1}: {0}"
       .format(e8_100k_total_mass, 100*u.K))
 
+e8_peak_flux = im[mask].max()*u.Jy
+e8_peak_tb = e8_peak_flux.to(u.K, beam.jtok_equiv(freq))
+
+e8_dustmass = dust_emissivity.dust.massofsnu(freq, e8_peak_flux,
+                                             distance=distance,
+                                             temperature=e8_peak_tb)
+print("e8 (core) dust mass: {0}".format(e8_dustmass))
+
 
 
 
@@ -164,6 +172,15 @@ north_100k_total_mass = dust_emissivity.dust.massofsnu(freq, north_total_flux,
 
 print("north cluster total mass, assuming T={1}: {0}"
       .format(north_100k_total_mass, 100*u.K))
+
+north_peak_flux = im[mask].max()*u.Jy
+north_peak_tb = north_peak_flux.to(u.K, beam.jtok_equiv(freq))
+
+north_dustmass = dust_emissivity.dust.massofsnu(freq, north_peak_flux,
+                                                distance=distance,
+                                                temperature=north_peak_tb)
+print("north (core) dust mass: {0}".format(north_dustmass))
+
 
 
 """
