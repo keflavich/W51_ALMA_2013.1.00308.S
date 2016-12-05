@@ -2,7 +2,9 @@ Workflow for extracting information from regions
 ------------------------------------------------
 
 1. Modify ``cores.reg``
-2. run ``../code/spectral_extraction.py`` (now linked here; note that this requires the full spectral cubes)
+2. run ``../code/spectral_extraction.py`` (now linked here; note that this
+   requires the full spectral cubes: that means it needs to be run on a different
+   filesystem in most cases)
 3. run ``core_velocities.py``
 4. run ``core_photometry.py``
 5. run ``outflow_photometry.py``

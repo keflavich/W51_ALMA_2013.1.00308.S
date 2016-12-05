@@ -113,14 +113,15 @@ spectroscopically identified \citep{Crowther2016a}.  Within our own Galaxy,
 very massive stars have been found in compact, high-mass clusters such as NGC
 3603 and the Arches \citep{Crowther2010a}.  While it is difficult to idenfity
 and characterize the most massive stars in our own galaxy because the UV
-features best capable of establishing their spectral types are extincted away,
+features best capable of establishing their spectral types are 
+extinguished,
 it is still possible to find examples of very massive stars close to their
 birth environments using infrared lines.  \citet{Barbosa2008a} identified an O3
 and an O4 star ($M\gtrsim50$ \msun) within the W51 IRS2 region, demonstrating
 that this region has at some time been capable of forming stars on the high
 end tail of the IMF.  It remains to be seen whether W51 will form any very
-massive stars, but it is  an appropriate environment to investigate
-the process.
+massive stars ($M>100$ \msun), but it is  an appropriate environment to
+investigate the process.
 
 The W51 cloud contains two protocluster regions, IRS2 and e1/e2, which each
 contain $M\gtrsim10^4$ \msun of gas and have large far-infrared luminosities
@@ -272,13 +273,6 @@ We produced spectral image cubes of the lines listed in Tables
 the spectral range [25,30],[80,95] \kms was used to estimate and subtract the
 local continuum. 
 
-\input{linetable0.tex}
-
-\input{linetable1.tex}
-
-\input{linetable2.tex}
-
-\input{linetable3.tex}
 
 
 
@@ -413,8 +407,8 @@ emission $ff<1$ would both imply higher intrinsic temperatures.  The implied
 luminosity, assuming blackbody emission from a spherical beam-filling source,
 is $L = 4\pi r^2 \sigma_{sb} T^4 = 2.3\ee{4} \lsun$.  Since any systematic
 uncertainties imply a higher temperature, this estimate is a lower limit on the
-source luminosity.  Such a luminosity corresponds to a B0.5V, 15 \msun
-star with effective temperature $4\ee{4}$ K \citep[][see
+source luminosity.  Such a luminosity corresponds to a B0.5V, 15 \msun main
+sequence star with effective temperature $4\ee{4}$ K \citep[][see
 Section \ref{sec:stellarproperties} for further discussion of
 stellar types]{Pecaut2013a}.
 % http://www.pas.rochester.edu/~emamajek/EEM_dwarf_UBVIJHK_colors_Teff.txt
@@ -574,8 +568,10 @@ and SO).  Both HCOOH and N$_2$D+ are weak and associated only with the innermost
 e2e core.
 
 The presence of these complex species symmetrically distributed at large
-distances ($r\sim5000$ AU) from the central sources is an independent indication
-of the gas heating provided by these sources.
+distances ($r\sim5000$ AU) from the central sources is an independent
+indication of the gas heating provided by these sources.  The abundance
+increase most likely corresponds to $T\gtrsim85$ K \citep{Green2009a}.
+
 
 \Figure{figures/chemical_m0_slabs_e2.png}
 {Moment 0 maps of the e2 region in 40 different lines over the range 51 to 60
@@ -602,12 +598,12 @@ whereas the opposite is true in e2.
 }{fig:chemmapse8}{1}{18cm}
 
 \Figure{figures/chemical_m0_slabs_north.png}
-{Moment 0 maps of the W51 IRS2 region in 40 different lines over the range 54 to 64
-\kms with continuum subtraction using the 30th percentile emission
-over the ranges 25-40 and 75-90 \kms.  All images are on the same scale, and
-the negative features show absorption against the continuum.  Qualitatively,
- the relative extents of species seem comparable to e8.  The H30$\alpha$ 
- point source is W51 d2.
+{Moment 0 maps of the W51 IRS2 region containing the North core in 40 different
+lines over the range 54 to 64 \kms with continuum subtraction using the 30th
+percentile emission over the ranges 25-40 and 75-90 \kms.  All images are on
+the same scale, and the negative features show absorption against the
+continuum.  Qualitatively, the relative extents of species seem comparable to
+e8.  The H30$\alpha$ point source is W51 d2.
 }{fig:chemmapsnorth}{1}{18cm}
 
 \Figure{figures/chemical_m0_slabs_ALMAmm14.png}
@@ -1134,7 +1130,7 @@ the outflow (e.g., the J=10-9 transition), it is completely dominated by the
 general `extended hot core' emission described in Section
 \ref{sec:chemistrymaps}.
 
-None of the outflows initiate in \uchii or \hchii regions.  While a clear
+None of the outflows originate in \uchii or \hchii regions.  While a clear
 origin cannot be determined for all of the outflows, it is clear that no cm
 continuum sources lay at the base of any.  The lack of molecular outflows
 toward these sources implies that they are accreting at most weakly or are
@@ -1422,46 +1418,52 @@ possible.
 
 % TODO: consider dropping kapparho discussion entirely; the measurements are
 % pretty damned unreliable.
-If the turbulent core model is used to describe these sources, a few obvious
-issues arise.  First, the core structure is not a simple power-law with
-$\kappa_\rho=1.5$, as usually assumed
-\citep{McKee2003a,Zhang2011a}\footnote{The parameter $\kappa_\rho$ governs the
-density profile under an assumed power-law configuration, $\rho(r) =
-r^{-\kappa_{\rho}}$}; instead we find that the profile varies across the core,
-steepening from the center to the exterior.
-% Figure \ref{fig:kapparho} shows instead that the core is
-% overall steeper. 
-Of course, the observations do not correspond to the initial
-conditions, so this comparison could more fairly be made with a later
-`snapshot' from those models.  Second, the more sophisticated models of
-evolution from an initial turbulent core suggest that most of the stellar (and
-accretion) radiation should escape via growing outflow cavities
-\citep{Zhang2011a,Zhang2013h,Zhang2014e}.  The circular symmetry seen in the
-hot core around e2e and its lack of correspondence with the outflowing material
-(Figure \ref{fig:outflowonmethanol}) indicates that a large fraction of the
-stellar or accretion radiation is going directly into the core and not escaping
-along the poles.
+If the turbulent core model is used to describe these sources, a few 
+issues arise.  First, a `cold' turbulent core with the current density configuration
+would have been dramatically unstable to fragmentation on small scales.  It
+therefore is unlikely that a static model, with a single preassembled
+precursor core, is an appropriate initial condition for these forming high-mass
+stars.
+% First, the core structure is not a simple power-law with
+% $\kappa_\rho=1.5$, as usually assumed
+% \citep{McKee2003a,Zhang2011a}\footnote{The parameter $\kappa_\rho$ governs the
+% density profile under an assumed power-law configuration, $\rho(r) =
+% r^{-\kappa_{\rho}}$}; instead we find that the profile varies across the core,
+% steepening from the center to the exterior.
+% % Figure \ref{fig:kapparho} shows instead that the core is
+% % overall steeper. 
+%Of course, the observations do not correspond to the initial
+%conditions, so this comparison could more fairly be made with a later
+%`snapshot' from those models.
+Second, the more sophisticated models of evolution from an initial turbulent
+core suggest that most of the stellar (and accretion) radiation should escape
+via growing outflow cavities \citep{Zhang2011a,Zhang2013h,Zhang2014e}.  The
+circular symmetry seen in the hot core around e2e and its lack of
+correspondence with the outflowing material (Figure
+\ref{fig:outflowonmethanol}) indicates that a large fraction of the stellar or
+accretion radiation is going directly into the core and not escaping along the
+poles.  This failure of the outflow escape valves suggests a modification of
+the core evolution within the turbulent core scenario is needed.
 
 The presence of these large-scale, massive, hot cores raises a few questions
 that are not presently well-addressed by any class of theories.  If the hot
 cores successfully suppress further fragmentation in their envelopes, does that
 imply that these cores will collapse into single stars?  If so, do the cores in
 any way correspond to `initial conditions', or are the cores created by the
-stars that form within them?  This is more than merely a semantical question,
+stars that form within them?  This question is more than merely semantics,
 as the evolutionary progress within the `turbulent core' model depends on the
 initial core structure, and the presence of nearby fragments governs whether
 `competitive accretion' can occur at all.
 
-\todo{this is mostly just spitballing; it probably ought to be removed:}
 There are also some curious implications for `isolated' massive star formation.
 The stars we see forming are clearly not isolated - they are embedded within
 fairly rich clusters of massive stars we can see already, and they are very likely
 to be surrounded by substantial clusters of lower-mass stars.  However, \emph{during
-their formation process}, they may be the only accreting stars around - their
+their formation process}, they may be the only accreting stars within a few thousand
+AU neighborhood - their
 thermal feedback may prevent any neighbors from forming simultaneously.  This
 `enforced isolation' might be a way for massive star formation to proceed
-similarly independent of the size of their parent cloud, assuming they can be
-formed at all.
+similarly independent of the size of the parent cloud.
 
 % methanol_and_outflow.py
 \Figure{figures/outflows_over_methanol_e2e.png}
@@ -1471,7 +1473,8 @@ is circularly symmetric, while the outflow is clearly bipolar.}
 {fig:outflowonmethanol}{1}{10cm}
 
 %\todo{Do I need a plot of gravitational pressure / thermal pressure vs radius?
-%probably yes.}
+%probably yes.}  DONE: This is basically the Jeans plots, even though it's not
+%put in those terms...
 
 %\section{An evolutionary sequence...}
 
@@ -1505,19 +1508,19 @@ is circularly symmetric, while the outflow is clearly bipolar.}
 %\subsection{Possible additional discussion points}
 %-Can we determine whether the luminosity is powered by accretion or fusion?
 
-\subsection{Low-mass star formation in and around the MYSOs}
-\citet[TODO: Cyganowski 2016a][]{Cyganowski2016a} observed a region in which
-high-mass and low-mass star formation is occurring concurrently.  The same
-is almost certainly occurring in W51.  
-\todo{Is there more to say here?}
+% \subsection{Low-mass star formation in and around the MYSOs}
+% \citet[TODO: Cyganowski 2016a][]{Cyganowski2016a} observed a region in which
+% high-mass and low-mass star formation is occurring concurrently.  The same
+% is almost certainly occurring in W51.  
+% \todo{Is there more to say here?}
 
 
 \section{Conclusions}
 \label{sec:conclusion}
 
-We have presented ALMA observations of the high-mass protocluster W51.  We
-examined the three most massive forming stars and the surrounding population of
-forming stars.  
+We have presented ALMA 1.3 mm (226 GHz) continuum and line observations of the
+high-mass protocluster W51.  We examined the three most massive forming stars
+and the surrounding population of forming stars.  
 
 
 The key observational results include:
@@ -1529,9 +1532,18 @@ The key observational results include:
         or provide direct and accurate measurements of the temperature, they
         provide strong enough constraints to draw substantial physical conclusions.
     \item We cataloged and classified 75 continuum sources on the basis of their
-        dust emission, line emission, and morphology.  
+        dust emission, line emission, and morphology.  These sources are
+        prestellar cores, dust-enshrouded protostars, and hypercompact \hii
+        regions.
     \item We identified chemically enhanced regions around high-mass protostars
-        and suggest they are desorption zones
+        and suggest they are radiatively heated zones in which previously
+        frozen-out chemical species have desorbed into the gas phase.
+    \item We measured the temperature and mass structure surrounding the three
+        highest-mass cores, W51 e2e, e8, and North.  All three have masses
+        $M>200$ \msun within $R\lesssim5000$ AU.  They have temperatures
+        inferred from LTE modeling of \methanol $100 \mathrm{K} < T < 600
+        \mathrm{K}$.  Their centers are likely to be optically thick in
+        the dust continuum.
 \end{itemize}
 
 From these observations, we have inferred the following: 
@@ -1542,9 +1554,8 @@ From these observations, we have inferred the following:
     \item Older massive stars, those with surrounding \hii regions, appear
         to have little effect on the temperature of dense gas around them.
         While some are embedded within larger hot cores, they do not appear to
-        be the main
-        heating sources.  Their luminosity must therefore escape without
-        being fully reprocessed into infrared radiation.
+        be the main heating sources.  Their luminosity must therefore escape
+        without being locally reprocessed into infrared radiation.
     \item Heated massive cores surrounding the highest-mass protostars in
         W51 show no evidence of ongoing fragmentation and are warm enough
         to suppress Jeans fragmentation.  Hot massive cores therefore serve as
@@ -1585,6 +1596,17 @@ grant number KR4801/1-1.
 %sims and determine which lines are thick?}
 
 \appendix
+
+\section{Additional observational details}
+In this Appendix, we present the complete list of imaged lines.
+
+\input{linetable0.tex}
+
+\input{linetable1.tex}
+
+\input{linetable2.tex}
+
+\input{linetable3.tex}
 
 \section{A bubble around e5}
 \label{sec:e5bubble}
@@ -2020,15 +2042,18 @@ enough to be collisionally coupled to the dust, and it is optically thick, the
 brightness temperature provides an approximate measurement of the local
 temperature near the $\tau=1$ surface.  If any of these assumptions do not
 hold, $T_{B,max}$ will set a lower limit on the true gas temperature.  Only 
-two mechanisms can push $T_{B,max} > T_{dust}$: nonthermal (maser) emission or
-a dust-emitting region that has a smaller beam filling factor than the
-gas-emitting region.
+two mechanisms can push $T_{B,max} > T_{dust}$: nonthermal (maser) emission, which
+is not known for any of the observed lines nor expected given the reasonable
+$T_B$ observed, or a dust-emitting region that has a smaller beam filling
+factor than the gas-emitting region, which is unlikely when the dust emission
+structure is resolved, as is the case toward most sources.
 
 One potential problem with this approach is if the gas becomes optically thick
-before probing most of the dust.  Some transitions of more abundant molecules,
-e.g., CO and \formaldehyde, are likely to be affected by this issue.  However,
-many of the molecules included in the observations have lower abundances and
-are likely to be optically thin along most of the line of sight.
+before probing most of the dust, in which case spectral line self-absorption
+will occur.  Some transitions of more abundant molecules, e.g., CO and
+\formaldehyde, are likely to be affected by this issue.  However, many of the
+molecules included in the observations have lower abundances, especially in lower-density
+gas, and are likely to be optically thin along most of the line of sight.
 
 Some sources have no detected line emission aside from the molecular cloud
 species CO and \formaldehyde, which are also associated with more diffuse gas

@@ -1,8 +1,11 @@
 from astropy.table import Table, Column
 from astropy import units as u
 from latex_info import latexdict, format_float, round_to_n, strip_trailing_zeros
+import natsort
 
 tbl = Table.read('core_continuum_and_line.ipac', format='ascii.ipac')
+inds = natsort.index_natsorted(tbl['SourceID'])
+tbl = tbl[inds]
 
 
 tbl_towrite = tbl['SourceID', 'RA', 'Dec', 'cont_flux0p2arcsec',
@@ -37,17 +40,17 @@ latexdict['header_start'] = '\label{tab:photometry}'
 latexdict['caption'] = 'Continuum Source IDs and photometry'
 latexdict['tablefoot'] = ("\par\n"
                           "The Categories column consists of three letter codes "
-                          "as described in Section \\ref{sec:contsourcenature}."
+                          "as described in Section \\ref{sec:contsourcenature}.  "
                           "In column 1, "
-                          "\\texttt{F} indicates a free-free dominated source,"
-                          "\\texttt{f} indicates significant free-free contribution,"
-                          "and \\texttt{-} means there is no detected cm continuum."
-                          "In column 2, the peak brightness temperature is used to"
-                          "classify the temperature category."
+                          "\\texttt{F} indicates a free-free dominated source, "
+                          "\\texttt{f} indicates significant free-free contribution, "
+                          "and \\texttt{-} means there is no detected cm continuum.  "
+                          "In column 2, the peak brightness temperature is used to "
+                          "classify the temperature category.  "
                           "\\texttt{H} is `hot' ($T>50$ K), "
                           "\\texttt{C} is `cold' ($T<20$ K), "
                           "and \\texttt{-} is indeterminate (either $20<T<50$K "
-                          "or no measurement)"
+                          "or no measurement).  "
                           "In column 3, \\texttt{c} indicates compact sources, "
                           "and \\texttt{-} indicates a diffuse source."
                          )
