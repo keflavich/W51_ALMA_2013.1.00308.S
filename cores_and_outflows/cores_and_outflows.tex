@@ -624,12 +624,14 @@ rich chemistry.
 \label{sec:ch3ohtem}
 \label{sec:methanol}
 The  chemically enhanced regions appear to be associated with regions of
-elevated gas temperature.  We examine this directly by analyzing
-the excitation of lines for which we have detected multiple transitions with
-significant energy differences.  We do not use \formaldehyde  for this analysis 
-despite its usefulness as a thermometer
-because it is clearly optically thick (self-absorbed) in all lines in the
-hot cores.
+elevated gas temperature.  We examine the temperature structure directly by
+analyzing the excitation of lines for which we have detected multiple
+transitions with significant energy differences.  We do not use \formaldehyde
+for this analysis despite its usefulness as a thermometer because it is clearly
+optically thick (self-absorbed) in all lines in the hot cores.
+This section presents the details of the temperature determination, while 
+the implications of the temperature measurement will be discussed later,
+throughout Section \ref{sec:discussion}.
 
 We produce rotational diagrams for each spatial pixel covering all \methanol lines
 detected at high significance toward at least one position.  The detected lines
@@ -637,7 +639,9 @@ span a range $45 < E_U < 800$ K, allowing robust measurements of the temperature
 assuming the lines are optically thin, in LTE, and the gas temperature is high
 enough to excite the lines.  These conditions are likely to be satisfied in the
 e2e, e8, and North cores, except for the optically thin requirement.  Luckily,
-there are some lines in band that have much lower Einstein $A_{i,j}$ values
+there are some lines in band that have much lower Einstein $A_{i,j}$ values 
+(i.e., \methanol $5_{-4,2} - 6_{-4,3}$ has $A\approx10^{-5.19}$, while
+\methanol $4_{2,2}-3_{1,2}$ has $A\approx10^{-4.33}$)
 but comparable upper-state energy levels, allowing us to probe higher column
 densities than would otherwise be possible.
 
@@ -675,7 +679,8 @@ display significant discrepancies, especially at low J where self-absorption is
 evident.  In Figure \ref{fig:ch3ohe2epeaks}, there is clearly a low-temperature
 component slightly redshifted from the high-J peak that can be seen as a dip
 within the line profile.  The presence of this unmodeled low-temperature
-component renders our \methanol temperature measurements uncertain.  Nevertheless,
+component renders our \methanol temperature measurements uncertain, biasing
+them to be slightly high.  Nevertheless,
 the general trend exhibited by \methanol temperatures matches expectations
 if there is a central heating source.
 
@@ -762,16 +767,22 @@ in this inner region is likely to be underestimated.
 A few features illustrate the effects of thermal radiative feedback on the gas.
 The temperature jump starting inwards of  $r\sim1.5\arcsec$ (8100 AU; Figure
 \ref{fig:ch3ohtemX}b) is
-substantial, though the 100-200 K floor at greater radii is likely artificial as
-the low-J transitions are not consistent with a thermal distribution.
+substantial, though the 100-200 K floor at greater radii is likely
+artificial\footnote{The low-J transitions have significant optical depth
+across the whole region, but in the inner part of the core, the temperature
+measurement is dominated by the high-J transitions, which give a long
+energy baseline for the fit.  In the core exterior, the high-J lines are
+not detected, so the (possibly optically thick) low-J lines determine
+the temperature fit, which results in much lower accuracy and greater
+bias.}.
 There is an abundance enhancement at the inner radii, but it appears to be a
 radial bump rather than a pure increase.  The abundance enhancement is probably real,
 and is approximately a factor of $\sim5-10$.  The inner abundance dip
 is caused by two coincident effects: first, the \methanol column becomes underestimated
-because the \methanol is \emph{self}-absorbed, and second, the dust becomes
-optically thick, blocking additional \methanol emission, though this latter
-effect is somewhat self-regulating since it also decreases the dust column (the
-denominator in the abundance expression).
+because the low-J \methanol is \emph{self}-absorbed, and second, the dust
+becomes optically thick, blocking additional \methanol emission, though this
+latter effect is somewhat self-regulating since it also decreases the inferred
+dust column (the denominator in the abundance expression).
 
 
 % presently, this section adds nothing to the paper-in-progress...
@@ -1163,7 +1174,7 @@ to reprocess stellar photospheric light into the infrared.
 
 \subsection{The accreting stars}
 \label{sec:stellarproperties}
-In Sections \ref{sec:w51e2e} and \ref{sec:w51e8andnorth}, we noted that the
+In Sections \ref{sec:W51e2e} and \ref{sec:w51e8andnorth}, we noted that the
 \emph{lower limit} luminosities for the three most massive cores correspond to
 early B-type photospheres.  Such stars should emit enough radiation to ignite
 luminous compact \hii regions.%, $Q_{lyc}=5\ee{45}$ \pers \citep{Vacca1996a}.
@@ -1207,8 +1218,8 @@ a core heated only by accretion luminosity down to $R=10$ AU and therefore
 gave a lower limit on the total heating. 
 
 We examined the temperature structure around the highest-mass cores in Section
-\ref{sec:temperature} and the mass structure in Section \ref{sec:radialmass}.
-We put these together to measure the Jeans mass, $M_J = (\pi / 6) c_s^3
+\ref{sec:ch3ohtem} and the mass structure in Section \ref{sec:radialmass}.  We
+put these together to measure the Jeans mass, $M_J = (\pi / 6) c_s^3
 G^{-3/2} \rho^{-1/2}$
 , and length, $\lambda_J = c_s G^{-1/2} \rho^{-1/2}$, 
 in
@@ -1217,11 +1228,18 @@ and $R_J=\lambda_J/2$,
 i.e., they show the Jeans mass if the medium
 were of uniform density and temperature at the spherical-shell-average density
 and azimuthal average temperature at each plotted radius.
+
 The mass figure shows that the gas is stable on a beam size scale ($\sim1000$ AU),
-but the length figure shows that on larger scales, the gas is unstable to
+while the length figure shows that on larger scales, the gas is unstable to
 fragmentation.  However, on these larger scales, the Jeans length is about
 the same as the hot core size, and the gas density and temperature structure is
 highly non-uniform, violating the key assumptions of the Jeans analysis.  
+A more sophisticated analysis of the fragmentation propensity of the gas
+in such a core structure would be worthwhile but is beyond the scope of
+this work.  We note more simply that, even if thermal fragmentation occurs, it
+is likely to be greatly reduced compared to models with feedback limited to
+shorter wavelengths (e.g., ionizing radiation) or at a lower overall amplitude.
+
 % \todo{Interpretation
 % of these plots is not straightforward, though: if we assume the `core' is
 % spherically symmetric, the intersection of our telescope beam (which is
@@ -1250,14 +1268,8 @@ highly non-uniform, violating the key assumptions of the Jeans analysis.
 % though, the implied accretion rate is $\sim0.1$ \msun \peryr.  
 
 
-The high gas temperature therefore provides a mechanism for MYSOs to avoid
-the ``fragmentation-induced starvation'' problem discussed by
-\citet{Peters2010a,Peters2010c,Girichidis2012b}.  Apparently, stars above
-some mass are able to heat hundreds of \msun of material surrounding them
-to such a degree that it cannot fragment further, providing an enormous
-reservoir to feed from.
-
-Within this large reservoir, there are few currently-detected fragments.
+Within this large reservoir, there are few currently-detected fragments,
+supporting the conclusions of the Jeans analysis.
 In our data, within 6500 AU of W51 north, there is only 1 (ALMAmm35), around
 e2e there is the HII region e2w and possibly 2-3 others between 5000 and 6500
 AU, and around e8 there are none.  Admittedly, our data are not very sensitive
@@ -1267,15 +1279,20 @@ a bright and high-column background.  Nonetheless, the lack of compact core
 detections around the most massive sources is consistent with the interpretation
 that fragmentation is suppressed.
 
-Further fragmentation below 1000 AU is possible, e.g., as seen in NGC 6334Imm1
-\citep{Brogan2016a}.  However, in the long baseline data to be presented in a
-future work (Goddi et al, in prep), very little additional fragmentation is
-observed.  A few more sources are detected toward e2e and north and many toward
-e8, but the nature of those more compact ($<200$ AU) sources suggests they are
-protostellar or stellar.  Additionally, unlike the centrally-clustered
-fragmentation seen in NGC 6334Imm1, the fragments that are detected appear
-spread out in W51, indicating they may not be within the larger hot cores but
-somewhere else along the line of sight.
+%this discussion doesn't really add anything.
+% Further fragmentation below our resolution limit of $\sim1000$ AU is possible
+% (e.g., as seen in NGC 6334Imm1 \citep{Brogan2016a}), though the Jeans analysis
+% suggests that these smaller scales are \emph{more} thermally stable.
+% In the long baseline data to be presented in a future work (Goddi
+% et al, in prep), very little additional fragmentation is observed.  A few more
+% sources are detected toward e2e and north and many toward e8, but the nature of
+% those more compact ($<200$ AU) sources suggests they are protostellar or
+% stellar; they may represent previously-formed cluster members rather than
+% presently-collapsing cores.  Additionally, unlike the centrally-clustered
+% fragmentation seen in NGC 6334Imm1, the fragments that are detected appear
+% spread out in W51, indicating they may not be within the larger hot cores but
+% somewhere else along the line of sight.
+
 %not really true
 % The main sources all have the majority of their flux in relatively smooth
 % structures.
@@ -1303,19 +1320,33 @@ the local Jeans mass, the gas is stable against fragmentation.
 }
 {fig:mjeans}{1}{10cm}
 
-By suppressing fragmentation in their surroundings, accreting massive stars are
-able to sustain their mass reservoir.  They effectively create their own cores.
-Given the current structure of the observed cores and their marginal stability
-against fragmentation, it is unlikely that these cores could have existed at
+
+
+Given the current structure of the observed cores and their (marginal) stability
+against fragmentation, it is unlikely that they could have existed at
 all without the presence of a central heating source.  Should these $>200$
 \msun cores have been present before high-mass star formation initiated,
 resting at $T\sim20$ K as in a typical molecular cloud, they would have been
 subject to Jeans fragmentation on a much smaller scale and would have formed a
-cluster of smaller stars.  This implies that the mass currently in the core had
+cluster of smaller stars.  This prior instability implies that the mass
+currently in the core had
 to be assembled from larger scales while suppressing or slowing collapse on
 smaller scales, which is essentially the opposite of inside-out collapse.
+In turn, such a core assembly implies that aspects of both the `competitive accretion'
+and `core accretion' models may apply, with mass dumping onto a sink source from large
+physical scales, yet assembling a quasi-stable core.
 
-\subsection{High-mass star formation within dense protoclusters}
+The observed high gas temperature provides a mechanism for MYSOs to avoid the
+``fragmentation-induced starvation'' problem discussed by
+\citet{Peters2010a,Peters2010c} and \citet{Girichidis2012b}.  By suppressing
+fragmentation in their surroundings, accreting massive stars are able to
+sustain their mass reservoir.  They can effectively create their own cores by
+cooking the gas feast that would otherwise form a small cluster into one single
+serving.
+
+
+\subsection{High-mass star formation within dense protoclusters: A cooperative
+accretion scenario}
 Since massive ($M\gtrsim250$ \msun) hot cores presently exist, and they
 appear to be the precursors to a next generation of high mass stars, there
 is a clear route to high-mass star formation given the presence of 
@@ -1347,10 +1378,10 @@ the gas is either exhausted \citep{Ginsburg2016b} or expelled.
 However, some of the assumptions in this scenario contradict our observations.
 If the previous generation were responsible for substantial gas heating, we
 might expect to see warm gas surrounding the \hchii regions.  Instead, we see
-these stars barely interacting with the dense gas.  However, it is possible
+these stars barely interacting with the dense gas.  It is possible, though,
 that these stars are only effective at dense gas heating \emph{before} they ignite
 Lyman continuum emission and blow out cavities, and afterward they are merely
-uninteractive witnesses to continued collapse.
+uninteractive witnesses to continued collapse \citep{Peters2010c}.
 
 The alternatives to this hypothesis are that the initial conditions were
 entirely set within the gas on these current scales, which seems implausible,
