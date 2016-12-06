@@ -6,6 +6,7 @@ from astropy import wcs
 from astropy import coordinates
 from astropy import units as u
 from astropy import constants
+from astropy.extern.six.moves import xrange
 try:
     from .progressbar import ProgressBar
 except:
@@ -158,6 +159,8 @@ def load_apex_cube(apex_filename='data/E-085.B-0964A-2010.apex',
                                        sourcename=sourcename, telescope=xtel,
                                        **kwargs)
 
+    if found_data is None:
+        return None,None,None
     return found_data
 
 def select_apex_data(spectra, headers, indices, sourcename=None,
@@ -196,20 +199,23 @@ def select_apex_data(spectra, headers, indices, sourcename=None,
     #    sourceOK = True
 
     if xscan is not None:
-        xscanOK = np.array([h['SCAN']==xscan for h in headers])
+        xscanOK = np.array([h['SCAN']==xscan.encode('ascii')
+                            for h in headers])
     else:
         xscanOK = True
 
 
     if line is not None:
-        lineOK = np.array([h['LINE']==line for h in headers])
+        lineOK = np.array([h['LINE']==line.encode('ascii')
+                           for h in headers])
     else:
         lineOK = True
 
 
     #xtelOK = True
     if xtel is not None:
-        xtelOK = np.array([h['XTEL'].strip()==xtel for h in headers])
+        xtelOK = np.array([h['XTEL'].strip()==xtel.encode('ascii')
+                           for h in headers])
     else:
         xtelOK = True
 
@@ -226,7 +232,8 @@ def select_apex_data(spectra, headers, indices, sourcename=None,
         tsysOK = True
 
     if rchanrange is not None:
-        rchan = np.array([h['RCHAN'] if 'RCHAN' in h else np.inf for h in headers])
+        rchan = np.array([h['RCHAN'] if 'RCHAN'.encode('ascii') in h else np.inf
+                          for h in headers])
         rchanOK = (rchan>rchanrange[0]) & (rchan<rchanrange[1])
     else:
         rchanOK = True
@@ -440,7 +447,6 @@ def add_apex_data(data, hdrs, gal, cubefilename, noisecut=np.inf,
     def data_iterator(data=data, continuum=False, fsw=False):
         shape0 = data.shape[0]
         for ii in xrange(shape0):
-        #for ii in xrange(1000):
             yield data[ii,:]
 
     # as defined on http://www.apex-telescope.org/heterodyne/shfi/het230/lines/
@@ -492,7 +498,7 @@ def add_pipeline_parameters_to_file(fileprefix, pipeline_type, **kwargs):
 
     f = fits.open(fileprefix+".fits")
     f[0].header['PIPECALL'] = (pipeline_type,'build_cube function called')
-    for ii,(k,v) in enumerate(kwargs.iteritems()):
+    for ii,(k,v) in enumerate(kwargs.items()):
         try:
             kw = ('P{pipetype:_<4s}K{n:02d}'.format(n=ii,
                                                    pipetype=pipeline_type[:4])
@@ -775,7 +781,11 @@ def diagplot(data, tsys, noise, dataset, diagplotdir, freq=None, mask=None, ext=
         pl.clf()
     if freq is None:
         freq = np.arange(data.shape[1])
-    pl.plot(freq, data.mean(axis=0))
+
+    data_toplot = data.mean(axis=0)
+    assert data_toplot.shape == freq.shape
+
+    pl.plot(freq, data_toplot)
     if mask is not None:
         # Avoid the incorrect appearance of interpolation by masking out
         # intermediate values
@@ -1085,7 +1095,10 @@ def make_12CO_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
                           datasets_H2CO_13CO_OS = ["/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG02/E-098.C-0421A-2016-2016-08-01",
                                                    "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG03/E-098.C-0421A-2016-2016-08-02",
                                                    "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG09/E-098.C-0421A-2016-2016-08-08",
-                                                   "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG10/E-098.C-0421A-2016-2016-08-09"]
+                                                   "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG10/E-098.C-0421A-2016-2016-08-09",
+                                                   "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC02/E-098.C-0421A-2016-2016-12-01",
+                                                   "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC04/E-098.C-0421A-2016-2016-12-03",
+                                                  ]
                          ):
 
     make_blanks_merge(os.path.join(mergepath,mergefile1),
@@ -1106,11 +1119,14 @@ def make_12CO_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
                       )
 
 def make_232_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
-                          mergefile1 = 'W51_232GHz_merge',
-                          datasets_H2CO_13CO_OS = ["/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG02/E-098.C-0421A-2016-2016-08-01",
-                                                   "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG03/E-098.C-0421A-2016-2016-08-02",
-                                                   "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG09/E-098.C-0421A-2016-2016-08-08",
-                                                   "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG10/E-098.C-0421A-2016-2016-08-09"]
+                       mergefile1='W51_232GHz_merge',
+                       datasets_H2CO_13CO_OS=["/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG02/E-098.C-0421A-2016-2016-08-01",
+                                              "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG03/E-098.C-0421A-2016-2016-08-02",
+                                              "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG09/E-098.C-0421A-2016-2016-08-08",
+                                              "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG10/E-098.C-0421A-2016-2016-08-09",
+                                              "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC02/E-098.C-0421A-2016-2016-12-01",
+                                              "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC04/E-098.C-0421A-2016-2016-12-03",
+                                             ]
                          ):
 
     make_blanks_merge(os.path.join(mergepath,mergefile1),
@@ -1131,11 +1147,9 @@ def make_H2CO_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
                         mergefile1='W51_217GHz_merge',
                         datasets_H2CO_13CO=["/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG02/E-098.C-0421A-2016-2016-08-01",
                                             "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG03/E-098.C-0421A-2016-2016-08-02",
+                                            "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC04/E-098.C-0421A-2016-2016-12-03",
                                            ]
                          ):
-    datasets_H2CO_13CO = ["/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG02/E-098.C-0421A-2016-2016-08-01",
-                          "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG03/E-098.C-0421A-2016-2016-08-02",
-                         ]
 
     make_blanks_merge(os.path.join(mergepath,mergefile1),
                       restfreq=218.2218*u.GHz,
@@ -1156,11 +1170,9 @@ def make_218_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
                         mergefile1='W51_218GHz_merge',
                         datasets_H2CO_13CO=["/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG02/E-098.C-0421A-2016-2016-08-01",
                                             "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG03/E-098.C-0421A-2016-2016-08-02",
+                                            "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC04/E-098.C-0421A-2016-2016-12-03",
                                            ]
                          ):
-    datasets_H2CO_13CO = ["/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG02/E-098.C-0421A-2016-2016-08-01",
-                          "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG03/E-098.C-0421A-2016-2016-08-02",
-                         ]
 
     make_blanks_merge(os.path.join(mergepath,mergefile1),
                       restfreq=218.2218*u.GHz,
@@ -1433,7 +1445,7 @@ def make_smooth_noise(noisefilename, outfilename, kernelwidth=2, clobber=True):
 
 def make_line_mask(freqarr, lines=None):
     mask = np.ones(freqarr.size, dtype='bool')
-    for ln,lf in lines.iteritems():
+    for ln,lf in lines.items():
         bw = bandwidths[ln]
         wh = (lf*1e3-bw < freqarr) & (lf*1e3+bw > freqarr)
         mask[wh] = False
@@ -1476,7 +1488,7 @@ def do_extract_subcubes(outdir=None, merge_prefix='APEX_H2CO_merge',
             log.info("File {0} does not exist.  Skipping.".format(cubefilename))
             continue
 
-        for line,freq in lines.iteritems():
+        for line,freq in lines.items():
             if frange is not None:
                 if freq<frange[0] or freq>frange[1]:
                     log.info("Skipping line {0}".format(line))
@@ -1836,16 +1848,60 @@ def do_2014_merge(datasets=None,
         baseline_cube(os.path.join(mergepath,mergefile+".fits"),
                       polyspline='spline', mask_level_sigma=5)
 
-def get_info_2014(datapath='/Users/adam/work/h2co/apex/april2014/',
-                  datasets=None):
+def get_info_metadata(datapath="/Volumes/passport/w51-apex/raw/",
+                      datasets=None,
+                      source=None,
+                      exclude_objects=['TCAL', 'TSYS', 'SKY', 'HOT', 'COLD', 'TREC'],
+                     ):
     info = {}
+
+    if datasets is None:
+        datasets = glob.glob(os.path.join(datapath,"*","*.apex"))
+
     for dataset in datasets:
-        apex_filename=os.path.join(datapath,dataset)+".apex"
-        spectra,headers,indices = load_apex_cube(apex_filename)
-        info[dataset] = set([h['OBJECT'] for h in headers])
-        log.info("{0}:{1}".format(dataset, str(info[dataset])))
+        apex_filename=os.path.join(datapath,dataset)
+        if apex_filename[-5:] != '.apex':
+            apex_filename = apex_filename+".apex"
+        spectra,headers,indices = load_apex_cube(apex_filename, sourcename=source)
+        if spectra is None:
+            log.info("{0}: no hits for {1}".format(dataset, source))
+        else:
+            info[dataset] = set([(h['OBJECT'], h['LINE'], h['XTEL'])
+                                 for h in headers
+                                 if not any(x.encode('ascii') in h['OBJECT'] for x in exclude_objects)
+                                ])
+            log.info("{0}:{1}".format(dataset, str(info[dataset])))
 
     return info
+"""
+{'/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG02/E-098.C-0421A-2016-2016-08-01.apex': {
+  (b'W51', b'H2CO_+_13CO ', b'AP-H201-X201'),
+  (b'W51', b'H2CO_+_13CO ', b'AP-H201-X202'),
+  (b'W51', b'H2CO_13CO_OS', b'AP-H201-X201'),
+  (b'W51', b'H2CO_13CO_OS', b'AP-H201-X202')},
+ '/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG03/E-098.C-0421A-2016-2016-08-02.apex': {
+  (b'W51', b'H2CO_+_13CO ', b'AP-H201-X201'),
+  (b'W51', b'H2CO_+_13CO ', b'AP-H201-X202'),
+  (b'W51', b'H2CO_13CO_OS', b'AP-H201-X201'),
+  (b'W51', b'H2CO_13CO_OS', b'AP-H201-X202')},
+ '/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG04/E-098.C-0421A-2016-2016-08-03.apex': {
+  (b'W51', b'H2CO_+_13CO ', b'AP-H201-X201'),
+  (b'W51', b'H2CO_+_13CO ', b'AP-H201-X202')},
+ '/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG09/E-098.C-0421A-2016-2016-08-08.apex': {
+  (b'W51', b'H2CO_13CO_OS', b'AP-H201-X201'),
+  (b'W51', b'H2CO_13CO_OS', b'AP-H201-X202')},
+ '/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG10/E-098.C-0421A-2016-2016-08-09.apex': {
+  (b'W51', b'H2CO_13CO_OS', b'AP-H201-X201'),
+  (b'W51', b'H2CO_13CO_OS', b'AP-H201-X202')},
+ '/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC02/E-098.C-0421A-2016-2016-12-01.apex': {
+  (b'W51', b'H2CO_13CO_OS', b'AP-H201-X201'),
+  (b'W51', b'H2CO_13CO_OS', b'AP-H201-X202')},
+ '/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC04/E-098.C-0421A-2016-2016-12-03.apex': {
+  (b'W51', b'H2CO_+_13CO ', b'AP-H201-X201'),
+  (b'W51', b'H2CO_+_13CO ', b'AP-H201-X202'),
+  (b'W51', b'H2CO_13CO_OS', b'AP-H201-X201'),
+  (b'W51', b'H2CO_13CO_OS', b'AP-H201-X202')}}
+"""
 
 
 def identify_scans_fromcoords(gal):
