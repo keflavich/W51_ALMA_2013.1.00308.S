@@ -24,6 +24,7 @@ import scipy.linalg
 import time
 from astropy.time import Time
 import mpl_plot_templates
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 import pylab as pl
 import os
 import errno
@@ -372,6 +373,7 @@ def process_data(data, gal, hdrs, dataset, scanblsub=False,
 
     # pre-flagging diagnostic
     diagplot(dsub, tsys, noise, os.path.basename(dataset)+"_preflag", diagplotdir, freq=freq,
+             noisefactor=noisefactor,
              mask=mask, scans=scans, theoretical_rms=theoretical_rms, **kwargs)
 
     if np.count_nonzero(bad) == bad.size:
@@ -389,11 +391,14 @@ def process_data(data, gal, hdrs, dataset, scanblsub=False,
     log.info("Flagged out %i bad values (%0.1f%%)." % (bad.sum(),bad.sum()/float(bad.size)))
 
     diagplot(dsub, tsys, noise, os.path.basename(dataset), diagplotdir, freq=freq, mask=mask,
-             theoretical_rms=theoretical_rms[~bad], scans=scans, **kwargs)
+             theoretical_rms=theoretical_rms[~bad], scans=scans,
+             noisefactor=noisefactor,
+             **kwargs)
     for xscan in np.unique(obsids):
         match = obsids == xscan
         diagplot(dsub[match], tsys[match], noise[match],
-                 os.path.basename(dataset)+"_obs%i" % xscan, diagplotdir, freq=freq, mask=mask,
+                 os.path.basename(dataset)+"_obs%i" % xscan, diagplotdir,
+                 freq=freq, mask=mask, noisefactor=noisefactor,
                  theoretical_rms=theoretical_rms[~bad][match], **kwargs)
 
     return dsub,gal,hdrs
@@ -636,11 +641,8 @@ def make_blanks_freq(gal, header, cubefilename, clobber=True, pixsize=7.2*u.arcs
 def make_blanks_merge(cubefilename, clobber=True,
                       width=1.0*u.GHz, lowest_freq=None, pixsize=7.2*u.arcsec,
                       restfreq=218222.192*u.MHz, cd_kms=0.25):
-    # total size is 2.3 x 0.4 degrees
-    # 1150x
-    # center is 0.55 -0.075
-    naxis1 = 100
-    naxis2 = 100
+    naxis1 = 64
+    naxis2 = 64
     # beam major/minor axis are the same, gaussian for 12m telescope
     # we convolved with a 10" FWHM Gaussian kernel, so we add that in quadrature
     bmaj_ = (1.22*restfreq.to(u.m,u.spectral())/(12*u.m))*u.radian
@@ -648,7 +650,7 @@ def make_blanks_merge(cubefilename, clobber=True,
     cd3 = ((cd_kms*u.km/u.s)/constants.c * restfreq).to(u.Hz).value
     naxis3 = int(np.ceil(((width / (restfreq) * constants.c) / (cd_kms*u.km/u.s)).decompose().value))
 
-    cubeheader, flatheader = makecube.generate_header(49.49, -0.37,
+    cubeheader, flatheader = makecube.generate_header(49.486721, -0.37793872,
                                                       naxis1=naxis1,
                                                       naxis2=naxis2,
                                                       naxis3=naxis3,
@@ -726,8 +728,9 @@ def data_diagplot(data, dataset, diagplotdir, ext='png', newfig=False,
         print(ex)
     return axis
 
-def diagplot(data, tsys, noise, dataset, diagplotdir, freq=None, mask=None, ext='png',
-             newfig=False, theoretical_rms=None, **kwargs):
+def diagplot(data, tsys, noise, dataset, diagplotdir, freq=None, mask=None,
+             noisefactor=None, ext='png', newfig=False, theoretical_rms=None,
+             **kwargs):
     """
     Generate a set of diagnostic plots
 
@@ -757,9 +760,10 @@ def diagplot(data, tsys, noise, dataset, diagplotdir, freq=None, mask=None, ext=
         pl.clf()
     pl.subplot(2,1,1)
     pl.plot(tsys,np.arange(tsys.size),alpha=0.5)
+    pl.plot(tsys,np.arange(tsys.size),alpha=0.5,linestyle='none',marker='.')
     pl.xlabel("TSYS")
     pl.ylabel("Integration")
-    pl.subplot(2,1,2)
+    axis = pl.subplot(2,1,2)
     pl.plot(tsys, noise, '.',alpha=0.5)
     if theoretical_rms is not None:
         pl.plot(tsys, theoretical_rms, 'k--', zorder=-1, label='Thry RMS')
@@ -768,9 +772,27 @@ def diagplot(data, tsys, noise, dataset, diagplotdir, freq=None, mask=None, ext=
         leg = pl.legend(loc='best')
         leg.get_frame().set_alpha(0.1)
         leg.get_frame().set_facecolor('none')
+        if noisefactor is not None:
+            flagged = noise > (theoretical_rms*noisefactor)
+            pl.plot(tsys[flagged], noise[flagged], 'r.', alpha=0.5)
     pl.xlabel("TSYS")
     pl.ylabel("Noise")
-    figfilename = os.path.join(diagplotdir, os.path.basename(dataset)+"_tsys."+ext)
+
+    divider = make_axes_locatable(axis)
+    divider.set_aspect(False)  # MAGIC!!!!! False good, True bad, nothing BAD.  Wtf?
+    #divider.get_horizontal()[0]._aspect=0.5
+    
+    right = divider.append_axes("right", size="15%", pad=0.05)
+    h_,l_,p_ = right.hist(noise, bins=30, orientation='horizontal')
+    pl.hlines(theoretical_rms, 0, h_.max(), 'k--', zorder=-1)
+    pl.hlines(theoretical_rms*3, 0, h_.max(), 'k.-', zorder=-1)
+    pl.hlines(theoretical_rms*5, 0, h_.max(), 'k:', zorder=-1)
+    right.set_xlim(0, h_.max()*1.001)
+    right.set_ylim(*axis.get_ylim())
+
+
+    figfilename = os.path.join(diagplotdir,
+                               os.path.basename(dataset)+"_tsys."+ext)
     checkdir_makedir(figfilename)
     pl.savefig(figfilename,bbox_inches='tight')
 
