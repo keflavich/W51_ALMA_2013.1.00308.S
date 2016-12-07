@@ -1,12 +1,3 @@
-%\renewcommand\ion[2]{#1$\;${%
-%\ifx\@currsize\normalsize\small \else
-%\ifx\@currsize\small\footnotesize \else
-%\ifx\@currsize\footnotesize\scriptsize \else
-%\ifx\@currsize\scriptsize\tiny \else
-%\ifx\@currsize\large\normalsize \else
-%\ifx\@currsize\Large\large
-%\fi\fi\fi\fi\fi\fi
-%\rmfamily\@Roman{#2}}\relax}% 
 
 \newcommand{\paa}{Pa\ensuremath{\alpha}}
 \newcommand{\brg}{Br\ensuremath{\gamma}}
@@ -44,12 +35,14 @@
 \newcommand{\Rtwo}{\ensuremath{\para~S_{\nu}(\threetwotwo) / S_{\nu}(\threetwoone)}\xspace}
 \newcommand{\JKaKc}{\ensuremath{J_{K_a K_c}}}
 \newcommand{\water}{H$_{2}$O\xspace}		%  H2O
-\newcommand{\feii}{\ion{Fe}{2}}		%  FeII
+\newcommand{\feii}{\ion{Fe}{ii}\xspace}		%  FeII
+
 \newcommand{\uchii}{\ion{UCH}{ii}\xspace}
 \newcommand{\UCHII}{\ion{UCH}{ii}\xspace}
 \newcommand{\hchii}{\ion{HCH}{ii}\xspace}
 \newcommand{\HCHII}{\ion{HCH}{ii}\xspace}
 \newcommand{\hii}{\ion{H}{ii}\xspace}
+
 \newcommand{\hi}{H~{\sc i}\xspace}
 \newcommand{\Hii}{\hii}
 \newcommand{\HII}{\hii}
@@ -127,9 +120,9 @@
 \newcommand\nbolocat{8552\xspace}
 \newcommand\nbolocatnew{548\xspace}
 \newcommand\nbolocatnonew{8004\xspace} % = nbolocat-nbolocatnew
-\renewcommand\arcdeg{\mbox{$^\circ$}\xspace} 
-\renewcommand\arcmin{\mbox{$^\prime$}\xspace} 
-\renewcommand\arcsec{\mbox{$^{\prime\prime}$}\xspace} 
+%\renewcommand\arcdeg{\mbox{$^\circ$}\xspace} 
+%\renewcommand\arcmin{\mbox{$^\prime$}\xspace} 
+%\renewcommand\arcsec{\mbox{$^{\prime\prime}$}\xspace} 
 
 \newcommand{\todo}[1]{\textcolor{red}{#1}}
 \newcommand{\okinfinal}[1]{{#1}}
@@ -403,40 +396,40 @@
 %\footnotetext[#1]{#2}
 %}
 
-\def\LongTable#1#2#3#4#5#6#7#8{
-% required to get tablenotemark to work: http://www2.astro.psu.edu/users/stark/research/psuthesis/longtable.html
-\renewcommand{\thefootnote}{\alph{footnote}}
-\begin{longtable}{#1}
-\caption[#2]{#2}
-\label{#4} \\
-
- \\
-\hline 
-#3 \\
-\hline
-\endfirsthead
-
-\hline
-#3 \\
-\hline
-\endhead
-
-\hline
-\multicolumn{#8}{r}{{Continued on next page}} \\
-\hline
-\endfoot
-
-\hline 
-\endlastfoot
-#7 \\
-
-#5
-\hline
-#6 \\
-
-\end{longtable}
-\renewcommand{\thefootnote}{\arabic{footnote}}
-}
+% \def\LongTable#1#2#3#4#5#6#7#8{
+% % required to get tablenotemark to work: http://www2.astro.psu.edu/users/stark/research/psuthesis/longtable.html
+% \renewcommand{\thefootnote}{\alph{footnote}}
+% \begin{longtable}{#1}
+% \caption[#2]{#2}
+% \label{#4} \\
+% 
+%  \\
+% \hline 
+% #3 \\
+% \hline
+% \endfirsthead
+% 
+% \hline
+% #3 \\
+% \hline
+% \endhead
+% 
+% \hline
+% \multicolumn{#8}{r}{{Continued on next page}} \\
+% \hline
+% \endfoot
+% 
+% \hline 
+% \endlastfoot
+% #7 \\
+% 
+% #5
+% \hline
+% #6 \\
+% 
+% \end{longtable}
+% \renewcommand{\thefootnote}{\arabic{footnote}}
+% }
 
 \def\TallFigureTwo#1#2#3#4#5#6{
 \begin{figure*}[htp]

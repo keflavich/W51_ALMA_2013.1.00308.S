@@ -1,4 +1,4 @@
-\documentclass{aa}
+\documentclass{emulateapj}
 \input{preface}
 \begin{document}
 %\title{Cores and Outflows and Chemistry in the W51 Protoclusters}
@@ -8,7 +8,8 @@
 \authorrunning{Ginsburg et al}
 \input{authors}
 
-\abstract{
+%\abstract{
+\begin{abstract}
     We present ALMA observations of a $3\times1.5$ pc area in the W51
     high-mass star-forming complex.  We identify dust continuum sources and
     measure the gas and dust temperature through both rotational diagram
@@ -23,10 +24,14 @@
     The extended warm gas provides evidence that, during the process of
     forming, these high-mass stars heat a large volume (and correspondingly
     large mass) of gas in their surroundings, suppressing fragmentation and
-    therefore keepi a large reservoir available to feed from.  By contrast, the
-    more mature massive stars that illuminate compact \hii regions have little
-    effect on ther surrounding dense gas, hinting that these sources have
-    completed most or all of their accretion.  
+    therefore keeping a large reservoir available to feed from.  By contrast,
+    the more mature massive stars that illuminate compact \hii regions have
+    little effect on ther surrounding dense gas, suggesting that these main
+    sequence stars have completed most or all of their accretion.  
+    The high luminosity of the massive protostars, combined with a lack of
+    centimeter continuum from these sources, implies that they are not on
+    the main sequence while they accrete the majority of the mass; instead,
+    they may be bloated and cool.
     
     %These warm cores are presently stable against Jeans
     %fragmentation, but at their current density and lower temperature, they
@@ -43,7 +48,7 @@
     %(The observations provide a solution
     %to the `fragmentation-induced starvation' scenario, which might otherwise have
     %limited massive star growth even further than direct feedback.)
-}
+\end{abstract}
 
 \ifpdf
 \maketitle
@@ -454,7 +459,7 @@ An upper limit on the radio continuum emission from W51e2e is $S_{14.5 GHz} <
 0.6$ mJy/beam in a FWHM=$0.34\arcsec$ beam, or $T_{B,max} < 30$ K
 \citep{Ginsburg2016b}.  Assuming emission from an optically thick \hii region
 with $T_e = 8500$ K \citep{Ginsburg2015a}, the upper limit on the emitting
-radius is $R_{\hii} < 110 AU$.  Similar limits are obtained from other
+radius is $R(\hii) < 110 AU$.  Similar limits are obtained from other
 frequencies in those data.  The free-free contribution to the millimeter
 flux is therefore negligible, and the central source is unlikely to be
 ionizing.  Limits on the stellar properties are further discussed in
@@ -1144,7 +1149,7 @@ continuum sources lay at the base of any.  The lack of molecular outflows
 toward these sources implies that they are accreting at most weakly or are
 accreting (and ejecting) only atomic or ionized material.
 
-\subsection{The accreting phase of high-mass star formation}
+\subsection{The accreting phase of high-mass star formation is not ionized}
 \label{sec:accretionandoutflows}
 The strong outflows observed around the highest-mass forming stars, e2e, e8,
 and north are clear indications of ongoing accretion onto these sources.
@@ -1188,26 +1193,43 @@ In Sections \ref{sec:W51e2e} and \ref{sec:w51e8andnorth}, we noted that the
 early B-type photospheres.  Such stars should emit enough radiation to ignite
 luminous compact \hii regions.%, $Q_{lyc}=5\ee{45}$ \pers \citep{Vacca1996a}.
 The upper limits on the presence of such an \hii region are constraining, with
-$R<100 AU$, which is consistent with the presence of these stars, but
-inconsistent with any hotter or more luminous (spectral type $<$B0.5V).
-If the stellar luminosities are an order of magnitude or more higher,
-which is possible given the low-resolution constraints on the bolometric luminosity
+$R<100 AU$, which is consistent with the presence of late-type massive
+main-sequence stars, but inconsistent with any hotter or more luminous
+(spectral type $<$B0.5V).
+If the stellar luminosities are an order of magnitude or more higher, which is
+possible given the low-resolution constraints on the bolometric luminosity
 \citep{Ginsburg2016a,Sievers1991a}
 and likely if a large fraction of the stellar radiation is escaping along outflow
 cavities \citep{Kuiper2012a,Zhang2013h}, the luminosity would be too large and
 the UV radiation too small to be consistent with a main-sequence OB star.
 
-Since we can provide only upper limits on the UV radiation, it is possible
-that there is none at all.  The very large mass reservoir suggests that high
+Since we can provide only upper limits on the UV radiation, it is possible that
+there is none at all.  The very large mass reservoir suggests that high
 accretion rates are possible, and the bright molecular outflows show that
-accretion is proceeding vigorously (though we have not quantified the rate).  
-Rapid accretion, and in particular rapid and \emph{variable} accretion,
-can change the properties of the underlying star, bloating the star
-and reducing its effective photospheric temperature \citep{Hosokawa2009a,
-Smith2012h, Hosokawa2016a}.  Such stars can achieve radii $R\gtrsim200 \rsun
-\sim 1$ AU while retaining photospheric temperatures $T\lesssim5000$ K.
-\todo{We hope to explore this possibility further in a
-subsequent paper.}
+accretion is proceeding vigorously (though we have not quantified the rate).
+Rapid accretion, and in particular rapid and \emph{variable} accretion, can
+change the properties of the underlying star, bloating the star and reducing
+its effective photospheric temperature \citep{Hosokawa2009a, Smith2012h,
+Hosokawa2016a}.  Such stars can achieve radii $R\gtrsim200 \rsun \sim 1$ AU
+while retaining photospheric temperatures $T\lesssim5000$ K.  It may be
+possible to explore this scenario in more detail with higher-resolution and
+lower-frequency data.
+
+An alternative possibility is that the high accretion rates have created
+a quenched \hii region \citep{Walmsley1995b,Osorio1999a,Keto2006a}.
+In the spherically symmetric version of this scenario, the accretion rate
+is faster than the ionization rate, such that there is always fresh neutral
+material to ionize at the surface of the star.  The critical rate for
+\hii region quenching is very small, $\odot{M} \sim 4\ee{-6}$ \msun \peryr
+for a B0 star, so it is very likely that, even if the star has a hot
+photosphere, it is not capable of driving an expanding \hii region.
+The main reason to disregard this scenario is the assumption of spherical
+symmetry: if the accretion is proceeding via a disk, there ought to be a
+substantial fraction of the stellar surface that is not directly accreting and
+therefore is not quenched.  If there is a disk and an ionizing photosphere,
+there should be an expanding bipolar \hii region \citep{Keto2006a}. 
+The lack of such a feature suggests that the stellar photosphere is not 
+emitting ionizing photons.
 
 \subsection{Fragmentation: Jeans analysis}
 \label{sec:fragmentation}

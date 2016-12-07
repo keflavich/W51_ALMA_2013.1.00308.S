@@ -1,0 +1,50 @@
+\newcommand{\titlerunning}[1]{\shorttitle{#1}}
+\newcommand{\authorrunning}[1]{\shortauthors{#1}}
+
+\newcommand*\inst[1]{\unskip\hbox{\@textsuperscript{\normalfont$#1$}}}
+
+%\newcount\aa@nbinstitutes
+%
+%\newcounter{aa@institutecnt}
+
+\newcommand*\institute[1]{
+  \begingroup
+    \let\and\relax
+    \renewcommand*\inst[1]{}%
+    \renewcommand*\thanks[1]{}%
+    \renewcommand*\email[1]{}%
+    %\let\@@protect\protect
+    %\let\protect\@unexpandable@protect
+    %\global\aa@nbinstitutes \z@
+    %\expandafter\aa@cntinstitutes\aa@institute\and\aa@nil\and
+    %\restore@protect
+  \endgroup
+  \newcommand{\institutions}{#1}
+}%
+
+
+%\renewcommand{\abstract}[1]{
+%\begin{abstract}
+%    #1
+%\end{abstract}
+%}
+
+%\renewcommand\ion[2]{#1$\;${%
+%\ifx\@currsize\normalsize\small \else
+%\ifx\@currsize\small\footnotesize \else
+%\ifx\@currsize\footnotesize\scriptsize \else
+%\ifx\@currsize\scriptsize\tiny \else
+%\ifx\@currsize\large\normalsize \else
+%\ifx\@currsize\Large\large
+%\fi\fi\fi\fi\fi\fi
+%\rmfamily\@Roman{#2}}\relax}% 
+%
+%\renewcommand{ion}[2]{#1}{#2}
+
+\renewcommand{\ion}[2]{\textup{#1\,\textsc{\lowercase{#2}}}}
+
+%\newcommand{\uchii}{\ensuremath{\mathrm{\ion{UCH}{2}}}\xspace}
+%\newcommand{\UCHII}{\ensuremath{\mathrm{\ion{UCH}{2}}}\xspace}
+%\newcommand{\hchii}{\ensuremath{\mathrm{\ion{HCH}{2}}}\xspace}
+%\newcommand{\HCHII}{\ensuremath{\mathrm{\ion{HCH}{2}}}\xspace}
+%\newcommand{\hii}  {\ensuremath{\mathrm{\ion{H}{2}}}\xspace}

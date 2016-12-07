@@ -641,8 +641,8 @@ def make_blanks_freq(gal, header, cubefilename, clobber=True, pixsize=7.2*u.arcs
 def make_blanks_merge(cubefilename, clobber=True,
                       width=1.0*u.GHz, lowest_freq=None, pixsize=7.2*u.arcsec,
                       restfreq=218222.192*u.MHz, cd_kms=0.25):
-    naxis1 = 64
-    naxis2 = 64
+    naxis1 = 88
+    naxis2 = 88
     # beam major/minor axis are the same, gaussian for 12m telescope
     # we convolved with a 10" FWHM Gaussian kernel, so we add that in quadrature
     bmaj_ = (1.22*restfreq.to(u.m,u.spectral())/(12*u.m))*u.radian
@@ -767,13 +767,15 @@ def diagplot(data, tsys, noise, dataset, diagplotdir, freq=None, mask=None,
     pl.plot(tsys, noise, '.',alpha=0.5)
     if theoretical_rms is not None:
         pl.plot(tsys, theoretical_rms, 'k--', zorder=-1, label='Thry RMS')
-        pl.plot(tsys, theoretical_rms*3, 'k.-', zorder=-1, label='Thry RMS*3')
+        pl.plot(tsys, theoretical_rms*3, 'k-.', zorder=-1, label='Thry RMS*3')
         pl.plot(tsys, theoretical_rms*5, 'k:', zorder=-1, label='Thry RMS*5')
         leg = pl.legend(loc='best')
         leg.get_frame().set_alpha(0.1)
         leg.get_frame().set_facecolor('none')
         if noisefactor is not None:
             flagged = noise > (theoretical_rms*noisefactor)
+            pl.plot(tsys, theoretical_rms*noisefactor, 'k-', zorder=-1,
+                    label='Thrshld')
             pl.plot(tsys[flagged], noise[flagged], 'r.', alpha=0.5)
     pl.xlabel("TSYS")
     pl.ylabel("Noise")
@@ -784,9 +786,9 @@ def diagplot(data, tsys, noise, dataset, diagplotdir, freq=None, mask=None,
     
     right = divider.append_axes("right", size="15%", pad=0.05)
     h_,l_,p_ = right.hist(noise, bins=30, orientation='horizontal')
-    pl.hlines(theoretical_rms, 0, h_.max(), 'k--', zorder=-1)
-    pl.hlines(theoretical_rms*3, 0, h_.max(), 'k.-', zorder=-1)
-    pl.hlines(theoretical_rms*5, 0, h_.max(), 'k:', zorder=-1)
+    pl.hlines(theoretical_rms, 0, h_.max(), color='k', linestyle='--', zorder=-1)
+    pl.hlines(theoretical_rms*3, 0, h_.max(), color='k', linestyle='-.', zorder=-1)
+    pl.hlines(theoretical_rms*5, 0, h_.max(), color='k', linestyle=':', zorder=-1)
     right.set_xlim(0, h_.max()*1.001)
     right.set_ylim(*axis.get_ylim())
 
@@ -1089,7 +1091,9 @@ def make_individual_cubes_12CO():
     build_cube_generic(window='low', datasets=datasets_H2CO_13CO_OS,
                        sourcename='W51', line='H2CO_13CO_OS', blsub=False,
                        datapath='/Volumes/passport/w51-apex/raw/',
-                       outpath='/Volumes/passport/w51-apex/processed/')
+                       outpath='/Volumes/passport/w51-apex/processed/',
+                       noisefactor=10
+                      )
     build_cube_generic(window='high', datasets=datasets_H2CO_13CO_OS,
                        sourcename='W51', line='H2CO_13CO_OS', blsub=False,
                        datapath='/Volumes/passport/w51-apex/raw/',
@@ -1104,11 +1108,13 @@ def make_individual_cubes_H2CO():
     build_cube_generic(window='AP-H201-X202', datasets=datasets_H2CO_13CO,
                        sourcename='W51', line='H2CO_+_13CO ', blsub=False,
                        datapath='/Volumes/passport/w51-apex/raw/',
-                       outpath='/Volumes/passport/w51-apex/processed/')
+                       outpath='/Volumes/passport/w51-apex/processed/',
+                       noisefactor=10)
     build_cube_generic(window='AP-H201-X201', datasets=datasets_H2CO_13CO,
                        sourcename='W51', line='H2CO_+_13CO ', blsub=False,
                        datapath='/Volumes/passport/w51-apex/raw/',
-                       outpath='/Volumes/passport/w51-apex/processed/')
+                       outpath='/Volumes/passport/w51-apex/processed/',
+                       noisefactor=10)
 
 
 
@@ -1135,7 +1141,7 @@ def make_12CO_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
                        datapath='/Volumes/passport/w51-apex/raw/',
                        outpath=mergepath,
                        downsample_factor=10,
-                       noisefactor=10,
+                       noisefactor=20,
                        automask=False,
                        flagdata=False,
                       )
@@ -1163,6 +1169,7 @@ def make_232_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
                        downsample_factor=10,
                        datapath='/Volumes/passport/w51-apex/raw/',
                        outpath=mergepath,
+                       noisefactor=10,
                       )
 
 def make_H2CO_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
@@ -1185,16 +1192,17 @@ def make_H2CO_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
                        downsample_factor=10,
                        datapath='/Volumes/passport/w51-apex/raw/',
                        outpath=mergepath,
+                       noisefactor=10,
                       )
 
 
 def make_218_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
-                        mergefile1='W51_218GHz_merge',
-                        datasets_H2CO_13CO=["/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG02/E-098.C-0421A-2016-2016-08-01",
-                                            "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG03/E-098.C-0421A-2016-2016-08-02",
-                                            "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC04/E-098.C-0421A-2016-2016-12-03",
-                                           ]
-                         ):
+                       mergefile1='W51_218GHz_merge',
+                       datasets_H2CO_13CO=["/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG02/E-098.C-0421A-2016-2016-08-01",
+                                           "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG03/E-098.C-0421A-2016-2016-08-02",
+                                           "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC04/E-098.C-0421A-2016-2016-12-03",
+                                          ]
+                        ):
 
     make_blanks_merge(os.path.join(mergepath,mergefile1),
                       restfreq=218.2218*u.GHz,
