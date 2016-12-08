@@ -13,7 +13,7 @@ mu_h2 = yt.YTArray(zh2 * u.Da.to(u.g), 'g')
 
 
 # Problem setup: pure density field
-sz = 128
+sz = 32
 max_rad = 10000*u.au
 rbreak = 1000*u.au
 zz,yy,xx = np.indices([sz,sz,sz])
@@ -51,10 +51,10 @@ writer = RadMC3DWriter(ds)
 
 writer.write_amr_grid()
 #writer.write_line_file(("gas", "number_density_CO"), "numberdens_co.inp")
-#writer.write_line_file(("gas", "number_density_H2"), "numberdens_h2.inp")
-writer.write_line_file(("gas", "number_density_H2"), "h2_numberdens.inp")
-#writer.write_line_file(("gas", "number_density_CH3OH"), "numberdens_ch3oh.inp")
-writer.write_line_file(("gas", "number_density_CH3OH"), "ch3oh_numberdens.inp")
+dens_fn = "numberdens_h2.inp" # not h2_numberdens.inp?
+writer.write_line_file(("gas", "number_density_H2"), dens_fn)
+writer.write_line_file(("gas", "number_density_CH3OH"), "numberdens_ch3oh.inp")
+#writer.write_line_file(("gas", "number_density_CH3OH"), "ch3oh_numberdens.inp")
 #writer.write_line_file(("gas", "number_density_H2CO"), "numberdens_h2co.inp")
 writer.write_dust_file(("gas", "temperature"), "gas_temperature.inp")
 writer.write_dust_file(("gas", "dust_density"), "dust_density.inp")
@@ -150,7 +150,7 @@ with open('lines.inp','w') as fh:
 
 lengthscale = (1e4*u.au.to(u.cm))
 with open('escprob_lengthscale.inp','w') as fh:
-    with open('h2_numberdens.inp','r') as h2fh:
+    with open(dens_fn,'r') as h2fh:
         lines = h2fh.read().split("\n")
         nlines = len(lines)
     fh.write("\n".join(lines[0:3]) + "\n")

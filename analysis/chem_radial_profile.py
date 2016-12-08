@@ -44,6 +44,7 @@ for regfn,region,fignum,imtype,suffix in (
 
     # start with continuum
     files = [paths.dpath('W51_te_continuum_best.fits')] + files
+    # TODO: use merge or 12m continuum at *same resolution*.  using te high-res makes peak appear too bright
 
     for plotspecies in ("CH3OH", "CH3OCHO", "HNCO", "NH2CHO"):
         fig = pl.figure(fignum)
