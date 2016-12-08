@@ -54,6 +54,11 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
     gs4 = gridspec.GridSpec(*plotgrid)
     gs4.update(wspace=0.0, hspace=0.0)
 
+    fig5 = pl.figure(5, figsize=figsize)
+    fig5.clf()
+    gs5 = gridspec.GridSpec(*plotgrid)
+    gs5.update(wspace=0.0, hspace=0.0)
+
     figcounter = 0
 
     for ii,fn in enumerate(ProgressBar(filelist)):
@@ -68,6 +73,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         m0fitsfn = paths.dpath("chemslices/chemical_m0_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
         m1fitsfn = paths.dpath("chemslices/chemical_m1_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
         maxfitsfn = paths.dpath("chemslices/chemical_max_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
+        maxsubfitsfn = paths.dpath("chemslices/chemical_max_sub_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
         madstdfitsfn = paths.dpath("chemslices/chemical_madstd_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
         if not (os.path.exists(m0fitsfn) and
                 os.path.exists(maxfitsfn) and
@@ -98,10 +104,12 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
                 print(ex)
                 continue
             slabsub = (slab-contguess)
+            slab.beam_threshold = 0.25
             slabsub.beam_threshold = 0.25
             m0 = slabsub.moment0()
             m1 = slabsub.moment1()
-            max = slabsub.max(axis=0)
+            max_sub = slabsub.max(axis=0)
+            max = slab.max(axis=0)
             madstd = cube.with_mask(mask[:,None,None]).apply_function(mad_std,
                                                                       axis=0,
                                                                       projection=True,
@@ -111,11 +119,13 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
             m0.write(m0fitsfn, overwrite=True)
             m1.write(m1fitsfn, overwrite=True)
             max.write(maxfitsfn, overwrite=True)
+            max_sub.write(maxsubfitsfn, overwrite=True)
             madstd.write(madstdfitsfn, overwrite=True)
         else:
             m0fh = fits.open(m0fitsfn)
             m1fh = fits.open(m1fitsfn)
             maxfh = fits.open(maxfitsfn)
+            maxsubfh = fits.open(maxsubfitsfn)
             madstdfh = fits.open(madstdfitsfn)
 
             m0 = Projection(value=m0fh[0].data, header=m0fh[0].header,
@@ -127,6 +137,10 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
             max = Projection(value=maxfh[0].data, header=maxfh[0].header,
                              wcs=wcs.WCS(maxfh[0].header),
                              unit=u.Unit(maxfh[0].header['BUNIT']),)
+            max_sub = Projection(value=maxsubfh[0].data,
+                                 header=maxsubfh[0].header,
+                                 wcs=wcs.WCS(maxsubfh[0].header),
+                                 unit=u.Unit(maxsubfh[0].header['BUNIT']),)
             madstd = Projection(value=madstdfh[0].data,
                                 header=madstdfh[0].header,
                                 wcs=wcs.WCS(madstdfh[0].header),
@@ -159,16 +173,29 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         ax2.set_yticklabels([])
         ax2.set_aspect('equal')
 
-        ax3 = fig3.add_subplot(gs2[figcounter])
+        ax3 = fig3.add_subplot(gs3[figcounter])
 
-        im3 = ax3.imshow(max.value, vmin=-10, vmax=vmax_max,
+        im3 = ax3.imshow(max_sub.value, vmin=-10, vmax=vmax_max,
                          cmap=pl.cm.bone_r, interpolation='nearest')
+        # add a contour to show the regions that are "saturated" above T_max
+        ax3.contour(max_sub.value, levels=[vmax_max, 300, 400, 500], colors=['r','g','b','y'])
         ax3.text(3, 0.87*m0.shape[0], label, fontsize=9, color='r')
         ax3.set_xticklabels([])
         ax3.set_yticklabels([])
         ax3.set_aspect('equal')
 
-        ax4 = fig4.add_subplot(gs2[figcounter])
+        ax5 = fig5.add_subplot(gs5[figcounter])
+
+        im5 = ax5.imshow(max.value, vmin=-10, vmax=vmax_max,
+                         cmap=pl.cm.bone_r, interpolation='nearest')
+        # add a contour to show the regions that are "saturated" above T_max
+        ax5.contour(max_sub.value, levels=[vmax_max, 300, 400, 500], colors=['r','g','b','y'])
+        ax5.text(3, 0.87*m0.shape[0], label, fontsize=9, color='r')
+        ax5.set_xticklabels([])
+        ax5.set_yticklabels([])
+        ax5.set_aspect('equal')
+
+        ax4 = fig4.add_subplot(gs4[figcounter])
 
         im4 = ax4.imshow(madstd.value,
                          cmap=pl.cm.bone_r, interpolation='nearest')
@@ -181,7 +208,9 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
 
     cbs = {}
     for ii,fig, im, gs in ((1,fig1,im1,gs1), (2,fig2,im2,gs2),
-                           (3,fig3,im3,gs3), (4,fig4,im4,gs4),):
+                           (3,fig3,im3,gs3), (4,fig4,im4,gs4),
+                           (5,fig5,im5,gs5),
+                          ):
         bottom,top,left,right = gs.get_grid_positions(fig)
         cbar_ax = fig.add_axes([np.max(right)+0.01, np.min(bottom),
                                 0.05, np.max(top)-np.min(bottom)])
@@ -191,6 +220,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
     cbs[1].set_label("Flux Density (K km s$^{-1}$)", fontsize=12)
     cbs[2].set_label("Velocity (km s$^{-1}$)", fontsize=12)
     cbs[3].set_label("Peak Brightness (K)", fontsize=12)
+    cbs[5].set_label("Peak Brightness (K)", fontsize=12)
     cbs[4].set_label("MAD StdDev (K)", fontsize=12)
 
     pl.draw()
@@ -204,12 +234,16 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
                                                                    suffix)),
                  bbox_inches='tight', dpi=150)
 
-    fig3.savefig(paths.fpath("chemical_max_slabs_{0}{1}.png".format(sourcename,
-                                                                    suffix)),
+    fig3.savefig(paths.fpath("chemical_max_contsub_slabs_{0}{1}.png"
+                             .format(sourcename, suffix)),
                  bbox_inches='tight', dpi=150)
 
     fig4.savefig(paths.fpath("chemical_madstd_slabs_{0}{1}.png".format(sourcename,
                                                                        suffix)),
+                 bbox_inches='tight', dpi=150)
+
+    fig5.savefig(paths.fpath("chemical_max_slabs_{0}{1}.png"
+                             .format(sourcename, suffix)),
                  bbox_inches='tight', dpi=150)
 
 
@@ -219,7 +253,7 @@ if __name__ == "__main__":
     chem_plot(linere, yslice=slice(357,477), xslice=slice(104,224),
               vrange=[51,60]*u.km/u.s, sourcename='e2',
               filelist=glob.glob(paths.dpath('merge/cutouts/W51_b6_7M_12M.*e2e8*fits')),
-              suffix="_merge")
+              suffix="_merge", vmax_max=200)
     # not implemented chem_plot(linere, yslice=slice(357,477), xslice=slice(104,224),
     # not implemented           vrange=[51,60]*u.km/u.s, sourcename='e2',
     # not implemented           filelist=glob.glob(paths.dpath('merge/cutouts/W51_b6_7M_12M.*e2e8*fits')),

@@ -13,6 +13,7 @@ from astropy import units as u
 import pyregion
 import image_tools
 from astropy import wcs
+from constants import continuum_frequency
 
 import re
 import glob
@@ -92,7 +93,7 @@ for regfn,region,fignum,imtype,suffix in (
                                                                          return_nr=True)
 
             if ii==0:
-                ax.plot(bins*pixscale*3600., rprof * beam.jtok(225*u.GHz),
+                ax.plot(bins*pixscale*3600., rprof * beam.jtok(continuum_frequency),
                         label='Continuum', linestyle='-', alpha=0.25, zorder=-10,
                         linewidth=4, color='k')
             else:

@@ -130,7 +130,7 @@ with open('radmc3d.inp','w') as f:
 assert os.system('radmc3d calcpop writepop') == 0
 
 with open('radmc3d.inp','w') as f:
-    params['lines_mode'] = 3
+    params['lines_mode'] = 3 # 3 = sobolev (LVG)
     f.write(params_string.format(**params))
 
 # compute the dust temperature
@@ -148,18 +148,50 @@ with open('lines.inp','w') as fh:
     fh.write("ch3oh leiden 0 0 1\n")
     fh.write("h2")
 
+lengthscale = (1e4*u.au.to(u.cm))
+with open('escprob_lengthscale.inp','w') as fh:
+    with open('h2_numberdens.inp','r') as h2fh:
+        lines = h2fh.read().split("\n")
+        nlines = len(lines)
+    fh.write("\n".join(lines[0:3]) + "\n")
+    # want to write 1 less than nlines
+    for ii in range(nlines-1):
+        fh.write("{0}\n".format(lengthscale))
+
 import radmc3dPy
 # iline: 1 = CO 1-0, 2 = CO 2-1, etc.
 # widthkms = full width of output spectrum, divided by linenlam
-# linenlam: number of wavelengtyh bins
+# linenlam: number of wavelength bins
 # linelist
 wavelength_center = (218.440063*u.GHz).to(u.um, u.spectral()).value
-radmc3dPy.image.makeImage(iline=240, widthkms=5, linenlam=40, nostar=True,
-                          npix=500, incl=0,
+
+assert os.system('radmc3d calcpop writepop noscat nostar') == 0
+
+radmc3dPy.image.makeImage(iline=240, widthkms=1, linenlam=40,
+                          nostar=True,
+                          noscat=True,
+                          vkms=0,
+                          npix=50, incl=0,
                           lambdarange=[wavelength_center*(1-10/3e5),
                                        wavelength_center*(1+10/3e5)],
-                          nlam=20, sizeau=10000)
+                          nlam=40, sizeau=10000)
 shutil.move('image.out', 'ch3oh_422-312_image.out')
+im = radmc3dPy.image.readImage('ch3oh_422-312_image.out')
+im.writeFits('ch3oh_422-312_image.fits', fitsheadkeys={}, dpc=5400,
+             coord='19h23m43.963s +14d30m34.56s')
+
+
+
+
+
+#radmc3dPy.image.makeImage(iline=240, widthkms=5, linenlam=40, nostar=True,
+#                          npix=500, incl=0,
+#                          lambdarange=[wavelength_center*(1-10/3e5),
+#                                       wavelength_center*(1+10/3e5)],
+#                          nlam=20, sizeau=10000)
+#shutil.move('image.out', 'ch3oh_422-312_image.out')
+#im = radmc3dPy.image.readImage('ch3oh_422-312_image.out')
+#im.writeFits('ch3oh_422-312_image.fits', fitsheadkeys={}, dpc=5400, coord='19h23m43.963s +14d30m34.56s')
 # radmc3dPy.image.makeImage(iline=3, widthkms=5, linenlam=40, nostar=True)
 # shutil.move('image.out', 'h2co_303-202_image.out')
 # radmc3dPy.image.makeImage(iline=13, widthkms=5, linenlam=40, nostar=True)
