@@ -13,7 +13,7 @@
     We present ALMA observations of a $3\times1.5$ pc area in the W51
     high-mass star-forming complex.  We identify dust continuum sources and
     measure the gas and dust temperature through both rotational diagram
-    modeling of \methanol and  brightness-temperature-based limits.  The
+    modeling of \methanol and brightness-temperature-based limits.  The
     observed region contains three high-mass YSOs that appear to be at the
     earliest stages of their formation, with no signs of ionizing radiation
     from their central sources.  The new data reveal  high gas and dust
@@ -88,18 +88,19 @@ High-mass stars are the drivers of galaxy evolution, cycling enriched materials
 into the interstellar medium (ISM) and illuminating it.  During their formation
 process, however, these stars are nearly undetectable because of their rarity
 and their opaque surroundings.  We therefore know relatively little about how
-massive stars acquire their mass and what their immedate surroundings look like
-at this early time.
+massive stars acquire their mass and what their immediate surroundings look
+like at this early time.  We expect, though, that the physical conditions
+should be changing rapidly.
 
 The stellar initial mass function (IMF) appears to be a universal distribution
-\citep{Bastian2010a}.  However, massive stars O-stars (with $M>50 \msun$)
+\citep{Bastian2010a}.  However, massive  O-stars (with $M>50 \msun$)
 almost always form in a clustered fashion \citep[in proto-clusters or
-proto-associations][]{de-Wit2004a,de-Wit2005a,Parker2007a}. %bressert2012? 
+proto-associations;][]{de-Wit2004a,de-Wit2005a,Parker2007a}. %bressert2012? 
 Their presence, and the strong feedback they produce, may directly influence
 how the IMF around them is formed.  If feedback from these stars is relevant
 while most of the  mass surrounding them is still in gas (not yet in stars),
-the mass function in such clusters cannot be determined by ISM properties
-alone. 
+the mass function in such clusters cannot be decided by ISM properties
+(initial conditions) alone. 
 % actually, this relies on stellar feedback \citep[e.g., as described
 % in][]{Krumholz2011c}.
 
@@ -108,8 +109,8 @@ material to a stellar radius to form very massive stars.  Generally, these model
 produce a high-mass star with enough luminosity to halt further
 \emph{spherical} accretion at a very early stage, with $M_* \sim 10-20\msun$.
 Radiation pressure provides a fundamental limit on how much mass can be
-accreted, but geometric effects can circumvent this limit and allow
-further accretion
+accreted \citep{Wolfire1987a,Osorio1999a}, but geometric effects can circumvent
+this limit and allow further accretion
 \citep{Yorke2002a,Krumholz2005b,Krumholz2009a,Krumholz2009b,Kuiper2012a,Kuiper2013c,Rosen2016a}.
 Additionally, fragmentation-induced starvation can limit the amount of mass
 available to the most massive star, instead breaking up massive cores into many
@@ -123,14 +124,14 @@ Nature is clearly capable of producing massive stars larger than those produced
 in simulations.  Within the LMC, stars up to $M\sim300$ \msun have been
 spectroscopically identified \citep{Crowther2016a}.  Within our own Galaxy,
 very massive stars have been found in compact, high-mass clusters such as NGC
-3603 and the Arches \citep{Crowther2010a}.  While it is difficult to idenfity
+3603 and the Arches \citep{Crowther2010a}.  While it is difficult to identify
 and characterize the most massive stars in our own galaxy because the UV
 features best capable of establishing their spectral types are 
 extinguished,
 it is still possible to find examples of very massive stars close to their
 birth environments using infrared lines.  \citet{Barbosa2008a} identified an O3
 and an O4 star ($M\gtrsim50$ \msun) within the W51 IRS2 region, demonstrating
-that this region has at some time been capable of forming stars on the high
+that this region has at some time formed stars on the high
 end tail of the IMF.  It remains to be seen whether W51 will form any very
 massive stars ($M>100$ \msun), but it is  an appropriate environment to
 investigate the process.
@@ -159,7 +160,7 @@ about 100 pc along Galactic longitude, shows some signs of interaction with a
 supernova remnant \citep{Brogan2013a,Ginsburg2015a}, there is as yet no
 sign that supernovae have occurred within the W51 IRS2 or e1/e2 protocluster
 regions.  They are in the relatively short stage after which high mass stars
-have formed but before the gas has been exhausted or expelled by supernovae.
+have formed but before the gas has been exhausted or expelled.
 
 % we're proving this?
 This combination of feedback and ongoing formation is essential for testing
@@ -186,25 +187,19 @@ shows VLA Ku-band free-free continuum emission
 {fig:overview}{1}{18cm}
 
 
-\todo{The major sectioning/subsectioning breakdown is awkward.} We present an
+ We present an
 observational study of the high-mass star-forming region W51.  In Section
 \ref{sec:observations}, we describe the observations and data reduction
-process.  Section \ref{sec:results} describes the analysis, including source
-identification (\S \ref{sec:sourceid}), spatial distribution (\S
-\ref{sec:corespatialdistribution}), and photometry (\S \ref{sec:photometry}).
-%, and statistical distributions (\S \ref{sec:distributionfunctions}).  
-We then examine the source temperatures (\S \ref{sec:temperature}) in order to
-determine their nature (\S \ref{sec:contsourcenature}).  We examine the most
-massive cores in Sections \ref{sec:W51e2e} and \ref{sec:w51e8andnorth} and then
-compute their radial mass profiles in \ref{sec:radialmass}.
-Section \ref{sec:massbudget} describes the mass and flux recovered on different
-spatial scales,
-Section \ref{sec:chemistrymaps}  the observed chemical distribution, and
-Section \ref{sec:methanol} the
+process.  Section \ref{sec:results} describes the analysis:
+We discuss source identification (\S \ref{sec:sourceid}),
+%in Sections \ref{sec:W51e2e} and \ref{sec:w51e8andnorth} and then
+the mass and flux recovered on different
+spatial scales (\S \ref{sec:massbudget}),
+the observed chemical distribution (\S \ref{sec:chemistrymaps}), and
 temperatures inferred from \methanol lines (\S \ref{sec:methanol}).
-Section \ref{sec:nonionizingradiation} shows that the heating is not coming
-from \hii regions.
-Section \ref{sec:outflows} and its subsections describe outflows 
+%Section \ref{sec:nonionizingradiation} shows that the heating is not coming
+%from \hii regions.
+%Section \ref{sec:outflows} and its subsections describe outflows 
 %\todo{should
 %this be relegated to an appendix?  It breaks the flow...}.
 %finally!  so many subsections!!!
@@ -214,9 +209,18 @@ accretion and outflows (\S \ref{sec:accretionandoutflows}),
 and fragmentation (\S \ref{sec:fragmentation}).  
 We conclude in Section \ref{sec:conclusion}.
 Additional interesting features in the W51 data not directly relevant
-to our main topic are discussed in Appendix \ref{sec:e5bubble}.
+to our main topic, the formation of high-mass stars,
+are discussed in the Appendices, including
+an interesting bubble (\S \ref{sec:e5bubble}), some remarkable outflows 
+(\S \ref{sec:outflows}), and a characterization of the lower-mass sources
+(\S \ref{sec:contsrcs}).
 
-
+%including source
+%identification (\S \ref{sec:sourceid}), spatial distribution (\S
+%\ref{sec:corespatialdistribution}), and photometry (\S \ref{sec:photometry}).
+%%, and statistical distributions (\S \ref{sec:distributionfunctions}).  
+%We then examine the source temperatures (\S \ref{sec:temperature}) in order to
+%determine their nature (\S \ref{sec:contsourcenature}).
 
 
 
@@ -250,11 +254,14 @@ future work.
 \input{spwtable.tex}
 
 \subsection{Data Reduction}
-Data reduction was performed using CASA.  The QA2-produced data products were
+Data reduction was performed using CASA.  The QA2-produced visibility data
+products were
 combined using the standard inverse variance weighting.  Two sets of images
 were produced for different aspects of the analysis, one including the 7m array
 data and one including only 12m data.  Except where otherwise noted, the
 12m-only data were used in order to focus on the compact structures.
+For the majority of the data here, the conversion from flux density to
+brightness temperature is $T_B \approx 230 \mathrm{K}/(\mathrm{Jy} \perbeam)$.
 
 Full details of the data reduction, including all scripts used, can be found
 on the project's github repository\footnote{\url{https://github.com/keflavich/W51_ALMA_2013.1.00308.S}}.
@@ -265,13 +272,13 @@ A continuum image combining all 4 spectral windows was produced using
 \texttt{tclean}.  We identified line-rich channels from a spectrum of source e8
 and flagged them out prior to imaging.  We then phase self-calibrated the data
 on baselines longer than 100m to increase the dynamic range.  The final image
-was cleaned with 50000 iterations to a threshold of 5 mJy.  The lowest noise
+was cleaned to a threshold of 5 mJy.  The lowest noise
 level in the image, away from bright sources, is $\sim0.2$ mJy/beam
 ($M\sim0.14$ \msun at $T=20$ K using the extrapolation of
 \citet{Ossenkopf1994a} opacity from \citet{Aguirre2011a} with $\beta=1.75$),
 but near the bright sources e2 and IRS2, the noise reached as high as $\sim2$
 mJy/beam.  Deeper cleaning was attempted, but these attempts produced
-instabilities that produced divergent maps.  The combined image has a central
+instabilities that resulted in divergent maps.  The combined image has a central
 frequency of about 226.6 GHz assuming a flat spectrum source; a steep-spectrum
 source, with $\alpha=4$, would have a central frequency closer to 227 GHz, a
 difference that is negligible for all further analysis.
@@ -366,7 +373,7 @@ cataloging yielded over 8000 candidate sources, of which the majority are noise
 or artifacts around the brightest sources.  To filter out these bad sources,
 we created a noise map taking the local RMS of the \texttt{tclean}-produced
 residual map over a $\sigma=30$ pixel (1.5\arcsec) gaussian.  We then removed
-all sources with peak S/N < 8, mean S/N per pixel $< 5$, and minimum S/N per
+all sources with peak S/N < 8, mean S/N per pixel $< 5$, or minimum S/N per
 pixel $ < 1$.  We also only included the smallest sources in the dendrogram,
 the ``leaves''.  These parameters were tuned by checking against ``real''
 sources identified by eye and selected using \texttt{ds9}: most real sources are
@@ -1562,6 +1569,48 @@ is circularly symmetric, while the outflow is clearly bipolar.}
 % high-mass and low-mass star formation is occurring concurrently.  The same
 % is almost certainly occurring in W51.  
 % \todo{Is there more to say here?}
+
+\subsection{The population of faint, compact sources}
+In Section \ref{sec:sourceid}, we reported the identification of 75 or 113
+sources, depending on how you count them, but we have not discussed them since.
+In this section, we briefly discuss why we have chosen to ignore these sources
+and offer some cautions and prospects for the interpretation of millimeter sources
+in crowded star-forming regions. 
+% One of the original aims of this study was to measure
+% the `core mass function', but after examining the data we determined that this
+% is not possible.
+
+First, observational considerations have hindered the detection of `cores' down
+to our theoretical mass limit $M\sim1\msun$: the  extended millimeter continuum
+structure resulted in imaging artifacts that limited the dynamic range in the
+vicinity of bright sources.  This effect means that we have a wildly varying
+completeness to compact sources across our image, and the completeness is
+difficult or perhaps impossible to measure.
+
+Second, the nature of the sources makes determination of their masses quite
+difficult.  In Appendix \ref{sec:contsrcs}, we discuss our attempts to
+determine the temperature and structure of the individual sources and
+characterize them based on their morphology.  Most of these sources are
+centrally concentrated with high central brightness temperatures, suggesting
+that they are protostellar, which in turn means that any dust-derived mass is
+subject to dramatic uncertainties in the unresolved temperature structure.
+More diffuse and cool sources, those that appear similar to local prestellar
+cores, are theoretically detectable in our data, and some even are detected
+(those with classification \texttt{-C-} in Table \ref{tab:photometry1}), but in
+practice can only be seen in regions with no other substructure, especially
+free-free emission, that are rare in the observed area.
+
+These fainter sources are the most prominent members of the next generation of
+stars forming in this cloud, but we do not yet have the tools needed to
+understand them.  In order to probe the formation of the IMF, we need to be
+able to determine the masses of stars forming in the millimeter sources, which
+likely requires multiwavelength data.  
+
+The limitations we discuss prevent us from drawing any robust conclusions from
+these data.  However, they are presented in full detail in Appendix
+\ref{sec:contsrcs}, including description of the spatial structure,
+characterization technique, and flux distribution.
+
 
 
 \section{Conclusions}
