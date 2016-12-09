@@ -641,9 +641,13 @@ This section presents the details of the temperature determination, while
 the implications of the temperature measurement will be discussed later,
 throughout Section \ref{sec:discussion}.
 
-We produce rotational diagrams for each spatial pixel covering all \methanol lines
-detected at high significance toward at least one position.  The detected lines
-span a range $45 < E_U < 800$ K, allowing robust measurements of the temperature
+We produce rotational diagrams for each spatial pixel covering all \methanol
+lines detected at high significance toward at least one position\footnote{We
+observe both A- and E-type \methanol, but assume the ratio $E/A=1$, 
+as expected if the molecules have an even moderately high formation 
+temperature $T\gtrsim20$ K \citep{Wirstrom2011a}.}.  The detected
+lines span a range $45 < E_U < 800$ K, allowing robust measurements of the
+temperature
 assuming the lines are optically thin, in LTE, and the gas temperature is high
 enough to excite the lines.  These conditions are likely to be satisfied in the
 e2e, e8, and North cores, except for the optically thin requirement.  Luckily,
@@ -746,12 +750,22 @@ overestimated, as can be seen in Figure \ref{fig:ch3ohe2epeaks}.
 
 
 \Figure{figures/radialprofile_max_CH3OH_e2.png}
-{Radial profiles of the peak surface brightness of five \methanol transitions
-along with the profile of the continuum brightness.  The radial profiles were
-constructed from images with 0.2\arcsec resolution including only 12m data.
-The central dip shows where the lines go into absorption, though they are only
-seen in absorption at $\sim55$ \kms.  The \methanol lines are
-continuum-subtracted.}
+{Radial profiles of the azimuthally-averaged peak surface brightness of the
+observed \methanol transitions along with the profile of the continuum
+brightness.  These profiles indicate \emph{lower limit} gas temperatures
+as a function of radius; the true temperature can be substantially higher even
+if the lines are optically thick because of foreground, cold, self-absobing layers.
+The radial profiles were constructed from images with 0.2\arcsec
+resolution including only 12m data.  The lines are not continuum subtracted, so
+they represent the true on-sky observed brightness.  The abundance bump is
+evident at $r\sim1.5\arcsec$, while the consistently increasing high-J lines
+(\methanol $23_{5,19}-22_{6,17}$ and $25_{3,22}-24_{4,20}$) demonstrate that
+the excitation is continuing to increase toward the center, even after the
+lower-J lines become optically thick.
+%The central dip shows where the lines go into absorption, though they are only
+%seen in absorption at $\sim55$ \kms.  The \methanol lines are
+%continuum-subtracted.}
+}
 {fig:methanolradialprofile}{1}{12cm}
 
 % plot_code/overlay_contours_on_ch3oh.py

@@ -14,11 +14,18 @@ import pyregion
 import image_tools
 from astropy import wcs
 from constants import continuum_frequency
+from line_to_image_list import labeldict
 
 import re
 import glob
 
 region_names = {'e2': 'e2_exclude_e2w.reg'}
+
+continua = {
+    # todo?  make a naturally weighted merged continuum image...
+    'merge': 'merge/continuum/merge_selfcal_allspw_selfcal_4ampphase_mfs_tclean_deeperbroader.image.pbcor.fits',
+    '': 'W51_te_continuum_best.fits',
+}
 
 for regfn,region,fignum,imtype,suffix in (
     ('e2_exclude_e2w.reg','e2',1,'m0',''),
@@ -39,12 +46,16 @@ for regfn,region,fignum,imtype,suffix in (
     linestyles = {name: itertools.cycle(['-'] + ['--'] + [':'] + ['-.'])
                   for name in region_names}
 
-    linere = re.compile("chemical_{0}_slabs_[^_]*_(.*?)(_merge.fits|.fits)"
+    linere = re.compile("chemical_{0}_slabs_[^_]*_(.*?)"
+                        "(_merge.fits|_merge_natural.fits|.fits)"
                         .format(imtype))
 
     # start with continuum
-    files = [paths.dpath('W51_te_continuum_best.fits')] + files
-    # TODO: use merge or 12m continuum at *same resolution*.  using te high-res makes peak appear too bright
+    if 'merge' in suffix:
+        contfn = continua['merge']
+    else:
+        contfn = continua['']
+    files = [paths.dpath(contfn)] + files
 
     for plotspecies in ("CH3OH", "CH3OCHO", "HNCO", "NH2CHO"):
         fig = pl.figure(fignum)
@@ -100,7 +111,7 @@ for regfn,region,fignum,imtype,suffix in (
             else:
                 species = linere.search(fn).groups()[0]
                 ax.plot(bins*pixscale*3600., rprof,
-                        label=species, linestyle=linestyle)
+                        label=labeldict[species], linestyle=linestyle)
 
         if imtype == 'max':
             ax.set_ylabel("Azimuthally Averaged Peak Brightness (K)")

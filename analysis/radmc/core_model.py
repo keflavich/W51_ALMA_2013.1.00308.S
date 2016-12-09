@@ -1,8 +1,15 @@
+from __future__ import print_function
+from astroquery import lamda
+import radmc3dPy
+import matplotlib
+import pylab as pl
 import numpy as np
 from astropy import units as u
+from astropy import constants
 from yt.analysis_modules.radmc3d_export.api import RadMC3DWriter, RadMC3DSource
 from yt.utilities.physical_constants import kboltz
 import yt
+import struct
 from core_models import broken_powerlaw
 
 x_co = 1.0e-4
@@ -13,16 +20,23 @@ mu_h2 = yt.YTArray(zh2 * u.Da.to(u.g), 'g')
 
 
 # Problem setup: pure density field
-sz = 32
+sz = 16
 max_rad = 10000*u.au
 rbreak = 1000*u.au
 zz,yy,xx = np.indices([sz,sz,sz])
-rr = ((zz-sz/2)**2 + (yy-sz/2)**2 + (xx-sz/2)**2)**0.5
+rr = ((zz-(sz-1)/2.)**2 + (yy-(sz-1)/2.)**2 + (xx-(sz-1)/2.)**2)**0.5
+max_velo = 1*u.km/u.s
+velo = max_velo - np.array([(sz-1)/2.-zz, (sz-1/2.)-yy, (sz-1/2.)-xx]) / rr.max() * max_velo
+
+# now rr has units
 rr = rr * max_rad / (sz/2.)
 dens = broken_powerlaw(rr, rbreak=rbreak, n0=1e8*u.cm**-3, power=-1.5)
 
-
-data = dict(density=((dens*u.Da*zh2).to(u.g/u.cm**3), "g/cm**3"))
+data = {'density': ((dens*u.Da*zh2).to(u.g/u.cm**3), "g/cm**3"),
+        'z_velocity': (velo[0].to(u.km/u.s).value, 'km/s'),
+        'y_velocity': (velo[1].to(u.km/u.s).value, 'km/s'),
+        'x_velocity': (velo[2].to(u.km/u.s).value, 'km/s'),
+       }
 bbox = np.array([[-max_rad.value,max_rad.value]]*3)
 ds = yt.load_uniform_grid(data, dens.shape, length_unit="au", bbox=bbox, nprocs=64)
 
@@ -62,13 +76,18 @@ writer.write_dust_file(("gas", "dust_density"), "dust_density.inp")
 
 #velocity_fields = [('deposit',"all_cic_velocity_x"), ('deposit',"all_cic_velocity_y"),
 #                   ('deposit',"all_cic_velocity_z")]
-#writer.write_line_file(velocity_fields, "gas_velocity.inp")
+writer.write_line_file([('gas','x_velocity'), ('gas','y_velocity'),
+                        ('gas','z_velocity')], "gas_velocity.inp")
 
 # central star
 radius_cm = 1*u.au.to(u.cm)
 mass_g = 1*u.M_sun.to(u.g)
 position_cm = [0.0, 0.0, 0.0]
 temperature_K = 1000.0
+luminosity = 2e4*u.L_sun
+temperature_K = ((luminosity /
+                  (4 * np.pi * (radius_cm*u.cm)**2 * constants.sigma_sb))**0.25
+                ).to(u.K).value
 star = RadMC3DSource(radius_cm, mass_g, position_cm, temperature_K)
 
 sources_list = [star]
@@ -85,9 +104,9 @@ shutil.copy('/Users/adam/work/jimsims/code/dustopac.inp',
 shutil.copy('/Users/adam/repos/radmc-3d/version_0.39/python/python_examples/datafiles/molecule_co.inp', '.')
 shutil.copy('/Users/adam/LAMDA/e-ch3oh.dat','molecule_ch3oh.inp')
 
-params=dict(istar_sphere=0, itempdecoup=1, lines_mode=3, nphot=1000000,
+params=dict(istar_sphere=0, itempdecoup=0, lines_mode=3, nphot=1000000,
             nphot_scat=30000, nphot_spec=100000, rto_style=3,
-            scattering_mode=0, scattering_mode_max=1, tgas_eq_tdust=1,)
+            scattering_mode=0, scattering_mode_max=0, tgas_eq_tdust=1,)
 
 params_string = """
 istar_sphere = {istar_sphere}
@@ -124,80 +143,258 @@ with open('wavelength_micron.inp', 'w') as fh:
 
 
 with open('radmc3d.inp','w') as f:
-    params['lines_mode'] = 50
-    f.write(params_string.format(**params))
-
-assert os.system('radmc3d calcpop writepop') == 0
-
-with open('radmc3d.inp','w') as f:
     params['lines_mode'] = 3 # 3 = sobolev (LVG)
     f.write(params_string.format(**params))
 
 # compute the dust temperature
 assert os.system('radmc3d mctherm') == 0
 
-with open('lines.inp','w') as fh:
-    fh.write("2\n")
-    # n_lines
-    fh.write("1\n")
-    # line name (filename molecule_{linename}.inp must exist)
-    # file type (leiden)
-    # 0 # expert-only
-    # 0 # expert-only
-    # 0 for LTE or 1 for nLTE
-    fh.write("ch3oh leiden 0 0 1\n")
-    fh.write("h2")
+def read_dust_temperature(dust_tem_fn):
+    with open(dust_tem_fn, 'rb') as fh:
+        ftype, = struct.unpack('=q', fh.read(8))
+        precis, = struct.unpack('=q', fh.read(8))
+        nrcells, = struct.unpack('=q', fh.read(8))
+        nrspec, = struct.unpack('=q', fh.read(8))
+        data = np.fromfile(fh, dtype='float64', count=nrcells)
+    print(ftype, precis, nrcells, nrspec)
 
-lengthscale = (1e4*u.au.to(u.cm))
-with open('escprob_lengthscale.inp','w') as fh:
-    with open(dens_fn,'r') as h2fh:
-        lines = h2fh.read().split("\n")
-        nlines = len(lines)
-    fh.write("\n".join(lines[0:3]) + "\n")
-    # want to write 1 less than nlines
-    for ii in range(nlines-1):
-        fh.write("{0}\n".format(lengthscale))
+    assert sz * sz * sz == nrcells
 
-import radmc3dPy
-# iline: 1 = CO 1-0, 2 = CO 2-1, etc.
-# widthkms = full width of output spectrum, divided by linenlam
-# linenlam: number of wavelength bins
-# linelist
-wavelength_center = (218.440063*u.GHz).to(u.um, u.spectral()).value
+    return data.reshape([sz, sz, sz])
 
-assert os.system('radmc3d calcpop writepop noscat nostar') == 0
+dust_temperature = read_dust_temperature('dust_temperature.bdat')
 
-radmc3dPy.image.makeImage(iline=240, widthkms=1, linenlam=40,
-                          nostar=True,
-                          noscat=True,
-                          vkms=0,
-                          npix=50, incl=0,
-                          lambdarange=[wavelength_center*(1-10/3e5),
-                                       wavelength_center*(1+10/3e5)],
-                          nlam=40, sizeau=10000)
-shutil.move('image.out', 'ch3oh_422-312_image.out')
-im = radmc3dPy.image.readImage('ch3oh_422-312_image.out')
-im.writeFits('ch3oh_422-312_image.fits', fitsheadkeys={}, dpc=5400,
-             coord='19h23m43.963s +14d30m34.56s')
+fig1 = pl.figure(1)
+fig1.clf()
+ax1 = pl.subplot(1,2,1)
+im = ax1.imshow(dust_temperature[:,:,sz/2], cmap='hot')
+pl.colorbar(im, ax=ax1)
+ax2 = pl.subplot(1,2,2)
+ax2.plot(rr.ravel(), dust_temperature.ravel(), '.', alpha=0.25)
+pl.savefig("midplane_dust_temperature.png")
 
 
 
+do_methanol = False
+if do_methanol:
+
+    with open('lines.inp','w') as fh:
+        fh.write("2\n")
+        # n_lines
+        fh.write("1\n")
+        # line name (filename molecule_{linename}.inp must exist)
+        # file type (leiden)
+        # 0 # expert-only
+        # 0 # expert-only
+        # 0 for LTE or 1 for nLTE
+        fh.write("ch3oh leiden 0 0 1\n")
+        fh.write("h2")
+
+    lengthscale = (1e4*u.au.to(u.cm))
+    with open('escprob_lengthscale.inp','w') as fh:
+        with open(dens_fn,'r') as h2fh:
+            lines = h2fh.read().split("\n")
+            nlines = len(lines)
+        fh.write("\n".join(lines[0:3]) + "\n")
+        # want to write 1 less than nlines
+        for ii in range(nlines-1):
+            fh.write("{0}\n".format(lengthscale))
+
+    # iline: 1 = CO 1-0, 2 = CO 2-1, etc.
+    # widthkms = full width of output spectrum, divided by linenlam
+    # linenlam: number of wavelength bins
+    # linelist
+    wavelength_center = (218.440063*u.GHz).to(u.um, u.spectral()).value
+
+    with open('radmc3d.inp','w') as f:
+        params['lines_mode'] = 3
+        f.write(params_string.format(**params))
+
+    assert os.system('radmc3d calcpop writepop noscat') == 0
+
+    shutil.copy('levelpop_ch3oh.bdat', 'levelpop_ch3oh_all.bdat')
+
+    def read_levels(level_fn):
+        with open(level_fn, 'rb') as fh:
+            ftype, = struct.unpack('=q', fh.read(8))
+            nrcells, = struct.unpack('=q', fh.read(8))
+            nrlevels_subset, = struct.unpack('=q', fh.read(8))
+            nlevels, = struct.unpack('=q', fh.read(8))
+            levels = [struct.unpack('=q', fh.read(8)) for ii in range(nlevels)]
+            data = np.fromfile(fh, dtype='float64', count=nlevels*nrlevels_subset)
+        print(ftype, nrcells, nrlevels_subset, nlevels, levels)
+
+        assert sz * sz * sz == nrlevels_subset
+
+        return data.reshape([sz, sz, sz, nlevels])
+
+    ch3oh_levels = read_levels('levelpop_ch3oh.bdat')
+
+    tbl1,tbl2,tbl3 = lamda.parse_lamda_datafile('molecule_ch3oh.inp')
+
+    #for level in (19,90,42,53):
+    for trans in (240,241,242,251):
+
+        level_U = int(tbl2['Upper'][tbl2['Transition'] == trans])
+        level_L = int(tbl2['Lower'][tbl2['Transition'] == trans])
+        level_U_label = tbl3['J'][tbl3['Level'] == level_U][0]
+        level_L_label = tbl3['J'][tbl3['Level'] == level_L][0]
+
+        fig2 = pl.figure(2)
+        fig2.clf()
+        pl.suptitle("{0} - {1}".format(level_U_label, level_L_label))
+        ax1 = pl.subplot(2,2,1)
+        # trans 240 = 19-13 = 4_22-312
+        im = ax1.imshow(ch3oh_levels[:,:,int(sz/2),level_U-1], cmap='hot',
+                        norm=matplotlib.colors.LogNorm())
+        pl.colorbar(im, ax=ax1)
+        ax2 = pl.subplot(1,2,2)
+        ax2.semilogy(rr.ravel(), ch3oh_levels[:,:,:,level_U-1].ravel(), '.', alpha=0.25,
+                     label=level_U_label)
+
+        ax3 = pl.subplot(2,2,3)
+        im = ax3.imshow(ch3oh_levels[:,:,int(sz/2),level_L-1], cmap='hot',
+                        norm=matplotlib.colors.LogNorm())
+        pl.colorbar(im, ax=ax3)
+        ax4 = pl.subplot(1,2,2)
+        ax4.semilogy(rr.ravel(), ch3oh_levels[:,:,:,level_L-1].ravel(), '.', alpha=0.25,
+                     label=level_L_label)
+        pl.legend(loc='best')
+
+        pl.savefig("ch3oh_{0}-{1}_levelpops.png".format(level_U_label,level_L_label))
 
 
-#radmc3dPy.image.makeImage(iline=240, widthkms=5, linenlam=40, nostar=True,
-#                          npix=500, incl=0,
-#                          lambdarange=[wavelength_center*(1-10/3e5),
-#                                       wavelength_center*(1+10/3e5)],
-#                          nlam=20, sizeau=10000)
-#shutil.move('image.out', 'ch3oh_422-312_image.out')
-#im = radmc3dPy.image.readImage('ch3oh_422-312_image.out')
-#im.writeFits('ch3oh_422-312_image.fits', fitsheadkeys={}, dpc=5400, coord='19h23m43.963s +14d30m34.56s')
-# radmc3dPy.image.makeImage(iline=3, widthkms=5, linenlam=40, nostar=True)
-# shutil.move('image.out', 'h2co_303-202_image.out')
-# radmc3dPy.image.makeImage(iline=13, widthkms=5, linenlam=40, nostar=True)
-# shutil.move('image.out', 'h2co_321-220_image.out')
-# radmc3dPy.image.makeImage(iline=2, widthkms=5, linenlam=40, nostar=True)
-# shutil.move('image.out', 'co_2-1_image.out')
-# radmc3dPy.image.makeImage(iline=1, widthkms=5, linenlam=40, nostar=True)
-# shutil.move('image.out', 'co_1-0_image.out')
-# #radmc3d image iline 1 widthkms 10 linenlam 40 linelist nostar
+    # lines_mode = 50 means read from file
+    with open('radmc3d.inp','w') as f:
+        params['lines_mode'] = 50
+        f.write(params_string.format(**params))
+
+
+
+    # Debug: tau=1 surface should exist.
+    os.system("radmc3d tausurf 1.0 lambda 1300")
+    shutil.move('image.out', 'tausurf_1300um.out')
+    im = radmc3dPy.image.readImage('tausurf_1300um.out')
+    im.writeFits('tausurf_1300um.fits', fitsheadkeys={}, dpc=5400,
+                 coord='19h23m43.963s +14d30m34.56s')
+
+
+    radmc3dPy.image.makeImage(nlam=100,
+                              lambdarange=[500, 5000],
+                              npix=50,
+                              writepop=False,
+                              noscat=True,
+                              nostar=False,
+                              incl=0,
+                              sizeau=10000)
+    im = radmc3dPy.image.readImage('image.out')
+    pl.figure(3).clf()
+    pl.loglog(im.freq, im.image[25,25,0]*(im.freq/im.freq[0])**2,
+              label="$\\nu^2$")
+    pl.loglog(im.freq, im.image[25,25,:])
+    pl.legend(loc='best')
+
+    os.system('radmc3d image npix 50 incl 0 sizeau 10000 noscat  pointau 0.0  0.0  0.0 fluxcons lambdarange 500 5000 tracetau')
+    im = radmc3dPy.image.readImage('image.out')
+    pl.figure(3).clf()
+    pl.loglog(im.freq, im.image[25,25,:], label='center pixel')
+    pl.loglog(im.freq, im.image[15,15,:], label='15,15')
+    pl.ylabel("Optical Depth")
+    pl.legend(loc='best')
+
+
+    radmc3dPy.image.makeImage(iline=240, widthkms=10,
+                              linenlam=40,
+                              nostar=False,
+                              noscat=True,
+                              vkms=0,
+                              writepop=False,
+                              npix=50, incl=0,
+                              #lambdarange=[wavelength_center*(1-10/3e5),
+                              #             wavelength_center*(1+10/3e5)],
+                              #nlam=40,
+                              sizeau=10000)
+    im = radmc3dPy.image.readImage('image.out')
+    pl.figure(3).clf()
+    pl.plot(im.freq, im.image[25,25,:], label='center pixel')
+    pl.plot(im.freq, im.image[15,15,:], label='15,15')
+    pl.ylabel("Line?")
+    pl.legend(loc='best')
+
+
+
+
+    # ###### TEST
+    # fig4 = pl.figure(4)
+    # fig5 = pl.figure(5)
+    # fig4.clf()
+    # fig5.clf()
+    # for iline in range(1,250):
+    #     os.system("radmc3d image npix 1 incl 0 sizeau 10000 vkms 0 widthkms 10 noscat  pointau 0.0  0.0  0.0 fluxcons iline {0} > /dev/null".format(iline))
+    #     im = radmc3dPy.image.readImage('image.out')
+    #     fig4.gca().plot(im.freq, im.image.ravel(), label='{0}'.format(iline))
+    #     fig5.gca().plot(np.linspace(-10,10,40), im.image.ravel(), label='{0}'.format(iline))
+    #     if im.image.max() / im.image.min() < 1.1:
+    #         print(iline)
+    # pl.legend(loc='best')
+
+
+
+
+
+    shutil.move('image.out', 'ch3oh_422-312_image.out')
+    im = radmc3dPy.image.readImage('ch3oh_422-312_image.out')
+    im.writeFits('ch3oh_422-312_image.fits', fitsheadkeys={}, dpc=5400,
+                 coord='19h23m43.963s +14d30m34.56s')
+
+
+    radmc3dPy.image.makeImage(iline=242, widthkms=10,
+                              linenlam=40,
+                              nostar=False,
+                              noscat=True,
+                              vkms=0,
+                              writepop=False,
+                              npix=50, incl=0,
+                              #lambdarange=[wavelength_center*(1-10/3e5),
+                              #             wavelength_center*(1+10/3e5)],
+                              #nlam=40,
+                              sizeau=10000)
+    shutil.move('image.out', 'ch3oh_808-716_image.out')
+    im = radmc3dPy.image.readImage('ch3oh_808-716_image.out')
+    im.writeFits('ch3oh_808-716_image.fits', fitsheadkeys={}, dpc=5400,
+                 coord='19h23m43.963s +14d30m34.56s')
+
+
+    from astropy.io import fits
+    from astropy import wcs
+
+    def convert_to_K(radmc_fits_img, distance=5400*u.pc):
+        fh = fits.open(radmc_fits_img)
+        mywcs = wcs.WCS(fh[0].header)
+        pix_area = np.abs(mywcs.celestial.pixel_scale_matrix.diagonal().prod()) * u.deg**2
+        conv = u.Jy.to(u.K, equivalencies=u.brightness_temperature(pix_area, mywcs.wcs.crval[2]*u.Hz))
+        fh[0].data *= conv
+        fh[0].header['BUNIT'] = 'K'
+        return fh
+
+
+
+
+
+    #radmc3dPy.image.makeImage(iline=240, widthkms=5, linenlam=40, nostar=True,
+    #                          npix=500, incl=0,
+    #                          lambdarange=[wavelength_center*(1-10/3e5),
+    #                                       wavelength_center*(1+10/3e5)],
+    #                          nlam=20, sizeau=10000)
+    #shutil.move('image.out', 'ch3oh_422-312_image.out')
+    #im = radmc3dPy.image.readImage('ch3oh_422-312_image.out')
+    #im.writeFits('ch3oh_422-312_image.fits', fitsheadkeys={}, dpc=5400, coord='19h23m43.963s +14d30m34.56s')
+    # radmc3dPy.image.makeImage(iline=3, widthkms=5, linenlam=40, nostar=True)
+    # shutil.move('image.out', 'h2co_303-202_image.out')
+    # radmc3dPy.image.makeImage(iline=13, widthkms=5, linenlam=40, nostar=True)
+    # shutil.move('image.out', 'h2co_321-220_image.out')
+    # radmc3dPy.image.makeImage(iline=2, widthkms=5, linenlam=40, nostar=True)
+    # shutil.move('image.out', 'co_2-1_image.out')
+    # radmc3dPy.image.makeImage(iline=1, widthkms=5, linenlam=40, nostar=True)
+    # shutil.move('image.out', 'co_1-0_image.out')
+    # #radmc3d image iline 1 widthkms 10 linenlam 40 linelist nostar
