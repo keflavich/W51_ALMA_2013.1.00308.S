@@ -14,6 +14,20 @@ import yt
 import struct
 from core_models import broken_powerlaw
 
+def read_dust_temperature(dust_tem_fn, sz=32):
+    with open(dust_tem_fn, 'rb') as fh:
+        ftype, = struct.unpack('=q', fh.read(8))
+        precis, = struct.unpack('=q', fh.read(8))
+        nrcells, = struct.unpack('=q', fh.read(8))
+        nrspec, = struct.unpack('=q', fh.read(8))
+        data = np.fromfile(fh, dtype='float64', count=nrcells)
+    print(ftype, precis, nrcells, nrspec)
+
+    assert sz * sz * sz == nrcells
+
+    return data.reshape([sz, sz, sz])
+
+
 def core_model_dust(outname, x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8,
                     sz=16, max_rad=10000*u.au, rbreak=1000*u.au,
                     radius_cm=1*u.au.to(u.cm), mass_g=1*u.M_sun.to(u.g),
@@ -135,37 +149,62 @@ def core_model_dust(outname, x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8,
     # compute the dust temperature
     assert os.system('radmc3d mctherm') == 0
 
-    def read_dust_temperature(dust_tem_fn):
-        with open(dust_tem_fn, 'rb') as fh:
-            ftype, = struct.unpack('=q', fh.read(8))
-            precis, = struct.unpack('=q', fh.read(8))
-            nrcells, = struct.unpack('=q', fh.read(8))
-            nrspec, = struct.unpack('=q', fh.read(8))
-            data = np.fromfile(fh, dtype='float64', count=nrcells)
-        print(ftype, precis, nrcells, nrspec)
-
-        assert sz * sz * sz == nrcells
-
-        return data.reshape([sz, sz, sz])
-
-    dust_temperature = read_dust_temperature('dust_temperature.bdat')
+    dust_temperature = read_dust_temperature('dust_temperature.bdat', sz=sz)
     shutil.copy('dust_temperature.bdat','dust_temperature_{0}.bdat'.format(outname))
 
-    fig1 = pl.figure(1)
-    fig1.clf()
-    ax1 = pl.subplot(1,2,1)
-    im = ax1.imshow(dust_temperature[:,:,sz/2], cmap='hot')
-    pl.colorbar(im, ax=ax1)
-    ax2 = pl.subplot(1,2,2)
-    ax2.plot(rr.ravel(), dust_temperature.ravel(), '.', alpha=0.25)
-    pl.savefig("midplane_dust_temperature_{0}.png".format(outname))
-
 if __name__ == "__main__":
+    tmplt = 'dust_temperature_sz32_rad1e4au_mstar1msun_rstar1au_lstar{0:0.1e}lsun_power{1}.bdat'
+
+    max_rad = 10000*u.au
+
+    sz = 32
+    zz,yy,xx = np.indices([sz,sz,sz])
+    rr = ((zz-(sz-1)/2.)**2 + (yy-(sz-1)/2.)**2 + (xx-(sz-1)/2.)**2)**0.5
+    rr = rr * max_rad / (sz/2.)
+    rr_u, inds = np.unique(rr.ravel(), return_index=True)
+
+    fig2 = pl.figure(2)
+    fig2.clf()
+
+    linestyles = {-2.0: '-',
+                  -1.5: '--',
+                  -1.0: ':'}
+    colors = {1e4: 'r',
+              2e4: 'g',
+              5e4: 'b',
+              1e5: 'k'}
 
     for power in (-1.5, -2.0, -1.0):
+
         for lstar in (2e4, 1e4, 5e4, 1e5):
-            core_model_dust(outname="sz32_rad1e4au_mstar1msun_rstar1au_lstar{0:0.1e}lsun_power{1}".format(lstar,power),
-                            x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8, sz=32,
-                            max_rad=10000*u.au, rbreak=1000*u.au,
-                            radius_cm=1*u.au.to(u.cm), mass_g=1*u.M_sun.to(u.g),
-                            power=power, luminosity=lstar*u.L_sun,)
+
+            dusttem_fn = tmplt.format(lstar, power)
+            outname = "sz{2}_rad1e4au_mstar1msun_rstar1au_lstar{0:0.1e}lsun_power{1}".format(lstar,power,sz)
+            if not os.path.exists(dusttem_fn):
+                core_model_dust(outname=outname,
+                                x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8, sz=sz,
+                                max_rad=max_rad, rbreak=1000*u.au,
+                                radius_cm=1*u.au.to(u.cm), mass_g=1*u.M_sun.to(u.g),
+                                power=power, luminosity=lstar*u.L_sun,)
+            else:
+                dust_temperature = read_dust_temperature(dusttem_fn, sz)
+
+            fig1 = pl.figure(1)
+            fig1.clf()
+            ax1 = pl.subplot(1,2,1)
+            im = ax1.imshow(dust_temperature[:,:,sz/2], cmap='hot')
+            pl.colorbar(im, ax=ax1)
+            ax2 = pl.subplot(1,2,2)
+            ax2.plot(rr.ravel(), dust_temperature.ravel(), '.', alpha=0.25)
+            pl.savefig("midplane_dust_temperature_{0}.png".format(outname))
+
+
+            ax3 = fig2.gca()
+            ax3.plot(rr_u, dust_temperature.flat[inds], linestyle=linestyles[power],
+                     color=colors[lstar], alpha=1.0, label="$L={0:0.1e}, \\kappa={1}$".format(lstar, power))
+
+    pl.figure(2)
+    pl.legend(loc='best')
+    pl.xlabel("Radius (AU)", fontsize=16)
+    pl.ylabel("Dust temperature (K)", fontsize=16)
+    fig2.savefig("dust_radial_profile_comparison.png")

@@ -12,6 +12,11 @@ import yt
 import struct
 from core_models import broken_powerlaw
 
+# lvg results in inverted populations for methanol and is therefore useless
+lvg = False
+
+do_methanol = True
+
 x_co = 1.0e-4
 x_h2co = 1.0e-9
 x_ch3oh = 1e-9
@@ -104,7 +109,7 @@ shutil.copy('/Users/adam/work/jimsims/code/dustopac.inp',
 shutil.copy('/Users/adam/repos/radmc-3d/version_0.39/python/python_examples/datafiles/molecule_co.inp', '.')
 shutil.copy('/Users/adam/LAMDA/e-ch3oh.dat','molecule_ch3oh.inp')
 
-params=dict(istar_sphere=0, itempdecoup=0, lines_mode=3, nphot=1000000,
+params=dict(istar_sphere=0, itempdecoup=0, lines_mode=3 if lvg else 1, nphot=1000000,
             nphot_scat=30000, nphot_spec=100000, rto_style=3,
             scattering_mode=0, scattering_mode_max=0, tgas_eq_tdust=1,)
 
@@ -143,7 +148,7 @@ with open('wavelength_micron.inp', 'w') as fh:
 
 
 with open('radmc3d.inp','w') as f:
-    params['lines_mode'] = 3 # 3 = sobolev (LVG)
+    params['lines_mode'] = 3 if lvg else 1 # 3 = sobolev (LVG)
     f.write(params_string.format(**params))
 
 # compute the dust temperature
@@ -175,7 +180,6 @@ pl.savefig("midplane_dust_temperature.png")
 
 
 
-do_methanol = False
 if do_methanol:
 
     with open('lines.inp','w') as fh:
@@ -207,76 +211,78 @@ if do_methanol:
     wavelength_center = (218.440063*u.GHz).to(u.um, u.spectral()).value
 
     with open('radmc3d.inp','w') as f:
-        params['lines_mode'] = 3
+        params['lines_mode'] = 3 if lvg else 1
         f.write(params_string.format(**params))
 
-    assert os.system('radmc3d calcpop writepop noscat') == 0
+    # no need to calculate populations when lines_mode=1
+    if lvg:
+        assert os.system('radmc3d calcpop writepop noscat') == 0
 
-    shutil.copy('levelpop_ch3oh.bdat', 'levelpop_ch3oh_all.bdat')
+        shutil.copy('levelpop_ch3oh.bdat', 'levelpop_ch3oh_all.bdat')
 
-    def read_levels(level_fn):
-        with open(level_fn, 'rb') as fh:
-            ftype, = struct.unpack('=q', fh.read(8))
-            nrcells, = struct.unpack('=q', fh.read(8))
-            nrlevels_subset, = struct.unpack('=q', fh.read(8))
-            nlevels, = struct.unpack('=q', fh.read(8))
-            levels = [struct.unpack('=q', fh.read(8)) for ii in range(nlevels)]
-            data = np.fromfile(fh, dtype='float64', count=nlevels*nrlevels_subset)
-        print(ftype, nrcells, nrlevels_subset, nlevels, levels)
+        def read_levels(level_fn):
+            with open(level_fn, 'rb') as fh:
+                ftype, = struct.unpack('=q', fh.read(8))
+                nrcells, = struct.unpack('=q', fh.read(8))
+                nrlevels_subset, = struct.unpack('=q', fh.read(8))
+                nlevels, = struct.unpack('=q', fh.read(8))
+                levels = [struct.unpack('=q', fh.read(8)) for ii in range(nlevels)]
+                data = np.fromfile(fh, dtype='float64', count=nlevels*nrlevels_subset)
+            print(ftype, nrcells, nrlevels_subset, nlevels, levels)
 
-        assert sz * sz * sz == nrlevels_subset
+            assert sz * sz * sz == nrlevels_subset
 
-        return data.reshape([sz, sz, sz, nlevels])
+            return data.reshape([sz, sz, sz, nlevels])
 
-    ch3oh_levels = read_levels('levelpop_ch3oh.bdat')
+        ch3oh_levels = read_levels('levelpop_ch3oh.bdat')
 
-    tbl1,tbl2,tbl3 = lamda.parse_lamda_datafile('molecule_ch3oh.inp')
+        tbl1,tbl2,tbl3 = lamda.parse_lamda_datafile('molecule_ch3oh.inp')
 
-    #for level in (19,90,42,53):
-    for trans in (240,241,242,251):
+        #for level in (19,90,42,53):
+        for trans in (240,241,242,251):
 
-        level_U = int(tbl2['Upper'][tbl2['Transition'] == trans])
-        level_L = int(tbl2['Lower'][tbl2['Transition'] == trans])
-        level_U_label = tbl3['J'][tbl3['Level'] == level_U][0]
-        level_L_label = tbl3['J'][tbl3['Level'] == level_L][0]
+            level_U = int(tbl2['Upper'][tbl2['Transition'] == trans])
+            level_L = int(tbl2['Lower'][tbl2['Transition'] == trans])
+            level_U_label = tbl3['J'][tbl3['Level'] == level_U][0]
+            level_L_label = tbl3['J'][tbl3['Level'] == level_L][0]
 
-        fig2 = pl.figure(2)
-        fig2.clf()
-        pl.suptitle("{0} - {1}".format(level_U_label, level_L_label))
-        ax1 = pl.subplot(2,2,1)
-        # trans 240 = 19-13 = 4_22-312
-        im = ax1.imshow(ch3oh_levels[:,:,int(sz/2),level_U-1], cmap='hot',
-                        norm=matplotlib.colors.LogNorm())
-        pl.colorbar(im, ax=ax1)
-        ax2 = pl.subplot(1,2,2)
-        ax2.semilogy(rr.ravel(), ch3oh_levels[:,:,:,level_U-1].ravel(), '.', alpha=0.25,
-                     label=level_U_label)
+            fig2 = pl.figure(2)
+            fig2.clf()
+            pl.suptitle("{0} - {1}".format(level_U_label, level_L_label))
+            ax1 = pl.subplot(2,2,1)
+            # trans 240 = 19-13 = 4_22-312
+            im = ax1.imshow(ch3oh_levels[:,:,int(sz/2),level_U-1], cmap='hot',
+                            norm=matplotlib.colors.LogNorm())
+            pl.colorbar(im, ax=ax1)
+            ax2 = pl.subplot(1,2,2)
+            ax2.semilogy(rr.ravel(), ch3oh_levels[:,:,:,level_U-1].ravel(), '.', alpha=0.25,
+                         label=level_U_label)
 
-        ax3 = pl.subplot(2,2,3)
-        im = ax3.imshow(ch3oh_levels[:,:,int(sz/2),level_L-1], cmap='hot',
-                        norm=matplotlib.colors.LogNorm())
-        pl.colorbar(im, ax=ax3)
-        ax4 = pl.subplot(1,2,2)
-        ax4.semilogy(rr.ravel(), ch3oh_levels[:,:,:,level_L-1].ravel(), '.', alpha=0.25,
-                     label=level_L_label)
-        pl.legend(loc='best')
+            ax3 = pl.subplot(2,2,3)
+            im = ax3.imshow(ch3oh_levels[:,:,int(sz/2),level_L-1], cmap='hot',
+                            norm=matplotlib.colors.LogNorm())
+            pl.colorbar(im, ax=ax3)
+            ax4 = pl.subplot(1,2,2)
+            ax4.semilogy(rr.ravel(), ch3oh_levels[:,:,:,level_L-1].ravel(), '.', alpha=0.25,
+                         label=level_L_label)
+            pl.legend(loc='best')
 
-        pl.savefig("ch3oh_{0}-{1}_levelpops.png".format(level_U_label,level_L_label))
-
-
-    # lines_mode = 50 means read from file
-    with open('radmc3d.inp','w') as f:
-        params['lines_mode'] = 50
-        f.write(params_string.format(**params))
+            pl.savefig("ch3oh_{0}-{1}_levelpops.png".format(level_U_label,level_L_label))
 
 
+        # lines_mode = 50 means read from file
+        with open('radmc3d.inp','w') as f:
+            params['lines_mode'] = 50
+            f.write(params_string.format(**params))
 
-    # Debug: tau=1 surface should exist.
-    os.system("radmc3d tausurf 1.0 lambda 1300")
-    shutil.move('image.out', 'tausurf_1300um.out')
-    im = radmc3dPy.image.readImage('tausurf_1300um.out')
-    im.writeFits('tausurf_1300um.fits', fitsheadkeys={}, dpc=5400,
-                 coord='19h23m43.963s +14d30m34.56s')
+
+
+    # # Debug: tau=1 surface should exist.
+    # os.system("radmc3d tausurf 1.0 lambda 1300")
+    # shutil.move('image.out', 'tausurf_1300um.out')
+    # im = radmc3dPy.image.readImage('tausurf_1300um.out')
+    # im.writeFits('tausurf_1300um.fits', fitsheadkeys={}, dpc=5400,
+    #              coord='19h23m43.963s +14d30m34.56s')
 
 
     radmc3dPy.image.makeImage(nlam=100,
@@ -293,7 +299,9 @@ if do_methanol:
               label="$\\nu^2$")
     pl.loglog(im.freq, im.image[25,25,:])
     pl.legend(loc='best')
+    pl.savefig("SED.png")
 
+    # debug: make an optical depth image
     os.system('radmc3d image npix 50 incl 0 sizeau 10000 noscat  pointau 0.0  0.0  0.0 fluxcons lambdarange 500 5000 tracetau')
     im = radmc3dPy.image.readImage('image.out')
     pl.figure(3).clf()
@@ -301,6 +309,7 @@ if do_methanol:
     pl.loglog(im.freq, im.image[15,15,:], label='15,15')
     pl.ylabel("Optical Depth")
     pl.legend(loc='best')
+    pl.savefig("optical_depth.png")
 
 
     radmc3dPy.image.makeImage(iline=240, widthkms=10,
@@ -320,6 +329,7 @@ if do_methanol:
     pl.plot(im.freq, im.image[15,15,:], label='15,15')
     pl.ylabel("Line?")
     pl.legend(loc='best')
+    pl.savefig("ch3oh_422_spectrum.png")
 
 
 
