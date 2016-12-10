@@ -111,6 +111,7 @@ shutil.copy('/Users/adam/LAMDA/e-ch3oh.dat','molecule_ch3oh.inp')
 
 params=dict(istar_sphere=0, itempdecoup=0, lines_mode=3 if lvg else 1, nphot=1000000,
             nphot_scat=30000, nphot_spec=100000, rto_style=3,
+            doppcatch=True,
             scattering_mode=0, scattering_mode_max=0, tgas_eq_tdust=1,)
 
 params_string = """
@@ -290,6 +291,7 @@ if do_methanol:
                               npix=50,
                               writepop=False,
                               noscat=True,
+                              doppcatch=True,
                               nostar=False,
                               incl=0,
                               sizeau=10000)
@@ -315,6 +317,7 @@ if do_methanol:
     radmc3dPy.image.makeImage(iline=240, widthkms=10,
                               linenlam=40,
                               nostar=False,
+                              doppcatch=True,
                               noscat=True,
                               vkms=0,
                               writepop=False,
@@ -334,19 +337,20 @@ if do_methanol:
 
 
 
-    # ###### TEST
-    # fig4 = pl.figure(4)
-    # fig5 = pl.figure(5)
-    # fig4.clf()
-    # fig5.clf()
-    # for iline in range(1,250):
-    #     os.system("radmc3d image npix 1 incl 0 sizeau 10000 vkms 0 widthkms 10 noscat  pointau 0.0  0.0  0.0 fluxcons iline {0} > /dev/null".format(iline))
-    #     im = radmc3dPy.image.readImage('image.out')
-    #     fig4.gca().plot(im.freq, im.image.ravel(), label='{0}'.format(iline))
-    #     fig5.gca().plot(np.linspace(-10,10,40), im.image.ravel(), label='{0}'.format(iline))
-    #     if im.image.max() / im.image.min() < 1.1:
-    #         print(iline)
-    # pl.legend(loc='best')
+    ###### TEST
+    fig4 = pl.figure(4)
+    fig5 = pl.figure(5)
+    fig4.clf()
+    fig5.clf()
+    for iline in range(1,250,25):
+        os.system("radmc3d image npix 1 incl 0 sizeau 10000 vkms 0 widthkms 10 noscat doppcatch pointau 0.0  0.0  0.0 fluxcons iline {0} > /dev/null".format(iline))
+        im = radmc3dPy.image.readImage('image.out')
+        fig4.gca().plot(im.freq, im.image.ravel(), label='{0}'.format(iline))
+        fig5.gca().plot(np.linspace(-10,10,40), im.image.ravel(), label='{0}'.format(iline))
+        if im.image.max() / im.image.min() < 1.1:
+            print("peak is <1.1x min for line {0}".format(iline))
+    pl.legend(loc='best')
+    fig5.savefig('ch3oh_velocity_test_plot.png')
 
 
 
@@ -361,6 +365,7 @@ if do_methanol:
     radmc3dPy.image.makeImage(iline=242, widthkms=10,
                               linenlam=40,
                               nostar=False,
+                              doppcatch=True,
                               noscat=True,
                               vkms=0,
                               writepop=False,
