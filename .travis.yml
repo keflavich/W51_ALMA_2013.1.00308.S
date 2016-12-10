@@ -11,3 +11,5 @@ before_install:
      texlive-latex-extra
      texlive-latex-recommended
      texlive-xetex
+- wget https://journals.aps.org/files/revtex/revtex4-1.zip
+- unzip revtex4-1.zip
