@@ -152,6 +152,7 @@ def core_model_dust(outname, x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8,
     dust_temperature = read_dust_temperature('dust_temperature.bdat', sz=sz)
     shutil.copy('dust_temperature.bdat','dust_temperature_{0}.bdat'.format(outname))
 
+    os.remove('lines.inp')
     os.system('radmc3d image npix 50 incl 0 sizeau 10000 noscat pointau 0.0  0.0  0.0 fluxcons lambda 1323')
     im = radmc3dPy.image.readImage('image.out')
     im.writeFits('dustim1323um_{0}.fits'.format(outname), fitsheadkeys={}, dpc=5400,
@@ -200,6 +201,7 @@ if __name__ == "__main__":
             dust_image = 'dustim1323um_{0}.fits'.format(outname)
             if not os.path.exists(dust_image):
                 shutil.copy(dusttem_fn, 'dust_temperature.bdat')
+                os.remove('lines.inp')
                 os.system('radmc3d image npix 50 incl 0 sizeau 10000 noscat pointau 0.0  0.0  0.0 fluxcons lambda 1323')
                 im = radmc3dPy.image.readImage('image.out')
                 im.writeFits(dust_image, fitsheadkeys={}, dpc=5400,
