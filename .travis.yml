@@ -24,6 +24,9 @@ before_install:
 - wget https://journals.aps.org/files/revtex/4/revtex4.zip
 - sudo unzip revtex4.zip -d cores_and_outflows/
 - sudo unzip revtex4.zip
+- sudo unzip revtex4.zip -d /usr/share/texlive/texmf-dist/tex/latex/
+- sudo unzip revtex4.zip -d /usr/share/texlive/texmf-dist/tex/latex/revtex4/
 - sudo unzip revtex4.zip -d /usr/share/texlive/texmf-local/
 - sudo mktexlsr /usr/share/texlive/texmf-local
+- sudo mktexlsr /usr/share/texlive/texmf-dist/tex/latex/revtex4/
 - export TEXINPUTS=$PWD:$TEXINPUTS
