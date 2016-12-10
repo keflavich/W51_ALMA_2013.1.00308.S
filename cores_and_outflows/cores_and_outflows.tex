@@ -246,7 +246,7 @@ and the lines they cover described in Section \ref{sec:obslines}.
 % {fig:uvcov}{1}{16cm}
 
 Additionally, we will comment briefly on project 2015.1.01569.S (PI: Goddi),
-which observed two fields centered on e2e/e8 and north with very long baselines
+which observed two fields centered on e2e/e8 and North with very long baselines
 (resolution 0.04\arcsec) and provides additional insights that our 0.2\arcsec
 data do not yield alone.  Full details of that data set will be released in a
 future work.
@@ -383,7 +383,7 @@ included.  The resulting catalog includes 113 sources.
 The `by-eye' core extraction approach, in which we placed ds9 regions on all
 sources that look `real', produced a more reliable but less complete (and less
 quantifiable) catalog containing 75 sources.  This catalog is more useful in
-the regions around the bright sources e2 and north, since these regions are
+the regions around the bright sources e2 and North, since these regions are
 affected by substantial uncleaned PSF sidelobe artifacts.  In particular, the
 dendrogram catalog includes a number of sources around e2/e8 that, by eye,
 appear to be parts of continuous extended emission rather than local peaks;
@@ -400,9 +400,10 @@ $r\sim0.6$\arcsec.  This approach is necessary, as some of the sources are not
 centrally peaked and are therefore likely to be spatially resolved starless
 cores.
 
-Further information about and general discussion of the continuum sources is 
-in Appendix \ref{sec:contsrcs}.  For the rest of this section, we focus
-on only the few brightest sources.
+Further information about and general discussion of the continuum sources is in
+Appendix \ref{sec:contsrcs}.  For the rest of this section, we focus on only
+the few brightest sources.  The general point source population is briefly
+revisited in Section \ref{sec:faintsrcs_discussion}.
 
 
 %*demonstrate this* Generally, the obviously interstellar features are narrower.
@@ -473,18 +474,18 @@ ionizing.  Limits on the stellar properties are further discussed in
 Section \ref{sec:stellarproperties}.
 
 
-\subsubsection{W51 e8 and north mass and temperature from continuum}
+\subsubsection{W51 e8 and North mass and temperature from continuum}
 \label{sec:w51e8andnorth}
 % total_mass_analysis
-We repeat the above analysis for e8 and north.  They have peak flux densities
+We repeat the above analysis for e8 and North.  They have peak flux densities
 of 0.35 and 0.44 Jy/beam respectively, corresponding to peak brightness
 temperatures of 205 and 256 K.
-The lower limit luminosities of W51 e8 and north in a single beam, assuming the
+The lower limit luminosities of W51 e8 and North in a single beam, assuming the
 brightest detected beam is optically thick, are 1.6\ee{4} and 3.9\ee{4} \lsun,
 respectively.
 
 
-W51 North has an upper limit similar to that of W51e2e, but somewhat less
+W51 North has a free-free upper limit similar to that of W51e2e, but somewhat less
 restrictive because the noise in that region is substantially higher.  W51 e8,
 by contrast with the others, has a clear detection at cm wavelengths.  The
 source e8n, which is offset from the peak mm emission by 0.13\arcsec (700 AU),
@@ -493,7 +494,7 @@ optically thick \hii region size $R=180$ AU.  This could be part of an ionized
 jet or an ionizing binary companion, but its offset from the central mm source
 suggests that it is not a simple spherically symmetric HC\hii region.
 
-The apparent dust masses in the central beams of e8 and north are the same
+The apparent dust masses in the central beams of e8 and North are the same
 as in e2e, $M\sim18$ \msun, but these measurements are subject to the same
 limits discussed in Section \ref{sec:W51e2e}.
 
@@ -521,11 +522,14 @@ corresponds to an optical depth of $\tau\approx0.5$, implying that a large
 fraction of the cloud is either approaching optically thick or is warmer than 20
 K.  For an unresolved spherical source in the $\sim0.2\arcsec$ beam, this
 column density corresponds to a volume density $n>10^{8.1}$ \percc.
+Of the area with significant emission, 23\% has $T_B>20$ K (34 mJy \perbeam)
+and must have $T_{dust}>20$ K, guaranteeing that a substantial fraction of all
+of the detected continuum emission is coming from warmer gas.
 
 
 % total_mass_analysis also (end of it)
 Even more impressive is the amount of the total flux density concentrated
-into the three `massive cores', W51 e2e, e8, and north.  These three contain
+into the three `massive cores', W51 e2e, e8, and North.  These three contain
 12.3 Jy (within 1\arcsec or 5400 AU apertures) of the total 23.2 Jy in the
 observed field - more than half of the total ALMA flux density, or 15\% of the
 BGPS flux density.  In a \citet{Kroupa2001a} IMF, massive stars ($M>20$ \msun)
@@ -546,26 +550,30 @@ mixture of high- and low-mass stars as the region evolves.
 \label{sec:chemistrymapsobs}
 The ``hot cores'' in W51 (e2, e8, and North) are spatially well-resolved and
 multi-layered.  These cores are detected in lines of many different species
-spanning areas $\sim5\ee{3}-10^4$ AU across.
+spanning areas $\sim5\ee{3}-1\ee{4}$ AU across.  We describe some of the
+specific notable chemical features in this section, but the overall point that
+the three hot cores have extended chemical structure is highlighted in Figures
+\ref{fig:chemmapse2}, \ref{fig:chemmapse8}, and \ref{fig:chemmapsnorth}, with a
+fainter hot core shown for contrast in Figure \ref{fig:chemmapsALMAmm14}.
 
 Surrounding W51e2e, there are relatively sharp-edged uniform-brightness regions
 in a few spectral lines over the range 51-60 \kms (Figure
 \ref{fig:chemmapse2}).  Some of these features are elongated in the direction
-of the outflow, but most have significant extent orthogonal to the outflow,
-spanning $9500\times6600$ AU.  They are prominent in \methanol, OCS, and
+of the outflow, but most have significant extent orthogonal to the outflow.
+The circularly symmetric features are prominent in \methanol, OCS, and
 \dimethylether, weak but present in \formaldehyde and SO, and absent in
 \cyanoacetylene and HNCO.
 
-Around e8, a similar feature is observed, but in this case \dimethylether is absent.
-Toward W51 north, \methanol, \formaldehyde, and SO exhibit the sharp-edged
-enhancement feature, while the other species do not.
+Around e8, a similar chemically enhanced region is observed, but in this case
+\dimethylether is absent.  Toward W51 North, \methanol, \formaldehyde, and SO
+exhibit the sharp-edged enhancement feature, while the other species do not.
 %The enhancement is from 50-60 \kms.
 
 By contrast, along the south end of the e8 filament, no such enhanced features
-are seen; only \formaldehyde and the lowest transition of \methanol are
-evident.
+are seen; only \formaldehyde and the lowest transition of methanol, \methanol
+\fourtwotwo, are evident.
 
-The relative chemical structures of e2, e8, and north are  similar.
+The relative chemical structures of e2, e8, and North are  similar.
 The same species are detected in all of the central cores.  However, in e2,
 \dimethylether, \methylformate, \ethylcyanide, and Acetone (\acetone) are
 significantly more extended than in the other sources.
@@ -573,65 +581,69 @@ significantly more extended than in the other sources.
 in e2 (Figures \ref{fig:chemmapse2}, \ref{fig:chemmapse8},
 \ref{fig:chemmapsnorth}, \ref{fig:chemmapsALMAmm14}).
 
-Different chemical groups exhibit different morphologies around e2.  Species that
-are elongated in the NW/SE direction are associated primarily with the outflow
+Different chemical groups exhibit different morphologies around e2, and this
+approximate grouping is also seen around the other cores.  Species that are
+elongated in the NW/SE direction are associated primarily with the outflow
 (\cyanoacetylene, \ethylcyanide).  Other species are associated primarily with
-the extended core (\methylformate, \dimethylether, \acetone).  Some are only
-seen in the compact core (\methyleneamidogen, HNCO, \formamide, and
-vibrationally excited \cyanoacetylene).  Only \methanol and OCS are associated
-with both the extended core and the outflow, but not the greater extended
-emission.  \ketene seems to be associated with only the extended core, but not
-the compact core. Finally, there are the species that trace the broader ISM in
-addition to the cores and outflows (\formaldehyde, $^{13}$CS, OCS, C$^{18}$O
-and SO).  Both HCOOH and N$_2$D+ are weak and associated only with the innermost
-e2e core.
+the extended circular core (\methylformate, \dimethylether, \acetone).  Some
+are only seen in the compact core ($R<0.4\arcsec\sim2000$ AU;
+\methyleneamidogen, HNCO, \formamide, and vibrationally excited
+\cyanoacetylene).  Only \methanol and OCS are associated with both the extended
+core and the outflow, but not the greater extended emission.  \ketene seems to
+be associated with only the extended core, but not the compact core. Finally,
+there are the species that trace the broader ISM in addition to the cores and
+outflows: \formaldehyde, $^{13}$CS, OCS, C$^{18}$O and SO.  Both HCOOH and
+N$_2$D+ are weak and associated only with the innermost e2e core.
 
 The presence of these complex species symmetrically distributed at large
 distances ($r\sim5000$ AU) from the central sources is an independent
 indication of the gas heating provided by these sources.  The abundance
-increase most likely corresponds to $T\gtrsim85$ K \citep{Green2009a}.
+increase most likely corresponds to $T\gtrsim85$ K, the approximate
+sublimation temperature of \methanol ice \citep{Green2009a}.
 
 
-\Figure{figures/chemical_m0_slabs_e2.png}
-{Moment 0 maps of the e2 region in 40 different lines over the range 51 to 60
-\kms with continuum subtraction using the 30th percentile emission
-over the ranges 25-40 and 75-90 \kms.  All images are on the same scale, and
-the negative features show absorption against the continuum.  There
+\Figure{figures/chemical_max_slabs_e2.png}
+{Peak brightness maps of the e2 region in 40 different lines over the range 51 to 60
+\kms.  To illustrate the lower limit temperature implied by the observed brightness,
+the maps are not continuum-subtracted.  
+For additional contrast, contours are shown at 150, 200, 250, and 300 K
+(red, green, blue, yellow).
+There
 is a strong `halo' of emission seen in the CH$_3$Ox lines and OCS.  Extended
 emission is also clearly seen in SO, $^{13}$CS, and \formaldehyde, though these
 lines more smoothly blend into their surroundings.  HNCO and \formamide have
 smaller but substantial regions of enhancement with a sharp contrast to their
-surroundings.  HC$_3$N traces the e2 outflow.  The bright H30$\alpha$ emission
+surroundings.  HC$_3$N traces the e2e outflow.  The bright H30$\alpha$ emission
 marks the position of e2w, the hypercompact HII region that dominates the
 centimeter emission in e2.
 }{fig:chemmapse2}{1}{18cm}
 
-\Figure{figures/chemical_m0_slabs_e8.png}
-{Moment 0 maps of the e8 region in 40 different lines over the range 52 to 63
-\kms with continuum subtraction using the 30th percentile emission
-over the ranges 25-40 and 75-90 \kms.  All images are on the same scale, and
-the negative features show absorption against the continuum.  As in e2,
+\Figure{figures/chemical_max_slabs_e8.png}
+{Peak brightness maps of the e8 region in 40 different lines over the range 52 to 63
+\kms.
+For additional contrast, contours are shown at 150 and 200 K
+(red and green, respectively).
+As in e2 (Figure \ref{fig:chemmapse2}),
 there is extended emission in the CH$_3$OH and OCS lines, but in contrast with e2,
 the other CH$_3$Ox lines are more compact. SO is brighter than OCS in e8, 
 whereas the opposite is true in e2.
 }{fig:chemmapse8}{1}{18cm}
 
-\Figure{figures/chemical_m0_slabs_north.png}
-{Moment 0 maps of the W51 IRS2 region containing the North core in 40 different
-lines over the range 54 to 64 \kms with continuum subtraction using the 30th
-percentile emission over the ranges 25-40 and 75-90 \kms.  All images are on
-the same scale, and the negative features show absorption against the
-continuum.  Qualitatively, the relative extents of species seem comparable to
-e8.  The H30$\alpha$ point source is W51 d2.
+\Figure{figures/chemical_max_slabs_north.png}
+{Peak brightness maps of the W51 IRS2 region containing the North core in 40 different
+lines over the range 54 to 64 \kms. 
+For additional contrast, contours are shown at 150 and 200 K
+(red and green, respectively).
+Qualitatively, the relative extents of
+species seem comparable to e8 (Figure \ref{fig:chemmapse8}).  The H30$\alpha$
+point source is W51 d2.
 }{fig:chemmapsnorth}{1}{18cm}
 
-\Figure{figures/chemical_m0_slabs_ALMAmm14.png}
-{Moment 0 maps of the ALMAmm14 region in 40 different lines over the range 58 to 67
-\kms with continuum subtraction using the 30th percentile emission
-over the ranges 25-40 and 75-90 \kms.  All images are on the same scale. 
-ALMAmm14 is one of the brightest sources outside of e2/e8/IRS2, but
-it is substantially fainter than those regions.  Still, it has a noticeably
-rich chemistry.
+\Figure{figures/chemical_max_slabs_ALMAmm14.png}
+{Peak brightness maps of the ALMAmm14 region in 40 different lines over the
+range 58 to 67 \kms.  ALMAmm14 is one of the brightest sources outside of
+e2/e8/IRS2, but it is substantially fainter than those regions.  Still, it has
+a noticeably rich chemistry.
 }{fig:chemmapsALMAmm14}{1}{18cm}
 
 
@@ -645,7 +657,7 @@ transitions with significant energy differences.  We do not use \formaldehyde
 for this analysis despite its usefulness as a thermometer because it is clearly
 optically thick (self-absorbed) in all lines in the hot cores.
 This section presents the details of the temperature determination, while 
-the implications of the temperature measurement will be discussed later,
+the implications of the temperature measurements will be discussed later,
 throughout Section \ref{sec:discussion}.
 
 We produce rotational diagrams for each spatial pixel covering all \methanol
@@ -959,7 +971,7 @@ molecular gas.}
 \Figure
 {figures/W51north_ch3oh_hnco_continuum_aplpy_kucontours.pdf}
 {Image of \methanol $8_{0,8}-7_{1,6}$ (red), HCNO $10_{0,10}-9_{0,9}$ (green),
-and 225 GHz continuum (blue) toward  north, as in Figure
+and 225 GHz continuum (blue) toward  North, as in Figure
 \ref{fig:e2methanolhnco}.  The contours show Ku-band radio continuum emission
 tracing the diffuse IRS 2 \hii region.}
 {fig:northmethanolhnco}{1}{8.5cm}
@@ -1054,7 +1066,7 @@ within a $<0.1$ pc sphere, providing a far-infrared background light capable of
 heating its surroundings.
 
 The different effects of ionizing vs thermal radiation can be seen directly in
-the three main massive star forming regions, e2, e8, and north.  Figures
+the three main massive star forming regions, e2, e8, and North.  Figures
 \ref{fig:e2methanolhnco} and \ref{fig:northmethanolhnco} show both the
 highly-excited warm molecular gas in color and the free-free emission from
 ionized gas in contours.  As described in Section
@@ -1139,7 +1151,7 @@ though some species may appear at temperatures above or below their sublimation
 temperature if they are mixed into ices that have a different sublimation
 temperature.
 
-Most of the lines identified in the hot cores e2e, e8, and north are also
+Most of the lines identified in the hot cores e2e, e8, and North are also
 present in ALMAmm14.  However, their extent is greater toward the more luminous
 sources.  An examination of the relationship between the luminosity of the
 protostars and the extent of their chemically enhanced zones will be useful for
@@ -1173,7 +1185,7 @@ accreting (and ejecting) only atomic or ionized material.
 \subsection{The accreting phase of high-mass star formation is not ionized}
 \label{sec:accretionandoutflows}
 The strong outflows observed around the highest-mass forming stars, e2e, e8,
-and north are clear indications of ongoing accretion onto these sources.
+and North are clear indications of ongoing accretion onto these sources.
 However, the bright \hii regions, including e2w, e1, and d2, all lack any sign
 of an outflow or a surrounding rotating molecular structure.  Most of these
 sources lack any surrounding molecular material at all.
@@ -1322,7 +1334,7 @@ shorter wavelengths (e.g., ionizing radiation) or at a lower overall amplitude.
 
 Within this large reservoir, there are few currently-detected fragments,
 supporting the conclusions of the Jeans analysis.
-In our data, within 6500 AU of W51 north, there is only 1 (ALMAmm35), around
+In our data, within 6500 AU of W51 North, there is only 1 (ALMAmm35), around
 e2e there is the HII region e2w and possibly 2-3 others between 5000 and 6500
 AU, and around e8 there are none.  Admittedly, our data are not very sensitive
 in the areas immediately surrounding these cores because of dynamic
@@ -1337,7 +1349,7 @@ that fragmentation is suppressed.
 % suggests that these smaller scales are \emph{more} thermally stable.
 % In the long baseline data to be presented in a future work (Goddi
 % et al, in prep), very little additional fragmentation is observed.  A few more
-% sources are detected toward e2e and north and many toward e8, but the nature of
+% sources are detected toward e2e and North and many toward e8, but the nature of
 % those more compact ($<200$ AU) sources suggests they are protostellar or
 % stellar; they may represent previously-formed cluster members rather than
 % presently-collapsing cores.  Additionally, unlike the centrally-clustered
@@ -1360,6 +1372,8 @@ The density used for the mass calculation is assumed to be distributed
 over spherical shells.  The dashed lines show the measured mean mass per
 $\sim1000$ AU beam at each radius.  Since these masses are lower than
 the local Jeans mass, the gas is stable against fragmentation.
+The high variation seen at small radii (below 0.2\arcsec) is primarily due
+to noise.
 %The dashed lines show the average mass per $\sim1000$ AU
 %beam 
 %The Jeans mass decreases
@@ -1571,6 +1585,7 @@ is circularly symmetric, while the outflow is clearly bipolar.}
 % \todo{Is there more to say here?}
 
 \subsection{The population of faint, compact sources}
+\label{sec:faintsrcs_discussion}
 In Section \ref{sec:sourceid}, we reported the identification of 75 or 113
 sources, depending on how you count them, but we have not discussed them since.
 In this section, we briefly discuss why we have chosen to ignore these sources
@@ -1642,6 +1657,12 @@ The key observational results include:
         inferred from LTE modeling of \methanol $100 \mathrm{K} < T < 600
         \mathrm{K}$.  Their centers are likely to be optically thick in
         the dust continuum.
+    \item The flux density recovered in the ALMA map above a threshold of 10
+        mJy \perbeam  is $\sim30\%$ of that seen in single-dish data.  At this
+        brightness, cold (20 K) dust would correspond to a column density
+        $N(\hh)>10^{25}$ \persc, leading us to conclude that a large fraction
+        of the cloud - likely all of the gas emitting at over 10 mJy \perbeam -
+        is warmer than 20 K.
 \end{itemize}
 
 From these observations, we have inferred the following: 
@@ -1866,8 +1887,8 @@ H77$\alpha$.}
 {fig:outflowscontinuumnorth}{1}{12cm}
 
 \subsubsection{north}
-The outflow from W51 north is extended and complex.
-A jet-like high-velocity feature appears directly to the north of W51 north in
+The outflow from W51 North is extended and complex.
+A jet-like high-velocity feature appears directly to the north of W51 North in
 both CO and SO (Figure \ref{fig:outflowscontinuumnorth}).  However, in SO, this feature begins to emit at $\sim47$ \kms
 and continues to $\sim 100$ \kms.  The CO emission below $<70$ \kms is
 completely absent, presumably obscured by foreground material.  The blueshifted

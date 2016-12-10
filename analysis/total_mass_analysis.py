@@ -39,6 +39,8 @@ ppbeam = (beam.sr/(pixel_scale**2)).decompose().value / u.beam
 
 # over what threshold are we including flux when measuring total masses?
 threshold = 10*u.mJy/u.beam
+# threshold above which 20 K is very thick
+thick_threshold = (20*u.K).to(u.mJy, u.brightness_temperature(beam, masscalc.centerfreq)) / u.beam
 threshold_column = (threshold * u.beam/u.Jy * masscalc.col_conversion_factor(beam)).to(u.cm**-2)
 threshold_column = masscalc.dust.colofsnu(nu=masscalc.centerfreq,
                                           snu=threshold*u.beam,
@@ -49,7 +51,22 @@ threshold_density = (masscalc.mass_conversion_factor(20) * (threshold*u.beam).to
                      (beam.sr.value*masscalc.distance**2)**(1.5) /
                      (2.8*constants.m_p)).to(1/u.cm**3)
 definitely_signal = data > threshold
+definitely_thick_if_20K = data > thick_threshold
 total_signal = data[definitely_signal].sum() / ppbeam
+print("Total pixels > 10mJy/beam: {0} = {1}; r_eff = {2}"
+      .format(definitely_signal.sum(), definitely_signal.sum()/ppbeam,
+              ((definitely_signal.sum()*(pixel_scale*masscalc.distance)**2)**0.5).to(u.pc,
+                                                                                     u.dimensionless_angles())))
+print("Total pixels > {3}: {0} = {1}; r_eff = {2}, fraction={4}, fraction of signal: {5}"
+      .format(definitely_thick_if_20K.sum(), definitely_thick_if_20K.sum()/ppbeam,
+              ((definitely_thick_if_20K.sum() *
+                (pixel_scale*masscalc.distance)**2)**0.5).to(u.pc,
+                                                             u.dimensionless_angles()),
+              thick_threshold,
+              definitely_thick_if_20K.sum()/np.isfinite(data).sum(),
+              definitely_thick_if_20K.sum()/definitely_signal.sum(),
+             )
+     )
 print("Total flux: {0}".format(total_signal))
 print("Total mass(20K): {0}".format(total_signal * masscalc.mass_conversion_factor()*u.M_sun/u.Jy))
 print("Threshold column (20K): {0:e}".format(threshold_column))

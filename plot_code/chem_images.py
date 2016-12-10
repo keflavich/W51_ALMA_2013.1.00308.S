@@ -27,6 +27,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
               vmax_m0=5.0,
               vmax_max=150,
               maxbeam=0.5*u.arcsec,
+              contourlevels=None,
              ):
     nplots = np.product(plotgrid)
 
@@ -178,7 +179,10 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         im3 = ax3.imshow(max_sub.value, vmin=-10, vmax=vmax_max,
                          cmap=pl.cm.bone_r, interpolation='nearest')
         # add a contour to show the regions that are "saturated" above T_max
-        ax3.contour(max_sub.value, levels=[vmax_max, 300, 400, 500], colors=['r','g','b','y'])
+        if contourlevels is None:
+            contourlevels = [vmax_max, 300, 400, 500]
+        qcs = ax3.contour(max_sub.value, levels=contourlevels, colors=['r','g','b','y'])
+        #print("levels: {0} = {1}".format(qcs.levels, contourlevels))
         ax3.text(3, 0.87*m0.shape[0], label, fontsize=9, color='r')
         ax3.set_xticklabels([])
         ax3.set_yticklabels([])
@@ -189,7 +193,8 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         im5 = ax5.imshow(max.value, vmin=-10, vmax=vmax_max,
                          cmap=pl.cm.bone_r, interpolation='nearest')
         # add a contour to show the regions that are "saturated" above T_max
-        ax5.contour(max_sub.value, levels=[vmax_max, 300, 400, 500], colors=['r','g','b','y'])
+        qcs = ax5.contour(max.value, levels=contourlevels, colors=['r','g','b','y'])
+        #print("levels: {0} = {1}".format(qcs.levels, contourlevels))
         ax5.text(3, 0.87*m0.shape[0], label, fontsize=9, color='r')
         ax5.set_xticklabels([])
         ax5.set_yticklabels([])
@@ -284,17 +289,25 @@ if __name__ == "__main__":
 
     chem_plot(linere, yslice=slice(357,477), xslice=slice(104,224),
               vrange=[51,60]*u.km/u.s, sourcename='e2',
+              vmax_max=200,
+              contourlevels=[150,200,250,300],
               filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*e2e8*fits')))
 
     chem_plot(linere, yslice=slice(227,347), xslice=slice(119,239),
               vrange=[52,63]*u.km/u.s, sourcename='e8',
+              vmax_max=200,
+              contourlevels=[150,200,250,300],
               filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*e2e8*fits')))
 
     chem_plot(linere, yslice=slice(31,231), xslice=slice(152,350),
               vrange=[54,64]*u.km/u.s, sourcename='north',
+              vmax_max=200,
+              contourlevels=[150,200,250,300],
               filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*north*fits')))
 
     chem_plot(linere, yslice=slice(50,150), xslice=slice(80,180),
               vrange=[58,67]*u.km/u.s, sourcename='ALMAmm14',
+              vmax_max=100,
+              contourlevels=[125,150,175,200],
               filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*ALMAmm14*fits')))
 
