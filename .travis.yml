@@ -23,3 +23,4 @@ before_install:
 - cd ..
 - wget https://journals.aps.org/files/revtex/4/revtex4.zip
 - sudo unzip revtex4.zip -d cores_and_outflows/
+- sudo unzip revtex4.zip

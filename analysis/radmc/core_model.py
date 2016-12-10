@@ -19,7 +19,7 @@ do_methanol = True
 
 x_co = 1.0e-4
 x_h2co = 1.0e-9
-x_ch3oh = 1e-9
+x_ch3oh = 1e-8 # probably 1e-9, but boosted for tests...
 zh2 = 2.8
 mu_h2 = yt.YTArray(zh2 * u.Da.to(u.g), 'g')
 
@@ -112,7 +112,9 @@ shutil.copy('/Users/adam/LAMDA/e-ch3oh.dat','molecule_ch3oh.inp')
 params=dict(istar_sphere=0, itempdecoup=0, lines_mode=3 if lvg else 1, nphot=1000000,
             nphot_scat=30000, nphot_spec=100000, rto_style=3,
             doppcatch=True,
-            scattering_mode=0, scattering_mode_max=0, tgas_eq_tdust=1,)
+            scattering_mode=0, scattering_mode_max=0,
+            tgas_eq_tdust=0, # usually want this true...
+           )
 
 params_string = """
 istar_sphere = {istar_sphere}
@@ -283,7 +285,7 @@ if do_methanol:
     # shutil.move('image.out', 'tausurf_1300um.out')
     # im = radmc3dPy.image.readImage('tausurf_1300um.out')
     # im.writeFits('tausurf_1300um.fits', fitsheadkeys={}, dpc=5400,
-    #              coord='19h23m43.963s +14d30m34.56s')
+    #              coord='19h23m43.963s +14d30m34.56s', overwrite=True)
 
 
     radmc3dPy.image.makeImage(nlam=100,
@@ -359,7 +361,7 @@ if do_methanol:
     shutil.move('image.out', 'ch3oh_422-312_image.out')
     im = radmc3dPy.image.readImage('ch3oh_422-312_image.out')
     im.writeFits('ch3oh_422-312_image.fits', fitsheadkeys={}, dpc=5400,
-                 coord='19h23m43.963s +14d30m34.56s')
+                 coord='19h23m43.963s +14d30m34.56s', overwrite=True)
 
 
     radmc3dPy.image.makeImage(iline=242, widthkms=10,
@@ -377,7 +379,7 @@ if do_methanol:
     shutil.move('image.out', 'ch3oh_808-716_image.out')
     im = radmc3dPy.image.readImage('ch3oh_808-716_image.out')
     im.writeFits('ch3oh_808-716_image.fits', fitsheadkeys={}, dpc=5400,
-                 coord='19h23m43.963s +14d30m34.56s')
+                 coord='19h23m43.963s +14d30m34.56s', overwrite=True)
 
 
     from astropy.io import fits
@@ -403,7 +405,7 @@ if do_methanol:
     #                          nlam=20, sizeau=10000)
     #shutil.move('image.out', 'ch3oh_422-312_image.out')
     #im = radmc3dPy.image.readImage('ch3oh_422-312_image.out')
-    #im.writeFits('ch3oh_422-312_image.fits', fitsheadkeys={}, dpc=5400, coord='19h23m43.963s +14d30m34.56s')
+    #im.writeFits('ch3oh_422-312_image.fits', fitsheadkeys={}, dpc=5400, coord='19h23m43.963s +14d30m34.56s', overwrite=True)
     # radmc3dPy.image.makeImage(iline=3, widthkms=5, linenlam=40, nostar=True)
     # shutil.move('image.out', 'h2co_303-202_image.out')
     # radmc3dPy.image.makeImage(iline=13, widthkms=5, linenlam=40, nostar=True)
