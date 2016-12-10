@@ -14,6 +14,9 @@ before_install:
 - wget https://journals.aps.org/files/revtex/revtex4-1.zip
 - unzip revtex4-1.zip
 - cd revtex4-1
-- sudo unzip revtex4-1-tds.zip -d /usr/local/texlive/texmf-local/
-- sudo mktexlsr /usr/local/texlive/texmf-local
-
+- sudo mkdir -p /usr/share/texlive/texmf-local/
+- sudo unzip revtex4-1-tds.zip -d /usr/share/texlive/texmf-local/
+- sudo mktexlsr /usr/share/texlive/texmf-local
+- sudo mkdir -p /usr/share/texlive/texmf-dist/texmf-local/
+- sudo unzip revtex4-1-tds.zip -d /usr/share/texlive/texmf-dist/texmf-local/
+- sudo mktexlsr /usr/share/texlive/texmf-dist/texmf-local
