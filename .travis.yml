@@ -24,7 +24,7 @@ before_install:
 - wget https://journals.aps.org/files/revtex/4/revtex4.zip
 - sudo unzip revtex4.zip -d cores_and_outflows/
 - sudo unzip revtex4.zip
-- cp revtex4/* cores_and_outflows/
+- cp -r revtex4/* cores_and_outflows/
 - sudo unzip revtex4.zip -d /usr/share/texlive/texmf-dist/tex/latex/
 - sudo unzip revtex4.zip -d /usr/share/texlive/texmf-dist/tex/latex/revtex4/
 - sudo unzip revtex4.zip -d /usr/share/texlive/texmf-local/
