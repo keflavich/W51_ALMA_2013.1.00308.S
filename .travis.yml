@@ -30,3 +30,5 @@ before_install:
 - sudo mktexlsr /usr/share/texlive/texmf-local
 - sudo mktexlsr /usr/share/texlive/texmf-dist/tex/latex/revtex4/
 - export TEXINPUTS=$PWD:$TEXINPUTS
+- echo $TEXINPUTS
+- find . -name "revsymb.sty"
