@@ -56,10 +56,10 @@ publish_dir="$tmpdir/publish"
 
 
 # get revtex
-wget https://journals.aps.org/files/revtex/4/revtex4.zip
-unzip -of revtex4.zip -d $tmpdir
-unzip -of revtex4.zip -d $project_dir
-unzip -of revtex4.zip -d $scripts_dir
+#wget https://journals.aps.org/files/revtex/4/revtex4.zip
+#unzip -of revtex4.zip -d $tmpdir
+#unzip -of revtex4.zip -d $project_dir
+#unzip -of revtex4.zip -d $scripts_dir
 
 
 export GH_PUBLISHER_PROJECT_DIR="$project_dir"

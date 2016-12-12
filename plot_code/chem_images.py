@@ -168,7 +168,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         ax2 = fig2.add_subplot(gs2[figcounter])
 
         im2 = ax2.imshow(m1.value, vmin=vrange[0].value, vmax=vrange[1].value,
-                         cmap=pl.cm.viridis, interpolation='nearest')
+                         cmap=pl.cm.jet, interpolation='nearest')
         ax2.text(3, 0.87*m0.shape[0], label, fontsize=9, color='w')
         ax2.set_xticklabels([])
         ax2.set_yticklabels([])

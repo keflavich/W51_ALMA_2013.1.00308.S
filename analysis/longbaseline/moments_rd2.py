@@ -155,6 +155,7 @@ for source,stretch in zip(('e8','e2','north','northwest',),
                 m1emi.FITSFigure.save(paths.fpath('longbaseline/moments/{1}_{0}_mom1.png'.format(linename, source)))
                 m1emi.FITSFigure.show_colorscale(vmin=stretch[0], vmax=stretch[1])
                 m1emi.FITSFigure.save(paths.fpath('longbaseline/moments/{1}_{0}_mom1_rescale.png'.format(linename, source)))
+                m1emi.write(paths.dpath('longbaseline/moments/{1}_{0}_mom1.fits'.format(linename, source)), overwrite=True)
 
                 m2emi[(mx < slabstd*2) & (mn > -slabstd*2)] = np.nan
 

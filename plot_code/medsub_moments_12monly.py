@@ -78,6 +78,7 @@ try:
     ]
 
 except ImportError:
+    print("Failed to import dpath")
     files = glob.glob("W51_b6*.image.pbcor.fits")
     dpath = lambda x: x
     fpath = lambda x: os.path.join('moments',x)
@@ -88,9 +89,6 @@ cont_percentiles['CH3OH23519-22617'] = 10
 cont_percentiles['CH3OH25322-24420'] = 10
 cont_percentiles['CH3OH18315-17414'] = 10
 cont_percentiles['HNCO28128-29029'] = 10
-
-def dpath(x):
-    return os.path.join("./",x)
 
 def load_projection(filename):
     from astropy import wcs
