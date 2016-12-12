@@ -19,7 +19,7 @@ do_methanol = True
 
 x_co = 1.0e-4
 x_h2co = 1.0e-9
-x_ch3oh = 1e-8 # probably 1e-9, but boosted for tests...
+x_ch3oh = 1e-7 # probably 1e-9, but boosted for tests...
 zh2 = 2.8
 mu_h2 = yt.YTArray(zh2 * u.Da.to(u.g), 'g')
 
@@ -30,12 +30,12 @@ max_rad = 10000*u.au
 rbreak = 1000*u.au
 zz,yy,xx = np.indices([sz,sz,sz])
 rr = ((zz-(sz-1)/2.)**2 + (yy-(sz-1)/2.)**2 + (xx-(sz-1)/2.)**2)**0.5
-max_velo = 1*u.km/u.s
+max_velo = 2*u.km/u.s
 velo = max_velo - np.array([(sz-1)/2.-zz, (sz-1/2.)-yy, (sz-1/2.)-xx]) / rr.max() * max_velo
 
 # now rr has units
 rr = rr * max_rad / (sz/2.)
-dens = broken_powerlaw(rr, rbreak=rbreak, n0=1e8*u.cm**-3, power=-1.5)
+dens = broken_powerlaw(rr, rbreak=rbreak, n0=1e9*u.cm**-3, power=-1.5)
 
 data = {'density': ((dens*u.Da*zh2).to(u.g/u.cm**3), "g/cm**3"),
         'z_velocity': (velo[0].to(u.km/u.s).value, 'km/s'),
@@ -51,7 +51,7 @@ def _DustDensity(field, data):
 ds.add_field(("gas", "dust_density"), function=_DustDensity, units="g/cm**3")
 
 def _NumberDensityCH3OH(field, data):
-    return (1./mu_h2)*x_h2co*data['density']*x_ch3oh # data['density']#
+    return (1./mu_h2)*data['density']*x_ch3oh # data['density']#
 ds.add_field(("gas", "number_density_CH3OH"), function=_NumberDensityCH3OH, units="cm**-3")
 
 def _NumberDensityH2(field, data):
@@ -217,6 +217,8 @@ if do_methanol:
         params['lines_mode'] = 3 if lvg else 1
         f.write(params_string.format(**params))
 
+    tbl1,tbl2,tbl3 = lamda.parse_lamda_datafile('molecule_ch3oh.inp')
+
     # no need to calculate populations when lines_mode=1
     if lvg:
         assert os.system('radmc3d calcpop writepop noscat') == 0
@@ -238,8 +240,6 @@ if do_methanol:
             return data.reshape([sz, sz, sz, nlevels])
 
         ch3oh_levels = read_levels('levelpop_ch3oh.bdat')
-
-        tbl1,tbl2,tbl3 = lamda.parse_lamda_datafile('molecule_ch3oh.inp')
 
         #for level in (19,90,42,53):
         for trans in (240,241,242,251):
@@ -316,7 +316,7 @@ if do_methanol:
     pl.savefig("optical_depth.png")
 
 
-    radmc3dPy.image.makeImage(iline=240, widthkms=10,
+    radmc3dPy.image.makeImage(iline=240, widthkms=2,
                               linenlam=40,
                               nostar=False,
                               doppcatch=True,
@@ -345,7 +345,7 @@ if do_methanol:
     fig4.clf()
     fig5.clf()
     for iline in range(1,250,25):
-        os.system("radmc3d image npix 1 incl 0 sizeau 10000 vkms 0 widthkms 10 noscat doppcatch pointau 0.0  0.0  0.0 fluxcons iline {0} > /dev/null".format(iline))
+        os.system("radmc3d image npix 1 incl 0 sizeau 10000 vkms 0 widthkms 2 noscat doppcatch pointau 0.0  0.0  0.0 fluxcons iline {0} > /dev/null".format(iline))
         im = radmc3dPy.image.readImage('image.out')
         fig4.gca().plot(im.freq, im.image.ravel(), label='{0}'.format(iline))
         fig5.gca().plot(np.linspace(-10,10,40), im.image.ravel(), label='{0}'.format(iline))
@@ -364,7 +364,7 @@ if do_methanol:
                  coord='19h23m43.963s +14d30m34.56s', overwrite=True)
 
 
-    radmc3dPy.image.makeImage(iline=242, widthkms=10,
+    radmc3dPy.image.makeImage(iline=242, widthkms=2,
                               linenlam=40,
                               nostar=False,
                               doppcatch=True,
@@ -376,6 +376,15 @@ if do_methanol:
                               #             wavelength_center*(1+10/3e5)],
                               #nlam=40,
                               sizeau=10000)
+
+    im = radmc3dPy.image.readImage('image.out')
+    pl.figure(3).clf()
+    pl.plot(im.freq, im.image[25,25,:], label='center pixel')
+    pl.plot(im.freq, im.image[15,15,:], label='15,15')
+    pl.ylabel("Line Brightness (Jy)")
+    pl.legend(loc='best')
+    pl.savefig("ch3oh_808_spectrum.png")
+
     shutil.move('image.out', 'ch3oh_808-716_image.out')
     im = radmc3dPy.image.readImage('ch3oh_808-716_image.out')
     im.writeFits('ch3oh_808-716_image.fits', fitsheadkeys={}, dpc=5400,
@@ -395,7 +404,51 @@ if do_methanol:
         return fh
 
 
+    for trans in (240,241,242,251):
 
+        widthkms = 2
+        linenlam = 40
+        vkms = 0
+        radmc3dPy.image.makeImage(iline=trans, widthkms=widthkms,
+                                  linenlam=linenlam,
+                                  nostar=False,
+                                  doppcatch=True,
+                                  noscat=True,
+                                  vkms=vkms,
+                                  writepop=False,
+                                  npix=50, incl=0,
+                                  #lambdarange=[wavelength_center*(1-10/3e5),
+                                  #             wavelength_center*(1+10/3e5)],
+                                  #nlam=40,
+                                  sizeau=10000)
+
+        level_U = int(tbl2['Upper'][tbl2['Transition'] == trans])
+        level_L = int(tbl2['Lower'][tbl2['Transition'] == trans])
+        level_U_label = tbl3['J'][tbl3['Level'] == level_U][0]
+        level_L_label = tbl3['J'][tbl3['Level'] == level_L][0]
+
+        prefix = "ch3oh_{0}-{1}".format(level_U_label,level_L_label)
+
+        im = radmc3dPy.image.readImage('image.out')
+
+        shutil.move('image.out', '{0}_image.out'.format(prefix))
+        im = radmc3dPy.image.readImage('{0}_image.out'.format(prefix))
+        im.writeFits('{0}_image.fits'.format(prefix), fitsheadkeys={}, dpc=5400,
+                     coord='19h23m43.963s +14d30m34.56s', overwrite=True)
+
+        fh = convert_to_K('{0}_image.fits'.format(prefix))
+        fh.writeto("{0}_image_K.fits".format(prefix), clobber=True)
+
+        img = fh[0].data
+        velo = np.linspace(vkms-widthkms/2, vkms+widthkms/2, linenlam)
+        pl.figure(3).clf()
+        pl.plot(velo, img[:,25,25], label='center pixel')
+        pl.plot(velo, img[:,15,15], label='15,15')
+        pl.plot(velo, img[:,5,5], label='5,5')
+        pl.ylabel("Line Brightness (K)")
+        pl.xlabel("Velocity (km/s)")
+        pl.legend(loc='best')
+        pl.savefig("{0}_spectrum.png".format(prefix))
 
 
     #radmc3dPy.image.makeImage(iline=240, widthkms=5, linenlam=40, nostar=True,
