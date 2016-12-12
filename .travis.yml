@@ -12,27 +12,27 @@ before_install:
      texlive-latex-recommended
      texlive-xetex
      texlive-publishers
-- wget https://journals.aps.org/files/revtex/revtex4-1.zip
-- unzip revtex4-1.zip
-- cd revtex4-1
-- sudo mkdir -p /usr/share/texlive/texmf-local/
-- sudo unzip revtex4-1-tds.zip -d /usr/share/texlive/texmf-local/
-  #- sudo mktexlsr /usr/share/texlive/texmf-local
-  #- sudo mkdir -p /usr/share/texlive/texmf-dist/texmf-local/
-  #- sudo unzip revtex4-1-tds.zip -d /usr/share/texlive/texmf-dist/texmf-local/
-  #- sudo mktexlsr /usr/share/texlive/texmf-dist/texmf-local
-- cd ..
-- wget https://journals.aps.org/files/revtex/4/revtex4.zip
-- sudo unzip revtex4.zip -d cores_and_outflows/
-- sudo unzip revtex4.zip
-- cp -r revtex4/* cores_and_outflows/
-- sudo unzip revtex4.zip -d /usr/share/texlive/texmf-dist/tex/latex/
-- sudo unzip revtex4.zip -d /usr/share/texlive/texmf-dist/tex/latex/revtex4/
-- sudo unzip revtex4.zip -d /usr/share/texlive/texmf-local/
-- sudo mktexlsr /usr/share/texlive/texmf-local
-- sudo mktexlsr /usr/share/texlive/texmf-local/revtex4
-- sudo mktexlsr /usr/share/texlive/texmf-dist/tex/latex/
-- sudo mktexlsr /usr/share/texlive/texmf-dist/tex/latex/revtex4/
-- export TEXINPUTS=$PWD:$TEXINPUTS
-- echo $TEXINPUTS
-- find . -name "revsymb.sty"
+     #- wget https://journals.aps.org/files/revtex/revtex4-1.zip
+     #- unzip revtex4-1.zip
+     #- cd revtex4-1
+     #- sudo mkdir -p /usr/share/texlive/texmf-local/
+     #- sudo unzip revtex4-1-tds.zip -d /usr/share/texlive/texmf-local/
+     #  #- sudo mktexlsr /usr/share/texlive/texmf-local
+     #  #- sudo mkdir -p /usr/share/texlive/texmf-dist/texmf-local/
+     #  #- sudo unzip revtex4-1-tds.zip -d /usr/share/texlive/texmf-dist/texmf-local/
+     #  #- sudo mktexlsr /usr/share/texlive/texmf-dist/texmf-local
+     #- cd ..
+     #- wget https://journals.aps.org/files/revtex/4/revtex4.zip
+     #- sudo unzip revtex4.zip -d cores_and_outflows/
+     #- sudo unzip revtex4.zip
+     #- cp -r revtex4/* cores_and_outflows/
+     #- sudo unzip revtex4.zip -d /usr/share/texlive/texmf-dist/tex/latex/
+     #- sudo unzip revtex4.zip -d /usr/share/texlive/texmf-dist/tex/latex/revtex4/
+     #- sudo unzip revtex4.zip -d /usr/share/texlive/texmf-local/
+     #- sudo mktexlsr /usr/share/texlive/texmf-local
+     #- sudo mktexlsr /usr/share/texlive/texmf-local/revtex4
+     #- sudo mktexlsr /usr/share/texlive/texmf-dist/tex/latex/
+     #- sudo mktexlsr /usr/share/texlive/texmf-dist/tex/latex/revtex4/
+     #- export TEXINPUTS=$PWD:$TEXINPUTS
+     #- echo $TEXINPUTS
+     #- find . -name "revsymb.sty"
