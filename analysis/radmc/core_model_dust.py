@@ -31,6 +31,7 @@ def read_dust_temperature(dust_tem_fn, sz=32):
 def core_model_dust(outname, x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8,
                     sz=16, max_rad=10000*u.au, rbreak=1000*u.au,
                     radius_cm=1*u.au.to(u.cm), mass_g=1*u.M_sun.to(u.g),
+                    n0=5e8*u.cm**-3,
                     power=-1.5,
                     luminosity=2e4*u.L_sun,):
 
@@ -47,7 +48,7 @@ def core_model_dust(outname, x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8,
 
     # now rr has units
     rr = rr * max_rad / (sz/2.)
-    dens = broken_powerlaw(rr, rbreak=rbreak, n0=1e8*u.cm**-3, power=power)
+    dens = broken_powerlaw(rr, rbreak=rbreak, n0=n0, power=power)
 
     data = {'density': ((dens*u.Da*zh2).to(u.g/u.cm**3), "g/cm**3"),
             'z_velocity': (velo[0].to(u.km/u.s).value, 'km/s'),

@@ -28,14 +28,14 @@ mu_h2 = yt.YTArray(zh2 * u.Da.to(u.g), 'g')
 sz = 16
 max_rad = 10000*u.au
 rbreak = 1000*u.au
-zz,yy,xx = np.indices([sz,sz,sz])
-rr = ((zz-(sz-1)/2.)**2 + (yy-(sz-1)/2.)**2 + (xx-(sz-1)/2.)**2)**0.5
+zz,yy,xx = np.indices([sz,sz,sz]) * max_rad / (sz/2.)
+mid = max_rad * (sz-1.)/sz
+rr = ((zz-mid)**2 + (yy-mid)**2 + (xx-mid)**2)**0.5
 max_velo = 2*u.km/u.s
-velo = max_velo - np.array([(sz-1)/2.-zz, (sz-1/2.)-yy, (sz-1/2.)-xx]) / rr.max() * max_velo
+velo = max_velo - u.Quantity([mid-zz, mid-yy, mid-xx]) / rr.max() * max_velo
 
 # now rr has units
-rr = rr * max_rad / (sz/2.)
-dens = broken_powerlaw(rr, rbreak=rbreak, n0=1e9*u.cm**-3, power=-1.5)
+dens = broken_powerlaw(rr, rbreak=rbreak, n0=5e8*u.cm**-3, power=-1.5)
 
 data = {'density': ((dens*u.Da*zh2).to(u.g/u.cm**3), "g/cm**3"),
         'z_velocity': (velo[0].to(u.km/u.s).value, 'km/s'),
@@ -103,9 +103,40 @@ writer.write_source_files(sources_list, wavelengths_micron)
 import os
 import shutil
 
-shutil.copy('/Users/adam/repos/radmc-3d/version_0.39/python/python_examples/datafiles/dustkappa_silicate.inp', '.')
-shutil.copy('/Users/adam/work/jimsims/code/dustopac.inp',
-            'dustopac.inp')
+#shutil.copy('/Users/adam/repos/radmc-3d/version_0.39/python/python_examples/datafiles/dustkappa_silicate.inp', '.')
+import requests
+rslt = requests.get('https://hera.ph1.uni-koeln.de/~ossk/Jena/tables/mrn5')
+with open('dustkappa_mrn5.inp','w') as fh:
+    lines = rslt.content.rstrip().split("\n")
+    wav,opac = np.array([list(map(float, line.split())) for line in lines]).T
+    beta = np.log(opac[-1]/opac[-2])/np.log(wav[-2]/wav[-1])
+    beta = 1.5
+    lastwav = 4000.
+    const = opac[-1] * wav[-1]**beta
+    lastopac = const * lastwav**-beta
+    fh.write("{0:10d}\n".format(1))
+    fh.write("{0:10d}\n".format(len(lines)+1))
+    for line in lines:
+        fh.write("{0}\n".format(line))
+    fh.write(" {0:9.3e} {1:9.3e}\n".format(lastwav,lastopac))
+
+dust_type = 'mrn5'
+
+with open('dustopac.inp', 'w') as fh:
+    fh.write("2               Format number of this file\n")
+    fh.write("1               Nr of dust species\n")
+    fh.write("============================================================================\n")
+    fh.write("1               Way in which this dust species is read\n")
+    fh.write("0               0=Thermal grain, 1=Quantum heated\n")
+    fh.write("{0}      Extension of name of dustkappa_***.inp file\n".format(dust_type))
+    fh.write("----------------------------------------------------------------------------\n")
+
+wav,opac = np.loadtxt('dustkappa_{0}.inp'.format(dust_type), skiprows=2).T
+opac_1300 = np.interp(1300, wav, opac)
+print("Max column: {0}".format(((dens[:,8,8] * (max_rad/(sz/2.))).sum().to(u.cm**-2))))
+print("Max opacity: {0}".format(((dens[:,8,8] * (max_rad/(sz/2.))).sum().to(u.cm**-2) * opac_1300/100 * u.cm**2/u.g * (zh2*u.Da)).decompose()))
+
+
 shutil.copy('/Users/adam/repos/radmc-3d/version_0.39/python/python_examples/datafiles/molecule_co.inp', '.')
 shutil.copy('/Users/adam/LAMDA/e-ch3oh.dat','molecule_ch3oh.inp')
 
@@ -148,6 +179,26 @@ with open('wavelength_micron.inp', 'w') as fh:
 #     temperature = 1000 * u.K
 #     for nu in wavelengths_micron:
 #         fh.write("{0}\n".format(-temperature.to(u.K).value))
+
+
+
+# Self consistency check
+raddata = radmc3dPy.analyze.readData(ddens=True, dtemp=True, gdens=True,
+                                     gtemp=True, ispec='h2', binary=False,
+                                     molmass=zh2)
+raddata.readDustTemp(binary=True)
+print("Max log gas density: {0}".format(np.log10(raddata.ndens_mol.max())))
+print("Max log gas mass density: {0}".format(np.log10(raddata.rhogas.max())))
+print("Max log dust mass density: {0}".format(np.log10(raddata.rhodust.max())))
+
+
+os.system('radmc3d image npix 50 incl 0 sizeau 10000 noscat  pointau 0.0  0.0  0.0 fluxcons lambda 1325 tracetau')
+im = radmc3dPy.image.readImage('image.out')
+pl.figure(7).clf()
+pl.imshow(im.image[:,:,0])
+pl.colorbar()
+pl.savefig("optical_depth_1325um.png")
+
 
 
 with open('radmc3d.inp','w') as f:
@@ -280,12 +331,15 @@ if do_methanol:
 
 
 
-    # # Debug: tau=1 surface should exist.
-    # os.system("radmc3d tausurf 1.0 lambda 1300")
-    # shutil.move('image.out', 'tausurf_1300um.out')
-    # im = radmc3dPy.image.readImage('tausurf_1300um.out')
-    # im.writeFits('tausurf_1300um.fits', fitsheadkeys={}, dpc=5400,
-    #              coord='19h23m43.963s +14d30m34.56s', overwrite=True)
+    # Debug: tau=1 surface should exist.
+    os.system("radmc3d tausurf 1.0 lambda 1300")
+    shutil.move('image.out', 'tausurf_1300um.out')
+    im = radmc3dPy.image.readImage('tausurf_1300um.out')
+    pl.figure(6).clf()
+    pl.imshow(im.image[:,:,0])
+    pl.savefig("tausurf_1300um.png")
+    im.writeFits('tausurf_1300um.fits', fitsheadkeys={}, dpc=5400,
+                 coord='19h23m43.963s +14d30m34.56s', overwrite=True)
 
 
     radmc3dPy.image.makeImage(nlam=100,
