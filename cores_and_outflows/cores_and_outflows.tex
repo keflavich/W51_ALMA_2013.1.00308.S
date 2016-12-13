@@ -490,8 +490,9 @@ restrictive because the noise in that region is substantially higher.  W51 e8,
 by contrast with the others, has a clear detection at cm wavelengths.  The
 source e8n, which is offset from the peak mm emission by 0.13\arcsec (700 AU),
 has $S_{25 GHz}=4.7$ mJy/beam, corresponding to $T_B=135$ K, which implies an
-optically thick \hii region size $R=180$ AU.  This could be part of an ionized
-jet or an ionizing binary companion, but its offset from the central mm source
+\hii region size $R=180$ AU if the emission is produced by  optically thick
+free-free emission.  This could be part of an ionized jet or an ionizing binary
+companion, but its offset from the central mm source
 suggests that it is not a simple spherically symmetric HC\hii region.
 
 The apparent dust masses in the central beams of e8 and North are the same
@@ -697,12 +698,12 @@ over the same range to exclude contamination from the SO outflow line wings.
 
 \Figure{figures/ch3oh_rotation_diagrams_e2.png}
 {A sampling of fitted rotation diagrams of the detected \methanol transitions.
-These are meant to provide validation of the temperatures and column densities
-derived and shown in Figure \ref{fig:ch3ohe2}.  The lower-left corner shows
-the position from which the data were extracted in that figure in units of
-figure fraction.  The horizontal black lines show the detection threshold of each
-of the transitions; points below these lines are ignored when fitting, and instead
-the threshold itself is used.  The fitted temperature and
+These are shown to provide validation of the temperatures and column densities
+derived and shown in Figure \ref{fig:ch3ohe2}.  The lower-left corner of each
+panel shows the position from which the data were extracted in that figure in
+units of figure fraction.  The horizontal black lines show the detection
+threshold of each of the transitions; points below these lines are ignored when
+fitting, and instead the threshold itself is used.  The fitted temperature and
 column are shown in the top right of each plot.
 }{fig:ch3ohe2rot}{1}{18cm}
 
@@ -905,13 +906,14 @@ limit; see \S \ref{sec:ch3ohtem}).
 {figures/cumulative_radial_flux_massivecores.png}
 {figures/cumulative_radial_mass_of_TCH3OH_massivecores.png}
 {The cumulative (a) flux density radial profile and (b) mass radial profile
-centered on three massive protostellar cores.  They share similar profiles and
+centered on three massive protostellar cores.  The cores share similar profiles and
 are likely dominated by hot dust in their innermost regions, but they are more
 likely to be dominated by cooler dust in their outer, more massive regions.
-The cumulative mass distribution may therefore be deceptive.  In (a), we use a
-constant temperature to convert from flux to mass.  In (b), we use the
-temperature map computed from \methanol in
-Section \ref{sec:methanol}.}
+The cumulative mass distribution inferred from assuming the gas is at a
+constant temperature in (a) may therefore be deceptive.    In (b), we use the
+temperature map computed from \methanol in Section \ref{sec:methanol}; this
+plot should be at least qualitatively more realistic, though it is subject to
+many uncertainties discussion in \S \ref{sec:methanol}.}
 {fig:hmradprof}{1}{8cm}
 
 
@@ -973,7 +975,7 @@ the big regions?}
 
 \FigureTwo
 {figures/W51e2_ch3oh_hnco_continuum_aplpy_kucontours.pdf}
-{figures/W51e8fil_ch3oh_hnco_continuum_aplpy_kucontours.pdf}
+{figures/W51e8_ch3oh_hnco_continuum_aplpy_kucontours.pdf}
 {Image of \methanol $8_{0,8}-7_{1,6}$ (red), HCNO $10_{0,10}-9_{0,9}$ (green), and 225 GHz
 continuum (blue) toward (a) W51e2 (b) W51e8.  The contours show Ku-band radio continuum
 emission tracing the \hii regions (a) W51 e2w and (b) W51e1, e3, e4, e9, and
@@ -1173,10 +1175,11 @@ that the cores are dominated by sublimated ices from $R\sim2000-5000$ AU
 and by species formed in the gas phase at $R\lesssim2000$ AU.
 
 Most of the lines identified in the hot cores e2e, e8, and North are also
-present in ALMAmm14.  However, their extent is greater toward the more luminous
-sources.  An examination of the relationship between the luminosity of the
-protostars and the extent of their chemically enhanced zones will be useful for
-identifying further very massive protostars.
+present in a lower-luminosity hot core, ALMAmm14.  However, their extent is
+greater toward the more luminous sources.  This difference suggests that an
+examination of the relationship between the luminosity of the protostars and
+the extent of their chemically enhanced zones will be useful for identifying
+ very massive protostars in other regions.
 
 
 \subsubsection{Outflows}
@@ -1214,7 +1217,7 @@ sources lack any surrounding molecular material at all.
 % that it may be escaping from the core, rather than being its focus
 
 Some models of high-mass star formation suggest that accretion continues
-through the ionized (\hii region) phase \citep{Keto2002b,Keto2003}.  The lack
+through the ionized (\hii region) phase \citep{Keto2002b,Keto2003a}.  The lack
 of molecular material around the majority of the compact \hii regions in W51
 suggests instead that most of the accretion is done by the time an \hii region
 ignites.  Additionally, the W51e2 source, which was invoked as an example of an
@@ -1222,8 +1225,8 @@ ionized accretion flow in \citet{Keto2008a}, is  resolved into the e2e
 hot core driving an outflow and the e2w \hchii region that is not, so the
 evidence for ionized accretion onto e2w is diminished.
 
-There is one example of a \hchii region surrounded by molecular gas in our
-sample, the source d2.  However, it does not have an associated molecular
+There is one clear example of a \hchii region surrounded by molecular gas in
+our sample, the source d2.  However, it does not have an associated molecular
 outflow, so there is no direct evidence of ongoing accretion.
 
 % The correlation of the extended hot cores with outflow-driving sources suggests
@@ -1246,8 +1249,8 @@ In Sections \ref{sec:W51e2e} and \ref{sec:w51e8andnorth}, we noted that the
 \emph{lower limit} luminosities for the three most massive cores correspond to
 early B-type photospheres.  Such stars should emit enough radiation to ignite
 luminous compact \hii regions.%, $Q_{lyc}=5\ee{45}$ \pers \citep{Vacca1996a}.
-The upper limits on the presence of such an \hii region are constraining, with
-$R<100 AU$, which is consistent with the presence of late-type massive
+The upper limits on the presence of such  \hii regions are constraining, with
+$R_{\hii}<100 AU$, which is consistent with the presence of late-type massive
 main-sequence stars, but inconsistent with any hotter or more luminous
 (spectral type $<$B0.5V).
 If the stellar luminosities are an order of magnitude or more higher, which is
@@ -1289,7 +1292,7 @@ emitting ionizing photons.
 \label{sec:fragmentation}
 Fragmentation is one of the critical problems in high-mass star formation.
 Assuming typical initial conditions for molecular clouds, with temperatures of
-order 10 K, gas is expected to fragment into sub-solar mass cores, preventing
+order 10 K, gas is expected to fragment into sub-solar mass cores, preventing gaseous
 material from accreting onto single high-mass stars \citep{Krumholz2015a}.
 Even after high-mass stars successfully form, further fragmentation could
 halt the growth of these stars and limit their final mass \citep{Peters2010a}.
@@ -1428,8 +1431,8 @@ The observed high gas temperature provides a mechanism for MYSOs to avoid the
 \citet{Peters2010a,Peters2010c} and \citet{Girichidis2012b}.  By suppressing
 fragmentation in their surroundings, accreting massive stars are able to
 sustain their mass reservoir.  They can effectively create their own cores by
-cooking the gas feast that would otherwise form a small cluster into one single
-serving.
+cooking  into one single serving the gas feast that would otherwise form a
+small cluster.
 
 
 \subsection{High-mass star formation within dense protoclusters: A cooperative
