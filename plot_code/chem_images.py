@@ -285,6 +285,13 @@ if __name__ == "__main__":
               vrange=[58,67]*u.km/u.s, sourcename='ALMAmm14',
               filelist=glob.glob(paths.dpath('merge/cutouts/W51_b6_7M_12M.*ALMAmm14*fits')), suffix="_merge")
 
+    chem_plot(linere, yslice=slice(83,133), xslice=slice(243,293),
+              vrange=[58,67]*u.km/u.s, sourcename='d2',
+              vmax_max=200,
+              contourlevels=[150,200,250,300],
+              filelist=glob.glob(paths.dpath('merge/cutouts/W51_b6_7M_12M.*north*fits')))
+
+
     linere = re.compile("W51_b6_12M.(.*).image.pbcor")
 
     chem_plot(linere, yslice=slice(357,477), xslice=slice(104,224),
@@ -311,3 +318,8 @@ if __name__ == "__main__":
               contourlevels=[125,150,175,200],
               filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*ALMAmm14*fits')))
 
+    chem_plot(linere, yslice=slice(83,133), xslice=slice(243,293),
+              vrange=[58,67]*u.km/u.s, sourcename='d2',
+              vmax_max=200,
+              contourlevels=[150,200,250,300],
+              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*north*fits')))

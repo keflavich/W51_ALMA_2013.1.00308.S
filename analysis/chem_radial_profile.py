@@ -19,7 +19,9 @@ from line_to_image_list import labeldict
 import re
 import glob
 
-region_names = {'e2': 'e2_exclude_e2w.reg'}
+region_names = {'e2': 'e2_exclude_e2w.reg',
+                'north': 'd2_core.reg',
+               }
 
 continua = {
     # todo?  make a naturally weighted merged continuum image...
@@ -27,13 +29,16 @@ continua = {
     '': 'W51_te_continuum_best.fits',
 }
 
-for regfn,region,fignum,imtype,suffix in (
-    ('e2_exclude_e2w.reg','e2',1,'m0',''),
-    ('e2_exclude_e2w.reg','e2',2,'m0','_merge'),
-    ('e2_exclude_e2w.reg','e2',3,'m0','_merge_natural'),
-    ('e2_exclude_e2w.reg','e2',1,'max',''),
-    ('e2_exclude_e2w.reg','e2',2,'max','_merge'),
-    ('e2_exclude_e2w.reg','e2',3,'max','_merge_natural'),
+for regfn,region,fignum,imtype,suffix,outsuffix in (
+    ('d2_core.reg','north',1,'max','','d2',),
+    ('d2_core.reg','north',2,'max','_merge','d2',),
+    ('d2_core.reg','north',3,'max','_merge_natural','d2',),
+    ('e2_exclude_e2w.reg','e2',1,'m0','',''),
+    ('e2_exclude_e2w.reg','e2',2,'m0','_merge',''),
+    ('e2_exclude_e2w.reg','e2',3,'m0','_merge_natural',''),
+    ('e2_exclude_e2w.reg','e2',1,'max','',''),
+    ('e2_exclude_e2w.reg','e2',2,'max','_merge',''),
+    ('e2_exclude_e2w.reg','e2',3,'max','_merge_natural',''),
    ):
 
     reg = pyregion.open(paths.rpath(regfn))
@@ -112,6 +117,8 @@ for regfn,region,fignum,imtype,suffix in (
                 species = linere.search(fn).groups()[0]
                 ax.plot(bins*pixscale*3600., rprof,
                         label=labeldict[species], linestyle=linestyle)
+                print(species, end=', ')
+        print(".  ", end="")
 
         if imtype == 'max':
             ax.set_ylabel("Azimuthally Averaged Peak Brightness (K)")
@@ -125,6 +132,7 @@ for regfn,region,fignum,imtype,suffix in (
         # Put a legend to the right of the current axis
         ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
-        fig.savefig(paths.fpath("chemslices/radialprofile_{2}_{3}_{0}{1}.png"
-                                .format(region, suffix, imtype, plotspecies)),
+        print("Completed {0} {1} {2} {3}".format(region, suffix, imtype, plotspecies))
+        fig.savefig(paths.fpath("chemslices/radialprofile_{2}_{3}_{0}{4}{1}.png"
+                                .format(region, suffix, imtype, plotspecies, outsuffix)),
                     bbox_inches='tight')

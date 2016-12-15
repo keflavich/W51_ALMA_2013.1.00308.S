@@ -16,10 +16,11 @@ from core_models import broken_powerlaw
 lvg = False
 
 do_methanol = True
+do_mc_therm = False
 
 x_co = 1.0e-4
 x_h2co = 1.0e-9
-x_ch3oh = 1e-7 # probably 1e-9, but boosted for tests...
+x_ch3oh = 5e-7
 zh2 = 2.8
 mu_h2 = yt.YTArray(zh2 * u.Da.to(u.g), 'g')
 
@@ -201,12 +202,13 @@ pl.savefig("optical_depth_1325um.png")
 
 
 
-with open('radmc3d.inp','w') as f:
-    params['lines_mode'] = 3 if lvg else 1 # 3 = sobolev (LVG)
-    f.write(params_string.format(**params))
+if do_mc_therm:
+    with open('radmc3d.inp','w') as f:
+        params['lines_mode'] = 3 if lvg else 1 # 3 = sobolev (LVG)
+        f.write(params_string.format(**params))
 
-# compute the dust temperature
-assert os.system('radmc3d mctherm') == 0
+    # compute the dust temperature
+    assert os.system('radmc3d mctherm') == 0
 
 def read_dust_temperature(dust_tem_fn):
     with open(dust_tem_fn, 'rb') as fh:
@@ -388,7 +390,7 @@ if do_methanol:
     pl.plot(im.freq, im.image[15,15,:], label='15,15')
     pl.ylabel("Line?")
     pl.legend(loc='best')
-    pl.savefig("ch3oh_422_spectrum.png")
+    pl.savefig("ch3oh_422_spectrum_X={0}.png".format(x_ch3oh))
 
 
 
@@ -414,7 +416,8 @@ if do_methanol:
 
     shutil.move('image.out', 'ch3oh_422-312_image.out')
     im = radmc3dPy.image.readImage('ch3oh_422-312_image.out')
-    im.writeFits('ch3oh_422-312_image.fits', fitsheadkeys={}, dpc=5400,
+    im.writeFits('ch3oh_422-312_image_X={0}.fits'.format(x_ch3oh),
+                 fitsheadkeys={}, dpc=5400,
                  coord='19h23m43.963s +14d30m34.56s', overwrite=True)
 
 
@@ -437,11 +440,11 @@ if do_methanol:
     pl.plot(im.freq, im.image[15,15,:], label='15,15')
     pl.ylabel("Line Brightness (Jy)")
     pl.legend(loc='best')
-    pl.savefig("ch3oh_808_spectrum.png")
+    pl.savefig("ch3oh_808_spectrum_X={0}.png".format(x_ch3oh))
 
     shutil.move('image.out', 'ch3oh_808-716_image.out')
     im = radmc3dPy.image.readImage('ch3oh_808-716_image.out')
-    im.writeFits('ch3oh_808-716_image.fits', fitsheadkeys={}, dpc=5400,
+    im.writeFits('ch3oh_808-716_image_X={0}.fits'.format(x_ch3oh), fitsheadkeys={}, dpc=5400,
                  coord='19h23m43.963s +14d30m34.56s', overwrite=True)
 
 
@@ -485,13 +488,13 @@ if do_methanol:
 
         im = radmc3dPy.image.readImage('image.out')
 
-        shutil.move('image.out', '{0}_image.out'.format(prefix))
-        im = radmc3dPy.image.readImage('{0}_image.out'.format(prefix))
-        im.writeFits('{0}_image.fits'.format(prefix), fitsheadkeys={}, dpc=5400,
+        shutil.move('image.out', '{0}_image_X={1}.out'.format(prefix, x_ch3oh))
+        im = radmc3dPy.image.readImage('{0}_image_X={1}.out'.format(prefix, x_ch3oh))
+        im.writeFits('{0}_image_X={1}.fits'.format(prefix, x_ch3oh), fitsheadkeys={}, dpc=5400,
                      coord='19h23m43.963s +14d30m34.56s', overwrite=True)
 
-        fh = convert_to_K('{0}_image.fits'.format(prefix))
-        fh.writeto("{0}_image_K.fits".format(prefix), clobber=True)
+        fh = convert_to_K('{0}_image_X={1}.fits'.format(prefix, x_ch3oh))
+        fh.writeto("{0}_image_K_X={1}.fits".format(prefix, x_ch3oh), clobber=True)
 
         img = fh[0].data
         velo = np.linspace(vkms-widthkms/2, vkms+widthkms/2, linenlam)
@@ -502,7 +505,7 @@ if do_methanol:
         pl.ylabel("Line Brightness (K)")
         pl.xlabel("Velocity (km/s)")
         pl.legend(loc='best')
-        pl.savefig("{0}_spectrum.png".format(prefix))
+        pl.savefig("{0}_spectrum_X={1}.png".format(prefix, x_ch3oh))
 
 
     #radmc3dPy.image.makeImage(iline=240, widthkms=5, linenlam=40, nostar=True,

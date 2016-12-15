@@ -1931,6 +1931,13 @@ def get_info_metadata(datapath="/Volumes/passport/w51-apex/raw/",
   (b'W51', b'H2CO_+_13CO ', b'AP-H201-X202'),
   (b'W51', b'H2CO_13CO_OS', b'AP-H201-X201'),
   (b'W51', b'H2CO_13CO_OS', b'AP-H201-X202')}}
+
+ '/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC12/E-098.C-0421A-2016-2016-12-11.apex': {(
+  (b'W51', b'Setup291p8  ', b'AP-H301-X201'),
+  (b'W51', b'Setup291p8  ', b'AP-H301-X202')},
+ '/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC13/E-098.C-0421A-2016-2016-12-12.apex': {
+  (b'W51', b'Setup291p8  ', b'AP-H301-X201'),
+  (b'W51', b'Setup291p8  ', b'AP-H301-X202')}}
 """
 
 
