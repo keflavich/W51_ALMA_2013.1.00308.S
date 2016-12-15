@@ -756,7 +756,8 @@ appear to be self-absorbed.}
 {fig:ch3ohvscont}{1}{8cm}
 
 Figure \ref{fig:methanolradialprofile} shows the observed brightness profiles
-of \methanol line and dust continuum emission.
+of \methanol line and dust continuum emission, which gives a lower limit on
+the physical temperature probed by the \methanol and continuum.
 Figure \ref{fig:ch3ohtemX} shows a comparison of the \methanol temperature and
 abundance.  The \methanol abundance is derived by comparing the rotational
 diagram (RTD) fitted \methanol column density to the dust column density while
@@ -776,7 +777,8 @@ overestimated, as can be seen in Figure \ref{fig:ch3ohe2epeaks}.
 observed \methanol transitions along with the profile of the continuum
 brightness.  These profiles indicate \emph{lower limit} gas temperatures
 as a function of radius; the true temperature can be substantially higher even
-if the lines are optically thick because of foreground, cold, self-absobing layers.
+if the lines are optically thick because of foreground, cold, self-absorbing
+layers.
 The radial profiles were constructed from images with 0.2\arcsec
 resolution including only 12m data.  The lines are not continuum subtracted, so
 they represent the true on-sky observed brightness.  The abundance bump is
@@ -1292,7 +1294,7 @@ emitting ionizing photons.
 \label{sec:fragmentation}
 Fragmentation is one of the critical problems in high-mass star formation.
 Assuming typical initial conditions for molecular clouds, with temperatures of
-order 10 K, gas is expected to fragment into sub-solar mass cores, preventing gaseous
+order 10 K, gas is expected to fragment into sub-solar-mass cores, preventing gaseous
 material from accreting onto single high-mass stars \citep{Krumholz2015a}.
 Even after high-mass stars successfully form, further fragmentation could
 halt the growth of these stars and limit their final mass \citep{Peters2010a}.
@@ -1460,8 +1462,8 @@ the ``top-heavy IMF'' is a solution, not a problem.
 
 In this scenario, the highest mass stars (probably ``very massive stars'',
 $M\gtrsim50$ \msun) would only be capable of forming within dense, clustered
-environments, since larger stars would be prevented from forming by earlier
-fragmentation elsewhere.  The IMF would then be built up by an inverse
+environments, since larger stars would be prevented from forming in other
+environments by fragmentation.  The IMF would then be built up by an inverse
 hierarchy, with progressively larger stars capable of forming over time until
 the gas is either exhausted \citep{Ginsburg2016b} or expelled.
 
@@ -1486,7 +1488,7 @@ effect on the dense gas temperature.
 Two general classes of star formation theory, ``competitive accretion'' and
 ``turbulent core accretion'' have dominated the discussion of  high-mass star
 formation, though they are
-not fully complementary theories \citep{Schilke2016a}.  In their extreme forms,
+not entirely incompatible theories \citep{Schilke2016a}.  In their extreme forms,
 they can be simplified to uniform seeds accreting different amounts of material
 over their lifetime in the case of competitive accretion and a single, initial,
 quasistatic high-mass gas core collapsing into a star in the case of turbulent
@@ -1503,12 +1505,11 @@ dominant most massive star dramatically changes the conditions for accretion.
 This single central source heats material enough to reduce the efficiency of
 Bondi-Hoyle accretion by a factor of 10 for a stationary object, though the
 reduction is negligible for an object moving near the Virial velocity ($v_{vir}
-\gtrsim 5 \kms$ within the hot cores).  However, this extended warm region
+\gtrsim 5 \kms$ within the hot cores).  This extended warm region
 suppresses the formation of new small fragments, as has been observed in simulations
 with much weaker feedback \citep[e.g.][]{Bate2009a}. 
-It is not clear whether the mass accumulated around the most massive protostars
-at present came from large radii, as in \citet{Smith2009f}, but it is certainly
-possible.
+Most likely, the material around these most massive protostars was accumulated
+from larger scales, as in \citet{Smith2009f}.
 
 % TODO: consider dropping kapparho discussion entirely; the measurements are
 % pretty damned unreliable.
@@ -1549,7 +1550,7 @@ as the evolutionary progress within the `turbulent core' model depends on the
 initial core structure, and the presence of nearby fragments governs whether
 `competitive accretion' can occur at all.
 
-There are also some curious implications for `isolated' massive star formation.
+There are also implications for `isolated' massive star formation.
 The stars we see forming are clearly not isolated - they are embedded within
 fairly rich clusters of massive stars we can see already, and they are very likely
 to be surrounded by substantial clusters of lower-mass stars.  However, \emph{during
@@ -1557,7 +1558,9 @@ their formation process}, they may be the only accreting stars within a few thou
 AU neighborhood - their
 thermal feedback may prevent any neighbors from forming simultaneously.  This
 `enforced isolation' might be a way for massive star formation to proceed
-similarly independent of the size of the parent cloud.
+similarly independent of the size of the parent cloud: high-mass stars will form
+the same way whether in an `isolated' or `clustered' region because they govern
+gas conditions in their own surroundings.
 
 % methanol_and_outflow.py
 \Figure{figures/outflows_over_methanol_e2e.png}
@@ -1662,6 +1665,21 @@ and the surrounding population of forming stars.
 
 The key observational results include:
 \begin{itemize}
+    \item We identified chemically enhanced regions around high-mass protostars
+        and suggest they are radiatively heated zones in which previously
+        frozen-out chemical species have desorbed into the gas phase.
+    \item We measured the temperature and mass structure surrounding the three
+        highest-mass cores, W51 e2e, e8, and North.  All three have masses
+        $M>200$ \msun within $R\lesssim5000$ AU.  The core temperatures
+        inferred from LTE modeling of \methanol are $100 \mathrm{K} < T < 600
+        \mathrm{K}$, which brightness-based lower limits $T>100$ K confirm.
+        Their centers are likely to be optically thick in the dust continuum.
+    \item The flux density recovered in the ALMA map above a threshold of 10
+        mJy \perbeam  is $\sim30\%$ of that seen in single-dish data.  At this
+        brightness, cold (20 K) dust would correspond to a column density
+        $N(\hh)>10^{25}$ \persc, leading us to conclude that a large fraction
+        of the cloud - likely all of the gas emitting at over 10 mJy \perbeam -
+        is warmer than 20 K.
     \item We demonstrated three techniques for estimating the temperature of
         dust continuum sources with ALMA: limits from dust brightness
         temperature, limits from line brightness temperature, and LTE modeling
@@ -1672,21 +1690,6 @@ The key observational results include:
         dust emission, line emission, and morphology.  These sources are
         prestellar cores, dust-enshrouded protostars, and hypercompact \hii
         regions.
-    \item We identified chemically enhanced regions around high-mass protostars
-        and suggest they are radiatively heated zones in which previously
-        frozen-out chemical species have desorbed into the gas phase.
-    \item We measured the temperature and mass structure surrounding the three
-        highest-mass cores, W51 e2e, e8, and North.  All three have masses
-        $M>200$ \msun within $R\lesssim5000$ AU.  They have temperatures
-        inferred from LTE modeling of \methanol $100 \mathrm{K} < T < 600
-        \mathrm{K}$.  Their centers are likely to be optically thick in
-        the dust continuum.
-    \item The flux density recovered in the ALMA map above a threshold of 10
-        mJy \perbeam  is $\sim30\%$ of that seen in single-dish data.  At this
-        brightness, cold (20 K) dust would correspond to a column density
-        $N(\hh)>10^{25}$ \persc, leading us to conclude that a large fraction
-        of the cloud - likely all of the gas emitting at over 10 mJy \perbeam -
-        is warmer than 20 K.
 \end{itemize}
 
 From these observations, we have inferred the following: 
@@ -1696,9 +1699,11 @@ From these observations, we have inferred the following:
         and correspondingly large mass, of gas around them.
     \item Older massive stars, those with surrounding \hii regions, appear
         to have little effect on the temperature of dense gas around them.
-        While some are embedded within larger hot cores, they do not appear to
-        be the main heating sources.  Their luminosity must therefore escape
-        without being locally reprocessed into infrared radiation.
+        Instead, their feedback primarily affects larger ($\gtrsim 0.1$ pc)
+        scales.
+        %While some are embedded within larger hot cores, they do not appear to
+        %be the main heating sources.  Their luminosity must therefore escape
+        %without being locally reprocessed into infrared radiation.
     \item Because older generation stars have little impact on the star-forming
         molecular gas, it appears that the star formation process and the IMF
         are \emph{self-regulated} within clusters; they are unaffected by
@@ -1707,6 +1712,9 @@ From these observations, we have inferred the following:
         W51 show no evidence of ongoing fragmentation and are warm enough
         to suppress Jeans fragmentation.  Hot massive cores therefore serve as
         a mass reservoir for accretion onto possibly single massive stars.
+    \item Hot massive cores are heated by the accreting stars within them,
+        implying that young massive stars self-regulate their  core
+        structures.
 \end{itemize}
 
 
@@ -1761,7 +1769,7 @@ There is evidence of a bubble in the continuum around e5 with a radius of
 6.2\arcsec (0.16 pc; Figure \ref{fig:e5bubble}).  The bubble is completely
 absent in the centimeter continuum, so the observed emission is from dust.  The
 bubble edge can be seen from 58 \kms to 63 \kms in \ceighteeno and
-\formaldehyde, though it is not continuous in any single velocity channel.
+\formaldehyde, though it is not contiguous in any single velocity channel.
 There is a collection of compact sources (protostars or cores) along the
 southeast edge of the bubble.
 
@@ -1771,7 +1779,8 @@ radiative feedback, especially around a source that is currently a hypercompact
 HII region, but since no free-free emission is evident within or on the edge of
 the bubble, it is at least not presently driving the bubble.  A plausible
 explanation for this discrepancy is that e5 was an exposed O-star within the
-past Myr, but has since begun accreting heavily and therefore had its HII
+past Myr, but has since begun accreting heavily (or has traveled into a region
+of high density) and therefore had its HII
 region shrunk.  This model is marginally supported by the presence of a `pillar'
 of dense material pointing from e5 toward the south.
 
@@ -1793,7 +1802,9 @@ The Str\"omgren radius is \\
 \begin{eqnarray}
 R_{\rm s}=\left(\frac{3Q_{\rm H}}{4\pi\alpha_{\rm B} n^{2}}\right)^{\frac{1}{3}}.
 \end{eqnarray} 
-For $Q_{\rm H}\sim10^{49}$ \pers, $\alpha_{\rm B}=3\times10^{-13}$\,cm$^{3}$\,s$^{-1}$, $R_{\rm s}\approx0.01$\,pc.\\
+For $Q_{\rm H}\sim10^{49}$ \pers (corresponding to an $M\approx40$\msun
+main-sequence star), $\alpha_{\rm B}=3\times10^{-13}$\,cm$^{3}$\,s$^{-1}$,
+$R_{\rm s}\approx0.01$\,pc.\\
 \\
 The Spitzer solution for HII region expansion gives\\
 \begin{eqnarray}
@@ -1818,8 +1829,8 @@ $10\times$ longer than the expansion time.\\
 % which gives us $R_{\rm frag}\approx0.17$\,pc.\\
 
 These values are consistent with a late O-type star having been exposed,
-driving an \hii region, for $\sim10^4-10^5$ year, after which a substantial
-increase in the accretion rate quenched the ionizing radiation from the star,
+driving an \hii region, for $\sim10^4-10^5$ years, after which a substantial
+increase in the local density quenched the ionizing radiation from the star,
 trapping it into a hypercompact ($r<0.005$ pc) configuration.  The
 recombination timescale is short enough that the ionized gas would disappear
 almost immediately after the continuous ionizing radiation source was hidden.
@@ -1868,7 +1879,7 @@ outflows in the W51 region.  We show the most readily identified outflows in
 Figures \ref{fig:outflowscontinuume2}, \ref{fig:outflowscontinuumnorth},
 \ref{fig:e2ecooutflow}, and \ref{fig:e8cooutflow}.
 
-\subsubsection{The Lacy jet}
+\subsection{The Lacy jet}
 \label{sec:lacyjet}
 A high-velocity outflow was discovered within the W51 IRS2 region by
 \citet{Lacy2007a}, and subsequently detected in H77$\alpha$ by
@@ -1914,7 +1925,7 @@ H77$\alpha$ contours in blue.  The \citet{Lacy2007a} jet is prominent in
 H77$\alpha$.}
 {fig:outflowscontinuumnorth}{1}{12cm}
 
-\subsubsection{north}
+\subsection{north}
 The outflow from W51 North is extended and complex.
 A jet-like high-velocity feature appears directly to the north of W51 North in
 both CO and SO (Figure \ref{fig:outflowscontinuumnorth}).  However, in SO, this feature begins to emit at $\sim47$ \kms
@@ -1932,7 +1943,7 @@ and these all lay approximately along the W51 North outflow vector.
 However, the association is only circumstantial.
 
 
-\subsubsection{The e2e outflow}
+\subsection{The e2e outflow}
 The dominant outflow in W51, which was previously detected by the SMA
 \citep{Shi2010a,Shi2010b}, comes from the source e2e.  This outflow is
 remarkable for its high velocity, extending nearly to the limit of our spectral
@@ -1974,7 +1985,7 @@ of the long continuum filament is e8.}
 connects the northwest and southeast extrema of the flow.}
 {fig:e2ecooutflow}{1}{18cm}
 
-\subsubsection{e8}
+\subsection{e8}
 There are at least four distinct outflows coming from the e8 filament.
 The e8 core is launching a redshifted outflow to the northwest.  A blueshifted
 outflow is coming from somewhere south of the e8 peak and pointing straight
