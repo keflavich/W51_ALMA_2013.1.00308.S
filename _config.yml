@@ -8,12 +8,12 @@
 #
 
 title: W51 ALMA observations
-abstract: This is an abstract placeholder
+abstract: We present ALMA observations of a 3×1.5 pc area in the W51 high-mass star-forming complex. We identify dust continuum sources and measure the gas and dust temperature through both rotational diagram modeling of CH3OH and brightness-temperature-based limits. The observed region contains three high-mass YSOs that appear to be at the earliest stages of their formation, with no signs of ionizing radiation from their central sources. The new data reveal high gas and dust temperatures (T > 100 K) extending out to about 5000 AU from each of these sources. The extended warm gas provides evidence that, during the process of forming, these high-mass stars heat a large volume (and correspondingly large mass) of gas in their surroundings, suppressing fragmentation and therefore keeping a large reservoir available to feed from. By contrast, the more mature massive stars that illuminate compact H ii regions have little effect on ther surrounding dense gas, suggesting that these main sequence stars have completed most or all of their accretion. The high luminosity of the massive protostars, combined with a lack of centimeter continuum from these sources, implies that they are not on the main sequence while they accrete the majority of the mass; instead, they may be bloated and cool.
 
 # This controls which file is shown on the right-hand side of the published
 # HTML page.  By default it will take the first PDF or HTML file that it
 # finds.  If that doesn't work for you, you can specify the correct file here.
-iframe_src: cores_and_outflows_compressed.pdf
+iframe_src: w51_alma_00308_compressed.pdf
 
 # You can specify multiple authors, just follow the pattern below.
 # These fields can contain HTML tags.  You probably want to put <br />
