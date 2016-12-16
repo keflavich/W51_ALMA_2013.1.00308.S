@@ -22,6 +22,11 @@ for source in ('e8','north','e2',):
                     colors=['r']*11,
                     levels=[0.015, 0.0256944, 0.0577778, 0.11125, 0.186111,
                             0.282361, 0.4, ])
+
+    F1.add_scalebar((0.025*u.pc / (5400*u.pc)).to(u.deg,u.dimensionless_angles()))
+    F1.scalebar.set_label('5000 au / 0.025 pc')
+    F1.scalebar.set_color('k')
+
     F1.save(paths.fpath("{0}_continuum_contours_on_ch3oh1029.png".format(source)))
 
     matplotlib.pyplot.figure(2).clf()
@@ -34,6 +39,11 @@ for source in ('e8','north','e2',):
                    colors=['b']*11,
                    levels=np.linspace(200,1100,6), layer='CH3OH')
     #F.ticks.set_xspacing(0.0005)
+
+    F.add_scalebar((0.025*u.pc / (5400*u.pc)).to(u.deg,u.dimensionless_angles()))
+    F.scalebar.set_label('5000 au / 0.025 pc')
+    F.scalebar.set_color('k')
+
     F.save(paths.fpath("{0}_ch3oh1029_contours_on_continuum.png".format(source)))
 
     matplotlib.pyplot.figure(3).clf()
@@ -44,6 +54,11 @@ for source in ('e8','north','e2',):
                    colors=['b']*11,
                    levels=[0.015, 0.0256944, 0.0577778, 0.11125, 0.186111,
                            0.282361, 0.4, ])
+
+    F.add_scalebar((0.025*u.pc / (5400*u.pc)).to(u.deg,u.dimensionless_angles()))
+    F.scalebar.set_label('5000 au / 0.025 pc')
+    F.scalebar.set_color('k')
+
     F.save(paths.fpath("chemistry/{0}_continuum_contours_on_ch3oh_temperature.png".format(source)))
 
     matplotlib.pyplot.figure(4).clf()
@@ -55,6 +70,11 @@ for source in ('e8','north','e2',):
                    colors=['r']*11,
                    levels=[0.015, 0.0256944, 0.0577778, 0.11125, 0.186111,
                            0.282361, 0.4, ])
+
+    F.add_scalebar((0.025*u.pc / (5400*u.pc)).to(u.deg,u.dimensionless_angles()))
+    F.scalebar.set_label('5000 au / 0.025 pc')
+    F.scalebar.set_color('k')
+
     F.save(paths.fpath("chemistry/{0}_continuum_contours_on_ch3oh_temperature.png".format(source)))
 
 

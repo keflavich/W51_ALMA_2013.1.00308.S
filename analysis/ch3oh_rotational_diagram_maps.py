@@ -565,16 +565,22 @@ if __name__ == "__main__":
                                     replace_bad=replace_bad)
 
             pl.figure(1).clf()
+            ax = pl.figure(1).gca()
             im = pl.imshow(tmap, vmin=0, vmax=600, cmap='hot')
             # contour at T=350K = 170F, "well done"
             pl.contour(tmap, levels=[350], colors=['b'], linewidth=0.5, alpha=0.75)
             cb = pl.colorbar(mappable=im)
             cb.set_label("Temperature (K)")
+            ax.set_xticklabels([])
+            ax.set_yticklabels([])
             pl.savefig(paths.fpath("chemistry/ch3oh_temperature_map_{0}.png".format(sourcename)))
             pl.figure(3).clf()
+            ax = pl.figure(3).gca()
             pl.imshow(np.log10(Nmap), vmin=16, vmax=19, cmap='viridis')
             cb = pl.colorbar()
             cb.set_label("log N(CH$_3$OH)")
+            ax.set_xticklabels([])
+            ax.set_yticklabels([])
             pl.savefig(paths.fpath("chemistry/ch3oh_column_map_{0}.png".format(sourcename)))
 
             hdu = fits.PrimaryHDU(data=tmap, header=header)
