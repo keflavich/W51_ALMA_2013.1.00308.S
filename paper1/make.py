@@ -7,7 +7,7 @@ import os
 
 assert os.path.exists('bibdesk.bib')
 
-name = 'cores_and_outflows'
+name = 'w51_alma_00308'
 
 parser = argparse.ArgumentParser(description='Make latex files.')
 parser.add_argument('--referee', default=False,

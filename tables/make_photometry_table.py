@@ -73,20 +73,20 @@ formats={'RA': lambda x: '{0:0.4f}'.format(x),
          'M$(T_B, \mathrm{peak})$': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
         }
 
-tbl_towrite.write('../cores_and_outflows/photometry_table.tex',
+tbl_towrite.write('../paper1/photometry_table.tex',
                   latexdict=latexdict, format='ascii.latex', overwrite=True,
                   formats=formats)
 
 latexdict['caption'] = 'Continuum Source IDs and photometry Part 2'
 latexdict['header_start'] = '\label{tab:photometry2}'
-tbl_towrite[35:].write('../cores_and_outflows/photometry_table_2.tex',
+tbl_towrite[35:].write('../paper1/photometry_table_2.tex',
                        latexdict=latexdict, format='ascii.latex', overwrite=True,
                        formats=formats)
 
 latexdict['caption'] = 'Continuum Source IDs and photometry Part 1'
 latexdict['header_start'] = '\label{tab:photometry1}'
 latexdict['tablefoot'] = ''
-tbl_towrite[:35].write('../cores_and_outflows/photometry_table_1.tex',
+tbl_towrite[:35].write('../paper1/photometry_table_1.tex',
                        latexdict=latexdict, format='ascii.latex', overwrite=True,
                        formats=formats)
 

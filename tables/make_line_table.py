@@ -36,5 +36,5 @@ for spwid in (0,1,2,3):
     #latexdict['tabulartype'] = 'longtable'
     latexdict['units'] = {}
 
-    tbl.write('../cores_and_outflows/linetable{0}.tex'.format(spwid),
+    tbl.write('../paper1/linetable{0}.tex'.format(spwid),
               latexdict=latexdict, format='ascii.latex', overwrite=True)

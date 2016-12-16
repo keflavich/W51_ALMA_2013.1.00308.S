@@ -33,7 +33,7 @@ latexdict['units'] = {}
 
 formats = {cwv: lambda x: '{0:0.2f}'.format(x)}
 
-tbl.write('../cores_and_outflows/spwtable.tex', latexdict=latexdict,
+tbl.write('../paper1/spwtable.tex', latexdict=latexdict,
           format='ascii.latex',
           formats=formats,
           overwrite=True)
