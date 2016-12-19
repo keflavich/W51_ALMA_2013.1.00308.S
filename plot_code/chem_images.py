@@ -60,6 +60,12 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
     gs5 = gridspec.GridSpec(*plotgrid)
     gs5.update(wspace=0.0, hspace=0.0)
 
+    fig6 = pl.figure(6, figsize=figsize)
+    fig6.clf()
+    gs6 = gridspec.GridSpec(*plotgrid)
+    gs6.update(wspace=0.0, hspace=0.0)
+
+
     figcounter = 0
 
     for ii,fn in enumerate(ProgressBar(filelist)):
@@ -73,13 +79,15 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         # cache the results for use in other work, later use, ...
         m0fitsfn = paths.dpath("chemslices/chemical_m0_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
         m1fitsfn = paths.dpath("chemslices/chemical_m1_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
+        m2fitsfn = paths.dpath("chemslices/chemical_m2_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
         maxfitsfn = paths.dpath("chemslices/chemical_max_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
         maxsubfitsfn = paths.dpath("chemslices/chemical_max_sub_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
         madstdfitsfn = paths.dpath("chemslices/chemical_madstd_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
         if not (os.path.exists(m0fitsfn) and
+                os.path.exists(m2fitsfn) and
                 os.path.exists(maxfitsfn) and
                 os.path.exists(madstdfitsfn)):
-            print("Extracting max/m0/m1 for {0}".format(fn))
+            print("Extracting max/m0/m1/m2 for {0}".format(fn))
             cube = SpectralCube.read(fn)[:,yslice,xslice]
             goodbeams = np.array([bm.major < maxbeam for bm in cube.beams], dtype='bool')
             cube = cube.with_mask(goodbeams[:,None,None])
@@ -109,6 +117,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
             slabsub.beam_threshold = 0.25
             m0 = slabsub.moment0()
             m1 = slabsub.moment1()
+            m2 = slabsub.moment2()
             max_sub = slabsub.max(axis=0)
             max = slab.max(axis=0)
             madstd = cube.with_mask(mask[:,None,None]).apply_function(mad_std,
@@ -125,6 +134,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         else:
             m0fh = fits.open(m0fitsfn)
             m1fh = fits.open(m1fitsfn)
+            m2fh = fits.open(m2fitsfn)
             maxfh = fits.open(maxfitsfn)
             maxsubfh = fits.open(maxsubfitsfn)
             madstdfh = fits.open(madstdfitsfn)
@@ -135,6 +145,9 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
             m1 = Projection(value=m1fh[0].data, header=m1fh[0].header,
                             wcs=wcs.WCS(m1fh[0].header),
                             unit=u.Unit(m1fh[0].header['BUNIT']),)
+            m2 = Projection(value=m2fh[0].data, header=m2fh[0].header,
+                            wcs=wcs.WCS(m2fh[0].header),
+                            unit=u.Unit(m2fh[0].header['BUNIT']),)
             max = Projection(value=maxfh[0].data, header=maxfh[0].header,
                              wcs=wcs.WCS(maxfh[0].header),
                              unit=u.Unit(maxfh[0].header['BUNIT']),)
@@ -209,12 +222,21 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         ax4.set_yticklabels([])
         ax4.set_aspect('equal')
 
+        ax6 = fig6.add_subplot(gs6[figcounter])
+
+        im6 = ax6.imshow(m2.value, vmin=0, vmax=10,
+                         cmap=pl.cm.jet, interpolation='nearest')
+        ax6.text(3, 0.87*m0.shape[0], label, fontsize=9, color='w')
+        ax6.set_xticklabels([])
+        ax6.set_yticklabels([])
+        ax6.set_aspect('equal')
+
         figcounter += 1
 
     cbs = {}
     for ii,fig, im, gs in ((1,fig1,im1,gs1), (2,fig2,im2,gs2),
                            (3,fig3,im3,gs3), (4,fig4,im4,gs4),
-                           (5,fig5,im5,gs5),
+                           (5,fig5,im5,gs5), (6,fig6,im6,gs6),
                           ):
         bottom,top,left,right = gs.get_grid_positions(fig)
         cbar_ax = fig.add_axes([np.max(right)+0.01, np.min(bottom),
@@ -227,6 +249,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
     cbs[3].set_label("Peak Brightness (K)", fontsize=12)
     cbs[5].set_label("Peak Brightness (K)", fontsize=12)
     cbs[4].set_label("MAD StdDev (K)", fontsize=12)
+    cbs[6].set_label("Velocity Dispersion (km s$^{-1}$)", fontsize=12)
 
     pl.draw()
     pl.show()
@@ -249,6 +272,10 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
 
     fig5.savefig(paths.fpath("chemical_max_slabs_{0}{1}.png"
                              .format(sourcename, suffix)),
+                 bbox_inches='tight', dpi=150)
+
+    fig6.savefig(paths.fpath("chemical_m2_slabs_{0}{1}.png".format(sourcename,
+                                                                   suffix)),
                  bbox_inches='tight', dpi=150)
 
 

@@ -72,36 +72,6 @@ def checkdir_makedir(path):
         mkdir_p(dpath)
 
 
-def debug_and_load(test='test'):
-
-    spectra,headers,indices,data,hdrs,gal = load_dataset_for_debugging(skip_data=False, lowhigh='high')
-
-    make_blanks_freq(gal, hdrs[0], test, clobber=True)
-    dmeansub,gal,hdrs = process_data(data, gal, hdrs, dataset=test,
-                                     subspectralmeans=True, scanblsub=False)
-    add_apex_data(dmeansub, hdrs, gal, test, retfreq=True, varweight=True,)
-    dscube = cube_regrid.downsample_cube(fits.open(test+".fits")[0], factor=4)
-    dscube.writeto(test+"_ds.fits",clobber=True)
-
-    make_blanks_freq(gal, hdrs[0], test+"_blsub", clobber=True)
-    dspecsub,gal,hdrs = process_data(data, gal, hdrs, dataset=test+"_blsub",
-                                     subspectralmeans=True, scanblsub=True)
-    add_apex_data(dspecsub, hdrs, gal, test+"_blsub", retfreq=True, varweight=True,)
-    dscube = cube_regrid.downsample_cube(fits.open(test+"_blsub.fits")[0], factor=4)
-    dscube.writeto(test+"_blsub_ds.fits",clobber=True)
-
-    make_blanks_freq(gal, hdrs[0], test+"_pcasub", clobber=True)
-    dpcasub,gal,hdrs = process_data(data, gal, hdrs, dataset=test+"_pcasub",
-                                    subspectralmeans=True, scanblsub=True,
-                                    pca_clean=True, pcakwargs={})
-    add_apex_data(dpcasub, hdrs, gal, test+"_pcasub", retfreq=True, varweight=True,)
-    dscube = cube_regrid.downsample_cube(fits.open(test+"_pcasub.fits")[0], factor=4)
-    dscube.writeto(test+"_pcasub_ds.fits",clobber=True)
-
-    freq = hdr_to_freq(hdrs[0])
-    mask = make_line_mask(freq)
-
-    return spectra,headers,indices,data,hdrs,gal,dspecsub,dmeansub,dpcasub,freq,mask
 
 def load_dataset_for_debugging(lowhigh='low', downsample_factor=8,
                                dataset='',
@@ -170,23 +140,24 @@ def select_apex_data(spectra, headers, indices, sourcename=None,
                      xtel=None,
                      line=None,
                      skip_data=False,
-                     dont_flag_sgrb2=True,
-                     galactic_coordinate_range=[[-2,2],[-2,2]]):
+                     coordframe='fk5',
+                     dont_flag_sgrb2=False,
+                     galactic_coordinate_range=None):
 
     log.info("Determining RA/Dec")
     ra,dec = zip(*[(h['RA']+h['RAoff']/np.cos(h['DEC']/180.*np.pi),
                     h['DEC']+h['DECoff']) for h in headers])
     log.info("Determining Galactic coordinates")
-    gal = coordinates.SkyCoord(np.array(ra)*u.deg,
-                               np.array(dec)*u.deg,
-                               frame='icrs').galactic
+    coords = coordinates.SkyCoord(np.array(ra)*u.deg, np.array(dec)*u.deg,
+                                  frame='icrs')
+    coords = getattr(coords, coordframe)
     #gal.l.wrap_angle = 180*u.deg
     if galactic_coordinate_range is not None:
         (lmin,lmax),(bmin,bmax) = galactic_coordinate_range
-        galOK = ((gal.l.wrap_at(180*u.deg).deg > lmin) &
-                 (gal.l.wrap_at(180*u.deg).deg < lmax) &
-                 (gal.b.deg > bmin) &
-                 (gal.b.deg < bmax))
+        galOK = ((coords.galactic.l.wrap_at(180*u.deg).deg > lmin) &
+                 (coords.galactic.l.wrap_at(180*u.deg).deg < lmax) &
+                 (coords.galactic.b.deg > bmin) &
+                 (coords.galactic.b.deg < bmax))
     else:
         galOK = True
 
@@ -224,10 +195,10 @@ def select_apex_data(spectra, headers, indices, sourcename=None,
         tsys = np.array([h['TSYS'] for h in headers])
         tsysOK = (tsys>tsysrange[0]) & (tsys<tsysrange[1])
         if dont_flag_sgrb2:
-            sgrb2 = ((gal.l.wrap_at(180*u.deg).deg > 0.64) &
-                     (gal.l.wrap_at(180*u.deg).deg<0.7) &
-                     (gal.b.deg>-0.06) &
-                     (gal.b.deg<-0.01))
+            sgrb2 = ((coords.galactic.l.wrap_at(180*u.deg).deg > 0.64) &
+                     (coords.galactic.l.wrap_at(180*u.deg).deg<0.7) &
+                     (coords.galactic.b.deg>-0.06) &
+                     (coords.galactic.b.deg<-0.01))
             tsysOK[sgrb2] = True
     else:
         tsysOK = True
@@ -240,6 +211,10 @@ def select_apex_data(spectra, headers, indices, sourcename=None,
         rchanOK = True
 
     mostOK = galOK & sourceOK & tsysOK & rchanOK & xtelOK & xscanOK & lineOK
+
+    # if no constraints up to this point, make sure it's an array
+    if not isinstance(mostOK, np.ndarray):
+        mostOK = np.zeros(len(headers), dtype='bool') + mostOK
 
     if not skip_data:
         log.info("Shaping data")
@@ -265,11 +240,11 @@ def select_apex_data(spectra, headers, indices, sourcename=None,
         data = np.array(data1[allOK].tolist())
 
     hdrs = [h for h,K in zip(headers,allOK) if K]
-    gal = gal[allOK]
+    coords = coords[allOK]
 
-    return data,hdrs,gal
+    return data,hdrs,coords
 
-def process_data(data, gal, hdrs, dataset, scanblsub=False,
+def process_data(data, coords, hdrs, dataset, scanblsub=False,
                  subspectralmeans=True, verbose=False, noisefactor=3.0,
                  linemask=False, automask=2,
                  zero_edge_pixels=0,
@@ -304,7 +279,7 @@ def process_data(data, gal, hdrs, dataset, scanblsub=False,
     # for plotting and masking, determine frequency array
     freq = hdr_to_freq(hdrs[0])
 
-    scans = identify_scans_fromcoords(gal)
+    scans = identify_scans_fromcoords(coords)
 
     if scanblsub:
 
@@ -386,7 +361,7 @@ def process_data(data, gal, hdrs, dataset, scanblsub=False,
     tsys = tsys[~bad]
     noise = noise[~bad]
 
-    gal = gal[~bad]
+    coords = coords[~bad]
     hdrs = [h for h,b in zip(hdrs,bad) if not b]
     log.info("Flagged out %i bad values (%0.1f%%)." % (bad.sum(),bad.sum()/float(bad.size)))
 
@@ -401,7 +376,7 @@ def process_data(data, gal, hdrs, dataset, scanblsub=False,
                  freq=freq, mask=mask, noisefactor=noisefactor,
                  theoretical_rms=theoretical_rms[~bad][match], **kwargs)
 
-    return dsub,gal,hdrs
+    return dsub,coords,hdrs
 
 def classheader_to_fitsheader(header, axisnumber=1):
     header['CRPIX{0}'.format(axisnumber)] = header['RCHAN']
@@ -425,16 +400,20 @@ def classheader_to_fitsheader(header, axisnumber=1):
 
 
 def hdr_to_freq(h):
+    # apparently FOFF is never set, and the recorded frequencies in the APEX
+    # files are shifted by VOFF
     freqarr = ((np.arange(h['NCHAN'])+1-h['RCHAN']) * h['FRES'] +
-               h['FOFF'] + h['RESTF'])
+               h['FOFF'] + h['RESTF'] -
+               h['VOFF']/constants.c.to(u.km/u.s).value * h['RESTF'])
     return freqarr
 
 def hdr_to_velo(h):
     veloarr = (np.arange(h['NCHAN'])+1-h['RCHAN']) * h['VRES'] + h['VOFF']
     return veloarr
 
-def add_apex_data(data, hdrs, gal, cubefilename, noisecut=np.inf,
+def add_apex_data(data, hdrs, coords, cubefilename, noisecut=np.inf,
                   retfreq=False, excludefitrange=None, varweight=True,
+                  coordframe='fk5',
                   debug=False, kernel_fwhm=10./3600.):
 
 
@@ -446,7 +425,7 @@ def add_apex_data(data, hdrs, gal, cubefilename, noisecut=np.inf,
         raise ValueError('Data shape is NOT ok.')
     if data.shape[0] != len(hdrs):
         raise ValueError('Data and headers do not match')
-    if data.shape[0] != len(gal):
+    if data.shape[0] != len(coords):
         raise ValueError('Data and coords od not match')
 
     def data_iterator(data=data, continuum=False, fsw=False):
@@ -454,8 +433,7 @@ def add_apex_data(data, hdrs, gal, cubefilename, noisecut=np.inf,
         for ii in xrange(shape0):
             yield data[ii,:]
 
-    # as defined on http://www.apex-telescope.org/heterodyne/shfi/het230/lines/
-    linefreq = 218222.192
+    linefreq = None
     def velo_iterator(data=None, linefreq=linefreq, headers=hdrs):
         for h in headers:
             if retfreq:
@@ -467,9 +445,9 @@ def add_apex_data(data, hdrs, gal, cubefilename, noisecut=np.inf,
                 veloarr = hdr_to_velo(h)
                 yield veloarr*u.km/u.s
 
-    def coord_iterator(data=None, coordsys_out='galactic', gal=gal):
-        for c in gal:
-            yield c.l.deg, c.b.deg
+    def coord_iterator(data=None, coordsys_out=coordframe, coords=coords):
+        for c in coords:
+            yield c.spherical.lon.deg, c.spherical.lat.deg
 
     nhits = cubefilename+"_nhits.fits"
 
@@ -478,13 +456,13 @@ def add_apex_data(data, hdrs, gal, cubefilename, noisecut=np.inf,
 
     makecube.add_data_to_cube(cubefilename+".fits", data=data,
                               flatheader=flatheader,
-                              cubeheader=cubeheader, linefreq=218.22219,
+                              cubeheader=cubeheader, linefreq=None,
                               allow_smooth=True,
                               nhits=nhits,
                               data_iterator=data_iterator,
                               coord_iterator=coord_iterator,
                               velo_iterator=velo_iterator,
-                              progressbar=True, coordsys='galactic',
+                              progressbar=True, coordsys=coordframe,
                               velocity_offset=0.0, negative_mean_cut=None,
                               add_with_kernel=True, kernel_fwhm=kernel_fwhm,
                               fsw=False,
@@ -545,11 +523,12 @@ def add_pipeline_header_data(header):
     header['BUNIT'] = ('K', 'T_A*; ETAMB has efficiency')
     header['ETAMB'] = (0.75, 'http://www.apex-telescope.org/telescope/efficiency/')
 
-def make_blanks(gal, header, cubefilename, clobber=True, pixsize=7.2*u.arcsec):
+def make_blanks(coords, header, cubefilename, clobber=True,
+                pixsize=7.2*u.arcsec, coordframe='fk5'):
 
-    lrange = (gal.l.wrap_at(180*u.deg).deg.min()+15/3600.,
-              gal.l.wrap_at(180*u.deg).deg.max()+15/3600.)
-    brange = gal.b.deg.min()+15/3600.,gal.b.deg.max()+15/3600.
+    lrange = (coords.spherical.lon.wrap_at(180*u.deg).deg.min()+15/3600.,
+              coords.spherical.lon.wrap_at(180*u.deg).deg.max()+15/3600.)
+    brange = coords.spherical.lat.deg.min()+15/3600.,coords.spherical.lat.deg.max()+15/3600.
     log.info("Map extent automatically determined: "
              "%0.2f < l < %0.2f,  %0.2f < b < %0.2f" % (lrange[0], lrange[1],
                                                         brange[0], brange[1]))
@@ -567,7 +546,7 @@ def make_blanks(gal, header, cubefilename, clobber=True, pixsize=7.2*u.arcsec):
                                                       naxis1=naxis1,
                                                       naxis2=naxis2,
                                                       naxis3=4096,
-                                                      coordsys='galactic',
+                                                      coordsys=coordframe,
                                                       ctype3='VRAD',
                                                       bmaj=bmaj.to(u.deg).value,
                                                       bmin=bmaj.to(u.deg).value,
@@ -588,11 +567,12 @@ def make_blanks(gal, header, cubefilename, clobber=True, pixsize=7.2*u.arcsec):
                                flatheader=flatheader, clobber=clobber,
                                dtype='float32')
 
-def make_blanks_freq(gal, header, cubefilename, clobber=True, pixsize=7.2*u.arcsec):
+def make_blanks_freq(coords, header, cubefilename, clobber=True,
+                     pixsize=7.2*u.arcsec, coordframe='fk5'):
     """ complete freq covg """
 
-    lrange = gal.l.wrap_at(180*u.deg).deg.min()+15/3600.,gal.l.wrap_at(180*u.deg).deg.max()+15/3600.
-    brange = gal.b.deg.min()+15/3600.,gal.b.deg.max()+15/3600.
+    lrange = coords.spherical.lon.wrap_at(180*u.deg).deg.min()+15/3600.,coords.spherical.lon.wrap_at(180*u.deg).deg.max()+15/3600.
+    brange = coords.spherical.lat.deg.min()+15/3600.,coords.spherical.lat.deg.max()+15/3600.
     log.info("Map extent: %0.2f < l < %0.2f,  %0.2f < b < %0.2f" % (lrange[0],
                                                                     lrange[1],
                                                                     brange[0],
@@ -615,7 +595,7 @@ def make_blanks_freq(gal, header, cubefilename, clobber=True, pixsize=7.2*u.arcs
                                                       naxis1=naxis1,
                                                       naxis2=naxis2,
                                                       naxis3=header['NCHAN'],
-                                                      coordsys='galactic',
+                                                      coordsys=coordframe,
                                                       bmaj=bmaj.to(u.deg).value,
                                                       bmin=bmaj.to(u.deg).value,
                                                       pixsize=pixsize.to(u.arcsec).value,
@@ -640,9 +620,13 @@ def make_blanks_freq(gal, header, cubefilename, clobber=True, pixsize=7.2*u.arcs
 
 def make_blanks_merge(cubefilename, clobber=True,
                       width=1.0*u.GHz, lowest_freq=None, pixsize=7.2*u.arcsec,
-                      restfreq=218222.192*u.MHz, cd_kms=0.25):
-    naxis1 = 88
-    naxis2 = 88
+                      restfreq=218222.192*u.MHz, cd_kms=0.25, naxis1=88,
+                      coordsys='fk5',
+                      naxis2=88,
+                      center=coordinates.SkyCoord(49.486721, -0.37793872,
+                                                  frame='galactic',
+                                                  unit=(u.deg,u.deg)).fk5,
+                     ):
     # beam major/minor axis are the same, gaussian for 12m telescope
     # we convolved with a 10" FWHM Gaussian kernel, so we add that in quadrature
     bmaj_ = (1.22*restfreq.to(u.m,u.spectral())/(12*u.m))*u.radian
@@ -650,11 +634,13 @@ def make_blanks_merge(cubefilename, clobber=True,
     cd3 = ((cd_kms*u.km/u.s)/constants.c * restfreq).to(u.Hz).value
     naxis3 = int(np.ceil(((width / (restfreq) * constants.c) / (cd_kms*u.km/u.s)).decompose().value))
 
-    cubeheader, flatheader = makecube.generate_header(49.486721, -0.37793872,
+    center = getattr(center, coordsys)
+    cubeheader, flatheader = makecube.generate_header(center.spherical.lon.value,
+                                                      center.spherical.lat.value,
                                                       naxis1=naxis1,
                                                       naxis2=naxis2,
                                                       naxis3=naxis3,
-                                                      coordsys='galactic',
+                                                      coordsys=coordsys,
                                                       bmaj=bmaj.to(u.deg).value,
                                                       bmin=bmaj.to(u.deg).value,
                                                       pixsize=pixsize.to(u.arcsec).value,
@@ -839,6 +825,7 @@ def build_cube_generic(window, line, freq=True, mergefile=None, datapath='./',
                        mask_level_sigma=3,
                        blsub=True,
                        contsub=False,
+                       coordframe='fk5',
                        verbose=False, debug=False, **kwargs):
     """
     TODO: comment!
@@ -871,7 +858,7 @@ def build_cube_generic(window, line, freq=True, mergefile=None, datapath='./',
 
 
 
-    all_data,all_hdrs,all_gal = {},{},{}
+    all_data,all_hdrs,all_coords = {},{},{}
     for dataset in datasets:
 
         apex_filename = os.path.join(datapath,dataset+".apex")
@@ -881,25 +868,25 @@ def build_cube_generic(window, line, freq=True, mergefile=None, datapath='./',
                                                  xtel=xtel,
                                                  line=line,
                                                  sourcename=sourcename)
-        data,hdrs,gal = select_apex_data(spectra, headers, indices,
-                                         sourcename=sourcename,
-                                         shapeselect=shapeselect, xtel=xtel,
-                                         line=line,
-                                         rchanrange=None,
-                                         galactic_coordinate_range=None,
-                                         tsysrange=tsysrange)
+        data,hdrs,coords = select_apex_data(spectra, headers, indices,
+                                            sourcename=sourcename,
+                                            shapeselect=shapeselect, xtel=xtel,
+                                            line=line, rchanrange=None,
+                                            galactic_coordinate_range=None,
+                                            coordframe=coordframe,
+                                            tsysrange=tsysrange)
         log.info("Selected %i spectra from %s" % (len(hdrs), dataset))
 
         all_data[dataset] = data
         all_hdrs[dataset] = hdrs
-        all_gal[dataset] = gal
+        all_coords[dataset] = coords
 
-    all_gal_vect = coordinates.SkyCoord(np.hstack([all_gal[g].l.to(u.radian).value
-                                                   for g in all_gal]) * u.radian,
-                                        np.hstack([all_gal[g].b.to(u.radian).value
-                                                   for g in all_gal]) * u.radian,
-                                        frame='galactic')
-    all_gal_vect.l.wrap_angle = 180*u.deg
+    all_coords_vect = coordinates.SkyCoord(
+        np.hstack([all_coords[g].spherical.lon.to(u.radian).value for g in all_coords]) *
+        u.radian,
+        np.hstack([all_coords[g].spherical.lat.to(u.radian).value for g in all_coords]) *
+        u.radian, frame=coordframe)
+    all_coords_vect.spherical.lon.wrap_angle = 180*u.deg
 
     log.info("Data has been collected and flagged, now adding to cube.")
 
@@ -920,10 +907,12 @@ def build_cube_generic(window, line, freq=True, mergefile=None, datapath='./',
                                                 window, line).replace(" ",""))
             log.debug("Creating blanks for {0}".format(cubefilename))
             if freq:
-                make_blanks_freq(all_gal_vect, hdrs[0], cubefilename,
+                make_blanks_freq(all_coords_vect, hdrs[0], cubefilename,
+                                 coordframe=coordframe,
                                  clobber=True, pixsize=pixsize)
             else:
-                make_blanks(all_gal_vect, hdrs[0], cubefilename, clobber=True,
+                make_blanks(all_coords_vect, hdrs[0], cubefilename, clobber=True,
+                            coordframe=coordframe,
                             pixsize=pixsize)
             add_pipeline_parameters_to_file(cubefilename, 'generic', **headerpars)
 
@@ -934,16 +923,18 @@ def build_cube_generic(window, line, freq=True, mergefile=None, datapath='./',
 
         data = all_data[dataset]
         hdrs = all_hdrs[dataset]
-        gal  = all_gal[dataset]
+        coords = all_coords[dataset]
 
-        data, gal, hdrs = process_data(data, gal, hdrs, dataset+"_"+xtel+"_"+line.replace(" ",""),
-                                       scanblsub=scanblsub, verbose=verbose,
-                                       timewise_pca=timewise_pca,
-                                       pca_clean=pca_clean, **kwargs)
+        data, coords, hdrs = process_data(data, coords, hdrs,
+                                          dataset+"_"+xtel+"_"+line.replace(" ",""),
+                                          scanblsub=scanblsub, verbose=verbose,
+                                          timewise_pca=timewise_pca,
+                                          pca_clean=pca_clean, **kwargs)
 
-        add_apex_data(data, hdrs, gal, cubefilename,
+        add_apex_data(data, hdrs, coords, cubefilename,
                       excludefitrange=excludefitrange,
                       retfreq=freq,
+                      coordframe=coordframe,
                       varweight=True,
                       kernel_fwhm=kernel_fwhm,
                       debug=debug)
@@ -1133,6 +1124,8 @@ def make_12CO_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
                       restfreq=230.538*u.GHz,
                       lowest_freq=230.49*u.GHz, width=2.51*u.GHz,
                       pixsize=5.0*u.arcsec,
+                      naxis1=70,
+                      naxis2=70,
                       cd_kms=0.25)
 
     build_cube_generic(window='AP-H201-X201', datasets=datasets_H2CO_13CO_OS,
@@ -1161,6 +1154,8 @@ def make_232_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
                       restfreq=232.500*u.GHz,
                       lowest_freq=231.99*u.GHz, width=2.51*u.GHz,
                       pixsize=5.0*u.arcsec,
+                      naxis1=70,
+                      naxis2=70,
                       cd_kms=0.25)
 
     build_cube_generic(window='AP-H201-X202', datasets=datasets_H2CO_13CO_OS,
@@ -1184,6 +1179,8 @@ def make_H2CO_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
                       restfreq=218.2218*u.GHz,
                       lowest_freq=216.99*u.GHz, width=2.51*u.GHz,
                       pixsize=5.0*u.arcsec,
+                      naxis1=70,
+                      naxis2=70,
                       cd_kms=0.25)
 
     build_cube_generic(window='AP-H201-X202', datasets=datasets_H2CO_13CO,
@@ -1208,6 +1205,8 @@ def make_218_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
                       restfreq=218.2218*u.GHz,
                       lowest_freq=218.50*u.GHz, width=2.51*u.GHz,
                       pixsize=5.0*u.arcsec,
+                      naxis1=70,
+                      naxis2=70,
                       cd_kms=0.25)
 
     build_cube_generic(window='AP-H201-X201', datasets=datasets_H2CO_13CO,
@@ -1222,7 +1221,60 @@ def make_218_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
                       )
 
 
+def make_291_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
+                       mergefile1='W51_291GHz_merge',
+                       datasets=[
+                           '/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC12/E-098.C-0421A-2016-2016-12-11',
+                           '/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC13/E-098.C-0421A-2016-2016-12-12',
+                           '/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC14/E-098.C-0421A-2016-2016-12-13',
+                       ]
+                        ):
 
+    make_blanks_merge(os.path.join(mergepath,mergefile1),
+                      restfreq=291.38*u.GHz,
+                      lowest_freq=289.795*u.GHz, width=2.51*u.GHz,
+                      pixsize=2.5*u.arcsec,
+                      naxis1=140, naxis2=140,
+                      cd_kms=0.25)
+
+    build_cube_generic(window='AP-H301-X201', datasets=datasets,
+                       sourcename='W51', line='Setup291p8  ', blsub=False,
+                       mergefile=mergefile1,
+                       downsample_factor=10,
+                       datapath='/Volumes/passport/w51-apex/raw/',
+                       outpath=mergepath,
+                       noisefactor=10,
+                       automask=False,
+                       flagdata=False,
+                      )
+
+
+def make_293_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
+                       mergefile1='W51_293GHz_merge',
+                       datasets=[
+                           '/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC12/E-098.C-0421A-2016-2016-12-11',
+                           '/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC13/E-098.C-0421A-2016-2016-12-12',
+                           '/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC14/E-098.C-0421A-2016-2016-12-13',
+                       ]
+                        ):
+
+    make_blanks_merge(os.path.join(mergepath,mergefile1),
+                      restfreq=291.94808*u.GHz,
+                      lowest_freq=291.295*u.GHz, width=2.51*u.GHz,
+                      pixsize=2.5*u.arcsec,
+                      naxis1=140, naxis2=140,
+                      cd_kms=0.25)
+
+    build_cube_generic(window='AP-H301-X202', datasets=datasets,
+                       sourcename='W51', line='Setup291p8  ', blsub=False,
+                       mergefile=mergefile1,
+                       downsample_factor=10,
+                       datapath='/Volumes/passport/w51-apex/raw/',
+                       outpath=mergepath,
+                       noisefactor=10,
+                       automask=False,
+                       flagdata=False,
+                      )
 
 
 
@@ -1560,162 +1612,6 @@ def do_extract_subcubes(outdir=None, merge_prefix='APEX_H2CO_merge',
                 log.info("Skipping line {0}".format(line))
 
 
-def do_everything(pca_clean={'2014':False, '2013':False, 'ao':False},
-                  scanblsub={'2014':False, '2013':False, 'ao':False},
-                  timewise_pca={'2014':True, '2013':False, 'ao':True},
-                  mergefile2='APEX_H2CO_merge_high',
-                  mergepath=None, molpath=None, h2copath=None):
-    make_high_mergecube(mergefile2=mergefile2, pca_clean=pca_clean,
-                        scanblsub=scanblsub, timewise_pca=timewise_pca)
-
-    do_postprocessing(mergepath=mergepath, molpath=molpath, h2copath=h2copath)
-    extract_co_subcubes(mergepath=mergepath)
-
-
-def do_postprocessing(molpath=None, mergepath=None, h2copath=None):
-    #make_low_mergecube() # there's only one really useful overlap region
-    #os.chdir(mergepath)
-    # vsmoothds is made here:
-    #os.system('./APEX_H2CO_merge_high_starlink_custom.sh')
-    #os.chdir('../')
-    # OLD: merge_prefix = 'APEX_H2CO_merge_high' # Oct 4, 2014
-    merge_prefix='APEX_H2CO_merge_high_plait_all'
-    do_extract_subcubes(outdir=molpath, frange=[218,219],
-                        cubefilename=os.path.join(mergepath,
-                                                  merge_prefix+".fits"),
-                        lines=lines218)
-    # Because I really want to see SiO...
-    do_extract_subcubes(outdir=molpath,
-                        lines={'SiO_54':217.10498},
-                        merge_prefix='APEX_H2CO_2014_merge', suffix="")
-    compute_noise_high(prefix=mergepath+merge_prefix, pixrange=[700,900])
-    compute_noise_high(prefix=mergepath+merge_prefix+"_smooth", pixrange=[320,400])
-    #compute_noise_high(mergepath+merge_prefix+'_smooth',[203,272])
-    #compute_noise_high(mergepath+'APEX_H2CO_merge_high_vsmoothds',[203,272])
-    #compute_noise_high(mergepath+'APEX_H2CO_303_202_vsmooth',[75,100])
-    #compute_noise_low()
-    signal_to_noise_mask_cube(os.path.join(molpath,'APEX_H2CO_303_202'),
-                              noise=fits.getdata(os.path.join(mergepath,
-                                                              'APEX_H2CO_merge_high_plait_all_noise.fits')),
-                              sigmacut=2,
-                              grow=2,
-                              mask_hc3n=False) # unfortunately, flagged out brick & Sgr A
-    signal_to_noise_mask_cube(molpath+'APEX_H2CO_303_202_smooth',
-                              noise=fits.getdata(mergepath+'APEX_H2CO_merge_high_plait_all_smooth_noise.fits'),
-                              sigmacut=3,
-                              mask_hc3n=False)
-
-    signal_to_noise_mask_cube(os.path.join(molpath,'APEX_H2CO_321_220'),
-                              noise=fits.getdata(os.path.join(mergepath,
-                                                              'APEX_H2CO_merge_high_plait_all_noise.fits')),
-                              sigmacut=2,
-                              grow=2)
-    signal_to_noise_mask_cube(molpath+'APEX_H2CO_321_220_smooth',
-                              noise=fits.getdata(mergepath+'APEX_H2CO_merge_high_plait_all_smooth_noise.fits'),
-                              sigmacut=2)
-
-    integrate_mask(molpath+'APEX_H2CO_303_202',
-                   mask=molpath+'APEX_H2CO_303_202_mask.fits')
-    integrate_mask(molpath+'APEX_H2CO_303_202_smooth',
-                   mask=molpath+'APEX_H2CO_303_202_smooth_mask.fits')
-    integrate_mask(molpath+'APEX_H2CO_303_202',
-                   mask=molpath+'APEX_H2CO_321_220_mask.fits',
-                   maskpre='321')
-    integrate_mask(molpath+'APEX_H2CO_303_202_smooth',
-                   mask=molpath+'APEX_H2CO_321_220_smooth_mask.fits',
-                   maskpre='321')
-
-    for fn in glob.glob(os.path.join(mergepath,'APEX_H2CO_30*fits')):
-        try:
-            os.symlink(fn,
-                       os.path.join(h2copath,os.path.split(fn)[-1]))
-        except OSError:
-            log.debug("Skipped file {0} because it exists".format(fn))
-
-    # Create a few integrated H2CO 303 maps
-    integrate_slices_high(molpath+'APEX_H2CO_303_202_snmasked')
-
-    # Use spectral_cube to do a bunch of integrations
-    # PATH SENSITIVE
-    # integrate_h2co_by_freq(mergepath+mergefile2+".fits")
-    # On second thought, let's not go to camelot
-    # (this function proved ineffective)
-
-    for line in lines218:
-        fn = mergepath+'APEX_{0}.fits'.format(line)
-        if os.path.exists(fn):
-            integrate_mask(molpath+'APEX_{0}'.format(line),
-                           mask=molpath+'APEX_H2CO_303_202_mask.fits')
-            integrate_mask(molpath+'APEX_{0}'.format(line),
-                           mask=molpath+'APEX_H2CO_321_220_mask.fits',
-                           maskpre='321')
-
-            integrate_mask(molpath+'APEX_{0}_smooth'.format(line),
-                           mask=molpath+'APEX_H2CO_303_202_smooth_mask.fits')
-            integrate_mask(molpath+'APEX_{0}_smooth'.format(line),
-                           mask=molpath+'APEX_H2CO_321_220_smooth_mask.fits',
-                           maskpre='321')
-
-            log.debug("Integrated masked file {0}".format(fn))
-        else:
-            log.debug("File {0} does not exist".format(fn))
-
-    for line in lines218:
-        if os.path.exists(molpath+'APEX_{0}.fits'.format(line)):
-            baseline_cube(molpath+'APEX_{0}.fits'.format(line),
-                          maskfn=molpath+'APEX_H2CO_303_202_mask.fits',
-                          order=7)
-            baseline_cube(molpath+'APEX_{0}_smooth.fits'.format(line),
-                          maskfn=molpath+'APEX_H2CO_303_202_smooth_mask.fits',
-                          order=7)
-
-    #compute_noise_high(molpath+'APEX_H2CO_303_202_bl',[350,400])
-    #compute_noise_high(molpath+'APEX_H2CO_303_202_smooth_bl',[175,200])
-    #compute_noise_high(molpath+'APEX_H2CO_303_202_vsmooth_bl',[80,100])
-    signal_to_noise_mask_cube(molpath+'APEX_H2CO_303_202_bl',
-                              noise=fits.getdata(mergepath+'APEX_H2CO_merge_high_plait_all_noise.fits'),
-                              grow=2,
-                              sigmacut=2,
-                              mask_hc3n=False)
-    signal_to_noise_mask_cube(molpath+'APEX_H2CO_303_202_smooth_bl',
-                              noise=fits.getdata(mergepath+'APEX_H2CO_merge_high_plait_all_smooth_noise.fits'),
-                              sigmacut=3,
-                              mask_hc3n=False)
-    signal_to_noise_mask_cube(molpath+'APEX_H2CO_321_220_bl',
-                              noise=fits.getdata(mergepath+'APEX_H2CO_merge_high_plait_all_noise.fits'),
-                              sigmacut=2,
-                              grow=2)
-    signal_to_noise_mask_cube(molpath+'APEX_H2CO_321_220_smooth_bl',
-                              noise=fits.getdata(mergepath+'APEX_H2CO_merge_high_plait_all_noise.fits'),
-                              sigmacut=2,
-                              grow=2)
-
-    for line in lines218:
-        if os.path.exists(molpath+'APEX_{0}_bl.fits'.format(line)):
-            integrate_mask(molpath+'APEX_{0}_bl'.format(line),
-                           mask=molpath+'APEX_H2CO_303_202_bl_mask.fits')
-            integrate_mask(molpath+'APEX_{0}_smooth_bl'.format(line),
-                           mask=molpath+'APEX_H2CO_303_202_smooth_bl_mask.fits')
-
-            integrate_mask(molpath+'APEX_{0}_bl'.format(line),
-                           mask=molpath+'APEX_H2CO_321_220_bl_mask.fits',
-                           maskpre='321')
-            integrate_mask(molpath+'APEX_{0}_smooth_bl'.format(line),
-                           mask=molpath+'APEX_H2CO_321_220_smooth_bl_mask.fits',
-                           maskpre='321')
-
-    do_mask_ch3oh(dpath=molpath)
-
-    for fn in glob.glob(os.path.join(molpath,'APEX_H2CO_3*fits')):
-        try:
-            os.symlink(fn,
-                       os.path.join(h2copath,os.path.split(fn)[-1]))
-            log.info("Linked file {0} to {1}".format(fn, h2copath))
-        except OSError:
-            log.debug("Skipped file {0} because it exists".format(fn))
-
-    # moved to analysis doratio(h2copath=h2copath)
-    # moved to analysis do_temperature(ratio=False, h2copath=h2copath)
 
 def contsub_cube(cubefilename,):
     cube = fits.open(cubefilename+'.fits', memmap=False)
@@ -1778,105 +1674,7 @@ def baseline_cube(cubefn, mask=None, maskfn=None, mask_level=None,
 
 
 
-def do_everything_2013extrafreqs():
-    build_cube_2013(lowhigh='low',
-                    scanblsub=False)
-    build_cube_2013(lowhigh='high',
-                    scanblsub=False)
-    #raise NotImplementedError
-    #compute_noise_extras(lowhigh='low',pixrange=[0,4096])
-    #compute_noise_extras(lowhigh='high',pixrange=[0,4096])
 
-
-
-def dopeaksn():
-
-    from FITS_tools import strip_headers
-
-    f = fits.open(h2copath+'APEX_H2CO_303_202.fits')
-    header = strip_headers.flatten_header(f[0].header)
-    f[0].header=header
-    f[0].data = f[0].data.max(axis=0)
-    n = fits.getdata(h2copath+'APEX_H2CO_merge_high_sub_noise.fits')
-    f[0].data /= n
-    f.writeto(h2copath+'APEX_H2CO_303_202_peaksn.fits',clobber=True)
-
-    f = fits.open(h2copath+'APEX_H2CO_303_202_smooth.fits')
-    header = strip_headers.flatten_header(f[0].header)
-    f[0].header=header
-    f[0].data = f[0].data.max(axis=0)
-    n = fits.getdata(h2copath+'APEX_H2CO_merge_high_smooth_noise.fits')
-    f[0].data /= n
-    f.writeto(h2copath+'APEX_H2CO_303_202_peaksn_smooth.fits',clobber=True)
-
-def docleannhits():
-    """ not really used now """
-    f = fits.open(h2copath+'APEX_H2CO_merge_high_nhits.fits')
-    nh = f[0].data
-    nhm = scipy.ndimage.median_filter(nh, 5)
-    f[0].data = nhm
-
-
-
-def do_mask_ch3oh(dpath=None, vsmooth=False):
-    mask_out_ch3oh('', dpath=dpath)
-    # spatial smoothing = 2pix
-    mask_out_ch3oh('_smooth', dpath=dpath)
-    if vsmooth:
-        # spatial smoothing = 4pix
-        mask_out_ch3oh('_vsmooth', dpath=dpath)
-
-    mask_out_ch3oh('_bl', dpath=dpath)
-    # spatial smoothing = 2pix
-    mask_out_ch3oh('_smooth_bl', dpath=dpath)
-    if vsmooth:
-        # spatial smoothing = 4pix
-        mask_out_ch3oh('_vsmooth_bl', dpath=dpath)
-
-def do_2014(datasets=None, scanblsub=False):
-    #datasets = ['E-093.C-0144A.2014APR02/E-093.C-0144A-2014-2014-04-01',
-    #            'E-093.C-0144A.2014APR03/E-093.C-0144A-2014-2014-04-02']
-    #build_cube_2014('MAP_001', datasets=datasets, scanblsub=True, lowhigh='low')
-    #build_cube_2014('MAP_001', datasets=datasets, scanblsub=True, lowhigh='high')
-    #build_cube_2014('MAP_001', datasets=datasets, scanblsub=False, lowhigh='high_nosub')
-
-    for dataset in datasets:
-        for source in datasets[dataset]:
-            build_cube_2014(source, datasets=[dataset], scanblsub=scanblsub,
-                            outpath=mergepath,
-                            datapath=april2014path,
-                            lowhigh='low')
-            build_cube_2014(source, datasets=[dataset], scanblsub=scanblsub,
-                            outpath=mergepath,
-                            datapath=april2014path,
-                            lowhigh='high')
-
-
-def do_2014_merge(datasets=None,
-                  lowhigh=('low','high')):
-    log.info("Starting merge")
-    if not isinstance(lowhigh, (tuple,list)):
-        if isinstance(lowhigh, str):
-            lowhigh = (lowhigh,)
-        else:
-            raise ValueError("Invalid lowhigh.")
-    for lh in lowhigh:
-        mergefile = 'APEX_H2CO_2014_merge_{0}'.format(lh)
-        log.info("Making blanks")
-        lowest_freq = 218.4e9 if lh=='high' else 216.9e9
-        make_blanks_merge(os.path.join(mergepath,mergefile), lowhigh=lh,
-                          lowest_freq=lowest_freq, width=2.5*u.GHz)
-        mapnames = ['MAP_{0:03d}'.format(ii) for ii in range(1,130)]
-        log.info("Building cubes: "+str(mapnames)+" "+lh)
-        build_cube_2014(mapnames,
-                        mergefile=mergefile,
-                        outpath=mergepath,
-                        datapath=april2014path,
-                        lowhigh=lh,
-                        datasets=datasets)
-
-        baseline_cube(os.path.join(mergepath,mergefile+".fits"),
-                      polyspline='spline', mask_level_sigma=5)
 
 def get_info_metadata(datapath="/Volumes/passport/w51-apex/raw/",
                       datasets=None,
@@ -1898,7 +1696,8 @@ def get_info_metadata(datapath="/Volumes/passport/w51-apex/raw/",
         else:
             info[dataset] = set([(h['OBJECT'], h['LINE'], h['XTEL'])
                                  for h in headers
-                                 if not any(x.encode('ascii') in h['OBJECT'] for x in exclude_objects)
+                                 if not any(x.encode('ascii') in h['OBJECT']
+                                            for x in exclude_objects)
                                 ])
             log.info("{0}:{1}".format(dataset, str(info[dataset])))
 
@@ -1932,20 +1731,23 @@ def get_info_metadata(datapath="/Volumes/passport/w51-apex/raw/",
   (b'W51', b'H2CO_13CO_OS', b'AP-H201-X201'),
   (b'W51', b'H2CO_13CO_OS', b'AP-H201-X202')}}
 
- '/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC12/E-098.C-0421A-2016-2016-12-11.apex': {(
+ '/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC12/E-098.C-0421A-2016-2016-12-11.apex': {
   (b'W51', b'Setup291p8  ', b'AP-H301-X201'),
   (b'W51', b'Setup291p8  ', b'AP-H301-X202')},
  '/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC13/E-098.C-0421A-2016-2016-12-12.apex': {
   (b'W51', b'Setup291p8  ', b'AP-H301-X201'),
   (b'W51', b'Setup291p8  ', b'AP-H301-X202')}}
+ '/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC14/E-098.C-0421A-2016-2016-12-13.apex': {
+  (b'W51', b'Setup291p8  ', b'AP-H301-X201'),
+  (b'W51', b'Setup291p8  ', b'AP-H301-X202')}}
 """
 
 
-def identify_scans_fromcoords(gal):
+def identify_scans_fromcoords(coords):
     # identify where the *derivative* changes signs
     # each np.diff shifts 1 to the left
     # 2 np.diffs -> +2 to index
-    scans = 2+np.where(np.diff(np.sign(np.diff(gal.l.wrap_at(180*u.deg)))))[0]
+    scans = 2+np.where(np.diff(np.sign(np.diff(coords.spherical.lon.wrap_at(180*u.deg)))))[0]
     return scans
 
 def per_scan_fourier_clean(data, scans, mask_pixels=None,
