@@ -6,6 +6,7 @@ import radmc3dPy
 import matplotlib
 import pylab as pl
 import numpy as np
+from astropy.io import fits
 from astropy import units as u
 from astropy import constants
 from yt.analysis_modules.radmc3d_export.api import RadMC3DWriter, RadMC3DSource
@@ -13,6 +14,8 @@ from yt.utilities.physical_constants import kboltz
 import yt
 import struct
 from core_models import broken_powerlaw
+from convert_to_K import convert_to_K
+from get_dust_opacity import get_dust_opacity
 
 def read_dust_temperature(dust_tem_fn, sz=32):
     with open(dust_tem_fn, 'rb') as fh:
@@ -33,8 +36,11 @@ def core_model_dust(outname, x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8,
                     radius_cm=1*u.au.to(u.cm), mass_g=1*u.M_sun.to(u.g),
                     n0=5e8*u.cm**-3,
                     power=-1.5,
+                    recompute_dusttemperature=True,
                     luminosity=2e4*u.L_sun,):
 
+    if not os.path.exists('dustkappa_mrn5.inp'):
+        get_dust_opacity()
 
 
     mu_h2 = yt.YTArray(zh2 * u.Da.to(u.g), 'g')
@@ -147,14 +153,22 @@ def core_model_dust(outname, x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8,
         params['lines_mode'] = 1 # 3 = sobolev (LVG)
         f.write(params_string.format(**params))
 
-    # compute the dust temperature
-    assert os.system('radmc3d mctherm') == 0
+    if recompute_dusttemperature:
+        # compute the dust temperature
+        assert os.system('radmc3d mctherm') == 0
 
-    dust_temperature = read_dust_temperature('dust_temperature.bdat', sz=sz)
-    shutil.copy('dust_temperature.bdat','dust_temperature_{0}.bdat'.format(outname))
+        dust_temperature = read_dust_temperature('dust_temperature.bdat', sz=sz)
+        shutil.copy('dust_temperature.bdat','dust_temperature_{0}.bdat'.format(outname))
+    else:
+        try:
+            shutil.copy('dust_temperature_{0}.bdat'.format(outname),'dust_temperature.bdat',)
+        except Exception as ex:
+            print(ex)
+        dust_temperature = read_dust_temperature('dust_temperature.bdat', sz=sz)
 
-    os.remove('lines.inp')
-    os.system('radmc3d image npix 50 incl 0 sizeau 10000 noscat pointau 0.0  0.0  0.0 fluxcons lambda 1323')
+    if os.path.exists('lines.inp'):
+        os.remove('lines.inp')
+    assert os.system('radmc3d image npix 50 incl 0 sizeau 10000 noscat pointau 0.0  0.0  0.0 fluxcons lambda 1323 dpc 5400') == 0
     im = radmc3dPy.image.readImage('image.out')
     im.writeFits('dustim1323um_{0}.fits'.format(outname), fitsheadkeys={}, dpc=5400,
                  coord='19h23m43.963s +14d30m34.56s', overwrite=True)
@@ -171,17 +185,35 @@ if __name__ == "__main__":
     rr = ((zz-(sz-1)/2.)**2 + (yy-(sz-1)/2.)**2 + (xx-(sz-1)/2.)**2)**0.5
     rr = rr * max_rad / (sz/2.)
     rr_u, inds = np.unique(rr.ravel(), return_index=True)
+    rr_2d = ((yy[0,:,:]-(sz-1)/2.)**2 + (xx[0,:,:]-(sz-1)/2.)**2)**0.5
+    rr_2d = rr_2d * max_rad / (sz/2.)
+    rr_2du, inds_2d = np.unique(rr_2d.ravel(), return_index=True)
+
 
     fig2 = pl.figure(2)
     fig2.clf()
 
-    linestyles = {-2.0: '-',
-                  -1.5: '--',
+    fig3 = pl.figure(3)
+    fig3.clf()
+
+    linestyles = {-2.0: '--',
+                  -1.5: '-',
                   -1.0: ':'}
     colors = {1e4: 'r',
               2e4: 'g',
               5e4: 'b',
               1e5: 'k'}
+
+    # set up the appropriately-sized grid
+    lstar = 2e4
+    power = -1.5
+    outname = "sz{2}_rad1e4au_mstar1msun_rstar1au_lstar{0:0.1e}lsun_power{1}".format(lstar,power,sz)
+    core_model_dust(outname=outname,
+                    x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8, sz=sz,
+                    max_rad=max_rad, rbreak=1000*u.au,
+                    recompute_dusttemperature=False,
+                    radius_cm=1*u.au.to(u.cm), mass_g=1*u.M_sun.to(u.g),
+                   )
 
     for power in (-1.5, -2.0, -1.0):
 
@@ -200,13 +232,18 @@ if __name__ == "__main__":
 
             
             dust_image = 'dustim1323um_{0}.fits'.format(outname)
-            if not os.path.exists(dust_image):
+            dust_image_K = 'dustim1323um_{0}_K.fits'.format(outname)
+            if not os.path.exists(dust_image_K):
                 shutil.copy(dusttem_fn, 'dust_temperature.bdat')
-                os.remove('lines.inp')
-                os.system('radmc3d image npix 50 incl 0 sizeau 10000 noscat pointau 0.0  0.0  0.0 fluxcons lambda 1323')
+                if os.path.exists('lines.inp'):
+                    os.remove('lines.inp')
+                os.system('radmc3d image npix 50 incl 0 sizeau 10000 noscat pointau 0.0  0.0  0.0 fluxcons lambda 1323 dpc 5400')
                 im = radmc3dPy.image.readImage('image.out')
                 im.writeFits(dust_image, fitsheadkeys={}, dpc=5400,
                              coord='19h23m43.963s +14d30m34.56s', overwrite=True)
+                im_K = convert_to_K(dust_image)
+                im_K.writeto(dust_image_K, clobber=True)
+            imdata = fits.getdata(dust_image_K)
 
             fig1 = pl.figure(1)
             fig1.clf()
@@ -222,8 +259,52 @@ if __name__ == "__main__":
             ax3.plot(rr_u, dust_temperature.flat[inds], linestyle=linestyles[power],
                      color=colors[lstar], alpha=1.0, label="$L={0:0.1e}, \\kappa={1}$".format(lstar, power))
 
+            ax4 = fig3.gca()
+            ax4.plot(rr_2du, dust_temperature.flat[inds_2d], linestyle=linestyles[power],
+                     color=colors[lstar], alpha=1.0, label="$L={0:0.1e}, \\kappa={1}$".format(lstar, power))
+
+
+    # overlay "core_model" version
+    sz = 16
+    lstar = 2e4
+    power = -1.5
+    zz,yy,xx = np.indices([sz,sz,sz])
+    rr = ((zz-(sz-1)/2.)**2 + (yy-(sz-1)/2.)**2 + (xx-(sz-1)/2.)**2)**0.5
+    rr = rr * max_rad / (sz/2.)
+    rr_u, inds = np.unique(rr.ravel(), return_index=True)
+    rr_2d = ((yy[0,:,:]-(sz-1)/2.)**2 + (xx[0,:,:]-(sz-1)/2.)**2)**0.5
+    rr_2d = rr_2d * max_rad / (sz/2.)
+    rr_2du, inds_2d = np.unique(rr_2d.ravel(), return_index=True)
+
+    # set up the appropriately-sized grid
+    outname = "sz{2}_rad1e4au_mstar1msun_rstar1au_lstar{0:0.1e}lsun_power{1}_dens5e8".format(lstar,power,sz)
+    core_model_dust(outname=outname,
+                    x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8, sz=sz,
+                    max_rad=max_rad, rbreak=1000*u.au,
+                    recompute_dusttemperature=False,
+                    radius_cm=1*u.au.to(u.cm), mass_g=1*u.M_sun.to(u.g),
+                   )
+
+    dusttem_fn = outname+'.bdat'
+    dust_temperature = read_dust_temperature(dusttem_fn, sz)
+    ax3 = fig2.gca()
+    ax3.plot(rr_u, dust_temperature.flat[inds], linestyle='-',
+             color='m', alpha=0.5, linewidth=2, label="$L={0:0.1e}, \\kappa={1}$, $n=5\\times10^8$".format(lstar, power))
+
+    dust_image = 'dustim1323um_{0}.fits'.format(outname)
+    imdata = fits.getdata(dust_image)
+    ax4 = fig3.gca()
+    ax4.plot(rr_2du, dust_temperature.flat[inds_2d], linestyle='-',
+             color='m', alpha=0.5, label="$L={0:0.1e}, \\kappa={1}$, $n=5\\times10^8$".format(lstar, power))
+
     pl.figure(2)
     pl.legend(loc='best')
     pl.xlabel("Radius (AU)", fontsize=16)
     pl.ylabel("Dust temperature (K)", fontsize=16)
-    fig2.savefig("dust_radial_profile_comparison.png")
+    fig2.savefig("dust_temperature_radial_profile_comparison.png")
+
+    pl.figure(3)
+    pl.legend(bbox_to_anchor=(1, 1), loc='upper left', ncol=1)
+    pl.xlabel("Radius (AU)", fontsize=16)
+    pl.ylabel("Dust brightness (Jy/beam?)", fontsize=16)
+    fig3.savefig("dust_brightness_radial_profile_comparison.png", bbox_inches='tight')

@@ -11,6 +11,11 @@ from yt.utilities.physical_constants import kboltz
 import yt
 import struct
 from core_models import broken_powerlaw
+from convert_to_K import convert_to_K
+import os
+import shutil
+
+from get_dust_opacity import get_dust_opacity
 
 # lvg results in inverted populations for methanol and is therefore useless
 lvg = False
@@ -101,36 +106,8 @@ wavelengths_micron = np.logspace(-1.0, 4.0, 1000)
 
 writer.write_source_files(sources_list, wavelengths_micron)
 
-import os
-import shutil
-
-#shutil.copy('/Users/adam/repos/radmc-3d/version_0.39/python/python_examples/datafiles/dustkappa_silicate.inp', '.')
-import requests
-rslt = requests.get('https://hera.ph1.uni-koeln.de/~ossk/Jena/tables/mrn5')
-with open('dustkappa_mrn5.inp','w') as fh:
-    lines = rslt.content.rstrip().split("\n")
-    wav,opac = np.array([list(map(float, line.split())) for line in lines]).T
-    beta = np.log(opac[-1]/opac[-2])/np.log(wav[-2]/wav[-1])
-    beta = 1.5
-    lastwav = 4000.
-    const = opac[-1] * wav[-1]**beta
-    lastopac = const * lastwav**-beta
-    fh.write("{0:10d}\n".format(1))
-    fh.write("{0:10d}\n".format(len(lines)+1))
-    for line in lines:
-        fh.write("{0}\n".format(line))
-    fh.write(" {0:9.3e} {1:9.3e}\n".format(lastwav,lastopac))
-
-dust_type = 'mrn5'
-
-with open('dustopac.inp', 'w') as fh:
-    fh.write("2               Format number of this file\n")
-    fh.write("1               Nr of dust species\n")
-    fh.write("============================================================================\n")
-    fh.write("1               Way in which this dust species is read\n")
-    fh.write("0               0=Thermal grain, 1=Quantum heated\n")
-    fh.write("{0}      Extension of name of dustkappa_***.inp file\n".format(dust_type))
-    fh.write("----------------------------------------------------------------------------\n")
+if not os.path.exists('dustkappa_mrn5.inp'):
+    get_dust_opacity()
 
 wav,opac = np.loadtxt('dustkappa_{0}.inp'.format(dust_type), skiprows=2).T
 opac_1300 = np.interp(1300, wav, opac)
@@ -138,8 +115,10 @@ print("Max column: {0}".format(((dens[:,8,8] * (max_rad/(sz/2.))).sum().to(u.cm*
 print("Max opacity: {0}".format(((dens[:,8,8] * (max_rad/(sz/2.))).sum().to(u.cm**-2) * opac_1300/100 * u.cm**2/u.g * (zh2*u.Da)).decompose()))
 
 
-shutil.copy('/Users/adam/repos/radmc-3d/version_0.39/python/python_examples/datafiles/molecule_co.inp', '.')
-shutil.copy('/Users/adam/LAMDA/e-ch3oh.dat','molecule_ch3oh.inp')
+lamda.Lamda.download_molfile('co', 'molecule_co.inp')
+#shutil.copy('/Users/adam/repos/radmc-3d/version_0.39/python/python_examples/datafiles/molecule_co.inp', '.')
+lamda.Lamda.download_molfile('e-ch3oh', 'molecule_ch3oh.inp')
+#shutil.copy('/Users/adam/LAMDA/e-ch3oh.dat','molecule_ch3oh.inp')
 
 params=dict(istar_sphere=0, itempdecoup=0, lines_mode=3 if lvg else 1, nphot=1000000,
             nphot_scat=30000, nphot_spec=100000, rto_style=3,
@@ -448,17 +427,6 @@ if do_methanol:
                  coord='19h23m43.963s +14d30m34.56s', overwrite=True)
 
 
-    from astropy.io import fits
-    from astropy import wcs
-
-    def convert_to_K(radmc_fits_img, distance=5400*u.pc):
-        fh = fits.open(radmc_fits_img)
-        mywcs = wcs.WCS(fh[0].header)
-        pix_area = np.abs(mywcs.celestial.pixel_scale_matrix.diagonal().prod()) * u.deg**2
-        conv = u.Jy.to(u.K, equivalencies=u.brightness_temperature(pix_area, mywcs.wcs.crval[2]*u.Hz))
-        fh[0].data *= conv
-        fh[0].header['BUNIT'] = 'K'
-        return fh
 
 
     for trans in (240,241,242,251):
