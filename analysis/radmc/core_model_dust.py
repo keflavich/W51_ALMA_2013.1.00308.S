@@ -206,12 +206,20 @@ if __name__ == "__main__":
     lstar = 2e4
     power = -1.5
     outname = "sz{2}_rad1e4au_mstar1msun_rstar1au_lstar{0:0.1e}lsun_power{1}".format(lstar,power,sz)
-    core_model_dust(outname=outname,
-                    x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8, sz=sz,
-                    max_rad=max_rad, rbreak=1000*u.au,
-                    recompute_dusttemperature=False,
-                    radius_cm=1*u.au.to(u.cm), mass_g=1*u.M_sun.to(u.g),
-                   )
+    try:
+        core_model_dust(outname=outname,
+                        x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8, sz=sz,
+                        max_rad=max_rad, rbreak=1000*u.au,
+                        recompute_dusttemperature=False,
+                        radius_cm=1*u.au.to(u.cm), mass_g=1*u.M_sun.to(u.g),
+                       )
+    except IOError:
+        core_model_dust(outname=outname,
+                        x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8, sz=sz,
+                        max_rad=max_rad, rbreak=1000*u.au,
+                        recompute_dusttemperature=True,
+                        radius_cm=1*u.au.to(u.cm), mass_g=1*u.M_sun.to(u.g),
+                       )
 
     for power in (-1.5, -2.0, -1.0):
 
