@@ -1,10 +1,15 @@
+import os
 import numpy as np
 import requests
 
 def get_dust_opacity():
-    rslt = requests.get('https://hera.ph1.uni-koeln.de/~ossk/Jena/tables/mrn5')
-    with open('dustkappa_mrn5.inp','w') as fh:
+    if not os.path.exists('mrn5'):
+        rslt = requests.get('https://hera.ph1.uni-koeln.de/~ossk/Jena/tables/mrn5')
         lines = rslt.content.rstrip().split("\n")
+    else:
+        with open('mrn5','r') as fh:
+            lines = fh.readlines()
+    with open('dustkappa_mrn5.inp','w') as fh:
         wav,opac = np.array([list(map(float, line.split())) for line in lines]).T
         beta = np.log(opac[-1]/opac[-2])/np.log(wav[-2]/wav[-1])
         beta = 1.5
