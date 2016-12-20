@@ -56,10 +56,10 @@ def core_model_dust(outname, x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8,
     rr = rr * max_rad / (sz/2.)
     dens = broken_powerlaw(rr, rbreak=rbreak, n0=n0, power=power)
 
-    data = {'density': ((dens*u.Da*zh2).to(u.g/u.cm**3), "g/cm**3"),
-            'z_velocity': (velo[0].to(u.km/u.s).value, 'km/s'),
-            'y_velocity': (velo[1].to(u.km/u.s).value, 'km/s'),
-            'x_velocity': (velo[2].to(u.km/u.s).value, 'km/s'),
+    data = {('gas','density'): ((dens*u.Da*zh2).to(u.g/u.cm**3), "g/cm**3"),
+            ('gas','z_velocity'): (velo[0].to(u.km/u.s).value, 'km/s'),
+            ('gas','y_velocity'): (velo[1].to(u.km/u.s).value, 'km/s'),
+            ('gas','x_velocity'): (velo[2].to(u.km/u.s).value, 'km/s'),
            }
     bbox = np.array([[-max_rad.value,max_rad.value]]*3)
     ds = yt.load_uniform_grid(data, dens.shape, length_unit="au", bbox=bbox, nprocs=64)
