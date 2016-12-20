@@ -107,9 +107,7 @@ def core_model_dust(outname, x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8,
     writer.write_source_files(sources_list, wavelengths_micron)
 
 
-    shutil.copy('/Users/adam/repos/radmc-3d/version_0.39/python/python_examples/datafiles/dustkappa_silicate.inp', '.')
-    shutil.copy('/Users/adam/work/jimsims/code/dustopac.inp',
-                'dustopac.inp')
+    get_dust_opacity()
 
     params=dict(istar_sphere=0, itempdecoup=0, lines_mode=3, nphot=1000000,
                 nphot_scat=30000, nphot_spec=100000, rto_style=3,
