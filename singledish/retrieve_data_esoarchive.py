@@ -24,7 +24,7 @@ def retrieve_ESO_files(rawpath='/Volumes/passport/w51-apex/raw/',
         print(tbl)
 
         if download:
-            files = Eso.retrieve_data(tbl['Product ID'])
+            files = Eso.retrieve_data(tbl['Product ID'], continuation=True)
             all_files.append(files)
 
     return all_files

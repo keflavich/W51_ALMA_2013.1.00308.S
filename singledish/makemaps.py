@@ -1116,6 +1116,7 @@ def make_12CO_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
                                                    "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG09/E-098.C-0421A-2016-2016-08-08",
                                                    "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG10/E-098.C-0421A-2016-2016-08-09",
                                                    "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC02/E-098.C-0421A-2016-2016-12-01",
+                                                   "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC03/E-098.C-0421A-2016-2016-12-02",
                                                    "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC04/E-098.C-0421A-2016-2016-12-03",
                                                   ]
                          ):
@@ -1146,6 +1147,7 @@ def make_232_mergecube(mergepath='/Volumes/passport/w51-apex/processed/merge/',
                                               "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG09/E-098.C-0421A-2016-2016-08-08",
                                               "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016AUG10/E-098.C-0421A-2016-2016-08-09",
                                               "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC02/E-098.C-0421A-2016-2016-12-01",
+                                              "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC03/E-098.C-0421A-2016-2016-12-02",
                                               "/Volumes/passport/w51-apex/raw/E-098.C-0421A.2016DEC04/E-098.C-0421A-2016-2016-12-03",
                                              ]
                          ):
