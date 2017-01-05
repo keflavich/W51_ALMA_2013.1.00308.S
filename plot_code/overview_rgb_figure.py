@@ -128,6 +128,10 @@ im = ImageEnhance.Brightness(im).enhance(1.5)
 outname = paths.fpath("rgb_overview_brightness.png")
 im.save(outname)
 avm.embed(outname, outname)
+#im = ImageEnhance.Brightness(im).enhance(1.5)
+#outname = paths.fpath("rgb_overview_brightness_1.5.png")
+#im.save(outname)
+#avm.embed(outname, outname)
 
 
 FF = aplpy.FITSFigure(outname)
