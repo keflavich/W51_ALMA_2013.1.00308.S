@@ -1,11 +1,9 @@
-from paths import dpath, fpath
+from paths import dpath, fpath, rpath
 from astropy.io import fits
 import numpy as np
 from astropy import wcs
 import aplpy
-from astropy.io import fits
 import reproject
-from vla_cont_cutout import fnku
 from matplotlib.colors import Normalize,LogNorm
 from matplotlib.colors import rgb_to_hsv,hsv_to_rgb
 import PIL
@@ -113,5 +111,5 @@ avm.embed(outname, outname)
 
 FF = aplpy.FITSFigure(outname)
 FF.show_rgb(outname)
-#FF.show_regions(rpath('irs2_labels.reg'), layer='labels')
+FF.show_regions(rpath('irs2_labels.reg'), layer='labels')
 FF.save(fpath("rgb_irs2_aplpy_withlabels.png"), dpi=150)
