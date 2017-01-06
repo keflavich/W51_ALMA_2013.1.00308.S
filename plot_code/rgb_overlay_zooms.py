@@ -12,6 +12,7 @@ from outflow_meta import e1
 for suffix in ('auto','99.99','max'):
     # note to self: rgb_cube_fits doesn't have to exist, it's just a prefix
     # for "name"
+    # But the FITS files/pngs to load come from rgb_big.py
     for (rgb_cube_fits, rgb_cube_png, star_color, core_color, rlabel, glabel,
          blabel) in (('full_h2co_rgb.fits', 'full_h2co_rgb_auto.png', 'y', 'b',
                       'H$_2$CO $3_{0,3}-2_{0,2}$', 'H$_2$CO $3_{2,1}-2_{2,0}$',
@@ -29,6 +30,10 @@ for suffix in ('auto','99.99','max'):
                       'Ku', 'HC$_3$N', 'CH$_3$OH'),
                      ('ku_so_c18o_rgb.fits', 'ku_so_c18o_rgb_auto.png', 'w', 'b',
                       'Ku', 'SO', 'C$^{18}$O',),
+                     ('ku_mm_ch3oh_rgb.fits', 'ku_mm_ch3oh_rgb_auto.png', 'w', 'b',
+                      'Ku', 'mm', 'CH$_3$OH',),
+                     #('ku_mm_ch3ohnosub_rgb.fits', 'ku_mm_ch3ohnosub_rgb_auto.png', 'w', 'b',
+                     # 'Ku', 'mm', 'CH$_3$OH',),
                     ):
         name = rgb_cube_fits[:-9]
         # stupid hack, should just rewrite from scratch but it's easier to edit inplace...

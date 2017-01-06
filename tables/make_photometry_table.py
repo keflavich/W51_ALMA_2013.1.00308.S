@@ -1,4 +1,5 @@
 from astropy.table import Table, Column
+from astropy import coordinates
 from astropy import units as u
 from latex_info import latexdict, format_float, round_to_n, strip_trailing_zeros
 import natsort
@@ -7,8 +8,13 @@ tbl = Table.read('core_continuum_and_line.ipac', format='ascii.ipac')
 inds = natsort.index_natsorted(tbl['SourceID'])
 tbl = tbl[inds]
 
+coords = coordinates.SkyCoord(tbl['RA'], tbl['Dec'], frame='fk5')
+tbl.add_column(Column(name='RA_s', data=coords.ra.to(u.hourangle).to_string(sep=':')))
+tbl.add_column(Column(name='Dec_s', data=coords.dec.to(u.deg).to_string(sep=':')))
 
-tbl_towrite = tbl['SourceID', 'RA', 'Dec', 'cont_flux0p2arcsec',
+
+
+tbl_towrite = tbl['SourceID', 'RA_s', 'Dec_s', 'cont_flux0p2arcsec',
                   'cont_flux0p4arcsec',
                   #'BrightestFittedPeakPixBrightness',
                   'BrightestFittedPeakPixBrightnessWithcont',
@@ -17,6 +23,12 @@ tbl_towrite = tbl['SourceID', 'RA', 'Dec', 'cont_flux0p2arcsec',
                   'Categories',
                   #'Classification',
                  ]
+tbl_towrite.rename_column('RA_s','RA')
+tbl_towrite.rename_column('Dec_s','Dec')
+tbl_towrite['cont_flux0p2arcsec'] *= 1000
+tbl_towrite['cont_flux0p4arcsec'] *= 1000
+tbl_towrite['cont_flux0p2arcsec'].unit = u.mJy
+tbl_towrite['cont_flux0p4arcsec'].unit = u.mJy
 
 
 for row in tbl_towrite:
@@ -62,8 +74,10 @@ latexdict['col_align'] = 'l'*len(tbl.columns)
 #latexdict['tabulartype'] = 'longtable'
 latexdict['units'] = {}
 
-formats={'RA': lambda x: '{0:0.4f}'.format(x),
-         'Dec': lambda x: '{0:0.4f}'.format(x),
+formats={'RA': lambda x: x,#'{0:0.4f}'.format(x),
+         'Dec': lambda x: x,#'{0:0.4f}'.format(x),
+         'RA_s': lambda x: x,#'{0:0.4f}'.format(x),
+         'Dec_s': lambda x: x,#'{0:0.4f}'.format(x),
          '$S_{\\nu}(0.2\\arcsec)$': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
          '$S_{\\nu}(0.4\\arcsec)$': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
          '$T_{B,max}(\mathrm{line})$': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),

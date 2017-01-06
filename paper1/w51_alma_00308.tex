@@ -26,7 +26,7 @@
     large mass) of gas in their surroundings, suppressing fragmentation and
     therefore keeping a large reservoir available to feed from.  By contrast,
     the more mature massive stars that illuminate compact \hii regions have
-    little effect on ther surrounding dense gas, suggesting that these main
+    little effect on their surrounding dense gas, suggesting that these main
     sequence stars have completed most or all of their accretion.  
     The high luminosity of the massive protostars, combined with a lack of
     centimeter continuum from these sources, implies that they are not on
@@ -116,9 +116,9 @@ Additionally, fragmentation-induced starvation can limit the amount of mass
 available to the most massive star, instead breaking up massive cores into many
 lower-mass fragments \citep{Peters2010a}.  These simulations still have limited
 physics and can only produce stars up to $M\sim80$ \msun even in the current
-best cases \citep{Kuiper2015a,Kuiper2016a}.  The question of how massive stars
-acquire their mass, and especially whether they ever form Keplerian disks,
-remains open \citep{Beltran2016b}.
+best 3D cases  \citep{Kuiper2015a,Kuiper2016a}.  The question of how massive
+stars acquire their mass, and especially whether they ever form Keplerian
+disks, remains open \citep{Beltran2016b}.
 
 Nature is clearly capable of producing massive stars larger than those produced
 in simulations.  Within the LMC, stars up to $M\sim300$ \msun have been
@@ -231,7 +231,8 @@ $\sim2\arcmin\times1\arcmin$ region centered between W51 IRS2 and W51 e1/e2
 with a 37-pointing mosaic.  Two configurations of the 12m array were used,
 achieving a resolution of 0.2\arcsec.  Additionally, a 12-pointing mosaic was
 performed using the 7m array, hypothetically probing scales up to
-$\sim28$\arcsec.  The full UV coverage was from $\sim12$ to $\sim1500$ m.
+$\sim28$\arcsec.  The full UV coverage included baselines over
+the range $\sim12$ to $\sim1500$ m.
 The spectral windows (SPWs) covered are listed in Table \ref{tab:spw},
 and the lines they cover described in Section \ref{sec:obslines}.
 %(figure \ref{fig:uvcov}).
@@ -262,14 +263,20 @@ For the majority of the data here, the conversion from flux density to
 brightness temperature is $T_B \approx 230 \mathrm{K}/(\mathrm{Jy} \perbeam)$.
 
 Full details of the data reduction, including all scripts used, can be found
-on the project's github repository\footnote{\url{https://github.com/keflavich/W51_ALMA_2013.1.00308.S}}.
+on the project's github repository\footnote{\url{https://github.com/adamginsburg/W51_ALMA_2013.1.00308.S}}.
 
 
 \subsubsection{Continuum}
 A continuum image combining all 4 spectral windows was produced using
 \texttt{tclean}.  We identified line-rich channels from a spectrum of source e8
-and flagged them out prior to imaging.  We then phase self-calibrated the data
-on baselines longer than 100m to increase the dynamic range.  The final image
+and flagged them out prior to imaging\footnote{The velocity
+range of e8, e2, and North is similar enough that a common range was acceptable
+for this process.  Note also that, while the sources are line-rich,
+failure to flag out the data results in a $<10\%$ error in the continuum estimates
+(see S{\'a}nchez-Monge et al, in prep, showing that even the richest
+sources in the Galaxy have $<40\%$ line contribution).}.  We then phase
+self-calibrated the data on baselines longer than 100m to increase the dynamic
+range.  The final image
 was cleaned to a threshold of 5 mJy.  The lowest noise
 level in the image, away from bright sources, is $\sim0.2$ mJy/beam
 ($M\sim0.14$ \msun at $T=20$ K using the extrapolation of
@@ -437,7 +444,8 @@ stellar types]{Pecaut2013a}.
 % derive a dust mass $M_{dust}\sim20$ \msun. 
 
 If we assume that the dust is optically thick throughout our beam, and assume
-an opacity constant $\kappa(226 \mathrm{GHz})=120$ g \persc, the minimum mass
+an opacity constant $\kappa(226 \mathrm{GHz})=0.0083$ cm$^2$ g$^{-1}$  (which
+incorporates and assumed gas-to-dust ratio of 100), the minimum mass
 per beam to achieve $\tau\geq1$ is $M=18$ \msun beam$^{-1}$.  This  mass is not
 a strict limit in either direction: if the dust is indeed optically thick,
 there may be substantial hidden or undetected gas, while if the filling factor
@@ -511,9 +519,9 @@ contamination, we cannot estimate the central core's dust mass.
 
 Additionally, unlike the three hot cores, d2 does not drive an outflow.  It
 does, however, power a unique set of ammonia (\ammonia) masers \citep[][Wootten
-\& Wilson, in prep]{Gaume1993a,Wilson1990a,Henkel2013a}.  These features imply
+\& Wilson in prep]{Gaume1993a,Wilson1990a,Henkel2013a}.  These features imply
 it is in an intermediate evolutionary state between the larger compact \hii
-regions and the hot cores that exhibit no millimeter continuum.
+regions and the hot cores that exhibit no centimeter continuum.
 
 
 
@@ -543,7 +551,7 @@ K.  For an unresolved spherical source in the $\sim0.2\arcsec$ beam, this
 column density corresponds to a volume density $n>10^{8.1}$ \percc.
 Of the area with significant emission, 23\% has $T_B>20$ K (34 mJy \perbeam)
 and must have $T_{dust}>20$ K, guaranteeing that a substantial fraction of all
-of the detected continuum emission is coming from warmer gas.
+of the detected continuum emission is coming from warmer dust.
 
 
 % total_mass_analysis also (end of it)
@@ -741,9 +749,9 @@ over the same range to exclude contamination from the SO outflow line wings.
 These are shown to provide validation of the temperatures and column densities
 derived and shown in Figure \ref{fig:ch3ohe2}.  The lower-left corner of each
 panel shows the position from which the data were extracted in that figure in
-units of figure fraction.  The horizontal black lines show the detection
-threshold of each of the transitions; points below these lines are ignored when
-fitting, and instead the threshold itself is used.  The fitted temperature and
+units of figure fraction.  Errorbars show the measurement error on each point;
+because these are plotted on a log scale, the errors are often smaller than
+the plotted points.  The fitted temperature and
 column are shown in the top right of each plot.
 }{fig:ch3ohe2rot}{1}{18cm}
 
@@ -979,7 +987,7 @@ formation.
 
 The ionizing radiation in W51 was discussed in detail in \citet{Ginsburg2016b}.
 Ionizing radiation affects much of the cloud volume, but little of the
-high-density prestellar material:  there is no evidence of increased gas
+high-density prestellar material:  there is no evidence of increased molecular gas
 temperatures in the vicinity of \hii regions.  While in Section
 \ref{sec:chemistrymaps} we identify chemically enhanced regions as those where
 radiative feedback has heated the dust and released ices into the gas phase, no
@@ -1234,7 +1242,7 @@ the extent of their chemically enhanced zones will be useful for identifying
 
 \subsubsection{Outflows}
 \label{sec:outflowdiscussion}
-While the outflows described in Section \ref{sec:outflows} are impressive and
+While the outflows described in Appendix \ref{sec:outflows} are impressive and
 plentiful, they are obviously not the dominant form of feedback, as their area
 filling factor is small compared to that of the various forms of radiative
 feedback.  A low area filling factor implies a substantially smaller volume
@@ -1253,10 +1261,14 @@ general `extended hot core' emission described in Section
 None of the outflows originate in \uchii or \hchii regions.  While a clear
 origin cannot be determined for all of the outflows, it is clear that no cm
 continuum sources lay at the base of any.  The lack of molecular outflows
-toward these sources implies that they are accreting at most weakly or are
-accreting (and ejecting) only atomic or ionized material.
+toward these sources implies that they are accreting at most weakly.
+% 
+% or are
+% accreting (and ejecting) only atomic or ionized material.  Since an ionized
+% outflow might be directly apparent as a cm continuum jet, and any outflow
+% would likely entrain molecular material, 
 
-\subsection{The accreting phase of high-mass star formation is not ionized}
+\subsection{The accreting phase of high-mass star formation in W51 is not ionized}
 \label{sec:accretionandoutflows}
 The strong outflows observed around the highest-mass forming stars, e2e, e8,
 and North are clear indications of ongoing accretion onto these sources.
@@ -1327,7 +1339,7 @@ a quenched \hii region \citep{Walmsley1995b,Osorio1999a,Keto2006a}.
 In the spherically symmetric version of this scenario, the accretion rate
 is faster than the ionization rate, such that there is always fresh neutral
 material to ionize at the surface of the star.  The critical rate for
-\hii region quenching is very small, $\odot{M} \sim 4\ee{-6}$ \msun \peryr
+\hii region quenching is very small, $\dot{M} \sim 4\ee{-6}$ \msun \peryr
 for a B0 star, so it is very likely that, even if the star has a hot
 photosphere, it is not capable of driving an expanding \hii region.
 The main reason to disregard this scenario is the assumption of spherical
@@ -1463,19 +1475,21 @@ to noise.
 
 
 
-Given the current structure of the observed cores and their (marginal) stability
-against fragmentation, it is unlikely that they could have existed at
+Given the current structure of the observed cores and their (marginal)
+stability against fragmentation, it is unlikely that they could have existed at
 all without the presence of a central heating source.  Should these $>200$
 \msun cores have been present before high-mass star formation initiated,
 resting at $T\sim20$ K as in a typical molecular cloud, they would have been
 subject to Jeans fragmentation on a much smaller scale and would have formed a
-cluster of smaller stars.  This prior instability implies that the mass
-currently in the core had
-to be assembled from larger scales while suppressing or slowing collapse on
-smaller scales, which is essentially the opposite of inside-out collapse.
-In turn, such a core assembly implies that aspects of both the `competitive accretion'
-and `core accretion' models may apply, with mass dumping onto a sink source from large
-physical scales, yet assembling a quasi-stable core.
+cluster of smaller stars \citep[][reached the same conclusion that high-mass
+cores cannot be formed with only low-mass stellar feedback as a heating source
+by examining an earlier-stage high-mass star-forming region]{Longmore2011a}.
+This prior instability implies that the mass currently in the core had to be
+assembled from larger scales while suppressing or slowing collapse on smaller
+scales, which is essentially the opposite of inside-out collapse.  In turn,
+such a core assembly implies that aspects of both the `competitive accretion'
+and `core accretion' models may apply, with mass dumping onto a sink source
+from large physical scales, yet assembling a quasi-stable core.
 
 The observed high gas temperature provides a mechanism for MYSOs to avoid the
 ``fragmentation-induced starvation'' problem discussed by
@@ -1558,7 +1572,7 @@ reduction is negligible for an object moving near the Virial velocity ($v_{vir}
 suppresses the formation of new small fragments, as has been observed in simulations
 with much weaker feedback \citep[e.g.][]{Bate2009a}. 
 Most likely, the material around these most massive protostars was accumulated
-from larger scales, as in \citet{Smith2009f}.
+from larger scales, as in \citet{Smith2009f}.  
 
 % DONE: consider dropping kapparho discussion entirely; the measurements are
 % pretty damned unreliable. (dropped kapparho discussion)
@@ -1614,8 +1628,9 @@ own surroundings.
 % methanol_and_outflow.py
 \Figure{figures/outflows_over_methanol_e2e.png}
 {The e2e core as seen in the \methanol $8_{0,8}-7_{1,6}$ line with
-the integrated \twelveco outflow overlaid in red and blue.  The `core'
-is circularly symmetric, while the outflow is clearly bipolar.}
+the integrated \twelveco 2-1 outflow overlaid in red (73 to 180 \kms) and blue
+(0 to 45 \kms).  The `core' is circularly symmetric, while the outflow is
+clearly bipolar.}
 {fig:outflowonmethanol}{1}{10cm}
 
 %\done{Do I need a plot of gravitational pressure / thermal pressure vs radius?
@@ -1663,7 +1678,7 @@ is circularly symmetric, while the outflow is clearly bipolar.}
 \subsection{The population of faint, compact sources}
 \label{sec:faintsrcs_discussion}
 In Section \ref{sec:sourceid}, we reported the identification of 75 or 113
-sources, depending on how you count them, but we have not discussed them since.
+sources, depending on identification method, but we have not discussed them since.
 In this section, we briefly discuss why we have chosen to ignore these sources
 and offer some cautions and prospects for the interpretation of millimeter sources
 in crowded star-forming regions. 
@@ -1744,8 +1759,8 @@ The key observational results include:
 From these observations, we have inferred the following: 
 \begin{itemize}
     \item During the earliest stages of their formation, before they have 
-        ignited \hii regions, high-mass protostars heat a large volume,
-        and correspondingly large mass, of gas around them.
+        ignited \hii regions, high-mass protostars heat a large volume
+        ($R\sim5000 AU$), and correspondingly large mass, of gas around them.
     \item Older massive stars, those with surrounding \hii regions, appear
         to have little effect on the temperature of dense gas around them.
         Instead, their feedback primarily affects larger ($\gtrsim 0.1$ pc)
@@ -2084,6 +2099,8 @@ CO and \formaldehyde emission fill the full field of view.
 {The spatial distribution of the hand-identified core sample.
 The black outer contour shows the observed field of view.  The dashed circle
 (with $r=1$ pc) shows a hypothetical ring of star formation.
+The velocities shown are the mean of the velocity of peak intensity for many
+lines.
 }{fig:corepositions}{1}{16cm}
 
 
@@ -2305,7 +2322,7 @@ continuum sources.
 %The faded sources in the top left of the diagram are those with $M(T_{B,max}) >
 %M(20\textrm{K})$; the circles along the dashed line show their $M(20\mathrm{K})$.
 The dashed line shows $M(T_{B,max}) =
-M(20\textrm{K})$ and the dashed line shows $M(T_{B,max}) = 0.1 
+M(20\textrm{K})$ and the dotted line shows $M(T_{B,max}) = 0.1 
 M(20\textrm{K})$ 
 }{fig:moftbvsm20k}{1}{10cm}
 
@@ -2345,7 +2362,7 @@ data are for starless core candidates (Section \ref{sec:contsourcenature}).}
 \label{sec:contsourcenature}
 Millimeter continuum sources in star-forming regions are usually assumed to be
 either protostars or starless cores.  However, in this high-mass star-forming
-region, we have to consider not onyl those possibilities but also potential
+region, we have to consider not only those possibilities but also potential
 free-free sources and high-luminosity main-sequence stars embedded in dust.
 
 To distinguish these possibilities, we measure both the spectral lines and

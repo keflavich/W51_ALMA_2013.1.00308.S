@@ -17,6 +17,8 @@ fnc18o = paths.dpath('merge/moments/W51_b6_7M_12M.C18O2-1.image.pbcor_medsub_max
 fnSO = paths.dpath('merge/moments/W51_b6_7M_12M.SO65-54.image.pbcor_medsub_max.fits')
 fnhc3n = paths.dpath('merge/moments/W51_b6_7M_12M.HC3N24-23.image.pbcor_medsub_max.fits')
 fnch3oh422 = paths.dpath('merge/moments/W51_b6_7M_12M.CH3OH422-312.image.pbcor_medsub_max.fits')
+fnch3oh422_nosub = paths.dpath('merge/moments/W51_b6_7M_12M.CH3OH422-312.image.pbcor_max.fits')
+fnmmcont = paths.dpath("W51_te_continuum_best.fits")
 #fits303 = fits.open(fn303)
 #fits321 = fits.open(fn321)
 #fits322 = fits.open(fn322)
@@ -125,6 +127,26 @@ make_rgb('ku_so_c18o_rgb.fits',
          pmax_r=99.95,
          pmax_b=99.99,
         )
+
+make_rgb('ku_mm_ch3oh_rgb.fits',
+         greenline=fnmmcont,
+         redline=fnku,
+         blueline='CH3OH422-312',
+         pmax_g=99.99,
+         pmax_r=99.95,
+         pmax_b=99.99,
+        )
+
+
+#nosub does not exist
+# make_rgb('ku_mm_ch3ohnosub_rgb.fits',
+#          greenline=fnmmcont,
+#          redline=fnku,
+#          blueline=fnch3oh422_nosub,
+#          pmax_g=99.99,
+#          pmax_r=99.95,
+#          pmax_b=99.99,
+#         )
 
 
 rgb_cube_fits = 'full_h2co_rgb.fits'

@@ -23,7 +23,8 @@ log.setLevel('DEBUG')
 
 def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,60]*u.km/u.s,
               sourcename='e2', filelist=glob.glob(paths.dpath('12m/cutouts/*e2e8*fits')),
-              suffix="", plotgrid=(5,8), figsize=(12.8,8),
+              # 5,8 -> 12.8,8
+              suffix="", plotgrid=(6,8), figsize=(12.4,8),
               vmax_m0=5.0,
               vmax_max=150,
               maxbeam=0.5*u.arcsec,

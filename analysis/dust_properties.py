@@ -14,6 +14,7 @@ im = fits.getdata(paths.dpath('W51_te_continuum_best.fits'))
 hd = fits.getheader(paths.dpath('W51_te_continuum_best.fits'))
 beam = radio_beam.Beam.from_fits_header(hd)
 
+print("Dust opacity: ",dust_emissivity.dust.kappa(freq))
 
 e2e_peak_flux = im[1350:1400,850:867].max()*u.Jy
 e2e_peak_tb = e2e_peak_flux.to(u.K, beam.jtok_equiv(freq))
