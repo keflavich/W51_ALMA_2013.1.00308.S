@@ -20,11 +20,14 @@ import glob
 from astropy import log
 log.setLevel('DEBUG')
 
+# PN 5-4 looks terrible and doesn't have 12m data; it is screwy.
+if 'PN5-4' in labeldict:
+    labeldict.pop('PN5-4')
 
 def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,60]*u.km/u.s,
               sourcename='e2', filelist=glob.glob(paths.dpath('12m/cutouts/*e2e8*fits')),
               # 5,8 -> 12.8,8
-              suffix="", plotgrid=(6,8), figsize=(12.4,8),
+              suffix="", plotgrid=(6,8), figsize=(12.0,8.6),
               vmax_m0=5.0,
               vmax_max=150,
               maxbeam=0.5*u.arcsec,
@@ -280,7 +283,69 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
                  bbox_inches='tight', dpi=150)
 
 
+def test_layout(plotgrid=(6,8), figsize=(12.0,8.6), fignum=1):
+
+    # test layout
+    pl.close(fignum)
+    fig = pl.figure(fignum, figsize=figsize)
+    fig.clf()
+    gs = gridspec.GridSpec(*plotgrid)
+    gs.update(wspace=0.0, hspace=0.0)
+
+    for ii in range(np.product(plotgrid)):
+        ax = fig.add_subplot(gs[ii])
+        ax.set_xticklabels([])
+        ax.set_yticklabels([])
+        ax.set_aspect('equal')
+        im = pl.imshow([[1,1,],[1,2]])
+
+    bottom,top,left,right = gs.get_grid_positions(fig)
+    cbar_ax = fig.add_axes([np.max(right)+0.01, np.min(bottom),
+                            0.05, np.max(top)-np.min(bottom)])
+    cb = pl.colorbar(mappable=im, cax=cbar_ax)
+    cb.ax.tick_params(labelsize=12)
+
+
+
 if __name__ == "__main__":
+
+
+
+    linere = re.compile("W51_b6_12M.(.*).image.pbcor")
+
+    chem_plot(linere, yslice=slice(357,477), xslice=slice(104,224),
+              vrange=[51,60]*u.km/u.s, sourcename='e2',
+              vmax_max=200,
+              contourlevels=[150,200,250,300],
+              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*e2e8*fits')))
+
+    chem_plot(linere, yslice=slice(227,347), xslice=slice(119,239),
+              vrange=[52,63]*u.km/u.s, sourcename='e8',
+              vmax_max=200,
+              contourlevels=[150,200,250,300],
+              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*e2e8*fits')))
+
+    chem_plot(linere, yslice=slice(31,231), xslice=slice(152,350),
+              vrange=[54,64]*u.km/u.s, sourcename='north',
+              vmax_max=200,
+              contourlevels=[150,200,250,300],
+              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*north*fits')))
+
+    chem_plot(linere, yslice=slice(50,150), xslice=slice(80,180),
+              vrange=[58,67]*u.km/u.s, sourcename='ALMAmm14',
+              vmax_max=100,
+              contourlevels=[125,150,175,200],
+              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*ALMAmm14*fits')))
+
+    ### Below here are not used in the paper
+
+    chem_plot(linere, yslice=slice(83,133), xslice=slice(243,293),
+              vrange=[58,67]*u.km/u.s, sourcename='d2',
+              vmax_max=200,
+              contourlevels=[150,200,250,300],
+              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*north*fits')))
+
+
     linere = re.compile("W51_b6_7M_12M.(.*).image.pbcor")
 
     chem_plot(linere, yslice=slice(357,477), xslice=slice(104,224),
@@ -320,34 +385,3 @@ if __name__ == "__main__":
               filelist=glob.glob(paths.dpath('merge/cutouts/W51_b6_7M_12M.*north*fits')))
 
 
-    linere = re.compile("W51_b6_12M.(.*).image.pbcor")
-
-    chem_plot(linere, yslice=slice(357,477), xslice=slice(104,224),
-              vrange=[51,60]*u.km/u.s, sourcename='e2',
-              vmax_max=200,
-              contourlevels=[150,200,250,300],
-              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*e2e8*fits')))
-
-    chem_plot(linere, yslice=slice(227,347), xslice=slice(119,239),
-              vrange=[52,63]*u.km/u.s, sourcename='e8',
-              vmax_max=200,
-              contourlevels=[150,200,250,300],
-              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*e2e8*fits')))
-
-    chem_plot(linere, yslice=slice(31,231), xslice=slice(152,350),
-              vrange=[54,64]*u.km/u.s, sourcename='north',
-              vmax_max=200,
-              contourlevels=[150,200,250,300],
-              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*north*fits')))
-
-    chem_plot(linere, yslice=slice(50,150), xslice=slice(80,180),
-              vrange=[58,67]*u.km/u.s, sourcename='ALMAmm14',
-              vmax_max=100,
-              contourlevels=[125,150,175,200],
-              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*ALMAmm14*fits')))
-
-    chem_plot(linere, yslice=slice(83,133), xslice=slice(243,293),
-              vrange=[58,67]*u.km/u.s, sourcename='d2',
-              vmax_max=200,
-              contourlevels=[150,200,250,300],
-              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*north*fits')))
