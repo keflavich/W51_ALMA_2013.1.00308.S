@@ -12,9 +12,12 @@ from astropy.io import fits
 from astropy import wcs
 from astropy.stats import mad_std
 from line_to_image_list import labeldict
+import reproject
 
 import re
 import glob
+
+from constants import continuum_frequency
 
 # Sometimes debugging is necessary to prevent abort traps
 from astropy import log
@@ -23,11 +26,29 @@ log.setLevel('DEBUG')
 # PN 5-4 looks terrible and doesn't have 12m data; it is screwy.
 if 'PN5-4' in labeldict:
     labeldict.pop('PN5-4')
+for key in list(labeldict.keys()):
+    # SO2 v2 lines are too faint
+    if 'SO2v2' in key:
+        labeldict.pop(key)
+
+def get_cont(header):
+    contfn = paths.dpath('W51_te_continuum_best.fits')
+    beam = radio_beam.Beam.from_fits_header(contfn)
+    cont_Jy = reproject.reproject_interp(input_data=contfn,
+                                         output_projection=header)[0]*u.Jy
+    cont_K = cont_Jy.to(u.K, u.brightness_temperature(beam,
+                                                      continuum_frequency))
+    return cont_K
 
 def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,60]*u.km/u.s,
               sourcename='e2', filelist=glob.glob(paths.dpath('12m/cutouts/*e2e8*fits')),
               # 5,8 -> 12.8,8
-              suffix="", plotgrid=(6,8), figsize=(12.0,8.6),
+              # 6,8 -> 12.0,8.6
+              # 5,9 -> 15.0,8.0
+              # 6,9 -> 15,9.6
+              #plotgrid=(6,9), figsize=(15.0, 9.6),
+              plotgrid=(6,8), figsize=(12.0, 8.6),
+              suffix="",
               vmax_m0=5.0,
               vmax_max=150,
               maxbeam=0.5*u.arcsec,
@@ -35,7 +56,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
              ):
     nplots = np.product(plotgrid)
 
-    for ii in (1,2):
+    for ii in range(1,7):
         if not all(pl.figure(ii, figsize=figsize).get_size_inches() == figsize):
             pl.close(ii)
 
@@ -76,6 +97,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
 
         linename = linere.search(fn).groups()[0]
         if linename not in labeldict:
+            print()
             print("Skipping {0} because it's not in the label dict".format(linename))
             continue
         label = labeldict[linename]
@@ -91,13 +113,21 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
                 os.path.exists(m2fitsfn) and
                 os.path.exists(maxfitsfn) and
                 os.path.exists(madstdfitsfn)):
+            print()
             print("Extracting max/m0/m1/m2 for {0}".format(fn))
             cube = SpectralCube.read(fn)[:,yslice,xslice]
             goodbeams = np.array([bm.major < maxbeam for bm in cube.beams], dtype='bool')
+            if np.count_nonzero(goodbeams) < 5:
+                print()
+                print("Skipping {0} because it has too few good beams.".format(fn))
+                continue
+
             cube = cube.with_mask(goodbeams[:,None,None])
             cube = cube.minimal_subcube()
 
+
             if cube.shape[0] == 0:
+                print()
                 print("Skipping {0} because it was masked out".format(fn))
                 continue
 
@@ -113,6 +143,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
             try:
                 contguess = cube.with_mask(mask[:,None,None]).percentile(30, axis=0)
             except ValueError as ex:
+                print()
                 print("skipping {0}".format(fn))
                 print(ex)
                 continue
@@ -132,6 +163,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
 
             m0.write(m0fitsfn, overwrite=True)
             m1.write(m1fitsfn, overwrite=True)
+            m2.write(m2fitsfn, overwrite=True)
             max.write(maxfitsfn, overwrite=True)
             max_sub.write(maxsubfitsfn, overwrite=True)
             madstd.write(madstdfitsfn, overwrite=True)
@@ -211,7 +243,8 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
                          cmap=pl.cm.bone_r, interpolation='nearest')
         # add a contour to show the regions that are "saturated" above T_max
         qcs = ax5.contour(max.value, levels=contourlevels, colors=['r','g','b','y'])
-        #print("levels: {0} = {1}".format(qcs.levels, contourlevels))
+        if False: # debug
+            print("levels: {0} = {1}".format(qcs.levels, contourlevels))
         ax5.text(3, 0.87*m0.shape[0], label, fontsize=9, color='r')
         ax5.set_xticklabels([])
         ax5.set_yticklabels([])
@@ -236,6 +269,24 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         ax6.set_aspect('equal')
 
         figcounter += 1
+
+
+    # add a continuum image to the 'max' plots
+    ax5 = fig5.add_subplot(gs5[figcounter])
+
+    cont = get_cont(maxfh[0].header)
+
+    im5 = ax5.imshow(cont.value, vmin=-10, vmax=vmax_max,
+                     cmap=pl.cm.bone_r, interpolation='nearest')
+    # add a contour to show the regions that are "saturated" above T_max
+    ax5.contour(max.value, levels=contourlevels, colors=['r','g','b','y'])
+    ax5.text(3, 0.87*m0.shape[0], 'Continuum', fontsize=9, color='r')
+    ax5.set_xticklabels([])
+    ax5.set_yticklabels([])
+    ax5.set_aspect('equal')
+
+
+
 
     cbs = {}
     for ii,fig, im, gs in ((1,fig1,im1,gs1), (2,fig2,im2,gs2),
@@ -297,19 +348,22 @@ def test_layout(plotgrid=(6,8), figsize=(12.0,8.6), fignum=1):
         ax.set_xticklabels([])
         ax.set_yticklabels([])
         ax.set_aspect('equal')
-        im = pl.imshow([[1,1,],[1,2]])
+        im = pl.imshow([[1,1,],[1,2]], cmap=pl.cm.bone_r,
+                       interpolation='nearest')
 
     bottom,top,left,right = gs.get_grid_positions(fig)
     cbar_ax = fig.add_axes([np.max(right)+0.01, np.min(bottom),
                             0.05, np.max(top)-np.min(bottom)])
     cb = pl.colorbar(mappable=im, cax=cbar_ax)
     cb.ax.tick_params(labelsize=12)
+    cb.set_label('test')
+    fig.savefig(paths.fpath("TEST_LAYOUT.png"), bbox_inches='tight', dpi=150)
 
 
 
 if __name__ == "__main__":
 
-
+    test_layout()
 
     linere = re.compile("W51_b6_12M.(.*).image.pbcor")
 

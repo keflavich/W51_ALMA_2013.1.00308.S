@@ -139,7 +139,7 @@ investigate the process.
 The W51 cloud contains two protocluster regions, IRS2 and e1/e2, which each
 contain $M\gtrsim10^4$ \msun of gas and have large far-infrared luminosities
 that
-indicate the presence of embededded, recently-formed or forming massive stars
+indicate the presence of embedded, recently-formed or forming massive stars
 \citep{Harvey1986a,Sievers1991a,Ginsburg2012a,Ginsburg2016b}.  Previous
 millimeter and centimeter observations have revealed the gas reservoir
 that is forming new stars and, because of the high masses of the individual
@@ -148,7 +148,7 @@ cores detected, indicated that these new stars are likely to be massive
 Zapata2010a,Shi2010b,Shi2010a,Koch2010a,Koch2012a,Koch2012b,Tang2012a,Goddi2016a}.  The
 W51 protoclusters, while distant \citep[5.4 kpc;][]{Sato2010a}, therefore
 provide a powerful laboratory for studying high-mass star formation in an
-environment where massive star feedback is already evident, but 
+environment where feedback from massive stars is already evident, but 
 formation is still ongoing.
 
 The protocluster region within W51 exhibits many signs of strong feedback.  In
@@ -378,7 +378,7 @@ cataloging yielded over 8000 candidate sources, of which the majority are noise
 or artifacts around the brightest sources.  To filter out these bad sources,
 we created a noise map taking the local RMS of the \texttt{tclean}-produced
 residual map over a $\sigma=30$ pixel (1.5\arcsec) gaussian.  We then removed
-all sources with peak S/N < 8, mean S/N per pixel $< 5$, or minimum S/N per
+all sources with peak S/N $< 8$, mean S/N per pixel $< 5$, or minimum S/N per
 pixel $ < 1$.  We also only included the smallest sources in the dendrogram,
 the ``leaves''.  These parameters were tuned by checking against ``real''
 sources identified by eye and selected using \texttt{ds9}: most real sources are
@@ -430,7 +430,9 @@ temperature $T_B=225$ K.  This is a lower limit to the surface brightness of
 the millimeter core, since an optical depth $\tau<1$ or a filling factor of the
 emission $ff<1$ would both imply higher intrinsic temperatures.  The implied
 luminosity, assuming blackbody emission from a spherical beam-filling source,
-is $L = 4\pi r^2 \sigma_{sb} T^4 = 2.3\ee{4} \lsun$.  Since any systematic
+is $L = 4\pi r^2 \sigma_{sb} T^4 = 2.3\ee{4} \lsun$, where
+$\sigma_{sb}=5.670373\ee{-5} \mathrm{\,g\,s^{-3}\,K^{-4}}$ is the
+Stefan-Boltzmann constant.  Since any systematic
 uncertainties imply a higher temperature, this estimate is a lower limit on the
 source luminosity.  Such a luminosity corresponds to a B0.5V, 15 \msun main
 sequence star with effective temperature $4\ee{4}$ K \citep[][see
@@ -494,7 +496,7 @@ respectively.
 W51 North has a free-free upper limit similar to that of W51e2e, but somewhat less
 restrictive because the noise in that region is substantially higher.  W51 e8,
 by contrast with the others, has a clear detection at cm wavelengths.  The
-source e8n, which is offset from the peak mm emission by 0.13\arcsec (700 AU),
+source e8n, which is offset from the peak mm emission by 0.13\arcsec\ (700 AU),
 has $S_{25 GHz}=4.7$ mJy/beam, corresponding to $T_B=135$ K, which implies an
 \hii region size $R=180$ AU if the emission is produced by  optically thick
 free-free emission.  This could be part of an ionized jet or an ionizing binary
@@ -545,7 +547,7 @@ mosaic; in the same area the BGPS data have a flux of 144 Jy, which scales down 
 76.5 Jy.  The recovery fraction is 30$\pm3$\%, where the error bar accounts
 for a change in $\alpha\pm0.5$.  The threshold of 10 mJy/beam corresponds to a
 column threshold $N>1.3\ee{25}$ \percc for 20 K dust. This threshold also
-corresponds to an optical depth of $\tau\approx0.5$, implying that a large
+corresponds to an optical depth of $\tau\approx0.5$, implying that a substantial
 fraction of the cloud is either approaching optically thick or is warmer than 20
 K.  For an unresolved spherical source in the $\sim0.2\arcsec$ beam, this
 column density corresponds to a volume density $n>10^{8.1}$ \percc.
@@ -622,7 +624,7 @@ core and the outflow, but not the greater extended emission.  \ketene seems to
 be associated with only the extended core, but not the compact core. Finally,
 there are the species that trace the broader ISM in addition to the cores and
 outflows: \formaldehyde, $^{13}$CS, OCS, C$^{18}$O and SO.  Both HCOOH and
-N$_2$D+ are weak and associated only with the innermost e2e core.
+N$_2$D$^+$ are weak and associated only with the innermost e2e core.
 
 The presence of these complex species symmetrically distributed at large
 distances ($r\sim5000$ AU) from the central sources is an independent
@@ -791,7 +793,7 @@ $10_{2,9}-9_{3,6}$ line and the 225 GHz continuum.  While the brightest regions
 in \methanol mostly have corresponding dust emission, the dust morphology
 traces the \methanol morphology very poorly.  This difference suggests that the
 enhanced brightness is not simply because of higher total column density.
-We examine the dust-\methanol link more quantitatively in Figure
+We examine the dust-\methanol correspondence more quantitatively in Figure
 \ref{fig:ch3ohtemX}; Figure \ref{fig:ch3ohtemX}d shows the poor correlation.
 
 \FigureTwo{figures/e2_continuum_contours_on_ch3oh1029.png}
@@ -806,7 +808,7 @@ appear to be self-absorbed.}
 Figure \ref{fig:methanolradialprofile} shows the observed brightness profiles
 of \methanol line and dust continuum emission, which gives a lower limit on
 the physical temperature probed by the \methanol and continuum.
-Figure \ref{fig:ch3ohtemX} shows a comparison of the \methanol temperature and
+Figure \ref{fig:ch3ohtemX}a shows a comparison of the \methanol temperature and
 abundance.  The \methanol abundance is derived by comparing the rotational
 diagram (RTD) fitted \methanol column density to the dust column density while
 using the \methanol-derived temperature as the assumed dust temperature.  The
@@ -869,8 +871,9 @@ energy baseline for the fit.  In the core exterior, the high-J lines are
 not detected, so the (possibly optically thick) low-J lines determine
 the temperature fit, which results in much lower accuracy and greater
 bias.}.
-There is an abundance enhancement at the inner radii, but it appears to be a
-radial bump rather than a pure increase.  The abundance enhancement is probably real,
+There is an abundance enhancement at the inner radii, but in the plot it
+appears to be a radial bump rather than a pure increase.  The abundance
+enhancement is probably real,
 and is approximately a factor of $\sim5-10$.  The inner abundance dip
 is caused by two coincident effects: first, the \methanol column becomes underestimated
 because the low-J \methanol is \emph{self}-absorbed, and second, the dust
@@ -942,15 +945,15 @@ All three sources show similar radial profiles, with each containing up to 3000
 \msun within a compact radius of 5400 AU (0.03 pc).  However, the temperature
 structure within these sources is certainly not homogeneous, and  likely a
 large fraction of the total flux comes from $T\gtrsim300$ K heated material
-\citep[Section \ref{sec:ch3ohtem}; ][]{Goddi2016a}.  If the observed dust
-were all at 600 K, the mass would be $\sim17\times$ lower, 100 \msun, which we
-treat as a strict lower bound as it is unlikely that the dust at more than
-$r\gtrsim1000$ AU is so warm.  Additionally, it is  likely that a substantial
-mass of cold dust is also present but undetectable because it is hidden by the
-hotter dust.  
-Figure \ref{fig:hmradprof}b shows $M(R)$ using $T_{dust}=T_{\methanol}$, which
-is a more reasonable guess at the true mass profile (though it is still a lower
-limit; see \S \ref{sec:ch3ohtem}).
+\citep[Section \ref{sec:ch3ohtem}; ][]{Goddi2016a}.  If the observed dust were
+all at 600 K instead of 40 K, the mass would be $17\times$ lower, $\sim100-200$
+\msun, which we treat as a strict lower bound as it is unlikely that the dust
+at more than $r\gtrsim1000$ AU is so warm.  Additionally, it is likely that a
+substantial mass of cold dust is also present but undetectable because it is
+hidden by the hotter dust.  Figure \ref{fig:hmradprof}b shows $M(R)$ using
+$T_{dust}=T_{\scriptsize{\methanol}}$, which is a more reasonable guess at the
+true mass profile (though it is still a lower limit; see \S
+\ref{sec:ch3ohtem}).
 
 \FigureTwo
 {figures/cumulative_radial_flux_massivecores.png}
@@ -1011,11 +1014,11 @@ no radio detection; they are most likely heated by direct infrared radiation
 from these sources.
 
 The luminosities of the other \uchii and \hchii regions throughout the observed
-area are high enough, $L\gtrsim10^4$ \lsun, to illuminate and excite molecularly
-enhanced regions if they were surrounded by dense ($n(\hh)\gtrsim10^4$ \percc)
-gas.  Since few such regions are detected, we conclude that these \hii regions
-are not surrounded by such high-density gas but instead are traveling through a
-lower-density medium.
+area are high enough, $L\gtrsim10^4$ \lsun, to produce chemically-enhanced
+molecular envelopes if they were surrounded by dense ($n(\hh)\gtrsim10^4$
+\percc) molecular gas.  Since few such regions are detected, we conclude that
+these \hii regions are not surrounded by such high-density gas but instead are
+traveling through a lower-density medium.
 
 There are two counterexamples, e2w and d2, which are extremely compact \hchii regions
 that  exhibit some enhanced molecular emission around them, though with a smaller
