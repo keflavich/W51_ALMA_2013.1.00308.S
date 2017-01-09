@@ -279,7 +279,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
     im5 = ax5.imshow(cont.value, vmin=-10, vmax=vmax_max,
                      cmap=pl.cm.bone_r, interpolation='nearest')
     # add a contour to show the regions that are "saturated" above T_max
-    ax5.contour(max.value, levels=contourlevels, colors=['r','g','b','y'])
+    ax5.contour(cont.value, levels=contourlevels, colors=['r','g','b','y'])
     ax5.text(3, 0.87*m0.shape[0], 'Continuum', fontsize=9, color='r')
     ax5.set_xticklabels([])
     ax5.set_yticklabels([])

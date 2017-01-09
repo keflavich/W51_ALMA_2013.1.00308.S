@@ -253,17 +253,22 @@ and the lines they cover described in Section \ref{sec:obslines}.
 \input{spwtable.tex}
 
 \subsection{Data Reduction}
-Data reduction was performed using CASA.  The QA2-produced visibility data
-products were
-combined using the standard inverse variance weighting.  Two sets of images
-were produced for different aspects of the analysis, one including the 7m array
-data and one including only 12m data.  Except where otherwise noted, the
-12m-only data were used in order to focus on the compact structures.
-For the majority of the data here, the conversion from flux density to
-brightness temperature is $T_B \approx 230 \mathrm{K}/(\mathrm{Jy} \perbeam)$.
+Data reduction was performed using CASA 4.5.2-REL (r36115), including
+reprocessing of datasets that were delivered with earlier versions.  The
+QA2-produced visibility data products were combined using the standard inverse
+variance weighting.  Two sets of images were produced for different aspects of
+the analysis, one including the 7m array data and one including only 12m data.
+Except where otherwise noted, the 12m-only data were used in order to focus on
+the compact structures.  The conversion from
+flux density to brightness temperature is $T_B \approx 220
+\mathrm{\,K}/(\mathrm{Jy}\,\perbeam)$ for a 0.33\arcsec beam (most of the spectral
+line data) or $T_B=590\mathrm{\,K}/(\mathrm{Jy}\,\perbeam)$ for a 0.2\arcsec
+beam (for the higher-resolution images of the continuum) assuming a central
+frequency 226.6 GHz (see below).
 
-Full details of the data reduction, including all scripts used, can be found
-on the project's github repository\footnote{\url{https://github.com/adamginsburg/W51_ALMA_2013.1.00308.S}}.
+Full details of the data reduction, including all scripts used, can be found on
+the project's github
+repository\footnote{\url{https://github.com/adamginsburg/W51_ALMA_2013.1.00308.S}}.
 
 
 \subsubsection{Continuum}
@@ -377,7 +382,8 @@ value of 1 mJy/beam ($\sim5\sigma$) and a minimum $\Delta=0.4$ mJy/beam
 cataloging yielded over 8000 candidate sources, of which the majority are noise
 or artifacts around the brightest sources.  To filter out these bad sources,
 we created a noise map taking the local RMS of the \texttt{tclean}-produced
-residual map over a $\sigma=30$ pixel (1.5\arcsec) gaussian.  We then removed
+residual map, using a weighted RMS over a $\sigma=30$ pixel (1.5\arcsec)
+gaussian.  We then removed
 all sources with peak S/N $< 8$, mean S/N per pixel $< 5$, or minimum S/N per
 pixel $ < 1$.  We also only included the smallest sources in the dendrogram,
 the ``leaves''.  These parameters were tuned by checking against ``real''
@@ -446,7 +452,7 @@ stellar types]{Pecaut2013a}.
 % derive a dust mass $M_{dust}\sim20$ \msun. 
 
 If we assume that the dust is optically thick throughout our beam, and assume
-an opacity constant $\kappa(226 \mathrm{GHz})=0.0083$ cm$^2$ g$^{-1}$  (which
+an opacity constant $\kappa(227 \mathrm{GHz})=0.0083$ cm$^2$ g$^{-1}$  (which
 incorporates and assumed gas-to-dust ratio of 100), the minimum mass
 per beam to achieve $\tau\geq1$ is $M=18$ \msun beam$^{-1}$.  This  mass is not
 a strict limit in either direction: if the dust is indeed optically thick,
@@ -517,7 +523,9 @@ bright centimeter continuum source, $\sim17$ mJy at 15 GHz
 explained as free-free emission, requiring a spectral index of only
 $\alpha\sim0.6-0.7$ from the cm to account for all of its mm emission.  There
 is little doubt that it contains a compact \hii region.  Because of this free-free
-contamination, we cannot estimate the central core's dust mass.
+contamination, we cannot estimate the central core's dust mass.  If we assume
+the free-free is optically thin at 33 GHz (the highest-frequency cm-wave measurement
+we have available), 
 
 Additionally, unlike the three hot cores, d2 does not drive an outflow.  It
 does, however, power a unique set of ammonia (\ammonia) masers \citep[][Wootten
@@ -642,7 +650,7 @@ in H30$\alpha$ and a (moderately) extended chemical envelope.
 
 
 \Figure{figures/chemical_max_slabs_e2.png}
-{Peak brightness maps of the e2 region in 40 different lines over the range 51 to 60
+{Peak brightness maps of the e2 region in 47 different lines over the range 51 to 60
 \kms.
 The cutouts are $6\arcsec\times6\arcsec$ ($3.2\ee{4}\times3.2\ee{4}$ AU).
 To illustrate the lower limit temperature implied by the observed brightness,
@@ -660,7 +668,7 @@ centimeter emission in e2.
 }{fig:chemmapse2}{1}{18cm}
 
 \Figure{figures/chemical_max_slabs_e8.png}
-{Peak brightness maps of the e8 region in 40 different lines over the range 52 to 63
+{Peak brightness maps of the e8 region in 47 different lines over the range 52 to 63
 \kms.
 The cutouts are $6\arcsec\times6\arcsec$ ($3.2\ee{4}\times3.2\ee{4}$ AU).
 To illustrate the lower limit temperature implied by the observed brightness,
@@ -669,25 +677,23 @@ For additional contrast, contours are shown at 150 and 200 K
 (red and green, respectively).
 As in e2 (Figure \ref{fig:chemmapse2}),
 there is extended emission in the CH$_3$OH and OCS lines, but in contrast with e2,
-the other CH$_3$Ox lines are more compact. SO is brighter than OCS in e8, 
+the other CH$_3$Ox lines are more compact. SO is brighter than OCS in e8,
 whereas the opposite is true in e2.
 }{fig:chemmapse8}{1}{18cm}
 
 \Figure{figures/chemical_max_slabs_north.png}
-{Peak brightness maps of the W51 IRS2 region containing the North core in 40 different
-lines over the range 54 to 64 \kms.
-The cutouts are $10\arcsec\times10\arcsec$ ($5.4\ee{4}\times5.4\ee{4}$ AU).
-To illustrate the lower limit temperature
-implied by the observed brightness, the maps are not continuum-subtracted.  
-For additional contrast, contours are shown at 150 and 200 K
-(red and green, respectively).
-Qualitatively, the relative extents of
-species seem comparable to e8 (Figure \ref{fig:chemmapse8}).  The H30$\alpha$
-point source is W51 d2.
+{Peak brightness maps of the W51 IRS2 region containing the North core in 47
+different lines over the range 54 to 64 \kms.  The cutouts
+are $10\arcsec\times10\arcsec$ ($5.4\ee{4}\times5.4\ee{4}$ AU).  To illustrate
+the lower limit temperature implied by the observed brightness, the maps are
+not continuum-subtracted.  For additional contrast, contours are shown at 150
+and 200 K (red and green, respectively).  Qualitatively, the relative extents
+of species seem comparable to e8 (Figure \ref{fig:chemmapse8}).  The
+H30$\alpha$ point source is W51 d2.
 }{fig:chemmapsnorth}{1}{18cm}
 
 \Figure{figures/chemical_max_slabs_ALMAmm14.png}
-{Peak brightness maps of the ALMAmm14 region in 40 different lines over the
+{Peak brightness maps of the ALMAmm14 region in 47 different lines over the
 range 58 to 67 \kms.
 The cutouts are $5\arcsec\times5\arcsec$ ($2.7\ee{4}\times2.7\ee{4}$ AU).
 ALMAmm14 is one of the brightest sources outside of
@@ -784,8 +790,8 @@ Nonetheless, a component with the modeled temperature is likely to be present
 in addition to a cooler component responsible for the self-absorption in the
 low-J lines.  (a) shows a pixel close to the center of e2e, which is probably
 optically thick in most of the shown transitions, while (b) shows a better case
-where the highest-$A_{ij}$ lines are overpredicted but many of the others are
-well-fit.}
+where the highest-$A_{ij}$ (highest critical density) lines are overpredicted
+but many of the others are well-fit.}
 {fig:ch3ohe2epeaks}{1}{8cm}
 
 Figure \ref{fig:ch3ohvscont} shows a comparison between the \methanol
@@ -1156,13 +1162,13 @@ ionizing radiation sources - the exposed OB stars - have little effect on the
 star-forming collapsing and fragmenting gas.
 
 % subsubsection on the formation of the IMF?
-The low impact of photospheric radiation on collapsing gas suggests that
-second-generation star formation is relatively unaffected by its surroundings.
-Instead, the stars of the same generation - those currently embedded and
-accreting - have the dominant regulating effect on the gas temperature.  To the
-extent that gas temperature governs the IMF, then, the formation of the IMF
-\emph{within clusters} is therefore predominantly self-regulated, with little
-external influence.
+The low impact of short-wavelength photospheric radiation on collapsing gas
+suggests that second-generation star formation is relatively unaffected by its
+surroundings.  Instead, the stars of the same generation - those currently
+embedded and accreting - have the dominant regulating effect on the gas
+temperature.  To the extent that gas temperature governs the IMF, then, the
+formation of the IMF \emph{within clusters} is therefore predominantly
+self-regulated, with little external influence.
 
 % something about implications for star formation on galactic scales
 
@@ -1225,7 +1231,7 @@ We have not performed a detailed abundance analysis of multiple species, but we
 nonetheless suggest that these sharp-edged bubbles around the hot cores
 represent desorption (sublimation) zones in which substantial quantities of
 grain-processed materials are released into the gas phase.  The relatively
-sharp edges likely reflect the radius at which where the temperature exceeds
+sharp edges likely reflect the radius at which the temperature exceeds
 the sublimation temperature for each species \citep{Garrod2006a,Green2009a},
 though some species may appear at temperatures above or below their sublimation
 temperature if they are mixed into ices that have a different sublimation
@@ -1256,9 +1262,9 @@ surrounding cloud material, allowing radiation to escape.
 The detection of widespread high-J \methanol emission around the highest-mass
 protostars suggests that the use of \methanol as a bulk outflow tracer as
 suggested by \citet{Kristensen2015a} is not viable in regions with forming
-high-mass stars.  While mid-J \methanol emission is detected associated with
-the outflow (e.g., the J=10-9 transition), it is completely dominated by the
-general `extended hot core' emission described in Section
+high-mass stars.  While mid-J \methanol emission associated with
+the outflow (e.g., the J=10-9 transition) is detected, it is completely
+dominated by the general `extended hot core' emission described in Section
 \ref{sec:chemistrymaps}.
 
 None of the outflows originate in \uchii or \hchii regions.  While a clear
@@ -1313,10 +1319,11 @@ outflow, so there is no direct evidence of ongoing accretion.
 In Sections \ref{sec:W51e2e} and \ref{sec:w51e8andnorth}, we noted that the
 \emph{lower limit} luminosities for the three most massive cores correspond to
 early B-type photospheres.  Such stars should emit enough radiation to ignite
-luminous compact \hii regions.%, $Q_{lyc}=5\ee{45}$ \pers \citep{Vacca1996a}.
+luminous compact \hii regions. %, $Q_{lyc}=5\ee{45}$ \pers \citep{Vacca1996a}.
 The upper limits on the presence of such  \hii regions are constraining, with
-$R_{\hii}<100 AU$, which is consistent with the presence of late-type massive
-main-sequence stars, but inconsistent with any hotter or more luminous
+$R_{\scriptsize{\hii}}<100$ AU, which is consistent with the presence of
+late-type massive main-sequence stars, but inconsistent with any hotter or more
+luminous
 (spectral type $<$B0.5V).
 If the stellar luminosities are an order of magnitude or more higher, which is
 possible given the low-resolution constraints on the bolometric luminosity
@@ -1346,12 +1353,12 @@ material to ionize at the surface of the star.  The critical rate for
 for a B0 star, so it is very likely that, even if the star has a hot
 photosphere, it is not capable of driving an expanding \hii region.
 The main reason to disregard this scenario is the assumption of spherical
-symmetry: if the accretion is proceeding via a disk, there ought to be a
-substantial fraction of the stellar surface that is not directly accreting and
-therefore is not quenched.  If there is a disk and an ionizing photosphere,
-there should be an expanding bipolar \hii region \citep{Keto2006a}. 
-The lack of such a feature suggests that the stellar photosphere is not 
-emitting ionizing photons.
+symmetry: if the accretion is proceeding via a disk, as evidenced by the
+presence of outflows, there ought to be a substantial fraction of the stellar
+surface that is not directly accreting and therefore is not quenched.  If there
+is a disk and an ionizing photosphere, there should be an expanding bipolar
+\hii region \citep{Keto2006a}.  The lack of such a feature suggests that the
+stellar photosphere is not emitting ionizing photons.
 
 \subsection{Fragmentation: Jeans analysis}
 \label{sec:fragmentation}
@@ -1391,7 +1398,7 @@ A more sophisticated analysis of the fragmentation propensity of the gas
 in such a core structure would be worthwhile but is beyond the scope of
 this work.  We note more simply that, even if thermal fragmentation occurs, it
 is likely to be greatly reduced compared to models with feedback limited to
-shorter wavelengths (e.g., ionizing radiation) or at a lower overall amplitude.
+shorter wavelengths (e.g., ionizing radiation) or with a lower total amplitude.
 
 % \resolved{Interpretation
 % of these plots is not straightforward, though: if we assume the `core' is
@@ -1454,7 +1461,7 @@ that fragmentation is suppressed.
 \FigureTwo
 {figures/azimuthalaverage_radial_mj_and_mbar_of_TCH3OH_massivecores.png}
 {figures/azimuthalaverage_radial_rj_of_TCH3OH_massivecores.png}
-{The azimuthally averaged Jeans mass surrounding the
+{\todo{Shade-out sub-beam area}. The azimuthally averaged Jeans mass surrounding the
 three most massive cores.  We used the \methanol temperature from
 \ref{sec:methanol}, Figure \ref{fig:hmradprof}b in both the Jeans mass
 calculation and the dust-based mass determination.
@@ -1462,17 +1469,18 @@ The density used for the mass calculation is assumed to be distributed
 over spherical shells.  The dashed lines show the measured mean mass per
 $\sim1000$ AU beam at each radius.  Since these masses are lower than
 the local Jeans mass, the gas is stable against fragmentation.
-The high variation seen at small radii (below 0.2\arcsec) is primarily due
-to noise.
+The high variation seen at small radii (below 0.2\arcsec) is due to
+sub-resolution noise.
 %The dashed lines show the average mass per $\sim1000$ AU
 %beam 
 %The Jeans mass decreases
 %toward the center at least in part because of the density increase, while the
 %temperature only rises slowly.  
-%In (b), the dashed black line shows the $R_J=R$ line.  When $R_J > R$,
-%the gas is on average stable against fragmentation on the measured length
-%scale.  Since the medium is clearly \emph{not} isothermal or uniform density,
-%though, this only shows a rough approximation of the stability.
+In (b), the dashed black line shows the $R_J=R$ line.  When $R_J > R$, i.e.,
+for points falling above the black dashed line,
+the gas is on average stable against fragmentation on the measured length
+scale.  Since the medium is clearly \emph{not} isothermal or uniform density,
+though, this only shows a rough approximation of the stability.
 }
 {fig:mjeans}{1}{8cm}
 
@@ -1489,18 +1497,19 @@ cores cannot be formed with only low-mass stellar feedback as a heating source
 by examining an earlier-stage high-mass star-forming region]{Longmore2011a}.
 This prior instability implies that the mass currently in the core had to be
 assembled from larger scales while suppressing or slowing collapse on smaller
-scales, which is essentially the opposite of inside-out collapse.  In turn,
-such a core assembly implies that aspects of both the `competitive accretion'
-and `core accretion' models may apply, with mass dumping onto a sink source
-from large physical scales, yet assembling a quasi-stable core.
+scales, which is essentially the opposite of inside-out collapse
+\citep{Naranjo-Romero2015a}.  In turn, such a core assembly implies that
+aspects of both the `competitive accretion' and `core accretion' models may
+apply, with mass dumping onto a sink source from large physical scales, yet
+assembling a quasi-stable core.
 
 The observed high gas temperature provides a mechanism for MYSOs to avoid the
 ``fragmentation-induced starvation'' problem discussed by
 \citet{Peters2010a,Peters2010c} and \citet{Girichidis2012b}.  By suppressing
 fragmentation in their surroundings, accreting massive stars are able to
-sustain their mass reservoir.  They can effectively create their own cores by
-cooking  into one single serving the gas feast that would otherwise form a
-small cluster.
+sustain their mass reservoir.  A forming massive star can effectively create
+its own core by cooking into one single serving the gas feast that would
+otherwise form a small cluster.
 
 
 \subsection{High-mass star formation within dense protoclusters: A cooperative
@@ -1514,17 +1523,17 @@ current generation of forming massive stars start life the same way
 as previous generations?
 
 One possibility hinted at by the density of hyper- and ultra-compact \hii
-regions around each of the massive cores is that they did not.  Heating from
-previous generations of moderate mass stars could have warmed the gas,
-suppressing fragmentation into the sub-solar mass objects typical in local
-clouds until enough gas was present to collapse into a substantially larger
-object.  This toy model is analogous to the `cooperative accretion' mode
-suggested by \citet{Zinnecker2007a}, but at a much earlier stage in the cluster
-development when the gas is still molecular and dusty and therefore capable of
-efficient cooling.  It is also similar to the results of \citet{Krumholz2011a},
-in which radiative heating drove up the peak of the IMF; in this case, though,
-we suggest that the affected region is smaller (not the whole cloud) and that
-the ``top-heavy IMF'' is a solution, not a problem.
+regions around each of the massive cores is that they did not.  Heating
+(thermal feedback) from previous generations of moderate mass stars could have
+warmed the gas, suppressing fragmentation into the sub-solar mass objects
+typical in local clouds until enough gas was present to collapse into a
+substantially larger object.  This toy model is analogous to the `cooperative
+accretion' mode suggested by \citet{Zinnecker2007a}, but at a much earlier
+stage in the cluster development when the gas is still molecular and dusty and
+therefore capable of efficient cooling.  It is also similar to the results of
+\citet{Krumholz2011a}, in which radiative heating drove up the peak of the IMF;
+in this case, though, we suggest that the affected region is smaller (not the
+whole cloud) and that the ``top-heavy IMF'' is a solution, not a problem.
 
 In this scenario, the highest mass stars (probably ``very massive stars'',
 $M\gtrsim50$ \msun) would only be capable of forming within dense, clustered
@@ -1715,8 +1724,8 @@ understand them.  In order to probe the formation of the IMF, we need to be
 able to determine the masses of stars forming in the millimeter sources, which
 likely requires multiwavelength data.  
 
-The limitations we discuss prevent us from drawing any robust conclusions from
-these data.  However, they are presented in full detail in Appendix
+These limitations prevent us from drawing any robust conclusions from these
+data.  However, they are presented in full detail in Appendix
 \ref{sec:contsrcs}, including description of the spatial structure,
 characterization technique, and flux distribution.
 
@@ -1725,7 +1734,7 @@ characterization technique, and flux distribution.
 \section{Conclusions}
 \label{sec:conclusion}
 
-We have presented ALMA 1.3 mm (226 GHz) continuum and line observations of the
+We have presented ALMA 1.3 mm (227 GHz) continuum and line observations of the
 high-mass protocluster W51.  We examined the three most massive forming stars
 and the surrounding population of forming stars.  
 
@@ -1742,7 +1751,7 @@ The key observational results include:
         \mathrm{K}$, which brightness-based lower limits $T>100$ K confirm.
         Their centers are likely to be optically thick in the dust continuum.
     \item The flux density recovered in the ALMA map above a threshold of 10
-        mJy \perbeam  is $\sim30\%$ of that seen in single-dish data.  At this
+        mJy \perbeam is $\sim30\%$ of that seen in single-dish data.  At this
         brightness, cold (20 K) dust would correspond to a column density
         $N(\hh)>10^{25}$ \persc, leading us to conclude that a large fraction
         of the cloud - likely all of the gas emitting at over 10 mJy \perbeam -
@@ -1774,7 +1783,7 @@ From these observations, we have inferred the following:
     \item Because older generation stars have little impact on the star-forming
         molecular gas, it appears that the star formation process and the IMF
         are \emph{self-regulated} within clusters; they are unaffected by
-        external forces.
+        external forces like main-sequence OB-star feedback.
     \item Heated massive cores surrounding the highest-mass protostars in
         W51 show no evidence of ongoing fragmentation and are warm enough
         to suppress Jeans fragmentation.  Hot massive cores therefore serve as
@@ -1943,8 +1952,9 @@ discussion of outflow chemistry to a future work.
 
 In this section, we discuss some of the unique outflows and unique features of
 outflows in the W51 region.  We show the most readily identified outflows in
-Figures \ref{fig:outflowscontinuume2}, \ref{fig:outflowscontinuumnorth},
-\ref{fig:e2ecooutflow}, and \ref{fig:e8cooutflow}.
+Figures \ref{fig:outflowscontinuumnorth} - \ref{fig:e8cooutflow}.
+%\ref{fig:outflowscontinuume2}, 
+% \ref{fig:e2ecooutflow}, and
 
 \subsection{The Lacy jet}
 \label{sec:lacyjet}
@@ -2006,15 +2016,15 @@ evidence that this outflow transitions into an externally ionized state.
 The northernmost point of the W51 North outflow may coincide with
 the \citet{Hodapp2002a} \hh and [Fe II] outflow.  There is some CO 2-1
 emission coincident with the southernmost point of the \hh features,
-and these all lay approximately along the W51 North outflow vector.
+and these all lie approximately along the W51 North outflow vector.
 However, the association is only circumstantial.
 
 
 \subsection{The e2e outflow}
 The dominant outflow in W51, which was previously detected by the SMA
-\citep{Shi2010a,Shi2010b}, comes from the source e2e.  This outflow is
+\citep{Shi2010b,Shi2010a}, comes from the source e2e.  This outflow is
 remarkable for its high velocity, extending nearly to the limit of our spectral
-coverage in $^{12}$CO.  The ends of the flow cover at least $-50 < v_{lsr} <
+coverage in $^{12}$CO.  The ends of the flow cover at least $-50 < v_{LSR} <
 160$ \kms, or a velocity $v\pm100$ \kms.  
 
 The morphology is also notable.  Both ends of the outflow are sharply truncated
@@ -2079,7 +2089,7 @@ observed region.  The most notable feature in the spatial distribution is their
 alignment: most continuum sources collect along approximately linear features.
 This is especially evident in W51 IRS2, where the core density is very high and
 there is virtually no deviation from the line.  The e8 filament is also notably
-linear, though there area few sources detected just off the filament. 
+linear, though there are a few sources detected just off the filament. 
 
 On a larger scale, the e8 filament points toward e2, apparently tracing a
 slightly longer filamentary structure that is either lower-column or resolved
@@ -2115,18 +2125,18 @@ we further extracted aperture photometry around the centroid in 6 apertures:
 0.2, 0.4, 0.6, 0.8, 1.0, and 1.5\arcsec.  We performed the same aperture
 photometry on the W51 Ku-band images from \citet{Ginsburg2016a} to estimate the
 free-free contribution to the observed intensity measurements.  The
-free-free contribution at $\sim226$ GHz will fall in a range between optically
+free-free contribution at $\sim227$ GHz will fall in a range between optically
 thick, spectral index $\alpha_\nu=2$, and optically thin, $\alpha_\nu=0.1$,
-which correspond to factors of $S_{226 \mathrm{GHz}} = 227 S_{15 \mathrm{GHz}}$
-and $S_{226 \mathrm{GHz}} = 1.3 S_{15 \mathrm{GHz}}$, respectively.  These
+which correspond to factors of $S_{227 \mathrm{GHz}} = 227 S_{15 \mathrm{GHz}}$
+and $S_{227 \mathrm{GHz}} = 1.3 S_{15 \mathrm{GHz}}$, respectively.  These
 measurements are reported in Table
 \ref{tab:photometry1}.
 
-The source flux density and intensity distribution is shown in Figure
+The source flux density and intensity distribution are shown in Figure
 \ref{fig:fluxhistograms}.  The most common nearest-neighbor separation between
 cataloged sources is $\sim0.3\arcsec$, which implies that the larger apertures
 double-count some pixels.  The smallest separation is 0.26\arcsec, so the
-0.2\arcsec aperture contains almost only unique pixels.  The corresponding
+0.2\arcsec\ aperture contains almost only unique pixels.  The corresponding
 masses are shown in Figure \ref{fig:masshistograms} assuming the dust
 temperature is equal to the source's peak line brightness temperature (Section
 \ref{sec:temperature}).
@@ -2233,7 +2243,7 @@ See Figure \ref{fig:masshistograms} for the corresponding masses.}
 The temperature is a critical ingredient for determining the total mass of each
 continuum source or region. Since we do not have any means of directly
 determining the dust temperature, as the SED peak is well into the THz regime
-and inaccessible with any existing instruments at the requisite resolution, we
+and inaccessible to any existing instruments at the requisite resolution, we
 employ alternative indicators.  Above a density $n\gtrsim10^5-10^6$ \percc,
 the gas and dust become strongly collisionally coupled, meaning the gas
 temperature should accurately reflect the dust temperature.  Below this density,
@@ -2255,10 +2265,10 @@ the surface brightness is substantially
 brighter than is possible for a beam-filling, optically thick blackbody at 20
 K, providing a lower limit on the dust temperature ranging from 20 K (35
 mJy/beam) to $\sim300$ K (0.5 Jy/beam).  Toward most of this emission, optically-thick
-free-free emission can be strongly ruled out as the driving mechanism using
-existing data that limits the free-free contribution to be $<50\%$ if it is
-optically thick, and negligible ($<<1\%$) if it is optically thin at radio wavelengths
-\citep{Ginsburg2016b, Goddi2016a}.
+free-free emission can be strongly ruled out as the driving mechanism: 
+existing data limits the free-free contribution to be $<50\%$ if it is
+optically thick and negligible ($\ll1\%$) if it is optically thin at radio
+wavelengths \citep{Ginsburg2016b, Goddi2016a}.
 %(Ginsburg et al, 2016; Goddi2016a).
 
 To gain a more detailed measurement of the dust temperature in regions where it
@@ -2275,12 +2285,14 @@ $T_B$ observed, or a dust-emitting region that has a smaller beam filling
 factor than the gas-emitting region, which is unlikely when the dust emission
 structure is resolved, as is the case toward most sources.
 
-One potential problem with this approach is if the gas becomes optically thick
+One potential problem with this approach is whether the gas becomes optically thick
 before probing most of the dust, in which case spectral line self-absorption
 will occur.  Some transitions of more abundant molecules, e.g., CO and
 \formaldehyde, are likely to be affected by this issue.  However, many of the
-molecules included in the observations have lower abundances, especially in lower-density
-gas, and are likely to be optically thin along most of the line of sight.
+molecules included in the observations (Tables
+\ref{tab:linesspw0}-\ref{tab:linesspw3}) have lower abundances, especially in
+lower-density gas, and are likely to be optically thin along most of the lines
+of sight.
 
 Some sources have no detected line emission aside from the molecular cloud
 species CO and \formaldehyde, which are also associated with more diffuse gas
@@ -2315,7 +2327,7 @@ i.e., CO and its isotopologues and \formaldehyde are excluded.}
 We use these peak line brightness temperatures to compute the masses of the
 continuum sources.  For sources with $T_{B,max} < 20$ K, we assume $T_{dust} =
 20$ K to avoid producing unreasonably high masses; in such sources the lines
-are likely to be optically thin and/or subthermally excited.  The correction is
+are likely to be optically thin and/or subthermally excited.  This correction is
 illustrated in Figure \ref{fig:moftbvsm20k}.
 
 \Figure{figures/aperture_mass20K_vs_massTB.png}
@@ -2372,7 +2384,7 @@ To distinguish these possibilities, we measure both the spectral lines and
 features of the continuum emission toward the compact continuum sources.  Main
 sequence OB stars and their illuminated ionized nebulae are in principle easily
 identified by their free-free emission, so we use centimeter continuum and
-radio recombination line to identify these sources.  Starless cores,
+radio recombination line emission to identify these sources.  Starless cores,
 protostellar cores, and their variants are more difficult to identify, so we
 used a combination of gas temperature and continuum concentration parameter to
 classify them.
@@ -2389,7 +2401,7 @@ an estimated lower limit on the core temperature.
 In the continuum, we measured a `concentration parameter', which is the ratio
 of the flux density in a 0.2\arcsec aperture to that in a 0.2\arcsec-0.4\arcsec
 annulus divided by three to account for the annulus' larger area.  A uniform
-source with $r>0.4\arcsec$ source would have a concentration $C=1$ by this
+source with $r>0.4\arcsec$ would have a concentration $C=1$ by this
 definition, while an unresolved point source would have a Gaussian profile
 resulting in $C=14$.  Only one source approaches this extreme, the HII region
 e5, while the rest have $C\leq7$.  We set the threshold for a `concentrated'
@@ -2400,9 +2412,9 @@ have none.
 
 We classified each of the 75 hand-selected sources on the following parameters:
 \begin{enumerate}
-    \item Free-free dominated sources ($S_{15 GHz} > 0.5 S_{226 GHz}$) are \hii
+    \item Free-free dominated sources ($S_{15 GHz} > 0.5 S_{227 GHz}$) are \hii
         regions
-    \item Free-free contaminated sources ($S_{15 GHz} > 0.1 S_{226 GHz}$) are
+    \item Free-free contaminated sources ($S_{15 GHz} > 0.1 S_{227 GHz}$) are
         likely to be dust-dominated but with \hii region contamination; these
         are either dusty sources superposed on or embedded in a large \hii
         region or they are compact, dusty \hii regions
@@ -2410,9 +2422,9 @@ We classified each of the 75 hand-selected sources on the following parameters:
         brightness temperatures $T_B < 20$ K and with a high concentration
         parameter ($C>2$)
     \item Hot core candidates are those with peak $T_B>50$ K and $C>2$
-    \item Extended cold core and hot core candidates are those with $T_B<20$ 
-        and $T_B>50$ K and $C<2$
-    \item The remaining sources with $S_{15 GHz} < 0.1 S_{226 GHz}$ and $50 >
+    \item Extended cold core and hot core candidates are those with $T_B<20$ K
+        and $T_B>50$ K and $C<2$, respectively.
+    \item The remaining sources with $S_{15 GHz} < 0.1 S_{227 GHz}$ and $50 >
         T_B > 20$ K were classed as uncertain compact ($C>2$) or uncertain extended
         ($C<2$)
 \end{enumerate}

@@ -31,7 +31,8 @@ residfile = fits.open(paths.dpath('12m/continuum/W51_te_continuum_best_residual.
 resid = residfile[0].data
 smresid = convolve_fft(np.nan_to_num(resid), Gaussian2DKernel(30))
 resid[np.isnan(resid)] = 0.01 # make the noise outside very high
-noise = convolve_fft(np.abs(resid-smresid),  Gaussian2DKernel(30))
+# NOT CORRECT noise = convolve_fft(np.abs(resid-smresid),  Gaussian2DKernel(30))
+noise2 = convolve_fft((resid-smresid)**2,  Gaussian2DKernel(30))**0.5
 residfile[0].data = noise
 residfile.writeto(paths.dpath('W51_te_continuum_best_noise.fits'), clobber=True)
 # lowest reasonable noise level is 0.2 mJy/beam
