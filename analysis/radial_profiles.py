@@ -75,7 +75,7 @@ def make_rprof(regions, ploteach=False):
             ppbeam = (beam.sr/(pixscale**2*u.deg**2)).decompose().value / u.beam
             #print("fn  {0} ppbeam={1:0.2f}".format(fn, ppbeam))
             
-            for ii,(name,position) in enumerate(zip(names, center_positions)):
+            for jj,(name,position) in enumerate(zip(names, center_positions)):
                 cutout = Cutout2D(fh[0].data, position, size, wcs=mywcs)
 
                 nr, bins, rprof = azimuthalAverage(cutout.data, binsize=1.0,
@@ -83,7 +83,7 @@ def make_rprof(regions, ploteach=False):
 
                 linestyle = next(linestyles[name])
 
-                pl.figure(ii)
+                pl.figure(jj)
                 pl.title(name)
                 pl.plot(bins*pixscale*3600., rprof/ppbeam,
                         label=fn.split(".")[0], linestyle=linestyle)
@@ -92,13 +92,15 @@ def make_rprof(regions, ploteach=False):
 
                 cumul_rprof = np.nan_to_num(rprof*nr/ppbeam).cumsum()
 
-                pl.figure(nplots+ii)
+                pl.figure(nplots+jj)
                 pl.title(name)
                 pl.plot(bins*pixscale*3600., cumul_rprof,
                         label=fn.split(".")[0], linestyle=linestyle)
+                if jj == 0:
+                    pl.fill_between([0, beam.major.to(u.arcsec).value], [100,100], [0,0], zorder=-5, alpha=0.2, color='k')
                 pl.ylabel("Cumulative Flux (Jy)")
                 pl.xlabel("Radius [arcsec]")
-                if ii == 0:
+                if jj == 0:
                     ax = pl.gca()
                     ax2 = ax.twiny()
                     ax3 = ax.twinx()
@@ -118,12 +120,14 @@ def make_rprof(regions, ploteach=False):
                     ax3.set_yticklabels(yticks_mass)
                     ax3.set_ylabel("Cumulative Mass (M$_\\odot$, $T=20$ K)")
 
-                pl.figure(nplots*2+ii)
+                pl.figure(nplots*2+jj)
                 pl.title(name)
                 pl.plot(((bins*pixscale*u.deg)*masscalc.distance).to(u.pc,
                                                                      u.dimensionless_angles()),
                         cumul_rprof * masscalc.mass_conversion_factor(),
                         label=fn.split(".")[0], linestyle=linestyle)
+                if jj == 0:
+                    pl.fill_between([0, beam.major.to(u.arcsec).value], [100,100], [0,0], zorder=-5, alpha=0.2, color='k')
                 pl.ylabel("Cumulative Mass (M$_\\odot$, $T=20$ K)")
                 pl.xlabel("Radius (pc)")
 
@@ -354,7 +358,7 @@ def make_rprof(regions, ploteach=False):
         ch3ohT = ch3ohT_hdul[0].data
         dust_brightness,wts = reproject.reproject_interp(fits.open(paths.dpath('W51_te_continuum_best.fits')),
                                                          ch3ohN_hdul[0].header)
-        bm = radio_beam.Beam.from_fits_header(paths.dpath("W51_te_continuum_best.fits"))
+        contbm = radio_beam.Beam.from_fits_header(paths.dpath("W51_te_continuum_best.fits"))
 
         yy,xx = np.indices(ch3ohN.shape)
         if source == 'north':
@@ -368,7 +372,7 @@ def make_rprof(regions, ploteach=False):
         theta = np.arctan2(yyc,xxc)*u.rad
 
         dust_column = dust_emissivity.dust.colofsnu(225*u.GHz, dust_brightness*u.Jy,
-                                                    beamomega=bm,
+                                                    beamomega=contbm,
                                                     temperature=ch3ohT*u.K)
         ch3oh_abundance = ch3ohN / dust_column.value
         mask = (ch3oh_abundance > 1e-10) & (ch3oh_abundance < 1e-5)
@@ -492,6 +496,8 @@ def make_rprof(regions, ploteach=False):
         #pl.title(fn.replace(".image.pbcor.fits",""))
         pl.plot(bins*pixscale*3600., mass_profile,
                 label=name)
+        if ii == 0:
+            pl.fill_between([0, beam.major.to(u.arcsec).value], [100,100], [0,0], zorder=-5, alpha=0.1, color='k')
         pl.ylabel("Cumulative Mass at T(CH$_3$OH)")
         pl.xlabel("Radius [arcsec]")
         if len(names) < 5:
@@ -537,6 +543,8 @@ def make_rprof(regions, ploteach=False):
         pl.plot([0,(7000*u.au/masscalc.distance).to(u.arcsec,
                                                     u.dimensionless_angles()).value],
                 [0,7000], 'k--', alpha=0.5)
+        if ii == 0:
+            pl.fill_between([0, beam.major.to(u.arcsec).value], [8000,8000], zorder=-5, alpha=0.2, color='k')
         pl.ylabel("Azimuthally Averaged $R_J$\nat $T(\\mathrm{CH}_3\\mathrm{OH})$ [au]")
         pl.xlabel("Radius [arcsec]")
         pl.ylim(0,8000)
@@ -692,6 +700,7 @@ def make_rprof(regions, ploteach=False):
         line, = pl.plot(angular_radii, azimuthal_average_MJ, label=name)
         pl.plot(angular_radii, azimuthal_average_mass,
                 linestyle='--', color=line.get_color())
+        pl.fill_between([0, beam.major.to(u.arcsec).value], [100,100], [0,0], zorder=-5, alpha=0.1, color='k')
         pl.ylabel("Mass at T=T(CH$_3$OH) [$M_\odot$]")
         pl.xlabel("Radius [arcsec]")
 
