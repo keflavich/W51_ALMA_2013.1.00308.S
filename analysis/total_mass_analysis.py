@@ -175,6 +175,7 @@ e2e_blackbody_luminosity = (constants.sigma_sb * e2etbpeak**4 *
                             (4*np.pi*beam_radius**2)).to(u.L_sun)
 print("e2e blackbody luminosity: {0} = {0:e}".format(e2e_blackbody_luminosity,))
 
+print()
 e8peak = np.nanmax(data[1200:1300,800:1000])
 print("e8 peak flux: {0}".format(e8peak))
 e8tbpeak = e8peak * beam.jtok(masscalc.centerfreq) * u.beam/u.Jy
@@ -184,6 +185,7 @@ e8_blackbody_luminosity = (constants.sigma_sb * e8tbpeak**4 *
 print("e8 blackbody luminosity: {0} = {0:e}".format(e8_blackbody_luminosity,))
 
 
+print()
 northpeak = np.nanmax(data[1900:2100,1900:2100])
 print("north peak flux: {0}".format(northpeak))
 northtbpeak = northpeak * beam.jtok(masscalc.centerfreq) * u.beam/u.Jy
@@ -191,6 +193,15 @@ print("north peak brightness tem: {0}".format(northtbpeak))
 north_blackbody_luminosity = (constants.sigma_sb * northtbpeak**4 *
                               (4*np.pi*beam_radius**2)).to(u.L_sun)
 print("north blackbody luminosity: {0} = {0:e}".format(north_blackbody_luminosity,))
+
+print()
+d2peak = np.nanmax(data[1983:1988,2060:2065])
+print("d2 peak flux: {0}".format(d2peak))
+d2tbpeak = d2peak * beam.jtok(masscalc.centerfreq) * u.beam/u.Jy
+print("d2 peak brightness tem: {0}".format(d2tbpeak))
+d2_blackbody_luminosity = (constants.sigma_sb * d2tbpeak**4 *
+                            (4*np.pi*beam_radius**2)).to(u.L_sun)
+print("d2 blackbody luminosity: {0} = {0:e}".format(d2_blackbody_luminosity,))
 
 print()
 print()

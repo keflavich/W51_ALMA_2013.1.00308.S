@@ -524,8 +524,18 @@ explained as free-free emission, requiring a spectral index of only
 $\alpha\sim0.6-0.7$ from the cm to account for all of its mm emission.  There
 is little doubt that it contains a compact \hii region.  Because of this free-free
 contamination, we cannot estimate the central core's dust mass.  If we assume
-the free-free is optically thin at 33 GHz (the highest-frequency cm-wave measurement
-we have available), 
+the free-free is optically thin at 36 GHz \citep[the highest-frequency cm-wave
+measurement
+we have available][]{Goddi2015b}, with $S_{36 \mathrm{GHz}} = 29$ mJy and
+$S_{227 \mathrm{GHz}}=110$
+mJy, the dust-produced flux would be $S_{227 \mathrm{GHz}} = 86$ mJy, or about
+$\sim20-25\%$ as bright as the other three cores ($T_{B}=65$ K).  With such a modest
+lower-limit brightness temperature, the dust source is likely to be optically
+thin or less than beam-filling, making its upper limit dust mass much less than
+$M\ll18\msun$; if we assume $T_{dust} = T_{line,max} = 220 K$, the upper limit
+dust mass is $M<7$ \msun.  If d2 were a purely dust source, its lower limit
+luminosity is a meager 160 \lsun, which is belied by its evidently ionizing
+photosphere.
 
 Additionally, unlike the three hot cores, d2 does not drive an outflow.  It
 does, however, power a unique set of ammonia (\ammonia) masers \citep[][Wootten
@@ -751,6 +761,11 @@ The line intensities are computed from moment maps integrating over the range
 was estimated as the median over the ranges (25-35,85-95) \kms, except
 for the J=25 lines, which had a continuum estimated from the 10th percentile
 over the same range to exclude contamination from the SO outflow line wings.
+The fitted species are listed in the order plotted in Table \ref{tab:methanol}.
+Note that A- and E-type methanol are effectively independent chemical species
+because they can only interchange in chemical reactions \citep{Rabli2010c},
+but for the purpose of our coarse measurements, they appear to have similar
+abundances.
 
 \Figure{figures/ch3oh_rotation_diagrams_e2.png}
 {A sampling of fitted rotation diagrams of the detected \methanol transitions.
@@ -761,7 +776,11 @@ units of figure fraction.  Errorbars show the measurement error on each point;
 because these are plotted on a log scale, the errors are often smaller than
 the plotted points.  The fitted temperature and
 column are shown in the top right of each plot.
+The central position is severely affected by absorption and can be ignored.
+The corners do not have enough line detections to be fit.
 }{fig:ch3ohe2rot}{1}{10cm}
+
+\input{methanol_table}
 
 To validate some of the rotational diagram fits, we examined the modeled
 spectra overlaid on the real (Figure \ref{fig:ch3ohe2epeaks}).  These generally

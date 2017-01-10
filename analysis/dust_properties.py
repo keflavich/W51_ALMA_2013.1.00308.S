@@ -183,6 +183,47 @@ north_dustmass = dust_emissivity.dust.massofsnu(freq, north_peak_flux,
 print("north (core) dust mass: {0}".format(north_dustmass))
 
 
+print()
+
+reg_d2 = pyregion.open(paths.rpath('d2.reg'))
+mask = reg_d2.get_mask(header=hd, shape=im.shape)
+
+d2_total_flux = im[mask].sum()*u.Jy/u.beam / ppbeam
+d2_median_flux = np.nanmedian(im[mask])*u.Jy
+d2_median_tb = d2_median_flux.to(u.K, beam.jtok_equiv(freq))
+print("d2 Median brightness temperature: {0}".format(d2_median_tb))
+d2_max_flux = np.nanmax(im[mask])*u.Jy
+d2_max_tb = d2_max_flux.to(u.K, beam.jtok_equiv(freq))
+print("d2 peak brightness temperature: {0}".format(d2_max_tb))
+d2_20k_total_mass = dust_emissivity.dust.massofsnu(freq, d2_total_flux,
+                                                      distance=distance,
+                                                      temperature=20*u.K)
+
+d2_median_column = dust_emissivity.dust.colofsnu(freq, d2_median_flux,
+                                                    beamomega=beam,
+                                                    temperature=100*u.K).to(u.cm**-2,
+                                                                            u.dimensionless_angles())
+print("d2 median column: {0}".format(d2_median_column))
+
+print("d2 total mass, assuming T={1}: {0}"
+      .format(d2_20k_total_mass, 20*u.K))
+
+d2_100k_total_mass = dust_emissivity.dust.massofsnu(freq, d2_total_flux,
+                                                       distance=distance,
+                                                       temperature=100*u.K)
+
+print("d2 total mass, assuming T={1}: {0}"
+      .format(d2_100k_total_mass, 100*u.K))
+
+d2_peak_flux = im[mask].max()*u.Jy
+d2_peak_tb = d2_peak_flux.to(u.K, beam.jtok_equiv(freq))
+
+d2_dustmass = dust_emissivity.dust.massofsnu(freq, d2_peak_flux,
+                                                distance=distance,
+                                                temperature=d2_peak_tb)
+print("d2 (core) dust mass (should be same as above): {0}".format(d2_dustmass))
+
+
 
 """
 e2e peak brightness: 228.1267575167404 K
