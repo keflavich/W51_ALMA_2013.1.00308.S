@@ -28,6 +28,7 @@ from line_to_image_list import line_to_image_list
 frequencies = u.Quantity([float(row[1].strip('GHz'))
                           for row in line_to_image_list], u.GHz)
 name_to_freq = {row[0]:frq for frq, row in zip(frequencies, line_to_image_list)}
+name_to_freq['CH3OH5m42-6m43'] = name_to_freq['CH3OH5m42-6m34'] # typo correction
 freq_to_name = {frq:row[0] for frq, row in zip(frequencies, line_to_image_list)}
 
 linere = re.compile("W51_b6_12M.(.*).image.pbcor")
@@ -557,7 +558,7 @@ if __name__ == "__main__":
                 pl.xlabel("")
             #pl.legend(loc='best', fontsize='small')
         pl.subplots_adjust(hspace=0, wspace=0)
-        pl.savefig(paths.fpath("chemistry/ch3oh_rotation_diagrams_{0}.png".format(sourcename)))
+        pl.savefig(paths.fpath("chemistry/ch3oh_rotation_diagrams_{0}.png".format(sourcename)), bbox_inches='tight')
 
         if True:
             tmap,Nmap = fit_all_tex(xaxis, cube, cubefrequencies, indices, degeneracies,
@@ -573,7 +574,7 @@ if __name__ == "__main__":
             cb.set_label("Temperature (K)")
             ax.set_xticklabels([])
             ax.set_yticklabels([])
-            pl.savefig(paths.fpath("chemistry/ch3oh_temperature_map_{0}.png".format(sourcename)))
+            pl.savefig(paths.fpath("chemistry/ch3oh_temperature_map_{0}.png".format(sourcename)), bbox_inches='tight')
             pl.figure(3).clf()
             ax = pl.figure(3).gca()
             pl.imshow(np.log10(Nmap), vmin=16, vmax=19, cmap='viridis')
@@ -581,7 +582,7 @@ if __name__ == "__main__":
             cb.set_label("log N(CH$_3$OH)")
             ax.set_xticklabels([])
             ax.set_yticklabels([])
-            pl.savefig(paths.fpath("chemistry/ch3oh_column_map_{0}.png".format(sourcename)))
+            pl.savefig(paths.fpath("chemistry/ch3oh_column_map_{0}.png".format(sourcename)), bbox_inches='tight')
 
             hdu = fits.PrimaryHDU(data=tmap, header=header)
             hdu.writeto(paths.dpath('12m/moments/CH3OH_{0}_cutout_temperaturemap.fits'.format(sourcename)), clobber=True)
@@ -599,7 +600,7 @@ if __name__ == "__main__":
             pl.ylim(0,650)
             pl.xlabel("Radius (arcsec)")
             pl.ylabel("Average Temperature (K)")
-            pl.savefig(paths.fpath("chemistry/ch3oh_temperature_radial_profile_{0}.png".format(sourcename)))
+            pl.savefig(paths.fpath("chemistry/ch3oh_temperature_radial_profile_{0}.png".format(sourcename)), bbox_inches='tight')
 
 
 

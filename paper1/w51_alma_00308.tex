@@ -8,8 +8,24 @@
 \authorrunning{Ginsburg et al}
 \input{authors}
 
+
+\keywords{
+stars: massive,
+stars: formation,
+ISM: abundances,
+(ISM:) HII regions,
+ISM: individual objects (W51),
+ISM: molecules,
+submillimeter: ISM,
+radio continuum: ISM,
+radio lines: ISM 
+}
+
 %\abstract{
 \begin{abstract}
+    High-mass stars have generally been assumed to accrete most of their
+    mass while already contracted onto the main sequence, but this
+    hypothesis has not been observationally verified.
     We present ALMA observations of a $3\times1.5$ pc area in the W51
     high-mass star-forming complex.  We identify dust continuum sources and
     measure the gas and dust temperature through both rotational diagram
@@ -22,8 +38,8 @@
     %, indicating that the forming MYSOs are able to heat a large
     %volume of gas in which fragmentation is suppressed. 
     The extended warm gas provides evidence that, during the process of
-    forming, these high-mass stars heat a large volume (and correspondingly
-    large mass) of gas in their surroundings, suppressing fragmentation and
+    forming, these high-mass stars heat a large volume and correspondingly
+    large mass of gas in their surroundings, suppressing fragmentation and
     therefore keeping a large reservoir available to feed from.  By contrast,
     the more mature massive stars that illuminate compact \hii regions have
     little effect on their surrounding dense gas, suggesting that these main
@@ -753,7 +769,7 @@ The central regions around
 the cores appear to have lower column densities because the lines become
 optically thick and self-absorbed.  The contour in the temperature map is at
 350 K, where red meat is typically considered ``well-done''.}
-{fig:ch3ohe2}{1}{10cm}
+{fig:ch3ohe2}{1}{9cm}
 
 Sample fitted rotational diagrams are displayed in Figure \ref{fig:ch3ohe2rot}.
 The line intensities are computed from moment maps integrating over the range
@@ -1389,15 +1405,18 @@ stellar photosphere is not emitting ionizing photons.
 
 \subsubsection{Multiplicity}
 \todo{Go into this more.}
-High-mass stars preferentially form in multiples \citep{Zinnecker2007a}.
-One explanation for the low ionizing luminosity but high total luminosity would
-be the presence of many moderate-mass ($M\lesssim8$ \msun) stars forming
-together.  The presence of single bipolar outflows suggests that, if there are
-multiple systems, they are in all cases accreting from a common disk.  Given
-the mass reservoirs available, though, there is little reason to believe that
-multiplicity is the \emph{only} explanation for the high-luminosity,
-low-ionizing luminosity sources: if multiples are forming, we should expect at
-least one of them to reach O-star mass.
+High-mass stars preferentially form in multiples \citep{Zinnecker2007a}.  One
+explanation for the low ionizing luminosity but high total luminosity observed
+in the massive hot cores would be the presence of many moderate-mass
+($M\lesssim8$ \msun) stars forming together.  The presence of single bipolar
+outflows suggests that, if there are multiple systems, they are in all cases
+accreting from a common disk, though the changing direction of the outflows
+suggests that the disk may be rapidly evolving.  Given the mass reservoirs
+available, however, there is little reason to believe that multiplicity is the
+\emph{only} explanation for the high-luminosity, low-ionizing luminosity
+sources: if multiples are forming, we should expect at least one of them to
+reach O-star mass.  In short, on the scales we can probe, multiplicity does not
+produce any obvious observational effects.
 
 \subsection{Fragmentation: Jeans analysis}
 \label{sec:fragmentation}
@@ -1500,7 +1519,7 @@ that fragmentation is suppressed.
 \FigureTwo
 {figures/azimuthalaverage_radial_mj_and_mbar_of_TCH3OH_massivecores.png}
 {figures/azimuthalaverage_radial_rj_of_TCH3OH_massivecores.png}
-{\todo{Shade-out sub-beam area}. The azimuthally averaged Jeans mass surrounding the
+{The azimuthally averaged Jeans mass surrounding the
 three most massive cores.  We used the \methanol temperature from
 \ref{sec:methanol}, Figure \ref{fig:hmradprof}b in both the Jeans mass
 calculation and the dust-based mass determination.
@@ -1508,8 +1527,8 @@ The density used for the mass calculation is assumed to be distributed
 over spherical shells.  The dashed lines show the measured mean mass per
 $\sim1000$ AU beam at each radius.  Since these masses are lower than
 the local Jeans mass, the gas is stable against fragmentation.
-The high variation seen at small radii (below 0.2\arcsec) is due to
-sub-resolution noise.
+The high variation seen at small radii (below 0.2\arcsec, shaded area) is due
+to sub-resolution noise.
 %The dashed lines show the average mass per $\sim1000$ AU
 %beam 
 %The Jeans mass decreases
@@ -1579,26 +1598,29 @@ $M\gtrsim50$ \msun) would only be capable of forming within dense, clustered
 environments, since larger stars would be prevented from forming in other
 environments by fragmentation.  The IMF would then be built up by an inverse
 hierarchy, with progressively larger stars capable of forming over time until
-the gas is either exhausted \citep{Ginsburg2016b} or expelled.
+the gas is either exhausted \citep{Kruijssen2012b,Ginsburg2016b} or expelled.
 
-However, some of the assumptions in this scenario contradict our observations.
+Our observations contradict some of the assumptions in this scenario.
 If the previous generation were responsible for substantial gas heating, we
 might expect to see warm gas surrounding the \hchii regions.  Instead, we see
 these stars barely interacting with the dense gas.  It is possible, though,
-that these stars are only effective at dense gas heating \emph{before} they ignite
-Lyman continuum emission and blow out cavities, and afterward they are merely
-uninteractive witnesses to continued collapse \citep{Peters2010c}.
+that these stars are only effective at dense gas heating \emph{before} they
+ignite Lyman continuum emission and blow out cavities, and afterward they are
+merely uninteractive witnesses to continued collapse \citep{Peters2010c}.
 
 The alternatives to this hypothesis are that the initial conditions were
-entirely set within the gas on these current scales, which seems implausible,
+entirely set within the gas on the observed scales, which seems implausible,
 or that the current high density of main-sequence stars (i.e., the observed
 \hchii regions) originated from a broader, lower-density distribution and
 dynamically collapsed into their current clustered state.  If the
 stars illuminating \hchii regions formed somewhat earlier in a more distributed
 manner and fell into a common central potential, they would have had little
-effect on the dense gas temperature.
+effect on the dense gas temperature.  This latter possibility seems likely
+and may even be possible to confirm by measuring stellar kinematics in the
+forming clusters. 
 
 \subsection{Comparison to high-mass star formation theories}
+\label{sec:sftheories}
 Two general classes of star formation theory, ``competitive accretion'' and
 ``turbulent core accretion'' have dominated the discussion of  high-mass star
 formation, though they are
@@ -1675,6 +1697,24 @@ way for massive star formation to proceed similarly independent of the size of
 the parent cloud: high-mass stars will form the same way whether in an
 `isolated' or `clustered' region because they govern gas conditions in their
 own surroundings.
+
+The `enforced isolation' scenario is, on face, incompatible with the `cooperative
+accretion' scenario.  We do not have the evidence needed to distinguish between
+these, but we can suggest an observational test: if the cluster of \hchii
+regions in W51 e1 or the cluster of high-mass stars in W51 IRS2 originated in a
+more widespread distribution and collapsed into their current configuration,
+the individual stars likely formed in an effectively isolated region.  If
+instead the stars are very close to their birthplace, they likely heated the
+dense gas before they ignited \hii regions and thereby established the initial
+conditions for the current generation of high-mass star formation.  
+
+As usual, though, an alternative explanation is possible, that the `cooperative
+accretion' and `enforced isolation' scenarios apply to stars of different
+masses, in which case `cooperative accretion' would provide the formation path
+for very massive stars, while isolated formation is the more general case.
+Common between both these scenarios is that the formation of massive stars is
+regulated by thermal feedback from one or more massive stars during cloud
+collapse.
 
 % methanol_and_outflow.py
 \Figure{figures/outflows_over_methanol_e2e.png}
@@ -1870,13 +1910,15 @@ grant number KR4801/1-1.
 \section{Additional observational details}
 In this Appendix, we present the complete list of imaged lines.
 
-\input{linetable0.tex}
+\input{linetable.tex}
 
-\input{linetable1.tex}
-
-\input{linetable2.tex}
-
-\input{linetable3.tex}
+%\input{linetable0.tex}
+%
+%\input{linetable1.tex}
+%
+%\input{linetable2.tex}
+%
+%\input{linetable3.tex}
 
 \section{A bubble around e5}
 \label{sec:e5bubble}

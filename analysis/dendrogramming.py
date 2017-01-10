@@ -69,6 +69,13 @@ ppbeam = (beam.sr/(pixel_scale**2)).decompose().value
 
 ppcat = astrodendro.pp_catalog(dend, metadata)
 
+with open(paths.rpath("raw_dendrogram_cores.reg"), 'w') as fh:
+    fh.write("fk5\n")
+    for row in ppcat:
+        fh.write("ellipse({x_cen}, {y_cen}, {major_sigma}, "
+                 "{minor_sigma}, {position_angle}) # text={{{_idx}}}\n"
+                 .format(**dict(zip(row.colnames, row))))
+
 # add a 'noise' column to the catalog
 keys = ['noise', 'is_leaf', 'peak_cont_flux', 'min_cont_flux',
         'mean_cont_flux', 'peak_cont_mass', 'peak_cont_col', 'beam_area']
@@ -95,8 +102,9 @@ for k in columns:
 
 cat_mask = (ppcat['is_leaf'] &
             (ppcat['peak_cont_flux']>8*ppcat['noise']) &
-            (ppcat['mean_cont_flux']>5*ppcat['noise']) &
+            (ppcat['mean_cont_flux']>3*ppcat['noise']) &
             (ppcat['min_cont_flux']>1*ppcat['noise']))
+log.info("Keeping {0} of {1} core candidates ({2}%)".format(cat_mask.sum(), len(cat_mask), cat_mask.sum()/len(cat_mask)*100))
 pruned_ppcat = ppcat[cat_mask]
 mask = dend.index_map.copy()
 log.info("Pruning mask image")

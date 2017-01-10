@@ -97,7 +97,7 @@ def make_rprof(regions, ploteach=False):
                 pl.plot(bins*pixscale*3600., cumul_rprof,
                         label=fn.split(".")[0], linestyle=linestyle)
                 if jj == 0:
-                    pl.fill_between([0, beam.major.to(u.arcsec).value], [100,100], [0,0], zorder=-5, alpha=0.2, color='k')
+                    pl.fill_between([0, beam.major.to(u.arcsec).value], [100,100], [0,0], zorder=-5, alpha=0.1, color='k')
                 pl.ylabel("Cumulative Flux (Jy)")
                 pl.xlabel("Radius [arcsec]")
                 if jj == 0:
@@ -127,7 +127,7 @@ def make_rprof(regions, ploteach=False):
                         cumul_rprof * masscalc.mass_conversion_factor(),
                         label=fn.split(".")[0], linestyle=linestyle)
                 if jj == 0:
-                    pl.fill_between([0, beam.major.to(u.arcsec).value], [100,100], [0,0], zorder=-5, alpha=0.2, color='k')
+                    pl.fill_between([0, beam.major.to(u.arcsec).value], [100,100], [0,0], zorder=-5, alpha=0.1, color='k')
                 pl.ylabel("Cumulative Mass (M$_\\odot$, $T=20$ K)")
                 pl.xlabel("Radius (pc)")
 
@@ -544,7 +544,7 @@ def make_rprof(regions, ploteach=False):
                                                     u.dimensionless_angles()).value],
                 [0,7000], 'k--', alpha=0.5)
         if ii == 0:
-            pl.fill_between([0, beam.major.to(u.arcsec).value], [8000,8000], zorder=-5, alpha=0.2, color='k')
+            pl.fill_between([0, beam.major.to(u.arcsec).value], [8000,8000], zorder=-5, alpha=0.1, color='k')
         pl.ylabel("Azimuthally Averaged $R_J$\nat $T(\\mathrm{CH}_3\\mathrm{OH})$ [au]")
         pl.xlabel("Radius [arcsec]")
         pl.ylim(0,8000)
@@ -700,7 +700,8 @@ def make_rprof(regions, ploteach=False):
         line, = pl.plot(angular_radii, azimuthal_average_MJ, label=name)
         pl.plot(angular_radii, azimuthal_average_mass,
                 linestyle='--', color=line.get_color())
-        pl.fill_between([0, beam.major.to(u.arcsec).value], [100,100], [0,0], zorder=-5, alpha=0.1, color='k')
+        if ii == 0:
+            pl.fill_between([0, beam.major.to(u.arcsec).value], [100,100], [0,0], zorder=-5, alpha=0.1, color='k')
         pl.ylabel("Mass at T=T(CH$_3$OH) [$M_\odot$]")
         pl.xlabel("Radius [arcsec]")
 
@@ -774,20 +775,20 @@ variables = make_rprof(regions, ploteach=True)
 for k,v in variables.items():
     globals()[k] = v
 nplots = len(regions)
-pl.figure(nplots*3+2).savefig(paths.fpath("cumulative_radial_flux_massivecores.png"))
-pl.figure(nplots*3+3).savefig(paths.fpath("cumulative_radial_mass_massivecores.png"))
-pl.figure(nplots*3+4).savefig(paths.fpath("cumulative_density_40K_massivecores.png"))
-pl.figure(nplots*3+5).savefig(paths.fpath("azimuthalaverage_density_40K_massivecores.png"))
-pl.figure(nplots*3+12).savefig(paths.fpath("azimuthalaverage_density_of_TCH3OH_massivecores.png"))
-pl.figure(nplots*3+6).savefig(paths.fpath("azimuthalaverage_radial_mj_40K_massivecores.png"))
-pl.figure(nplots*3+7).savefig(paths.fpath("azimuthalaverage_radial_mj_of_TCH3OH_massivecores.png"))
-pl.figure(nplots*3+8).savefig(paths.fpath("cumulative_radial_mass_of_TCH3OH_massivecores.png"))
-pl.figure(nplots*3+9).savefig(paths.fpath("azimuthalaverage_radial_TCH3OH_massivecores.png"))
-pl.figure(nplots*3+10).savefig(paths.fpath("azimuthalaverage_radial_rj_of_TCH3OH_massivecores.png"))
-pl.figure(nplots*3+11).savefig(paths.fpath("radialprofileexponent_of_TCH3OH_massivecores.png"))
-pl.figure(nplots*3+13).savefig(paths.fpath("cumulative_MJ_of_TCH3OH_massivecores.png"))
-pl.figure(nplots*3+14).savefig(paths.fpath("azimuthalaverage_radial_mj_and_mbar_of_TCH3OH_massivecores.png"))
-pl.figure(nplots*3+15).savefig(paths.fpath("compare_cumulative_to_average_density.png"))
+pl.figure(nplots*3+2).savefig(paths.fpath("cumulative_radial_flux_massivecores.png"), bbox_inches='tight')
+pl.figure(nplots*3+3).savefig(paths.fpath("cumulative_radial_mass_massivecores.png"), bbox_inches='tight')
+pl.figure(nplots*3+4).savefig(paths.fpath("cumulative_density_40K_massivecores.png"), bbox_inches='tight')
+pl.figure(nplots*3+5).savefig(paths.fpath("azimuthalaverage_density_40K_massivecores.png"), bbox_inches='tight')
+pl.figure(nplots*3+12).savefig(paths.fpath("azimuthalaverage_density_of_TCH3OH_massivecores.png"), bbox_inches='tight')
+pl.figure(nplots*3+6).savefig(paths.fpath("azimuthalaverage_radial_mj_40K_massivecores.png"), bbox_inches='tight')
+pl.figure(nplots*3+7).savefig(paths.fpath("azimuthalaverage_radial_mj_of_TCH3OH_massivecores.png"), bbox_inches='tight')
+pl.figure(nplots*3+8).savefig(paths.fpath("cumulative_radial_mass_of_TCH3OH_massivecores.png"), bbox_inches='tight')
+pl.figure(nplots*3+9).savefig(paths.fpath("azimuthalaverage_radial_TCH3OH_massivecores.png"), bbox_inches='tight')
+pl.figure(nplots*3+10).savefig(paths.fpath("azimuthalaverage_radial_rj_of_TCH3OH_massivecores.png"), bbox_inches='tight')
+pl.figure(nplots*3+11).savefig(paths.fpath("radialprofileexponent_of_TCH3OH_massivecores.png"), bbox_inches='tight')
+pl.figure(nplots*3+13).savefig(paths.fpath("cumulative_MJ_of_TCH3OH_massivecores.png"), bbox_inches='tight')
+pl.figure(nplots*3+14).savefig(paths.fpath("azimuthalaverage_radial_mj_and_mbar_of_TCH3OH_massivecores.png"), bbox_inches='tight')
+pl.figure(nplots*3+15).savefig(paths.fpath("compare_cumulative_to_average_density.png"), bbox_inches='tight')
 
 fig = pl.figure(nplots*3+8)
 ax = fig.axes[0]
@@ -797,7 +798,7 @@ ax.plot(xx, 300*xx**1.0, 'k:', label='$\\rho\\propto R^{-2}$', alpha=0.5)
 ax.plot(xx, 300*xx**1.5, 'k--', label='$\\rho\\propto R^{-3/2}$', alpha=0.5)
 ax.plot(xx, 300*xx**2.0, 'k-', label='$\\rho\\propto R^{-1}$', alpha=0.5)
 pl.legend(loc='upper left')
-fig.savefig(paths.fpath("cumulative_radial_mass_of_TCH3OH_massivecores_withmodel.png"))
+fig.savefig(paths.fpath("cumulative_radial_mass_of_TCH3OH_massivecores_withmodel.png"), bbox_inches='tight')
 
 #regions = pyregion.open(paths.rpath("cores.reg"))
 #make_rprof(regions, ploteach=False)

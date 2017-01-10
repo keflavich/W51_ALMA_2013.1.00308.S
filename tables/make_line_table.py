@@ -65,3 +65,24 @@ latexdict['header_start'] = '\label{tab:methanol}'
 latexdict['caption'] = '\methanol lines used to determine temperature'
 methanol_table.write('../paper1/methanol_table.tex', latexdict=latexdict,
                      format='ascii.latex', overwrite=True)
+
+# try to merge tables into one...
+with open('../paper1/linetable.tex', 'w') as outfh:
+
+    outfh.write('\\begin{table*}[htp]\n')
+    #outfh.write('\caption{Spectral Lines}\n')
+    #outfh.write('\label{tab:lines}\n')
+
+    for ii in range(4):
+        with open('../paper1/linetable{0}.tex'.format(ii), 'r') as fh:
+            lines = fh.readlines()
+        outfh.write("\\begin{minipage}[t]{0.5\\textwidth}\n")
+        outfh.write("\\centering\n")
+        #outfh.writelines(lines)
+        outfh.write(lines[1]+"\n") # caption
+        outfh.writelines(list(filter(lambda x: True,#'label' not in x,
+                                     lines[2:-1])))
+        #outfh.write('\\quad\n')
+        outfh.write("\\end{minipage}\n")
+
+    outfh.write('\\end{table*}')
