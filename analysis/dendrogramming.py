@@ -101,7 +101,7 @@ for k in columns:
         ppcat.add_column(Column(name=k, data=columns[k]))
 
 cat_mask = (ppcat['is_leaf'] &
-            (ppcat['peak_cont_flux']>8*ppcat['noise']) &
+            (ppcat['peak_cont_flux']>6.5*ppcat['noise']) &
             (ppcat['mean_cont_flux']>3*ppcat['noise']) &
             (ppcat['min_cont_flux']>1*ppcat['noise']))
 log.info("Keeping {0} of {1} core candidates ({2}%)".format(cat_mask.sum(), len(cat_mask), cat_mask.sum()/len(cat_mask)*100))
