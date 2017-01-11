@@ -54,10 +54,13 @@ def do_everything():
     print("Executing bibtex command: {0}".format(bibcmd))
     bibresult = subprocess.call(bibcmd)
     assert bibresult == 0
+    print("Executing PDF command a second time: {0}".format(pdfcmd))
     pdfresult = subprocess.call(pdfcmd)
     assert pdfresult == 0
+    print("Executing bibtex command a second time: {0}".format(bibcmd))
     bibresult = subprocess.call(bibcmd)
     assert bibresult == 0
+    print("Executing PDF command a third time: {0}".format(pdfcmd))
     pdfresult = subprocess.call(pdfcmd)
     assert pdfresult == 0
 
