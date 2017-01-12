@@ -82,8 +82,17 @@ for source in ('e8','north','e2',):
     # compare CH3OH LTE column to dust emission
     ch3ohN_hdul = fits.open(paths.dpath('12m/moments/CH3OH_{0}_cutout_columnmap.fits'.format(source)))
     ch3ohT_hdul = fits.open(paths.dpath('12m/moments/CH3OH_{0}_cutout_temperaturemap.fits'.format(source)))
+    ch3oh_808_mx = fits.open(paths.dpath('chemslices/chemical_max_slabs_{0}_CH3OH808-716_merge.fits'.format(source)))
     dust_brightness,wts = reproject.reproject_interp(fits.open(paths.dpath('W51_te_continuum_best.fits')),
                                                      ch3ohN_hdul[0].header)
+    # it's already in K!
+    #ch3oh_808_mx_K = (ch3oh_808_mx[0].data*u.Jy).to(u.K,
+    #                                                u.brightness_temperature(radio_beam.Beam.from_fits_header(ch3oh_808_mx[0].header),
+    #                                                                         ch3oh_808_mx[0].header['RESTFRQ']*u.Hz))
+    #ch3oh_808_mx[0].data = ch3oh_808_mx_K.value
+    ch3oh_808_peak,_ = reproject.reproject_interp(ch3oh_808_mx,
+                                                  ch3ohN_hdul[0].header)
+
 
     w = wcs.WCS(ch3ohT_hdul[0].header)
     pixscale = (w.pixel_scale_matrix.diagonal()**2).sum()**0.5 * u.deg
@@ -227,6 +236,19 @@ for source in ('e8','north','e2',):
     pl.ylabel('CH$_3$OH-derived Temperature')
     pl.savefig(paths.fpath('chemistry/{0}_CH3OH_LTE_temperature_radial_profile.png'.format(source)),
                bbox_inches='tight')
+
+    radbins_808,radialprof_808_max = image_tools.radialprofile.azimuthalAverage(ch3oh_808_peak,
+                                                                    weights=mask.astype('float'),
+                                                                    returnradii=True,
+                                                                    binsize=1,
+                                                                    # to ensure self-consistency, use an identical center
+                                                                    center=center,
+                                                                    interpnan=True)
+    pl.plot((radbins_808*pixscale).to(u.arcsec).value, radialprof_808_max,
+            'k-', alpha=0.5, zorder=-1)
+    pl.savefig(paths.fpath('chemistry/{0}_CH3OH_LTE_temperature_radial_profile_withpeak.png'.format(source)),
+               bbox_inches='tight')
+
 
 
 
