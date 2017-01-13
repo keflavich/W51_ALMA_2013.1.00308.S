@@ -28,7 +28,8 @@ def read_dust_temperature(dust_tem_fn, sz=32):
     print(ftype, precis, nrcells, nrspec)
 
     # raise an IOError, because the wrong dust temperature file has been found
-    assert sz * sz * sz == nrcells,IOError
+    if not sz * sz * sz == nrcells:
+        raise IOError("Wrong file dimensions")
 
     return data.reshape([sz, sz, sz])
 
