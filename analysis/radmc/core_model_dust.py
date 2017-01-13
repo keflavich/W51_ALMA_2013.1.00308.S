@@ -162,7 +162,8 @@ def core_model_dust(outname, x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8,
         shutil.move('dust_temperature.bdat','dust_temperature_{0}.bdat'.format(outname))
     else:
         try:
-            shutil.copy('dust_temperature_{0}.bdat'.format(outname),'dust_temperature.bdat',)
+            shutil.copy('dust_temperature_{0}.bdat'.format(outname),
+                        'dust_temperature.bdat',)
             success = True
         except Exception as ex:
             success = False
@@ -181,7 +182,7 @@ def core_model_dust(outname, x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8,
     return dust_temperature
 
 if __name__ == "__main__":
-    tmplt = 'dust_temperature_sz32_rad1e4au_mstar1msun_rstar1au_lstar{0:0.1e}lsun_power{1}.bdat'
+    tmplt = 'dust_temperature_sz32_rad1e4au_mstar1msun_rstar1au_lstar{0:0.1e}lsun_power{1}_ncen{2:0.1e}.bdat'
 
     max_rad = 10000*u.au
 
@@ -212,7 +213,8 @@ if __name__ == "__main__":
     # set up the appropriately-sized grid
     lstar = 2e4
     power = -1.5
-    outname = "sz{2}_rad1e4au_mstar1msun_rstar1au_lstar{0:0.1e}lsun_power{1}".format(lstar,power,sz)
+    ncen = 5e7
+    outname = "sz{2}_rad1e4au_mstar1msun_rstar1au_lstar{0:0.1e}lsun_power{1}_ncen{3:0.1e}".format(lstar,power,sz,ncen)
     try:
         core_model_dust(outname=outname,
                         x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8, sz=sz,
@@ -237,7 +239,7 @@ if __name__ == "__main__":
                 if os.path.exists('dust_temperature.bdat'):
                     shutil.move('dust_temperature.bdat', 'dust_temperature_backup_{0}.bdat'.format(datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')))
 
-                dusttem_fn = tmplt.format(lstar, power)
+                dusttem_fn = tmplt.format(lstar, power, central_density)
                 outname = "sz{2}_rad1e4au_mstar1msun_rstar1au_lstar{0:0.1e}lsun_power{1}_ncen{3:0.1e}".format(lstar,power,sz,central_density)
                 if not os.path.exists(dusttem_fn):
                     core_model_dust(outname=outname,
