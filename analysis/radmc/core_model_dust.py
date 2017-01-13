@@ -112,8 +112,8 @@ def core_model_dust(outname, x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8,
 
     get_dust_opacity()
 
-    params=dict(istar_sphere=0, itempdecoup=0, lines_mode=3, nphot=1000000,
-                nphot_scat=30000, nphot_spec=100000, rto_style=3,
+    params=dict(istar_sphere=0, itempdecoup=0, lines_mode=3, nphot=10000,
+                nphot_scat=3000, nphot_spec=10000, rto_style=3,
                 scattering_mode=0, scattering_mode_max=0, tgas_eq_tdust=1,)
 
     params_string = """
