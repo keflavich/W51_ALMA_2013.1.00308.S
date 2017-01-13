@@ -230,7 +230,7 @@ if __name__ == "__main__":
                         radius_cm=1*u.au.to(u.cm), mass_g=1*u.M_sun.to(u.g),
                        )
 
-    for central_density in (5e7,):
+    for central_density in (5e7,5e8,):
 
         for power in (-1.5, -2.0, -1.0):
 
@@ -298,7 +298,7 @@ if __name__ == "__main__":
     rr_2du, inds_2d = np.unique(rr_2d.ravel(), return_index=True)
 
     # set up the appropriately-sized grid
-    outname = "sz{2}_rad1e4au_mstar1msun_rstar1au_lstar{0:0.1e}lsun_power{1}_dens5e8".format(lstar,power,sz)
+    outname = "sz{2}_rad1e4au_mstar1msun_rstar1au_lstar{0:0.1e}lsun_power{1}_ncen5e8".format(lstar,power,sz)
     core_model_dust(outname=outname,
                     x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8, sz=sz,
                     n0=5e8*u.cm**-3,
