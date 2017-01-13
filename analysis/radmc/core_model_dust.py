@@ -1,6 +1,7 @@
 from __future__ import print_function
 import os
 import shutil
+import datetime
 from astroquery import lamda
 import radmc3dPy
 import matplotlib
@@ -26,7 +27,8 @@ def read_dust_temperature(dust_tem_fn, sz=32):
         data = np.fromfile(fh, dtype='float64', count=nrcells)
     print(ftype, precis, nrcells, nrspec)
 
-    assert sz * sz * sz == nrcells
+    # raise an IOError, because the wrong dust temperature file has been found
+    assert sz * sz * sz == nrcells,IOError
 
     return data.reshape([sz, sz, sz])
 
@@ -156,13 +158,17 @@ def core_model_dust(outname, x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8,
         assert os.system('radmc3d mctherm') == 0
 
         dust_temperature = read_dust_temperature('dust_temperature.bdat', sz=sz)
-        shutil.copy('dust_temperature.bdat','dust_temperature_{0}.bdat'.format(outname))
+        shutil.move('dust_temperature.bdat','dust_temperature_{0}.bdat'.format(outname))
     else:
         try:
             shutil.copy('dust_temperature_{0}.bdat'.format(outname),'dust_temperature.bdat',)
+            success = True
         except Exception as ex:
+            success = False
             print(ex)
         dust_temperature = read_dust_temperature('dust_temperature.bdat', sz=sz)
+        if success:
+            os.remove('dust_temperature.bdat')
 
     if os.path.exists('lines.inp'):
         os.remove('lines.inp')
@@ -222,9 +228,13 @@ if __name__ == "__main__":
                        )
 
     for central_density in (5e7,):
+
         for power in (-1.5, -2.0, -1.0):
 
             for lstar in (2e4, 1e4, 5e4, 1e5):
+
+                if os.path.exists('dust_temperature.bdat'):
+                    shutil.move('dust_temperature.bdat', 'dust_temperature_backup_{0}.bdat'.format(datetime.datetime.now().strftime('%Y/%m/%d-%H:%M:%S')))
 
                 dusttem_fn = tmplt.format(lstar, power)
                 outname = "sz{2}_rad1e4au_mstar1msun_rstar1au_lstar{0:0.1e}lsun_power{1}_ncen{3:0.1e}".format(lstar,power,sz,central_density)
