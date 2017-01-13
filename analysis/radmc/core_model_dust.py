@@ -234,7 +234,7 @@ if __name__ == "__main__":
             for lstar in (2e4, 1e4, 5e4, 1e5):
 
                 if os.path.exists('dust_temperature.bdat'):
-                    shutil.move('dust_temperature.bdat', 'dust_temperature_backup_{0}.bdat'.format(datetime.datetime.now().strftime('%Y/%m/%d-%H:%M:%S')))
+                    shutil.move('dust_temperature.bdat', 'dust_temperature_backup_{0}.bdat'.format(datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')))
 
                 dusttem_fn = tmplt.format(lstar, power)
                 outname = "sz{2}_rad1e4au_mstar1msun_rstar1au_lstar{0:0.1e}lsun_power{1}_ncen{3:0.1e}".format(lstar,power,sz,central_density)
