@@ -221,53 +221,55 @@ if __name__ == "__main__":
                         radius_cm=1*u.au.to(u.cm), mass_g=1*u.M_sun.to(u.g),
                        )
 
-    for power in (-1.5, -2.0, -1.0):
+    for central_density in (5e7,):
+        for power in (-1.5, -2.0, -1.0):
 
-        for lstar in (2e4, 1e4, 5e4, 1e5):
+            for lstar in (2e4, 1e4, 5e4, 1e5):
 
-            dusttem_fn = tmplt.format(lstar, power)
-            outname = "sz{2}_rad1e4au_mstar1msun_rstar1au_lstar{0:0.1e}lsun_power{1}".format(lstar,power,sz)
-            if not os.path.exists(dusttem_fn):
-                core_model_dust(outname=outname,
-                                x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8, sz=sz,
-                                max_rad=max_rad, rbreak=1000*u.au,
-                                radius_cm=1*u.au.to(u.cm), mass_g=1*u.M_sun.to(u.g),
-                                power=power, luminosity=lstar*u.L_sun,)
-            else:
-                dust_temperature = read_dust_temperature(dusttem_fn, sz)
+                dusttem_fn = tmplt.format(lstar, power)
+                outname = "sz{2}_rad1e4au_mstar1msun_rstar1au_lstar{0:0.1e}lsun_power{1}_ncen{3:0.1e}".format(lstar,power,sz,central_density)
+                if not os.path.exists(dusttem_fn):
+                    core_model_dust(outname=outname,
+                                    x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8, sz=sz,
+                                    max_rad=max_rad, rbreak=1000*u.au,
+                                    n0=central_density*u.cm**-3,
+                                    radius_cm=1*u.au.to(u.cm), mass_g=1*u.M_sun.to(u.g),
+                                    power=power, luminosity=lstar*u.L_sun,)
+                else:
+                    dust_temperature = read_dust_temperature(dusttem_fn, sz)
 
-            
-            dust_image = 'dustim1323um_{0}.fits'.format(outname)
-            dust_image_K = 'dustim1323um_{0}_K.fits'.format(outname)
-            if not os.path.exists(dust_image_K):
-                shutil.copy(dusttem_fn, 'dust_temperature.bdat')
-                if os.path.exists('lines.inp'):
-                    os.remove('lines.inp')
-                os.system('radmc3d image npix 50 incl 0 sizeau 10000 noscat pointau 0.0  0.0  0.0 fluxcons lambda 1323 dpc 5400')
-                im = radmc3dPy.image.readImage('image.out')
-                im.writeFits(dust_image, fitsheadkeys={}, dpc=5400,
-                             coord='19h23m43.963s +14d30m34.56s', overwrite=True)
-                im_K = convert_to_K(dust_image)
-                im_K.writeto(dust_image_K, clobber=True)
-            imdata = fits.getdata(dust_image_K)
+                
+                dust_image = 'dustim1323um_{0}.fits'.format(outname)
+                dust_image_K = 'dustim1323um_{0}_K.fits'.format(outname)
+                if not os.path.exists(dust_image_K):
+                    shutil.copy(dusttem_fn, 'dust_temperature.bdat')
+                    if os.path.exists('lines.inp'):
+                        os.remove('lines.inp')
+                    os.system('radmc3d image npix 50 incl 0 sizeau 10000 noscat pointau 0.0  0.0  0.0 fluxcons lambda 1323 dpc 5400')
+                    im = radmc3dPy.image.readImage('image.out')
+                    im.writeFits(dust_image, fitsheadkeys={}, dpc=5400,
+                                 coord='19h23m43.963s +14d30m34.56s', overwrite=True)
+                    im_K = convert_to_K(dust_image)
+                    im_K.writeto(dust_image_K, clobber=True)
+                imdata = fits.getdata(dust_image_K)
 
-            fig1 = pl.figure(1)
-            fig1.clf()
-            ax1 = pl.subplot(1,2,1)
-            im = ax1.imshow(dust_temperature[:,:,sz/2], cmap='hot')
-            pl.colorbar(im, ax=ax1)
-            ax2 = pl.subplot(1,2,2)
-            ax2.plot(rr.ravel(), dust_temperature.ravel(), '.', alpha=0.25)
-            pl.savefig("midplane_dust_temperature_{0}.png".format(outname))
+                fig1 = pl.figure(1)
+                fig1.clf()
+                ax1 = pl.subplot(1,2,1)
+                im = ax1.imshow(dust_temperature[:,:,sz/2], cmap='hot')
+                pl.colorbar(im, ax=ax1)
+                ax2 = pl.subplot(1,2,2)
+                ax2.plot(rr.ravel(), dust_temperature.ravel(), '.', alpha=0.25)
+                pl.savefig("midplane_dust_temperature_{0}.png".format(outname))
 
 
-            ax3 = fig2.gca()
-            ax3.plot(rr_u, dust_temperature.flat[inds], linestyle=linestyles[power],
-                     color=colors[lstar], alpha=1.0, label="$L={0:0.1e}, \\kappa={1}$".format(lstar, power))
+                ax3 = fig2.gca()
+                ax3.plot(rr_u, dust_temperature.flat[inds], linestyle=linestyles[power],
+                         color=colors[lstar], alpha=1.0, label="$L={0:0.1e}, \\kappa={1}$".format(lstar, power))
 
-            ax4 = fig3.gca()
-            ax4.plot(rr_2du, dust_temperature.flat[inds_2d], linestyle=linestyles[power],
-                     color=colors[lstar], alpha=1.0, label="$L={0:0.1e}, \\kappa={1}$".format(lstar, power))
+                ax4 = fig3.gca()
+                ax4.plot(rr_2du, dust_temperature.flat[inds_2d], linestyle=linestyles[power],
+                         color=colors[lstar], alpha=1.0, label="$L={0:0.1e}, \\kappa={1}$".format(lstar, power))
 
 
     # overlay "core_model" version
@@ -286,6 +288,7 @@ if __name__ == "__main__":
     outname = "sz{2}_rad1e4au_mstar1msun_rstar1au_lstar{0:0.1e}lsun_power{1}_dens5e8".format(lstar,power,sz)
     core_model_dust(outname=outname,
                     x_co=1.0e-4, x_h2co=1.0e-9, x_ch3oh=1e-9, zh2=2.8, sz=sz,
+                    n0=5e8*u.cm**-3,
                     max_rad=max_rad, rbreak=1000*u.au,
                     recompute_dusttemperature=False,
                     radius_cm=1*u.au.to(u.cm), mass_g=1*u.M_sun.to(u.g),
