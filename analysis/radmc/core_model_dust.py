@@ -25,7 +25,7 @@ def read_dust_temperature(dust_tem_fn, sz=32):
         nrcells, = struct.unpack('=q', fh.read(8))
         nrspec, = struct.unpack('=q', fh.read(8))
         data = np.fromfile(fh, dtype='float64', count=nrcells)
-    print(ftype, precis, nrcells, nrspec)
+    print(dust_tem_fn, ftype, precis, nrcells, nrspec)
 
     # raise an IOError, because the wrong dust temperature file has been found
     if not sz * sz * sz == nrcells:
