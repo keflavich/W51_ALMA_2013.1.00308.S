@@ -46,7 +46,7 @@ radio lines: ISM
     sequence stars have completed most or all of their accretion.  
     The high luminosity of the massive protostars, combined with a lack of
     centimeter continuum from these sources, implies that they are not on
-    the main sequence while they accrete the majority of the mass; instead,
+    the main sequence while they accrete the majority of their mass; instead,
     they may be bloated and cool.
 
     In the appendices, we identify a likely radiation-driven dust bubble,
@@ -1577,14 +1577,19 @@ otherwise form a small cluster.
 
 \subsection{Comparison to high-mass star formation theories}
 \label{sec:sftheories}
-Two general classes of star formation theory, ``competitive accretion'' and
-``turbulent core accretion'' have dominated the discussion of  high-mass star
+Two general classes of star formation theory, ``competitive accretion''  and
+``turbulent core accretion''  have dominated the discussion of  high-mass star
 formation, though they are
-not entirely incompatible theories \citep{Schilke2016a}.  In their extreme forms,
-they can be simplified to uniform seeds accreting different amounts of material
-over their lifetime in the case of competitive accretion and a single, initial,
-quasistatic high-mass gas core collapsing into a star in the case of turbulent
-core accretion.  
+not entirely incompatible theories \citep{Schilke2016a}. 
+Competitive accretion, in its simplest and most extreme form, consists of
+uniform-mass seeds accreting different amounts of mass from a common reservoir.
+The seed cores therefore have identical initial conditions but
+boundary conditions that vary over the course of their accreting lifetimes.
+Turbulent core accretion, again in its simplest form, invokes an initial
+quasi-static core with effectively closed boundaries.  Since they address
+different parts of the star formation process in differing levels of detail,
+the two theories are not in direct competition, but they nonetheless provide
+the basic framework for discussions of star formation theory.
 
 Our observations of high-mass hot cores extending to radii $\sim5000$ AU do
 not directly contradict either of these extremes, but instead suggests
@@ -1599,11 +1604,11 @@ Bondi-Hoyle accretion by a factor of 10 for a stationary object, though the
 reduction is negligible for an object moving near the Virial velocity ($v_{vir}
 \gtrsim 5$ \kms within the hot cores).  This extended warm region suppresses
 the formation of new small fragments, as has been observed in simulations with
-much weaker feedback \citep[e.g.][]{Bate2009a}.  Most likely, the material
+much weaker feedback \citep[e.g.,][]{Bate2009a}.  Most likely, the material
 around these most massive protostars was accumulated from larger scales, as in
 \citet{Smith2009f}.  Our data are therefore compatible with competitive
 accretion scenarios qualitatively, but they indicate that feedback is an essential
-ingredient and models excluding feedback do not agree quantitatively.
+ingredient and models excluding feedback cannot agree quantitatively.
 
 % DONE: consider dropping kapparho discussion entirely; the measurements are
 % pretty damned unreliable. (dropped kapparho discussion)
@@ -1634,7 +1639,7 @@ as the evolutionary progress within the `turbulent core' model depends on the
 initial core structure, and the presence of nearby fragments governs whether
 the competitive part of `competitive accretion' can occur at all.
 
-We also suggest there are implications for `isolated' massive star formation.
+These cores also carry implications for `isolated' massive star formation.
 The stars we see forming are clearly not isolated - they are embedded within
 fairly rich clusters including massive stars we can see already, and they are
 very likely to be surrounded by substantial clusters of lower-mass stars.
@@ -1658,12 +1663,15 @@ the same independent of environment.
 % collapse.
  
 % methanol_and_outflow.py
-\Figure{figures/outflows_over_methanol_e2e.png}
-{The e2e core as seen in the \methanol $8_{0,8}-7_{1,6}$ line with
-the integrated \twelveco 2-1 outflow overlaid in red (73 to 180 \kms) and blue
-(0 to 45 \kms).  The `core' is circularly symmetric, while the outflow is
-clearly bipolar.}
-{fig:outflowonmethanol}{1}{10cm}
+\FigureTwo
+{figures/outflows_over_methanol_e2e.png}
+{figures/methanol_scalebar_e2e.png}
+{The e2e core as seen in the peak intensity of the \methanol $8_{0,8}-7_{1,6}$
+line, with continuum included.
+(a) The integrated \twelveco 2-1 outflow is overlaid in red (73 to 180 \kms)
+and blue (0 to 45 \kms).  The `core' is circularly symmetric, while the outflow
+is clearly bipolar. Panel (b) is included to make the comparison clearer.}
+{fig:outflowonmethanol}{1}{8cm}
 
 
 \subsection{High-mass star formation within dense protoclusters:\\
@@ -1701,7 +1709,7 @@ One possibility is that the first generation helped produce the second,
 which we call `cooperative accretion'.
 If the main-sequence stars formed in the same way as the current generation of
 forming stars, i.e., they heated their own surrounding cores as suggested in
-the `enforced isolation' scenario above, they may have completely modified the
+the `enforced isolation' scenario above, they may have completely changed the
 conditions of the parent cloud.  If we assume they reached the main sequence
 before consuming all of the material they heated, and we assume that they
 decoupled from the gas and stopped accreting soon after reaching the main
@@ -1721,15 +1729,15 @@ and would therefore be higher mass than the first.
 This toy model is analogous to the `cooperative accretion' mode suggested by
 \citet{Zinnecker2007a}, but at a much earlier stage in the cluster development
 when the gas is still molecular and dusty and therefore capable of efficient
-cooling.  In the ionized cooperative accretion scenario, the most massive
-star in a forming cluster will accrete the most material because its potential
-well is deepest, and that star will continue to grow until it reaches an
-Eddington limit in which its own radiation reduces its effective potential,
-halting or reducing accretion.  At that point, the second most massive star
-will dominate the accretion, and so on until the gas is all gone.  Since
-we observe no direct evidence for ionized accretion in W51 (Section
-\ref{sec:accretionandoutflows}), the ionized version of the cooperative model
-is not likely to be significant in this particular region.
+cooling.  In the ionized cooperative accretion scenario, the most massive star
+in a forming cluster will accrete the most material because its potential well
+is deepest, and that star will continue to grow until it reaches a
+pseudo-Eddington limit in which its own radiation produces a pressure that
+reduces its effective potential, halting or reducing accretion.  At that point,
+the second most massive star will dominate the accretion, and so on until the
+gas is all gone.  Since we observe no direct evidence for ionized accretion in
+W51 (Section \ref{sec:accretionandoutflows}), the ionized version of the
+cooperative model is not likely to be significant in this particular region.
 
 % emphasize more likely to be "2nd generation" as cluster gets older...
 % "sphere of influence"
@@ -1766,12 +1774,11 @@ decoupled from their dense cores.
 % The alternatives to this hypothesis are that the initial conditions were
 % entirely set within the gas on the observed scales, which seems implausible,
 A second possibility is that the stars we see now formed from a larger-scale
-cloud and have collapsed into their current configuration.  If the stars
-illuminating \hchii regions formed somewhat earlier in a more distributed
-manner and fell into a common central potential \citep[e.g., the `conveyor
-belt' scenario for cluster
-formation,][]{Ginsburg2012a,Longmore2014a,Walker2016a}, they would have had
-little effect on the dense gas temperature.
+cloud and have collapsed into their current configuration.  If the
+now-main-sequence stars formed somewhat earlier in a more distributed manner
+and fell into a common central potential \citep[e.g., the `conveyor belt'
+scenario for cluster formation,][]{Ginsburg2012a,Longmore2014a,Walker2016a},
+they would have had little effect on the dense gas temperature.
 
 This latter possibility seems likely and may even be possible to confirm by
 measuring stellar kinematics in the forming clusters.  If the cluster of \hchii
@@ -1782,7 +1789,8 @@ instead the stars are very close to their birthplace, they likely heated the
 dense gas before they ignited \hii regions and thereby established the initial
 conditions for the current generation of high-mass star formation.  Comparing
 the velocities of the \hii regions and the dense gas can distinguish
-between these scenarios.  Current data \citep{Ginsburg2016a} are consistent
+between these scenarios.  Current data \citep[i.e., H77$\alpha$ measurements
+in][]{Ginsburg2016a} are consistent
 with the more interactive cooperative accretion scenario, but the errors on the
 ionized gas velocities are too large to perform a definitive test.
 
@@ -1951,6 +1959,13 @@ From these observations, we have inferred the following:
     \item Hot massive cores are heated by the accreting stars within them,
         implying that young massive stars self-regulate their  core
         structures.
+    \item Because the hot cores surround sources with tight upper limits
+        on their free-free emission, yet the central stellar luminosities
+        are consistent with main-sequence stars that would produce ionizing
+        radiation, we suggest that the central stars are rapidly accreting and
+        bloated.  The high accretion rate and bloating suppresses the
+        photospheric temperature, preventing the production of ionizing
+        radiation.
 \end{itemize}
 
 
