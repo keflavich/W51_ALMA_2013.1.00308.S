@@ -8,6 +8,7 @@ from matplotlib.colors import Normalize,LogNorm
 from matplotlib.colors import rgb_to_hsv,hsv_to_rgb
 import PIL
 from PIL import ImageEnhance
+import pylab as pl
 import pyavm
 
 
@@ -108,8 +109,13 @@ avm.embed(outname, outname)
 #im.save(outname)
 #avm.embed(outname, outname)
 
-
-FF = aplpy.FITSFigure(outname)
+pl.matplotlib.rc_file('pubfiguresrc')
+pl.rcParams['font.size'] = 16
+pl.rcParams['axes.labelsize'] = 18
+pl.figure(1).clf()
+FF = aplpy.FITSFigure(outname, figure=pl.figure(1))
 FF.show_rgb(outname)
+FF.recenter(290.916844, 14.51870943, 0.0029)
+FF.set_tick_xspacing(4.5/3600.)
 FF.show_regions(rpath('irs2_labels.reg'), layer='labels')
 FF.save(fpath("rgb_irs2_aplpy_withlabels.png"), dpi=150)
