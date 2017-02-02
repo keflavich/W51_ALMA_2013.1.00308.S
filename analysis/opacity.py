@@ -17,10 +17,10 @@ pl.xlabel("Temperature")
 pl.ylabel("Planck-averaged opacity (cm$^2$/g)")
 
 
-# Eddington luminosity...
+# Eddington luminosity assuming a 20 Msun central star
 
 Ledd = (constants.G*20*u.M_sun*constants.c/(4*np.pi*kappas)).to(u.L_sun)
 pl.figure(2).clf()
 pl.loglog(temperatures, Ledd)
-pl.xlabel("Temperature")
+pl.xlabel("Temperature [L]")
 pl.ylabel("Dust-only Eddington Luminosity (L$_\\odot$)")

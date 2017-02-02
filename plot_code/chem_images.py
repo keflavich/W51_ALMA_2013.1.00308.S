@@ -2,6 +2,7 @@ import paths
 import pylab as pl
 import os
 from spectral_cube import SpectralCube
+from spectral_cube.spectral_cube import SIGMA2FWHM
 import numpy as np
 from astropy import units as u
 import matplotlib.gridspec as gridspec
@@ -22,6 +23,12 @@ from constants import continuum_frequency
 # Sometimes debugging is necessary to prevent abort traps
 from astropy import log
 log.setLevel('DEBUG')
+
+pl.matplotlib.rc_file('pubfiguresrc')
+# this entire setup was specifically designed to override the classic style;
+# mpl2.0 defaults will wreck the figures
+pl.style.use('classic')
+
 
 # PN 5-4 looks terrible and doesn't have 12m data; it is screwy.
 if 'PN5-4' in labeldict:
@@ -209,18 +216,22 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
 
         im1 = ax1.imshow(m0.value, vmin=-1.25*jtok.value, vmax=vmax_m0*jtok.value,
                          cmap=pl.cm.bone_r, interpolation='nearest')
-        ax1.text(3, 0.87*m0.shape[0], label, fontsize=9)
+        ax1.text(3, 0.87*m0.shape[0], label, fontsize=4.5)
         ax1.set_xticklabels([])
         ax1.set_yticklabels([])
+        ax1.set_xticks([])
+        ax1.set_yticks([])
         ax1.set_aspect('equal')
 
         ax2 = fig2.add_subplot(gs2[figcounter])
 
         im2 = ax2.imshow(m1.value, vmin=vrange[0].value, vmax=vrange[1].value,
                          cmap=pl.cm.jet, interpolation='nearest')
-        ax2.text(3, 0.87*m0.shape[0], label, fontsize=9, color='w')
+        ax2.text(3, 0.87*m0.shape[0], label, fontsize=4.5, color='k')
         ax2.set_xticklabels([])
         ax2.set_yticklabels([])
+        ax2.set_xticks([])
+        ax2.set_yticks([])
         ax2.set_aspect('equal')
 
         ax3 = fig3.add_subplot(gs3[figcounter])
@@ -232,9 +243,11 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
             contourlevels = [vmax_max, 300, 400, 500]
         qcs = ax3.contour(max_sub.value, levels=contourlevels, colors=['r','g','b','y'])
         #print("levels: {0} = {1}".format(qcs.levels, contourlevels))
-        ax3.text(3, 0.87*m0.shape[0], label, fontsize=9, color='r')
+        ax3.text(3, 0.87*m0.shape[0], label, fontsize=4.5, color='r')
         ax3.set_xticklabels([])
         ax3.set_yticklabels([])
+        ax3.set_xticks([])
+        ax3.set_yticks([])
         ax3.set_aspect('equal')
 
         ax5 = fig5.add_subplot(gs5[figcounter])
@@ -245,27 +258,33 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         qcs = ax5.contour(max.value, levels=contourlevels, colors=['r','g','b','y'])
         if False: # debug
             print("levels: {0} = {1}".format(qcs.levels, contourlevels))
-        ax5.text(3, 0.87*m0.shape[0], label, fontsize=9, color='r')
+        ax5.text(3, 0.87*m0.shape[0], label, fontsize=4.5, color='r')
         ax5.set_xticklabels([])
         ax5.set_yticklabels([])
+        ax5.set_xticks([])
+        ax5.set_yticks([])
         ax5.set_aspect('equal')
 
         ax4 = fig4.add_subplot(gs4[figcounter])
 
         im4 = ax4.imshow(madstd.value,
                          cmap=pl.cm.bone_r, interpolation='nearest')
-        ax4.text(3, 0.87*m0.shape[0], label, fontsize=9, color='r')
+        ax4.text(3, 0.87*m0.shape[0], label, fontsize=4.5, color='r')
         ax4.set_xticklabels([])
         ax4.set_yticklabels([])
+        ax4.set_xticks([])
+        ax4.set_yticks([])
         ax4.set_aspect('equal')
 
         ax6 = fig6.add_subplot(gs6[figcounter])
 
-        im6 = ax6.imshow(m2.value, vmin=0, vmax=10,
+        im6 = ax6.imshow((m2**0.5).to(u.km/u.s).value * SIGMA2FWHM, vmin=0, vmax=10,
                          cmap=pl.cm.jet, interpolation='nearest')
-        ax6.text(3, 0.87*m0.shape[0], label, fontsize=9, color='w')
+        ax6.text(3, 0.87*m0.shape[0], label, fontsize=4.5, color='k')
         ax6.set_xticklabels([])
         ax6.set_yticklabels([])
+        ax6.set_xticks([])
+        ax6.set_yticks([])
         ax6.set_aspect('equal')
 
         figcounter += 1
@@ -280,7 +299,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
                      cmap=pl.cm.bone_r, interpolation='nearest')
     # add a contour to show the regions that are "saturated" above T_max
     ax5.contour(cont.value, levels=contourlevels, colors=['r','g','b','y'])
-    ax5.text(3, 0.87*m0.shape[0], 'Continuum', fontsize=9, color='r')
+    ax5.text(3, 0.87*m0.shape[0], 'Continuum', fontsize=4.5, color='r')
     ax5.set_xticklabels([])
     ax5.set_yticklabels([])
     ax5.set_aspect('equal')
@@ -311,27 +330,27 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
 
     fig1.savefig(paths.fpath("chemical_m0_slabs_{0}{1}.png".format(sourcename,
                                                                    suffix)),
-                 bbox_inches='tight', dpi=150)
+                 bbox_inches='tight', dpi=300)
 
     fig2.savefig(paths.fpath("chemical_m1_slabs_{0}{1}.png".format(sourcename,
                                                                    suffix)),
-                 bbox_inches='tight', dpi=150)
+                 bbox_inches='tight', dpi=300)
 
     fig3.savefig(paths.fpath("chemical_max_contsub_slabs_{0}{1}.png"
                              .format(sourcename, suffix)),
-                 bbox_inches='tight', dpi=150)
+                 bbox_inches='tight', dpi=300)
 
     fig4.savefig(paths.fpath("chemical_madstd_slabs_{0}{1}.png".format(sourcename,
                                                                        suffix)),
-                 bbox_inches='tight', dpi=150)
+                 bbox_inches='tight', dpi=300)
 
     fig5.savefig(paths.fpath("chemical_max_slabs_{0}{1}.png"
                              .format(sourcename, suffix)),
-                 bbox_inches='tight', dpi=150)
+                 bbox_inches='tight', dpi=300)
 
     fig6.savefig(paths.fpath("chemical_m2_slabs_{0}{1}.png".format(sourcename,
                                                                    suffix)),
-                 bbox_inches='tight', dpi=150)
+                 bbox_inches='tight', dpi=300)
 
 
 def test_layout(plotgrid=(6,8), figsize=(12.0,8.6), fignum=1):
