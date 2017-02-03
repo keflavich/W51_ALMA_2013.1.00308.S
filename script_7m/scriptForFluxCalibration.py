@@ -189,7 +189,10 @@ applycal(vis = 'uid___A002_Xa1e1bf_X6f1.ms.split.cal',
 
 print "# Concatenating the data."
 
-concat(vis = ['uid___A002_X9f852b_X134a.ms.split.cal', 'uid___A002_X9ff365_X2a83.ms.split.cal', 'uid___A002_Xa1e1bf_X290.ms.split.cal', 'uid___A002_Xa1e1bf_X6f1.ms.split.cal'],
+concat(vis = ['uid___A002_X9f852b_X134a.ms.split.cal',
+              'uid___A002_X9ff365_X2a83.ms.split.cal',
+              'uid___A002_Xa1e1bf_X290.ms.split.cal',
+              'uid___A002_Xa1e1bf_X6f1.ms.split.cal'],
   concatvis = 'calibrated.ms')
 
 
