@@ -56,69 +56,81 @@ def spectra_from_cubefn(cubefn, reg, bins_arcsec, coordinate):
 if __name__ == "__main__":
 
 
-    coordinate = coordinates.SkyCoord("19:23:43.961",
-                                      "+14:30:34.56",
-                                      frame='fk5',
-                                      unit=(u.hour, u.deg))
-    bins_ends_arcsec = np.linspace(0,2.25,7)
-    bins_arcsec = np.array(list(zip(bins_ends_arcsec[:-1], bins_ends_arcsec[1:])))
-    reg = pyregion.open(paths.rpath('e2_exclude_e2w.reg'))
+    for sourcename,pfx,regfn in (('e2','e2e','e2_exclude_e2w.reg'),
+                                 ('e8','e8','e8_core.reg'),
+                                 ('north','north','north_core.reg')):
+
+        #coordinate = coordinates.SkyCoord("19:23:43.961",
+        #                                  "+14:30:34.56",
+        #                                  frame='fk5',
+        #                                  unit=(u.hour, u.deg))
+        bins_ends_arcsec = np.linspace(0,2.25,7)
+        bins_arcsec = np.array(list(zip(bins_ends_arcsec[:-1], bins_ends_arcsec[1:])))
+        reg = pyregion.open(paths.rpath(regfn))
+        coordinate = coordinates.SkyCoord(reg[0].coord_list[0],
+                                          reg[0].coord_list[1],
+                                          frame='fk5',
+                                          unit=(u.deg, u.deg))
 
 
-    for spw in (0,1,2,3):
-        for suffix in ('','_hires'):
+        for spw in (0,1,2,3):
+            for suffix in ('','_hires'):
 
-            cubefn = paths.dpath('merge/fullcube_cutouts/e2cutout_full_W51_7m12m_spw{0}{1}_lines.fits'
-                                .format(spw,suffix))
+                cubefn = paths.dpath('merge/fullcube_cutouts/{2}cutout_full_W51_7m12m_spw{0}{1}_lines.fits'
+                                     .format(spw,suffix,sourcename))
+                print(cubefn)
+
+                spectra = spectra_from_cubefn(cubefn, reg, bins_arcsec, coordinate)
+
+                for bins, (key, spectrum) in zip(bins_arcsec, spectra.items()):
+                    if hasattr(spectrum, 'beams'):
+                        include = np.isfinite(spectrum) & np.array([(bm.major < 1*u.arcsec) &
+                                                                    (bm.minor < 1*u.arcsec)
+                                                                    for bm in spectrum.beams])
+                        assert include.any()
+                        avg_beam = spectral_cube.cube_utils.average_beams(spectrum.beams,
+                                                                          includemask=include)
+                        assert not np.isnan(avg_beam)
+                        spectrum.meta['beam'] = avg_beam
+                    spectrum.write(paths.merge_spath('{4}_radial_bin_{0:0.2f}to{1:0.2f}_7m12m_spw{2}{3}.fits'
+                                                     .format(bins[0], bins[1], spw,
+                                                             suffix, pfx)),
+                                   overwrite=True
+                                  )
+
+        for spw in (0,1,2,3):
+
+            cubefn = paths.dpath('12m/fullcube_cutouts/{1}cutout_full_W51_spw{0}_lines.fits'
+                                 .format(spw, sourcename))
             print(cubefn)
 
             spectra = spectra_from_cubefn(cubefn, reg, bins_arcsec, coordinate)
 
+            pl.figure(1).clf()
+
             for bins, (key, spectrum) in zip(bins_arcsec, spectra.items()):
-                include = np.isfinite(spectrum) & np.array([(bm.major < 1*u.arcsec) &
-                                                            (bm.minor < 1*u.arcsec)
-                                                            for bm in spectrum.beams])
-                avg_beam = spectral_cube.cube_utils.average_beams(spectrum.beams,
-                                                                  includemask=include)
-                spectrum.meta['beam'] = avg_beam
-                spectrum.write(paths.merge_spath('e2e_radial_bin_{0:0.2f}to{1:0.2f}_7m12m_spw{2}{3}.fits'
-                                                 .format(bins[0], bins[1], spw,
-                                                         suffix)),
+                if hasattr(spectrum, 'beams'):
+                    include = np.isfinite(spectrum) & np.array([(bm.major < 1*u.arcsec) &
+                                                                (bm.minor < 1*u.arcsec)
+                                                                for bm in spectrum.beams])
+                    avg_beam = spectral_cube.cube_utils.average_beams(spectrum.beams,
+                                                                      includemask=include)
+                    spectrum.meta['beam'] = avg_beam
+                spectrum.write(paths.spath('{3}_radial_bin_{0:0.2f}to{1:0.2f}_spw{2}.fits'
+                                           .format(bins[0], bins[1], spw, pfx)),
                                overwrite=True
                               )
 
-    for spw in (0,1,2,3):
 
-        cubefn = paths.dpath('12m/fullcube_cutouts/e2cutout_full_W51_spw{0}_lines.fits'
-                             .format(spw))
-        print(cubefn)
+                pl.plot(spectrum.spectral_axis.to(u.GHz).value, spectrum.value,
+                        label='{0:0.1f}-{1:0.1f}'.format(*bins))
 
-        spectra = spectra_from_cubefn(cubefn, reg, bins_arcsec, coordinate)
-
-        pl.figure(1).clf()
-
-        for bins, (key, spectrum) in zip(bins_arcsec, spectra.items()):
-            include = np.isfinite(spectrum) & np.array([(bm.major < 1*u.arcsec) &
-                                                        (bm.minor < 1*u.arcsec)
-                                                        for bm in spectrum.beams])
-            avg_beam = spectral_cube.cube_utils.average_beams(spectrum.beams,
-                                                              includemask=include)
-            spectrum.meta['beam'] = avg_beam
-            spectrum.write(paths.spath('e2e_radial_bin_{0:0.2f}to{1:0.2f}_spw{2}.fits'
-                                       .format(bins[0], bins[1], spw)),
-                           overwrite=True
-                          )
-
-
-            pl.plot(spectrum.spectral_axis.to(u.GHz).value, spectrum.value,
-                    label='{0:0.1f}-{1:0.1f}'.format(*bins))
-
-        pl.xlabel("Frequency (GHz)")
-        pl.ylabel("Intensity (Jy)")
-        pl.gca().ticklabel_format(useOffset=False)
-        pl.gca().get_xaxis().get_major_formatter().set_scientific(False)
-        pl.gca().get_yaxis().get_major_formatter().set_scientific(False)
-        
-        pl.legend(loc='best')
-        pl.savefig(paths.fpath('radial_spectra/e2e_radial_spectra_spw{0}.png'
-                               .format(spw)))
+            pl.xlabel("Frequency (GHz)")
+            pl.ylabel("Intensity (Jy)")
+            pl.gca().ticklabel_format(useOffset=False)
+            pl.gca().get_xaxis().get_major_formatter().set_scientific(False)
+            pl.gca().get_yaxis().get_major_formatter().set_scientific(False)
+            
+            pl.legend(loc='best')
+            pl.savefig(paths.fpath('radial_spectra/{1}_radial_spectra_spw{0}.png'
+                                   .format(spw, pfx)))

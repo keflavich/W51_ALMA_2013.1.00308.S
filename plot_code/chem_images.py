@@ -47,8 +47,9 @@ def get_cont(header):
                                                       continuum_frequency))
     return cont_K
 
-def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,60]*u.km/u.s,
-              sourcename='e2', filelist=glob.glob(paths.dpath('12m/cutouts/*e2e8*fits')),
+def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214),
+              vrange=[51,60]*u.km/u.s, sourcename='e2',
+              filelist=glob.glob(paths.dpath('12m/cutouts/*e2e8*fits')),
               # 5,8 -> 12.8,8
               # 6,8 -> 12.0,8.6
               # 5,9 -> 15.0,8.0
@@ -174,11 +175,12 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
             max.write(maxfitsfn, overwrite=True)
             max_sub.write(maxsubfitsfn, overwrite=True)
             madstd.write(madstdfitsfn, overwrite=True)
+            maxfh = max.hdu
         else:
             m0fh = fits.open(m0fitsfn)
             m1fh = fits.open(m1fitsfn)
             m2fh = fits.open(m2fitsfn)
-            maxfh = fits.open(maxfitsfn)
+            maxfh = fits.open(maxfitsfn)[0]
             maxsubfh = fits.open(maxsubfitsfn)
             madstdfh = fits.open(madstdfitsfn)
 
@@ -191,9 +193,9 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
             m2 = Projection(value=m2fh[0].data, header=m2fh[0].header,
                             wcs=wcs.WCS(m2fh[0].header),
                             unit=u.Unit(m2fh[0].header['BUNIT']),)
-            max = Projection(value=maxfh[0].data, header=maxfh[0].header,
-                             wcs=wcs.WCS(maxfh[0].header),
-                             unit=u.Unit(maxfh[0].header['BUNIT']),)
+            max = Projection(value=maxfh.data, header=maxfh.header,
+                             wcs=wcs.WCS(maxfh.header),
+                             unit=u.Unit(maxfh.header['BUNIT']),)
             max_sub = Projection(value=maxsubfh[0].data,
                                  header=maxsubfh[0].header,
                                  wcs=wcs.WCS(maxsubfh[0].header),
@@ -215,7 +217,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         ax1 = fig1.add_subplot(gs1[figcounter])
 
         im1 = ax1.imshow(m0.value, vmin=-1.25*jtok.value, vmax=vmax_m0*jtok.value,
-                         cmap=pl.cm.bone_r, interpolation='nearest')
+                         cmap=pl.cm.bone_r, interpolation='nearest', origin='lower')
         ax1.text(3, 0.87*m0.shape[0], label, fontsize=4.5)
         ax1.set_xticklabels([])
         ax1.set_yticklabels([])
@@ -226,8 +228,8 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         ax2 = fig2.add_subplot(gs2[figcounter])
 
         im2 = ax2.imshow(m1.value, vmin=vrange[0].value, vmax=vrange[1].value,
-                         cmap=pl.cm.jet, interpolation='nearest')
-        ax2.text(3, 0.87*m0.shape[0], label, fontsize=4.5, color='k')
+                         cmap='seismic', interpolation='nearest', origin='lower')
+        ax2.text(3, 0.87*m0.shape[0], label, fontsize=4.5, color='g')
         ax2.set_xticklabels([])
         ax2.set_yticklabels([])
         ax2.set_xticks([])
@@ -237,7 +239,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         ax3 = fig3.add_subplot(gs3[figcounter])
 
         im3 = ax3.imshow(max_sub.value, vmin=-10, vmax=vmax_max,
-                         cmap=pl.cm.bone_r, interpolation='nearest')
+                         cmap=pl.cm.bone_r, interpolation='nearest', origin='lower')
         # add a contour to show the regions that are "saturated" above T_max
         if contourlevels is None:
             contourlevels = [vmax_max, 300, 400, 500]
@@ -253,7 +255,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         ax5 = fig5.add_subplot(gs5[figcounter])
 
         im5 = ax5.imshow(max.value, vmin=-10, vmax=vmax_max,
-                         cmap=pl.cm.bone_r, interpolation='nearest')
+                         cmap=pl.cm.bone_r, interpolation='nearest', origin='lower')
         # add a contour to show the regions that are "saturated" above T_max
         qcs = ax5.contour(max.value, levels=contourlevels, colors=['r','g','b','y'])
         if False: # debug
@@ -268,7 +270,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
         ax4 = fig4.add_subplot(gs4[figcounter])
 
         im4 = ax4.imshow(madstd.value,
-                         cmap=pl.cm.bone_r, interpolation='nearest')
+                         cmap=pl.cm.bone_r, interpolation='nearest', origin='lower')
         ax4.text(3, 0.87*m0.shape[0], label, fontsize=4.5, color='r')
         ax4.set_xticklabels([])
         ax4.set_yticklabels([])
@@ -278,8 +280,8 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
 
         ax6 = fig6.add_subplot(gs6[figcounter])
 
-        im6 = ax6.imshow((m2**0.5).to(u.km/u.s).value * SIGMA2FWHM, vmin=0, vmax=10,
-                         cmap=pl.cm.jet, interpolation='nearest')
+        im6 = ax6.imshow((m2**0.5).to(u.km/u.s).value * SIGMA2FWHM, vmin=0, vmax=15,
+                         cmap='viridis', interpolation='nearest', origin='lower')
         ax6.text(3, 0.87*m0.shape[0], label, fontsize=4.5, color='k')
         ax6.set_xticklabels([])
         ax6.set_yticklabels([])
@@ -293,10 +295,10 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214), vrange=[51,6
     # add a continuum image to the 'max' plots
     ax5 = fig5.add_subplot(gs5[figcounter])
 
-    cont = get_cont(maxfh[0].header)
+    cont = get_cont(maxfh.header)
 
     im5 = ax5.imshow(cont.value, vmin=-10, vmax=vmax_max,
-                     cmap=pl.cm.bone_r, interpolation='nearest')
+                     cmap=pl.cm.bone_r, interpolation='nearest', origin='lower')
     # add a contour to show the regions that are "saturated" above T_max
     ax5.contour(cont.value, levels=contourlevels, colors=['r','g','b','y'])
     ax5.text(3, 0.87*m0.shape[0], 'Continuum', fontsize=4.5, color='r')
@@ -368,7 +370,7 @@ def test_layout(plotgrid=(6,8), figsize=(12.0,8.6), fignum=1):
         ax.set_yticklabels([])
         ax.set_aspect('equal')
         im = pl.imshow([[1,1,],[1,2]], cmap=pl.cm.bone_r,
-                       interpolation='nearest')
+                       interpolation='nearest', origin='lower')
 
     bottom,top,left,right = gs.get_grid_positions(fig)
     cbar_ax = fig.add_axes([np.max(right)+0.01, np.min(bottom),
@@ -387,16 +389,35 @@ if __name__ == "__main__":
     linere = re.compile("W51_b6_12M.(.*).image.pbcor")
 
     chem_plot(linere, yslice=slice(357,477), xslice=slice(104,224),
+              vrange=[45,70]*u.km/u.s, sourcename='e2wide',
+              vmax_max=200,
+              contourlevels=[150,200,250,300],
+              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*e2e8*fits')))
+
+    chem_plot(linere, yslice=slice(357,477), xslice=slice(104,224),
               vrange=[51,60]*u.km/u.s, sourcename='e2',
               vmax_max=200,
               contourlevels=[150,200,250,300],
               filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*e2e8*fits')))
 
     chem_plot(linere, yslice=slice(227,347), xslice=slice(119,239),
+              vrange=[48,68]*u.km/u.s, sourcename='e8wide',
+              vmax_max=200,
+              contourlevels=[150,200,250,300],
+              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*e2e8*fits')))
+
+
+    chem_plot(linere, yslice=slice(227,347), xslice=slice(119,239),
               vrange=[52,63]*u.km/u.s, sourcename='e8',
               vmax_max=200,
               contourlevels=[150,200,250,300],
               filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*e2e8*fits')))
+
+    chem_plot(linere, yslice=slice(31,231), xslice=slice(152,350),
+              vrange=[48,70]*u.km/u.s, sourcename='northwide',
+              vmax_max=200,
+              contourlevels=[150,200,250,300],
+              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*north*fits')))
 
     chem_plot(linere, yslice=slice(31,231), xslice=slice(152,350),
               vrange=[54,64]*u.km/u.s, sourcename='north',

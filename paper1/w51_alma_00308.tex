@@ -134,8 +134,9 @@ this limit and allow further accretion
 \citep{Yorke2002a,Krumholz2005b,Krumholz2009a,Krumholz2009b,Kuiper2012a,Kuiper2013c,Rosen2016a}.
 Additionally, fragmentation-induced starvation can limit the amount of mass
 available to the most massive star, instead breaking up massive cores into many
-lower-mass fragments \citep{Peters2010a}.  These simulations still have limited
-physics and can only produce stars up to $M\sim80$ \msun even in the current
+lower-mass fragments \citep{Peters2010a}.  The simulations used to demonstrate
+these points still have limited physics and can only produce stars up to
+$M\sim80$ \msun even in the current
 best 3D cases  \citep{Kuiper2015a,Kuiper2016a}.  The question of how massive
 stars acquire their mass, and especially whether they ever form Keplerian
 disks, remains open \citep{Beltran2016b}.
@@ -179,21 +180,21 @@ on many scales, and the driving populations of OB stars have been identified
 about 100 pc along Galactic longitude, shows some signs of interaction with a
 supernova remnant \citep{Brogan2013a,Ginsburg2015a}, there is as yet no
 sign that supernovae have occurred within the W51 IRS2 or e1/e2 protocluster
-regions.  They are in the relatively short stage after which high mass stars
+regions.  They are in the relatively short stage after  high mass stars
 have formed but before the gas has been exhausted or expelled.
 
 % we're proving this?
 This combination of feedback and ongoing formation is essential for testing
 components of high mass star formation theory that are relatively inaccessible
-to simulations.  \citet{Krumholz2006a} suggests that accretion heating during
-the formation of high-mass stars can heat massive cores to $\gtrsim100$ K and
-therefore suppress fragmentation into smaller stars, which would be expected
-for cold cores, though these models have $T>100$ K out to only $R\lesssim100$
-AU.  While simulations have verified the conclusion that early-stage accretion
-heating can control the mass scale within low-mass star
+to simulations.  While simulations have verified the conclusion that
+early-stage accretion heating can control the mass scale within low-mass star
 forming regions \citep{Krumholz2007c,Offner2011b, Bate2012a,Bate2014b}, there
 have been neither theoretical nor observational tests of this model for
-high-mass stars. 
+high-mass stars.   For example, \citet{Krumholz2006a} suggests that accretion
+heating during the formation of high-mass stars can heat massive cores to
+$\gtrsim100$ K and therefore suppress fragmentation into smaller stars, which
+would be expected for cold cores, though these models have $T>100$ K out to
+only $R\lesssim100$ AU.  
 
 \Figure{figures/rgb_overview_aplpy_withlabels.png}
 {An overview of the W51A region as seen by ALMA and the VLA.  The main regions
@@ -223,8 +224,13 @@ temperatures inferred from \methanol lines (\S \ref{sec:methanol}).
 %finally!  so many subsections!!!
 Section \ref{sec:discussion} discusses scales and types of feedback (\S
 \ref{sec:feedbackscales}), outflows (\S \ref{sec:outflowdiscussion}),
-accretion and outflows (\S \ref{sec:accretionandoutflows}),
+the implications of these outflows for accretion (\S \ref{sec:accretionandoutflows}),
 and fragmentation (\S \ref{sec:fragmentation}).  
+Sections \ref{sec:sftheories} and \ref{sec:cooperative} discuss implications
+of the fragmentation analysis and the existence of these cores on star
+formation theory.  Section \ref{sec:faintsrcs_discussion} discusses the
+low-mass cores and protostars, explaining why they do not receive
+as much attention in this document.
 We conclude in Section \ref{sec:conclusion}.
 Additional interesting features in the W51 data not directly relevant
 to our main topic, the formation of high-mass stars,
@@ -250,7 +256,7 @@ As part of ALMA Cycle 2 program 2013.1.00308.S, we observed a
 $\sim2\arcmin\times1\arcmin$ region centered between W51 IRS2 and W51 e1/e2
 with a 37-pointing mosaic.  Two configurations of the 12m array were used,
 achieving a resolution of 0.2\arcsec.  Additionally, a 12-pointing mosaic was
-performed using the 7m array, hypothetically probing scales up to
+performed using the 7m array, theoretically probing scales up to
 $\sim28$\arcsec.  The full UV coverage included baselines over
 the range $\sim12$ to $\sim1500$ m.
 The spectral windows (SPWs) covered are listed in Table \ref{tab:spw},
@@ -513,7 +519,9 @@ Section \ref{sec:stellarproperties}.
 % total_mass_analysis
 We repeat the above analysis for e8 and North.  They have peak intensities
 of 0.35 and 0.44 Jy/beam respectively, corresponding to peak brightness
-temperatures of 205 and 256 K.
+temperatures of 205 and 256 K.  The North source was detected at 25 \um, but
+no shorter wavelengths, by \citet{Barbosa2016a}, confirming the presence
+of warm dust.
 The lower limit luminosities of W51 e8 and North in a single beam, assuming the
 brightest detected beam is optically thick, are 1.6\ee{4} and 3.9\ee{4} \lsun,
 respectively.
@@ -563,6 +571,11 @@ does, however, power a unique set of ammonia (\ammonia) masers \citep[][Wootten
 it is in an intermediate evolutionary state between the larger compact \hii
 regions and the hot cores that exhibit no centimeter continuum.
 
+\citet{Barbosa2016a} reported W51 d2 (OKYM 6) as ``just a ridge of emission''
+because it appears only in their 25 \um images and is invisible at shorted
+wavelengths.  Our clear detection of both the known \hchii region and a
+surrounding molecular core indicate instead that it is just extremely embedded,
+comparable to North but presumably less luminous.
 
 
 \subsection{The mass and light budget on different spatial scales}
@@ -904,7 +917,8 @@ temperature at each line of sight.
 (c) Abundance vs distance from e2e.  The apparent dip at $r<1\arcsec$ is
 somewhat artificial, as it is driven by a rising dust emissivity that
 corresponds to an increasing optical depth in the dust.  The \methanol column
-in this inner region is likely to be underestimated. 
+in this inner region is likely to be underestimated.   The grey
+line shows the azimuthally averaged abundance.
 (d) \methanol vs dust column density.  }
 {fig:ch3ohtemX}
 
@@ -1016,6 +1030,33 @@ temperature map computed from \methanol in Section \ref{sec:methanol}; this
 plot should be at least qualitatively more realistic, though it is subject to
 many uncertainties discussion in \S \ref{sec:methanol}.}
 {fig:hmradprof}{1}{8cm}
+
+\subsection{Gas kinematics around the most massive cores}
+The gas motion around the massive cores is traced consistently by many species.
+\methanol has some of the brightest and most isolated (i.e., not confused
+with other species) lines, so we show the kinematic structure of two
+moderately-excited \methanol lines for each HMYSO core in Figures
+\ref{fig:}...\ref{fig:...}.
+
+There are two notable common features in these maps: First, there is no clear
+sign of systematic motion (i.e., rotation) in any of them.  Second, they are
+highly turbulent, with velocity dispersion uniformly much greater than the
+sound speed.  We determine temperatures below in Section
+\ref{sec:temperatures}, giving $c_s\sim0.5$ \kms.  With velocity dispersions
+$\sigma_{FWHM}\approx5-15$ \kms, the gas is typically moving at Mach numbers
+$M\approx10-30$.
+
+Curiously, the most suggestive gradients, e.g., the east-west blue-red gradient
+in e8, are parallel to the outflows, though the \methanol lines do not trace
+these outflows.  In e2e, both the blue and red lobe of the CO outflow are seen
+as redshifted in the dense gas, while the rest of the core is blueshifted.
+
+An increase in the velocity dispersion toward the central protostar is clearly
+seen in both e2e and e8, though the opposite is seen in north.  We caution,
+though, that the very high velocity dispersion toward the central source is
+very likely to be affected by contamination from other molecular species.
+There are many more complex species detected in the central pixel than
+elsewhere in these cores.
 
 
 % \Figure{figures/radialprofileexponent_of_TCH3OH_massivecores.png}
@@ -1677,17 +1718,17 @@ is clearly bipolar. Panel (b) is included to make the comparison clearer.}
 \subsection{High-mass star formation within dense protoclusters:\\
 Cooperative accretion or assembly line}
 \label{sec:cooperative}
-The conditions we currently observe in W51 are not `initial conditions' in any
-commonly-used sense of the word, but they are intermediate preconditions for
-high-mass (and maybe very high-mass) star formation.  We are observing a state
-in which high-mass stars have recently reached the main sequence within the
-same volume of gas as presently-forming, rapidly accreting protostars.  These
-conditions are rare in our galaxy, appearing only in a handful of high-mass
-star-forming regions, specifically in the dense, dusty protoclusters (e.g.,
-W49, Sgr B2, G333) that are the likely precursors of $>10^4$ \msun young
-massive clusters (e.g., NGC 3606, Trumpler 14, the Arches).  In this section,
-we discuss the possible interactions between individual high-mass protostars
-and the dense (in both gas and stars) protocluster environment.
+The conditions we currently observe in W51 are not `initial conditions', but
+they are intermediate preconditions for high-mass (and maybe very high-mass)
+star formation.  We are observing a state in which high-mass stars have
+recently reached the main sequence within the same volume of gas as
+presently-forming, rapidly accreting protostars.  These conditions are rare in
+our galaxy, appearing only in a handful of high-mass star-forming regions,
+specifically in the dense, dusty protoclusters (e.g., W49, Sgr B2, G333) that
+are the likely precursors of $>10^4$ \msun young massive clusters (e.g., NGC
+3606, Trumpler 14, the Arches).  In this section, we discuss the possible
+interactions between individual high-mass protostars and the dense (in both gas
+and stars) protocluster environment.
 
 % Since massive ($M\gtrsim250$ \msun) hot cores presently exist, and they appear
 % to be the precursors to a next generation of high mass stars, we assume that
@@ -1924,7 +1965,7 @@ The key observational results include:
         $N(\hh)>10^{25}$ \persc, leading us to conclude that a large fraction
         of the cloud - likely all of the gas emitting at over 10 mJy \perbeam -
         is warmer than 20 K.
-    \item We demonstrated three techniques for estimating the temperature of
+    \item We used three techniques for estimating the temperature of
         dust continuum sources with ALMA: limits from dust brightness
         temperature, limits from line brightness temperature, and LTE modeling
         of \methanol lines.  While these methods do not necessarily agree
