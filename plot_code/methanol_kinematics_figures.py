@@ -5,18 +5,24 @@ from astropy import units as u
 from astropy.io import fits
 import pylab as pl
 import paths
+import reproject
+
+blue_fits_fn = paths.dpath('moments/w51_12co2-1_blue0to45_masked.fits')
+red_fits_fn = paths.dpath('moments/w51_12co2-1_red73to130_masked.fits')
+red_fits = fits.open(red_fits_fn)
+blue_fits = fits.open(blue_fits_fn)
 
 vrange = {'e2wide': (53,61),
           'e8wide': (54,64),
           'northwide': (56,64),
          }
-threshold= {'e2wide': 50,
-            'e8wide': 40,
-            'northwide': 40,
+threshold= {'e2wide': 40,
+            'e8wide': 30,
+            'northwide': 30,
            }
 wrange = {'e2wide': (6,20),
           'e8wide': (6,15),
-          'northwide': (6,13),
+          'northwide': (6,14),
          }
 cutout = {'e2wide': [slice(20,-20),slice(15,-25)],
           'e8wide': [slice(10,-20),slice(20,-20)],
@@ -30,6 +36,10 @@ labelline = {'e2wide': ([8,18],[65,65]),
              'e8wide': ([8,18],[80,80]),
              'northwide': ([8,18],[50,50]),
             }
+outflow_levels = {'e2wide': ([1],[1]),
+                  'e8wide': ([0.5],[1]),
+                  'northwide': ([0.5,1,2],[0.5,1,2]),
+                 }
 
 for sourcename in ('e2wide', 'e8wide', 'northwide'):
     linename = 'CH3OH808-716'
@@ -39,6 +49,7 @@ for sourcename in ('e2wide', 'e8wide', 'northwide'):
     wmin,wmax = wrange[sourcename]
     vmin,vmax = vrange[sourcename]
     linex, liney = labelline[sourcename]
+    levels_r,levels_b = outflow_levels[sourcename]
 
     m1fitsfn = paths.dpath("chemslices/chemical_m1_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
     m2fitsfn = paths.dpath("chemslices/chemical_m2_slabs_{0}_{1}{2}.fits".format(sourcename, linename, suffix))
@@ -65,6 +76,9 @@ for sourcename in ('e2wide', 'e8wide', 'northwide'):
     ch3oh109_m2.data[~ch3oh109_mask] = np.nan
     ch3oh109_m2_fwhm = ch3oh109_m2.data**0.5 * np.sqrt(8*np.log(2))
 
+    co_red,_ = reproject.reproject_interp(red_fits, ch3oh87_m1.header)
+    co_blue,_ = reproject.reproject_interp(blue_fits, ch3oh87_m1.header)
+
     pl.close(1)
     fig1 = pl.figure(1, figsize=figsize[sourcename])
     fig1.clf()
@@ -78,12 +92,11 @@ for sourcename in ('e2wide', 'e8wide', 'northwide'):
     ax2 = fig1.add_subplot(gs1[1])
     mappable2 = ax2.imshow(ch3oh109_m1.data[cslice], vmin=vmin, vmax=vmax, origin='lower', cmap='seismic', interpolation='nearest')
 
-
     ax3 = fig1.add_subplot(gs1[2])
-    ax3.imshow(ch3oh87_m2_fwhm[cslice], vmin=wmin, vmax=wmax, origin='lower', cmap='viridis_r', interpolation='nearest')
+    ax3.imshow(ch3oh87_m2_fwhm[cslice], vmin=wmin, vmax=wmax, origin='lower', cmap='inferno', interpolation='nearest')
 
     ax4 = fig1.add_subplot(gs1[3])
-    mappable4 = ax4.imshow(ch3oh109_m2_fwhm[cslice], vmin=wmin, vmax=wmax, origin='lower', cmap='viridis_r', interpolation='nearest')
+    mappable4 = ax4.imshow(ch3oh109_m2_fwhm[cslice], vmin=wmin, vmax=wmax, origin='lower', cmap='inferno', interpolation='nearest')
 
     ax_lims = ax4.axis()
 
@@ -93,6 +106,10 @@ for sourcename in ('e2wide', 'e8wide', 'northwide'):
     ax4.annotate('2700 AU',(np.mean(linex),np.mean(liney)-5), fontsize=10, horizontalalignment='center')
     ax4.axis(ax_lims)
 
+    axlims = ax4.axis()
+    ax4.contour(co_blue[cslice], levels=levels_b, colors=['b']*len(levels_b))
+    ax4.contour(co_red[cslice], levels=levels_r, colors=['r']*len(levels_r))
+    ax4.axis(axlims)
 
     for ax in (ax1,ax2,ax3,ax4):
         ax.set_xticklabels([])

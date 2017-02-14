@@ -6,6 +6,7 @@ import paths
 from astropy import units as u
 from astropy import coordinates
 from astropy import wcs
+from astropy import log
 from spectral_cube import SpectralCube
 import pyregion
 
@@ -14,6 +15,7 @@ from outflow_meta import e2e, e8, north, lacy
 from line_point_offset import offset_to_point
 
 import pylab as pl
+
 
 #fntemplate = 'full_W51e2cutout_spw{0}_lines.fits'
 #medsubtemplate = 'full_W51e2cutout_spw{0}_lines_medsub.fits'
@@ -51,10 +53,10 @@ for ii,direction in enumerate(('perpco', 'perpsio')):
     diskycoorddict['e2'] = diskycoorddict['e2e']
 
     for name, cutoutname, source, vrange in (
+        ('e2', 'e2', e2e, (45,70)),
         ('lacy', 'north', lacy, (50,75)),
         ('north', 'north', north, (45,75)),
         ('e8', 'e8', e8, (45,75)),
-        ('e2', 'e2', e2e, (45,70)),
        ):
 
         diskycoords = diskycoorddict[name]
@@ -78,12 +80,15 @@ for ii,direction in enumerate(('perpco', 'perpsio')):
             cube = SpectralCube.read(fn)
             cube.allow_huge_operations=True
             cube.beam_threshold = 5
-            med = cube.median(axis=0)
+            med = cube.percentile(25,axis=0)
             medsub = cube - med
 
             extraction_path = pvextractor.Path(diskycoords, 0.2*u.arcsec)
             extracted = pvextractor.extract_pv_slice(medsub, extraction_path)
-            #extracted.writeto(outfn, clobber=True)
+            if direction=='perpco' and ('CH3OH' in basename or 'CH3OCHO' in basename):
+                extracted.writeto(outfn, clobber=True)
+            else:
+                continue
 
             ww = wcs.WCS(extracted.header)
             ww.wcs.cdelt[1] /= 1000.0
@@ -95,45 +100,75 @@ for ii,direction in enumerate(('perpco', 'perpsio')):
             fig = pl.figure(1)
             fig.clf()
             ax = fig.add_axes([0.15, 0.1, 0.8, 0.8],projection=ww)
-            ax.imshow(extracted.data, cmap='viridis')
+            assert ww.wcs.cunit[1] == 'm/s' # this is BAD BAD BAD but necessary
+
+            if ww.wcs.cunit[1] == 'm/s':
+                scalefactor = 1000.0
+            else:
+                scalefactor = 1.0
+
+            good_limits = (np.array((np.argmax(np.isfinite(extracted.data.max(axis=0))),
+                                     extracted.data.shape[1] -
+                                     np.argmax(np.isfinite(extracted.data.max(axis=0)[::-1])) - 1
+                                    ))
+                           )
+            leftmost_position = ww.wcs_pix2world(good_limits[0],
+                                                 vrange[0]*scalefactor,
+                                                 0)[0]*u.arcsec
+
+
+            plotted_region = ww.wcs_world2pix([0,0],
+                                              np.array(vrange)*scalefactor,
+                                              0)
+            plotted_slice = (slice(int(plotted_region[1][0]), int(plotted_region[1][1])),
+                             slice(None,None),
+                            )
+            if np.any(np.array(extracted.data[plotted_slice].shape) == 0):
+                log.warn("Skipping {0} because it's empty".format(fn))
+                continue
+
+            vmin,vmax = (np.nanmin(extracted.data[plotted_slice]),
+                         np.nanmax(extracted.data[plotted_slice]))
+            im = ax.imshow(extracted.data, cmap='gray_r',
+                           vmin=vmin, vmax=vmax*1.1)
             ax.set_xlabel("Offset [\"]")
             ax.set_ylabel("$V_{LSR}$ [km/s]")
 
-            good_limits = (np.argmax(np.isfinite(extracted.data.max(axis=0))),
-                           extracted.data.shape[1] -
-                           np.argmax(np.isfinite(extracted.data.max(axis=0)[::-1])))
-            leftmost_position = ww.wcs_pix2world(good_limits[0],
-                                                 vrange[0],
-                                                 0)[0]*u.arcsec
 
             trans = ax.get_transform('world')
-            length = (1000*u.au / (5400*u.pc)).to(u.deg, u.dimensionless_angles())
+            length = (2000*u.au / (5400*u.pc)).to(u.deg, u.dimensionless_angles())
             endpoints_x = u.Quantity([0.5*u.arcsec, 0.5*u.arcsec+length]) + leftmost_position
             ax.plot(endpoints_x.to(u.arcsec),
-                    [vrange[0]+5]*2*u.km/u.s,
-                    'w',
+                    ([vrange[0]+2]*2*u.km/u.s).to(u.m/u.s),
+                    'r',
                     transform=trans,
                     zorder=100, linewidth=2)
             ax.text(endpoints_x.mean().value,
-                    (vrange[0]+6),
-                    "1000 au", color='w', transform=trans, ha='center')
+                    (vrange[0]+3)*scalefactor,
+                    "2000 au", color='r', transform=trans, ha='center')
 
             origin = offset_to_point(source.ra.deg,
                                      source.dec.deg,
                                      extraction_path)*u.deg
 
-            ax.vlines(origin.to(u.arcsec).value, vrange[0]-5, vrange[1]+5,
-                      color='w', linestyle='--', linewidth=2.0,
+            ax.vlines(origin.to(u.arcsec).value,
+                      (vrange[0]-5)*scalefactor,
+                      (vrange[1]+5)*scalefactor,
+                      color='r', linestyle='--', linewidth=2.0,
                       alpha=0.6, transform=trans)
 
-            ax.set_ylim(ww.wcs_world2pix(0,vrange[0],0)[1],
-                        ww.wcs_world2pix(0,vrange[1],0)[1])
+            ax.set_ylim(ww.wcs_world2pix(0,vrange[0]*scalefactor,0)[1],
+                        ww.wcs_world2pix(0,vrange[1]*scalefactor,0)[1])
             ax.set_xlim(good_limits)
 
 
             # ax.set_aspect(4)
             ax.set_aspect(2*extracted.data.shape[1]/extracted.data.shape[0])
+            #ax.set_aspect('equal')
 
+            ax.coords[1].set_format_unit(u.km/u.s)
+
+            pl.colorbar(im)
 
 
             fig.savefig(paths.fpath('pv/{0}/{1}'.format(name, direction) +
