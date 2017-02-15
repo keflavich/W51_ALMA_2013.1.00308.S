@@ -4,6 +4,7 @@ import os
 import glob
 import paths
 from astropy import units as u
+from astropy import constants
 from astropy import coordinates
 from astropy import wcs
 from astropy import log
@@ -35,6 +36,7 @@ import pylab as pl
 #e8diskycoords = "19:23:43.913,+14:30:29.96,19:23:43.874,+14:30:26.09".split(",")
 ## small, perp to SiO outflow
 #e8diskycoords = "19:23:43.928,+14:30:29.17,19:23:43.882,+14:30:27.18".split(",")
+pl.close(1)
 
 for ii,direction in enumerate(('perpco', 'perpsio')):
     diskycoorddict = {}
@@ -52,11 +54,11 @@ for ii,direction in enumerate(('perpco', 'perpsio')):
 
     diskycoorddict['e2'] = diskycoorddict['e2e']
 
-    for name, cutoutname, source, vrange in (
-        ('e2', 'e2', e2e, (45,70)),
-        ('lacy', 'north', lacy, (50,75)),
-        ('north', 'north', north, (45,75)),
-        ('e8', 'e8', e8, (45,75)),
+    for name, cutoutname, source, vrange, vcen in (
+        ('e2', 'e2', e2e, (45,70), 56.0),
+        ('north', 'north', north, (45,75), 60.5),
+        ('e8', 'e8', e8, (45,75), 59.65),
+        ('lacy', 'north', lacy, (50,75), 62),
        ):
 
         diskycoords = diskycoorddict[name]
@@ -87,8 +89,6 @@ for ii,direction in enumerate(('perpco', 'perpsio')):
             extracted = pvextractor.extract_pv_slice(medsub, extraction_path)
             if direction=='perpco' and ('CH3OH' in basename or 'CH3OCHO' in basename):
                 extracted.writeto(outfn, clobber=True)
-            else:
-                continue
 
             ww = wcs.WCS(extracted.header)
             ww.wcs.cdelt[1] /= 1000.0
@@ -97,25 +97,13 @@ for ii,direction in enumerate(('perpco', 'perpsio')):
             ww.wcs.cdelt[0] *= 3600
             ww.wcs.cunit[0] = u.arcsec
 
-            fig = pl.figure(1)
-            fig.clf()
-            ax = fig.add_axes([0.15, 0.1, 0.8, 0.8],projection=ww)
-            assert ww.wcs.cunit[1] == 'm/s' # this is BAD BAD BAD but necessary
+            # #!@#$!@#$@!%@#${^(@#$)%#$(
+            ww.wcs.set()
 
             if ww.wcs.cunit[1] == 'm/s':
                 scalefactor = 1000.0
             else:
                 scalefactor = 1.0
-
-            good_limits = (np.array((np.argmax(np.isfinite(extracted.data.max(axis=0))),
-                                     extracted.data.shape[1] -
-                                     np.argmax(np.isfinite(extracted.data.max(axis=0)[::-1])) - 1
-                                    ))
-                           )
-            leftmost_position = ww.wcs_pix2world(good_limits[0],
-                                                 vrange[0]*scalefactor,
-                                                 0)[0]*u.arcsec
-
 
             plotted_region = ww.wcs_world2pix([0,0],
                                               np.array(vrange)*scalefactor,
@@ -126,6 +114,22 @@ for ii,direction in enumerate(('perpco', 'perpsio')):
             if np.any(np.array(extracted.data[plotted_slice].shape) == 0):
                 log.warn("Skipping {0} because it's empty".format(fn))
                 continue
+
+
+            fig = pl.figure(1, figsize=(6,4))
+            fig.clf()
+            ax = fig.add_axes([0.15, 0.1, 0.8, 0.8],projection=ww)
+            assert ww.wcs.cunit[1] == 'm/s' # this is BAD BAD BAD but necessary
+
+            good_limits = (np.array((np.argmax(np.isfinite(extracted.data.max(axis=0))),
+                                     extracted.data.shape[1] -
+                                     np.argmax(np.isfinite(extracted.data.max(axis=0)[::-1])) - 1
+                                    ))
+                           )
+            leftmost_position = ww.wcs_pix2world(good_limits[0],
+                                                 vrange[0]*scalefactor,
+                                                 0)[0]*u.arcsec
+
 
             vmin,vmax = (np.nanmin(extracted.data[plotted_slice]),
                          np.nanmax(extracted.data[plotted_slice]))
@@ -157,6 +161,7 @@ for ii,direction in enumerate(('perpco', 'perpsio')):
                       color='r', linestyle='--', linewidth=2.0,
                       alpha=0.6, transform=trans)
 
+
             ax.set_ylim(ww.wcs_world2pix(0,vrange[0]*scalefactor,0)[1],
                         ww.wcs_world2pix(0,vrange[1]*scalefactor,0)[1])
             ax.set_xlim(good_limits)
@@ -172,6 +177,33 @@ for ii,direction in enumerate(('perpco', 'perpsio')):
 
 
             fig.savefig(paths.fpath('pv/{0}/{1}'.format(name, direction) +
+                                    basename.replace(".fits",".png")),
+                        bbox_inches='tight')
+
+            # overlay a Keplerian velocity curve
+            positions = np.linspace(0,10000,500)*u.au
+            # this is the 3d velocity, so assumes edge-on
+            vel = (((constants.G * 20*u.M_sun)/(positions))**0.5).to(u.m/u.s)
+            loc = (positions/(5410*u.pc)).to(u.arcsec, u.dimensionless_angles())
+            vcen = u.Quantity(vcen, u.km/u.s)
+            axlims = ax.axis()
+            ax.plot((origin+loc).to(u.arcsec), (vcen+vel).to(u.m/u.s), 'b:', linewidth=1.0, alpha=0.5, transform=trans)
+            ax.plot((origin-loc).to(u.arcsec), (vcen+vel).to(u.m/u.s), 'b:', linewidth=1.0, alpha=0.5, transform=trans)
+            ax.plot((origin+loc).to(u.arcsec), (vcen-vel).to(u.m/u.s), 'b:', linewidth=1.0, alpha=0.5, transform=trans)
+            ax.plot((origin-loc).to(u.arcsec), (vcen-vel).to(u.m/u.s), 'b:', linewidth=1.0, alpha=0.5, transform=trans)
+
+            positions = np.linspace(0,10000,500)*u.au
+            vel = (((constants.G * 50*u.M_sun)/(positions))**0.5).to(u.m/u.s)
+            loc = (positions/(5410*u.pc)).to(u.arcsec, u.dimensionless_angles())
+            vcen = u.Quantity(vcen, u.km/u.s)
+            ax.plot((origin+loc).to(u.arcsec), (vcen+vel).to(u.m/u.s), 'm:', linewidth=1.0, alpha=0.5, transform=trans)
+            ax.plot((origin-loc).to(u.arcsec), (vcen+vel).to(u.m/u.s), 'm:', linewidth=1.0, alpha=0.5, transform=trans)
+            ax.plot((origin+loc).to(u.arcsec), (vcen-vel).to(u.m/u.s), 'm:', linewidth=1.0, alpha=0.5, transform=trans)
+            ax.plot((origin-loc).to(u.arcsec), (vcen-vel).to(u.m/u.s), 'm:', linewidth=1.0, alpha=0.5, transform=trans)
+
+            ax.axis(axlims)
+
+            fig.savefig(paths.fpath('pv/{0}/keplercurves_{1}'.format(name, direction) +
                                     basename.replace(".fits",".png")),
                         bbox_inches='tight')
 

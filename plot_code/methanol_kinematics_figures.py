@@ -11,6 +11,7 @@ blue_fits_fn = paths.dpath('moments/w51_12co2-1_blue0to45_masked.fits')
 red_fits_fn = paths.dpath('moments/w51_12co2-1_red73to130_masked.fits')
 red_fits = fits.open(red_fits_fn)
 blue_fits = fits.open(blue_fits_fn)
+cont = fits.open(paths.dpath('W51_te_continuum_best.fits'))
 
 vrange = {'e2wide': (53,61),
           'e8wide': (54,64),
@@ -78,6 +79,7 @@ for sourcename in ('e2wide', 'e8wide', 'northwide'):
 
     co_red,_ = reproject.reproject_interp(red_fits, ch3oh87_m1.header)
     co_blue,_ = reproject.reproject_interp(blue_fits, ch3oh87_m1.header)
+    cont_im,_ = reproject.reproject_interp(cont, ch3oh87_m1.header)
 
     pl.close(1)
     fig1 = pl.figure(1, figsize=figsize[sourcename])
@@ -109,6 +111,7 @@ for sourcename in ('e2wide', 'e8wide', 'northwide'):
     axlims = ax4.axis()
     ax4.contour(co_blue[cslice], levels=levels_b, colors=['b']*len(levels_b))
     ax4.contour(co_red[cslice], levels=levels_r, colors=['r']*len(levels_r))
+    ax4.contour(cont_im[cslice], levels=[0.15], colors=['k'], alpha=0.5)
     ax4.axis(axlims)
 
     for ax in (ax1,ax2,ax3,ax4):
