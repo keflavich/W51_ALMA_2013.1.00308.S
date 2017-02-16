@@ -371,8 +371,8 @@ def make_rprof(regions, ploteach=False):
         rr_as = (rr*bigpixscale).to(u.arcsec)
         theta = np.arctan2(yyc,xxc)*u.rad
 
-        dust_column = dust_emissivity.dust.colofsnu(225*u.GHz, dust_brightness*u.Jy,
-                                                    beamomega=contbm,
+        dust_column = dust_emissivity.dust.colofsnu(225*u.GHz, dust_brightness*u.Jy/contbm,
+                                                    #beamomega=contbm,
                                                     temperature=ch3ohT*u.K)
         ch3oh_abundance = ch3ohN / dust_column.value
         mask = (ch3oh_abundance > 1e-10) & (ch3oh_abundance < 1e-5)
@@ -543,6 +543,10 @@ def make_rprof(regions, ploteach=False):
         pl.plot([0,(7000*u.au/masscalc.distance).to(u.arcsec,
                                                     u.dimensionless_angles()).value],
                 [0,7000], 'k--', alpha=0.5)
+        pl.plot([beam.major.to(u.arcsec).value,
+                 (7000*u.au/masscalc.distance).to(u.arcsec,
+                                                  u.dimensionless_angles()).value],
+                [1000,1000], 'k:', alpha=0.5)
         if ii == 0:
             pl.fill_between([0, beam.major.to(u.arcsec).value], [8000,8000], zorder=-5, alpha=0.1, color='k')
         pl.ylabel("Azimuthally Averaged $R_J$\nat $T(\\mathrm{CH}_3\\mathrm{OH})$ [au]")

@@ -29,6 +29,10 @@ cutout = {'e2wide': [slice(20,-20),slice(15,-25)],
           'e8wide': [slice(10,-20),slice(20,-20)],
           'northwide': [slice(58,120),slice(28,88)],
          }
+# tuned to ipython!?!?! figsize = {'e2wide': (8,8.09),
+# tuned to ipython!?!?!            'e8wide': (8,9.1),
+# tuned to ipython!?!?!            'northwide': (8,8.29),
+# tuned to ipython!?!?!           }
 figsize = {'e2wide': (8,7.75),
            'e8wide': (8,8.725),
            'northwide': (8,8),
