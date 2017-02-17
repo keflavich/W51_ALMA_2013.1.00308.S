@@ -119,7 +119,7 @@ proto-associations;][]{de-Wit2004a,de-Wit2005a,Parker2007a}. %bressert2012?
 Their presence, and the strong feedback they produce, may directly influence
 how the IMF around them is formed.  If feedback from these stars is relevant
 while most of the  mass surrounding them is still in gas (not yet in stars),
-the mass function in such clusters cannot be decided by ISM properties
+the mass function in such clusters cannot be determined by ISM properties
 (initial conditions) alone. 
 % actually, this relies on stellar feedback \citep[e.g., as described
 % in][]{Krumholz2011c}.
@@ -134,9 +134,11 @@ this limit and allow further accretion
 \citep{Yorke2002a,Krumholz2005b,Krumholz2009a,Krumholz2009b,Kuiper2012a,Kuiper2013c,Rosen2016a}.
 Additionally, fragmentation-induced starvation can limit the amount of mass
 available to the most massive star, instead breaking up massive cores into many
-lower-mass fragments \citep{Peters2010a}.  The simulations used to demonstrate
-these points still have limited physics and can only produce stars up to
-$M\sim80$ \msun even in the current
+lower-mass fragments \citep{Peters2010a}, though other simulations suggest
+that feedback should suppress this fragmentation
+\citep{Myers2013a,Krumholz2016a}.  The simulations used to demonstrate that disk
+accretion can form massive stars still have limited physics and can only
+produce stars up to $M\sim80$ \msun even in the current
 best 3D cases  \citep{Kuiper2015a,Kuiper2016a}.  The question of how massive
 stars acquire their mass, and especially whether they ever form Keplerian
 disks, remains open \citep{Beltran2016b}.
@@ -1168,22 +1170,21 @@ above, though, the central pixel is the most chemically complex and confused
 region, which renders any attempt at determining the width
 of a given line nearly impossible.
 
-Despite these limitations, many authors have reported the detection of ``rotating
-toroids'' or ``Keplerian-like'' rotation curves around MYSOs
+Despite these limitations, many authors have reported the detection of
+``rotating toroids'' or ``Keplerian-like'' rotation curves around MYSOs
 \citep{Johnston2015a,Chen2016b,Ilee2016a,Zapata2015a,Hunter2014a,Sanchez-Monge2013a,Moscadelli2014a}.
-Following these authors, we examine the velocity profile perpendicular to the observed
-outflow direction in e2e.  Figure \ref{fig:e2epvdiagrams} shows position-velocity
-diagrams of a \methanol and a \methylformate line extracted along
-PA$=145^\circ$, perpendicular to the $^{12}$CO 2-1 outflow.  While there is
-velocity structure, there is no obvious line broadening at the source center.
-The line-to-continuum ratio also drops, which could be an indication that
-the dust is becoming optically thick, preventing us from detecting the
-high-velocity gas.
-Indeed, an optically thick inner disk is theoretically
-expected \citep{Forgan2016a,Klassen2016a}, so it is not surprising that we
-fail to detect high-velocity features associated with a disk.  Our result fits
-with \citet{Maud2017a} and Cesaroni et al (in prep), who similarly failed to
-find disk signatures around MYSOs.
+Following these authors, we examine the velocity profile perpendicular to the
+observed outflow direction in e2e.  Figure \ref{fig:e2epvdiagrams} shows
+position-velocity diagrams of a \methanol and a \methylformate line extracted
+along PA$=145^\circ$, perpendicular to the $^{12}$CO 2-1 outflow.  While there
+is velocity structure, there is no obvious line broadening at the source
+center.  The line-to-continuum ratio also drops, which could be an indication
+that the dust is becoming optically thick, preventing us from detecting the
+high-velocity gas.  Indeed, an optically thick inner disk is theoretically
+expected \citep{Forgan2016a,Klassen2016a}, so it is not surprising that we fail
+to detect high-velocity features associated with a disk.  Our result fits with
+\citet{Maud2017a} and Cesaroni et al (in prep), who similarly failed to find
+disk signatures around MYSOs.
 
 \FigureTwo
 {figures/perpcoW51_b6_12M.CH3OCHO17314-16313A.e2_diskpv.png}
@@ -1198,9 +1199,13 @@ the low line-to-continuum contrast near the source.}
 
 
 We repeated this exercise for e8 and north, although their outflow directions
-are more ambiguous, and we found similar features (i.e., a lack of any
-clear rotation signature) at all plausible position
-angles.
+are more ambiguous, and we found similar features (i.e., a lack of any clear
+rotation signature) at all plausible position angles.
+
+While we failed to detect clear disk signatures toward these MYSOs, the outflows
+driven from them suggests that disks are indeed present.  We suggest, therefore,
+that the disks are either too small ($r<1000$ AU) or too optically thick to
+be detected in our data.
 
 
 % \Figure{figures/radialprofileexponent_of_TCH3OH_massivecores.png}
@@ -1756,7 +1761,8 @@ obtaining 2-7 mG.  \citet{Koch2012a} showed that even with this high field
 strength, the central core at $r<1\arcsec$ is magnetically supercritical, i.e.,
 dominated by self-gravity.  The presence of such strong magnetic fields
 throughout the hot cores may suppress fragmentation and slow down accretion,
-though we do not consider their dynamical effects further here.
+though in simulations magnetic fields have little effect on already-collapsing
+regions \citep{Myers2013b,Krumholz2016a}.
 
 \subsection{Comparison to high-mass star formation theories}
 \label{sec:sftheories}
@@ -1796,22 +1802,25 @@ ingredient and models excluding feedback are unlikely to agree quantitatively.
 % DONE: consider dropping kapparho discussion entirely; the measurements are
 % pretty damned unreliable. (dropped kapparho discussion)
 
-If the turbulent core model is used to describe these sources, a few issues
-arise.  First, a `cold' turbulent core with the current density configuration
-would have been dramatically unstable to fragmentation on small scales.  It
-therefore is unlikely that a static model, with a single preassembled precursor
-core, is an appropriate initial condition for these forming high-mass stars.
-Second, the more sophisticated models of evolution from an initial turbulent
-core suggest that most of the stellar (and accretion) radiation should escape
-via growing outflow cavities \citep{Zhang2011a,Zhang2013h,Zhang2014e}.  The
-circular symmetry seen in the hot core around e2e and its lack of
-correspondence with the outflowing material (Figure \ref{fig:outflowonmethanol}
-shows that the outflow cavities are no warmer than the rest of the core)
-indicates that a large fraction of the stellar or accretion radiation is going
-directly into the core and not escaping along the poles.  This failure of the
-outflow escape valves suggests a modification of the core evolution within the
-turbulent core scenario is needed.
+% If the turbulent core model is used to describe these sources, a few issues
+% arise.  First, a `cold' turbulent core with the current density configuration
+% would have been dramatically unstable to fragmentation on small scales.  It
+% therefore is unlikely that a static model, with a single preassembled precursor
+% core, is an appropriate initial condition for these forming high-mass stars.
 
+In the context of the turbulent core model, models of evolution from an initial
+turbulent core suggest that most of the stellar (and accretion) radiation
+should escape via growing outflow cavities
+\citep{Zhang2011a,Zhang2013h,Zhang2014e}.  The circular symmetry seen in the
+hot core around e2e and its lack of correspondence with the outflowing material
+(Figure \ref{fig:outflowonmethanol} shows that the outflow cavities are no
+warmer than the rest of the core) indicates that a large fraction of the
+stellar or accretion radiation is going directly into the core and not escaping
+along the poles.  This failure of the outflow escape valves suggests a
+modification of the core evolution within the turbulent core scenario is
+needed.
+
+% COULD remove this.
 The presence of these large-scale, massive, hot cores raises a few questions
 that are not presently well-addressed by any class of theories.  If the hot
 cores successfully suppress further fragmentation in their envelopes, does that
@@ -2101,6 +2110,9 @@ The key observational results include:
         inferred from LTE modeling of \methanol are $100 \mathrm{K} < T < 600
         \mathrm{K}$, which brightness-based lower limits $T>100$ K confirm.
         Their centers are likely to be optically thick in the dust continuum.
+    \item We searched for signs of disks around the central protostars in these
+        hot cores, but found no clear signatures of disks or rotating
+        structures perpendicular to the observed outflows.
     \item The flux density recovered in the ALMA map above a threshold of 10
         mJy \perbeam is $\sim30\%$ of that seen in single-dish data.  At this
         brightness, cold (20 K) dust would correspond to a column density
@@ -2366,15 +2378,15 @@ H77$\alpha$.}
 {fig:outflowscontinuumnorth}{1}{12cm}
 
 \subsection{north}
-The outflow from W51 North is extended and complex.
-A jet-like high-velocity feature appears directly to the north of W51 North in
-both CO and SO (Figure \ref{fig:outflowscontinuumnorth}).  However, in SO, this feature begins to emit at $\sim47$ \kms
-and continues to $\sim 100$ \kms.  The CO emission below $<70$ \kms is
-completely absent, presumably obscured by foreground material.  The blueshifted
-component, by contrast with the red, points to the southeast and is barely
-detected in CO, but again cleanly in SO.  It is sharply truncated, extending
-only $\sim1 \arcsec$ ($\sim5000$ AU).  Unlike the Lacy jet, there is no
-evidence that this outflow transitions into an externally ionized state.
+The outflow from W51 North is extended and complex.  A jet-like high-velocity
+feature appears directly to the north of W51 North in both CO and SO (Figure
+\ref{fig:outflowscontinuumnorth}).  However, in SO, this feature begins to emit
+at $\sim47$ \kms and continues to $\sim 100$ \kms.  The CO emission below $<70$
+\kms is completely absent, presumably obscured by foreground material.  The
+blueshifted component, by contrast with the red, points to the southeast and is
+barely detected in CO, but again cleanly in SO.  It is sharply truncated,
+extending only $\sim1 \arcsec$ ($\sim5000$ AU).  Unlike the Lacy jet, there is
+no evidence that this outflow transitions into an externally ionized state.
 
 The northernmost point of the W51 North outflow may coincide with
 the \citet{Hodapp2002a} \hh and [Fe II] outflow.  There is some CO 2-1
@@ -2384,8 +2396,8 @@ However, the association is only circumstantial.
 
 
 \subsection{The e2e outflow}
-The dominant outflow in W51, which was previously detected by the SMA
-\citep{Shi2010b,Shi2010a}, comes from the source e2e.  This outflow is
+The most prominent bipolar outflow in W51, which was previously detected by the
+SMA \citep{Shi2010b,Shi2010a}, comes from the source e2e.  This outflow is
 remarkable for its high velocity, extending nearly to the limit of our spectral
 coverage in $^{12}$CO.  The ends of the flow cover at least $-50 < v_{LSR} <
 160$ \kms, or a velocity $v\pm100$ \kms.  
