@@ -9,7 +9,7 @@ BIBTEX=bibtex
 DVIPS=dvips
 PS2PDF=ps2pdf
 
-all: referee w51_alma_00308
+all: w51_alma_00308
 
 .PHONY: w51_alma_00308
 w51_alma_00308: 
