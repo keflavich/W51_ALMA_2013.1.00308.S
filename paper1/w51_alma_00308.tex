@@ -472,8 +472,10 @@ uncertainties imply a higher temperature, this estimate is a lower limit on the
 source luminosity.  Such a luminosity corresponds to a B0.5V, 15 \msun main
 sequence star with effective temperature $4\ee{4}$ K \citep[][see
 Section \ref{sec:stellarproperties} for further discussion of
-stellar types]{Pecaut2013a}.
-% http://www.pas.rochester.edu/~emamajek/EEM_dwarf_UBVIJHK_colors_Teff.txt
+stellar types]{Pecaut2013a}\footnote{For the B-star parameters, we used
+\url{http://www.pas.rochester.edu/~emamajek/EEM_dwarf_UBVIJHK_colors_Teff.txt},
+which primarily comes from \citep{Pecaut2013a}.
+}.
 
 % this mass estimation method is not self-consistent; T_dust = T_peak implies
 % tau >= 1
@@ -507,7 +509,7 @@ $\sim6$ \msun.  However, this latter estimate discounts any substructure at
 scales $<1000$ AU, which we know exists from the 2015.1.01596.S data.
 
 An upper limit on the radio continuum emission from W51e2e is $S_{14.5 GHz} <
-0.6$ mJy/beam in a FWHM=$0.34\arcsec$ beam, or $T_{B,max} < 30$ K
+0.6$ mJy/beam ($2-\sigma$) in a FWHM=$0.34\arcsec$ beam, or $T_{B,max} < 30$ K
 \citep{Ginsburg2016b}.  Assuming emission from an optically thick \hii region
 with $T_e = 8500$ K \citep{Ginsburg2015a}, the upper limit on the emitting
 radius is $R(\hii) < 110 AU$.  Similar limits are obtained from other
@@ -1548,59 +1550,100 @@ outflow, so there is no direct evidence of ongoing accretion.
 % B. High accretion *reprocesses* stellar light into infrared, which heats the gas.
 % C. High accretion bloats the stars.
 
-\subsection{The accreting stars}
+\subsection{The accreting stars in the massive hot cores}
 \label{sec:stellarproperties}
 In Sections \ref{sec:W51e2e} and \ref{sec:w51e8andnorth}, we noted that the
 \emph{lower limit} luminosities for the three most massive cores correspond to
 early B-type photospheres.  Such stars should emit enough radiation to ignite
 luminous compact \hii regions. %, $Q_{lyc}=5\ee{45}$ \pers \citep{Vacca1996a}.
-The upper limits on the presence of such  \hii regions are constraining, with
-$R_{\scriptsize{\hii}}<100$ AU, which is consistent with the presence of
-late-type massive main-sequence stars, but inconsistent with any hotter or more
-luminous
-(spectral type $<$B0.5V).
-If the stellar luminosities are an order of magnitude or more higher, which is
-possible given the low-resolution constraints on the bolometric luminosity
-\citep{Ginsburg2016a,Sievers1991a}
-and likely if a large fraction of the stellar radiation is escaping along outflow
-cavities \citep{Kuiper2012a,Zhang2013h}, the luminosity would be too large and
-the UV radiation too small to be consistent with a main-sequence OB star.
 
-Since we can provide only upper limits on the UV radiation, it is possible that
-there is none at all.  The very large mass reservoir suggests that high
-accretion rates are possible, and the bright molecular outflows show that
-accretion is proceeding vigorously (though we have not quantified the rate).
-Rapid accretion, and in particular rapid and \emph{variable} accretion, can
-change the properties of the underlying star, bloating the star and reducing
-its effective photospheric temperature \citep{Hosokawa2009a, Smith2012h,
-Hosokawa2016a}.  Such stars can achieve radii $R\gtrsim200 \rsun \sim 1$ AU
-while retaining photospheric temperatures $T\lesssim5000$ K.  It may be
-possible to explore this scenario in more detail with higher-resolution and
-lower-frequency data.
+% see hii_limits.py
+If we assume a uniform, spherical \hii region (a Strömgren sphere), we can
+obtain the Lyman continuum luminosity $Q_{lyc}$ required to produce our
+$2-\sigma$ upper limit for e2e:
+\begin{equation}
+    Q_{lyc} = \frac{4}{3} \pi R^2 \alpha_B EM
+\end{equation}
 
-An alternative possibility is that the high accretion rates have created
-a quenched \hii region \citep{Walmsley1995b,Osorio1999a,Keto2006a}.
-In the spherically symmetric version of this scenario, the accretion rate
-is faster than the ionization rate, such that there is always fresh neutral
-material to ionize at the surface of the star.  The critical rate for
-\hii region quenching is very small, $\dot{M} \sim 4\ee{-6}$ \msun \peryr
-for a B0 star, so it is very likely that, even if the star has a hot
-photosphere, it is not capable of driving an expanding \hii region.
-The main reason to disregard this scenario is the assumption of spherical
-symmetry: if the accretion is proceeding via a disk, as evidenced by the
-presence of outflows, there ought to be a substantial fraction of the stellar
-surface that is not directly accreting and therefore is not quenched.  If there
-is a disk and an ionizing photosphere, there should be an expanding bipolar
-\hii region \citep{Keto2006a}.  The lack of such a feature suggests that the
-stellar photosphere is not emitting ionizing photons.
+where $\alpha_B = 3\ee{-13}$ cm$^{3}$ s$^{-1}$, the emission measure $EM$ has
+units cm$^{-6}$ pc, and $Q_{lyc}$ has units \pers.  We infer the emission measure
+using Equation 4.60 of \citet{Condon2007a} and inverting their equation 4.61 to
+get
+
+\begin{equation}
+EM = -3.05\ee{6} 
+\left(\frac{T_e}{10^4\mathrm{K}}\right)^{-1}
+\left(\frac{\nu}{\mathrm{GHz}}\right)^{2.1}
+\ln\left(1-\frac{T_{B,\nu}}{T_e}\right)
+\end{equation}
+using numerical constants
+from \citet{Mezger1967a}.  If we use the centimeter
+continuum beam size (FWHM) as the radius, the resulting $Q_{lyc}<3\ee{43}$ \pers 
+is well below the lowest tabulated $Q_{lyc}$ in \citet{Vacca1996a} and
+\citet{Sternberg2003a},
+$Q_{lyc}(\mathrm{B0.5V}) = 5\ee{47}$ \pers.  Using the stellar parameters from
+\citet{Pecaut2013a} and assuming the stars are pure blackbodies, the upper
+limit Lyman continuum implies a star later than about B8, or $M<4$ \msun.  If
+instead we assume the \hii region is optically thick, the implied radius is
+about $R_{\scriptsize{\hii}}<100$ AU, which allows $Q_{lyc}\leq6\ee{45}$ \pers,
+corresponding to spectral type $<$B2.5, or $M<6$ \msun.  
+
+
+The stellar luminosity inferred for e2e from the dust continuum is
+$L>2.3\ee{4}$ \lsun (Section \ref{sec:W51e2e}), which corresponds to at least a
+B1V star, or $M>11$ \msun.  The upper limits on the Lyman continuum luminosity
+and lower limits on the bolometric luminosity are similar for e8 and north.
+The contradiction between the two luminosity limits implies that the accreting
+stars are not yet on the main sequence.
+
+%which is possible given the
+%low-resolution constraints on the bolometric luminosity
+%\citep{Ginsburg2016a,Sievers1991a}
+%and likely if a large fraction of the stellar radiation is escaping along outflow
+%cavities \citep{Kuiper2012a,Zhang2013h},
+
+
+The Kelvin-Helmholtz timescale for a massive star is extremely short,
+$\tau_{KH} < 5\ee{4}$ yr for a $M>20$ \msun star, which suggests that these
+stars should reach the main sequence and beging ionizing their surroundings
+while they are still accreting \citep{Zinnecker2007a}.
+
+While it is possible that we have caught three stars at a nearly simultaneous,
+extremely short-lived phase in their evolution, it is also possible that they
+are contracting more slowly than the Kelvin-Helmholtz timescale.  The very
+large
+mass reservoir suggests that high accretion rates are possible, and the bright
+molecular outflows show that accretion is proceeding vigorously (though we have
+not quantified the rate).  Rapid accretion, and in particular rapid and
+\emph{variable} accretion, can change the properties of the underlying star,
+bloating the star and reducing its effective photospheric temperature
+\citep{Hosokawa2009a, Smith2012h, Hosokawa2016a}.  Such stars can achieve radii
+$R\gtrsim200 \rsun \sim 1$ AU while retaining photospheric temperatures
+$T\lesssim5000$ K.  Bloated central stars would therefore explain why they do
+not produce \hii regions.
+
+An alternative possibility is that the high accretion rates have created a
+quenched \hii region \citep{Walmsley1995b,Osorio1999a,Keto2006a}.  In the
+spherically symmetric version of this scenario, the accretion rate is faster
+than the ionization rate, such that there is always fresh neutral material to
+ionize at the surface of the star.  The critical rate for \hii region quenching
+is small, $\dot{M} \sim 4\ee{-6}$ \msun \peryr for a B0 star, so it is likely
+that, even if the central star has a hot photosphere, it is not capable of
+driving an expanding \hii region.  The main reason to disregard this scenario
+is the assumption of spherical symmetry: if the accretion is proceeding via a
+disk, as evidenced by the presence of outflows, there ought to be a substantial
+fraction of the stellar surface that is not directly accreting and therefore is
+not quenched.  If there is a disk and an ionizing photosphere, there should be
+an expanding bipolar \hii region \citep{Keto2006a}.  The lack of such a feature
+suggests that the stellar photosphere is not emitting ionizing photons.
 
 \subsubsection{Multiplicity}
 High-mass stars preferentially form in multiples \citep{Zinnecker2007a}.  One
 explanation for the low ionizing luminosity but high total luminosity observed
 in the massive hot cores would be the presence of many moderate-mass
 ($M\lesssim8$ \msun) stars forming together.  The presence of single bipolar
-outflows suggests that, if there are multiple systems, they are 
-accreting from a common disk, though the changing direction of the outflows
+outflows in e2e and north suggests that, if there are multiple systems, they
+are accreting from a common disk, though the changing direction of the outflows
 suggests that the disk may be rapidly evolving.  Given the mass reservoirs
 available, however, there is little reason to believe that multiplicity is the
 \emph{only} explanation for the high-luminosity, low-ionizing luminosity
@@ -1890,10 +1933,11 @@ and stars) protocluster environment.
 % start life the same way as previous generations?
 
 The simultaneous presence of hyper- and ultra-compact \hii regions and
-molecular cores indicates that there are at least two generations of massive
-stars forming within each of the clusters.  How do these generations interact,
-and did the first generation - the present-day \hchii and \uchii drivers, which
-we refer to here as main-sequence stars - affect the second?
+molecular cores indicates that there are at least two generations (likely
+separated by at most a few thousand years) of massive stars forming within each
+of the clusters.  How do these generations interact, and did the first
+generation - the present-day \hchii and \uchii drivers, which we refer to here
+as main-sequence stars - affect the second?
 
 One possibility is that the first generation helped produce the second,
 which we call `cooperative accretion'.
