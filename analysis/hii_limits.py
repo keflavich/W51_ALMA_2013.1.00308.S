@@ -54,9 +54,35 @@ tbl.add_column(Column(name='lycfrac', data=lycfrac))
 lyclum = (lycfrac*(10**np.array(tbl['logL'], dtype='float')*u.L_sun)/(constants.h*constants.c/(912*u.AA))).to(u.s**-1)
 tbl.add_column(Column(name='lyclum', data=lyclum))
 
+colorder = ['SpT', 'Teff', 'logT', 'Msun', 'logL', 'lycfrac',
+            'lyclum', 'B-V', 'Bt-Vt', 'U-B', 'V-Rc', 'V-Ic', 'V-Ks', 'J-H',
+            'H-K', 'Ks-W1', 'logAge', 'b-y', '#SpT', 'M_J', 'M_Ks', 'Mbol',
+            'i-z', 'z-Y', 'W1-W2', 'BCv', 'Mv', ]
+
+tbl[colorder].write('pecaut_table_with_lyclums.txt', format='ascii.fixed_width', overwrite=True)
+
 #print(tbl['SpT','Msun','lyclum','logL','Teff'][:40])
 
 closest_type = np.argmin(np.abs(tbl['lyclum'] - qmax))
 
 print("Closest spectral type = {0}".format(tbl['SpT'][closest_type]))
 print(tbl['SpT','Msun','lyclum','logL','Teff'][closest_type-1:closest_type+1])
+
+
+# IMF examinations
+from imf import imf
+cluster_masses = [250, 500, 1000, 2000]
+nsamp = 100
+clusters = {mass: [imf.make_cluster(mass, silent=True) for ii in range(nsamp)]
+            for mass in cluster_masses}
+luminosities = {mass: [imf.lum_of_cluster(cl) for cl in clusters[mass]]
+                for mass in cluster_masses}
+lycluminosities = {mass: [imf.lyc_of_cluster(cl) for cl in clusters[mass]]
+                   for mass in cluster_masses}
+
+for mass in cluster_masses:
+    pl.plot(luminosities[mass], lycluminosities[mass], '.', label=mass)
+    
+pl.plot(np.log10(2e4), np.log10(4e45), 'x')
+
+pl.legend(loc='best')

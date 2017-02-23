@@ -1143,12 +1143,12 @@ not provide an unambiguous signature of infall.
 \subsubsection{Disks?}
 \label{sec:disks}
 We find no direct evidence of disks in the gas kinematic data.  The presence of
-outflows (Section \ref{sec:outflows}) hints at the presence of accretion disks,
-but measurement of a Keplerian rotation curve is necessary to determine their
-presence definitively.
+outflows (Appendix \ref{sec:outflows}) hints that there are accretion disks,
+but measurement of a Keplerian rotation curve is necessary to definitively
+identify a disk.
 
 The characteristic signature of a Keplerian disk is a velocity profile that
-rises from slow in the outskirts, almost certainly smaller than the turbulent
+rises from low in the outskirts, almost certainly smaller than the turbulent
 velocity dispersion, to a large value near the center.  For a 100 \msun star,
 at 1000 AU, the expected circular velocity is only 9.5 \kms, which is comparable
 to the velocity dispersion we observe across most of the core; any smaller
@@ -1157,8 +1157,7 @@ is an extraordinarily massive star at the center of each of these cores, we
 would not expect a clear disk signature to be detectable anywhere except the
 central pixel because of the high turbulent velocity dispersion.  As noted
 above, though, the central pixel is the most chemically complex and confused
-region, which renders any attempt at determining the width
-of a given line nearly impossible.
+region, so the line width measurements at that location are unreliable.
 
 Despite these limitations, many authors have reported the detection of
 ``rotating toroids'' or ``Keplerian-like'' rotation curves around MYSOs
@@ -1166,12 +1165,13 @@ Despite these limitations, many authors have reported the detection of
 Following these authors, we examine the velocity profile perpendicular to the
 observed outflow direction in e2e.  Figure \ref{fig:e2epvdiagrams} shows
 position-velocity diagrams of a \methanol and a \methylformate line extracted
-along PA$=35^\circ$, perpendicular to the $^{12}$CO 2-1 outflow.
+along PA $=35^\circ$, perpendicular to the $^{12}$CO 2-1 outflow.
 While there
 is velocity structure, there is no obvious line broadening at the source
-center.  The line-to-continuum ratio also drops, which could be an indication
-that the dust is becoming optically thick, preventing us from detecting the
-high-velocity gas.  Indeed, an optically thick inner disk is theoretically
+center, nor is there any obvious gradient indicating a rotating structure.  The
+line-to-continuum ratio also drops, which could be an indication that the dust
+is becoming optically thick, preventing us from detecting the
+high-velocity gas.  Indeed, an optically thick inner disk at 1 mm is theoretically
 expected \citep{Forgan2016a,Klassen2016a}, so it is not surprising that we fail
 to detect high-velocity features associated with a disk.  Our result fits with
 \citet{Maud2017a} and Cesaroni et al (in prep), who similarly failed to find
@@ -1200,7 +1200,7 @@ rotation signature) at all plausible position angles.
 
 While we failed to detect clear disk signatures toward these MYSOs, the outflows
 driven from them suggests that disks are indeed present.  We suggest, therefore,
-that the disks are either too small ($r<1000$ AU) or too optically thick to
+that the disks are either too small ($r<1000$ AU) or too optically thick at 1 mm to
 be detected in our data.
 
 
@@ -1572,7 +1572,7 @@ get
 
 \begin{equation}
 EM = -3.05\ee{6} 
-\left(\frac{T_e}{10^4\mathrm{K}}\right)^{-1}
+\left(\frac{T_e}{10^4\mathrm{K}}\right)^{1.35}
 \left(\frac{\nu}{\mathrm{GHz}}\right)^{2.1}
 \ln\left(1-\frac{T_{B,\nu}}{T_e}\right)
 \end{equation}
@@ -1624,8 +1624,8 @@ stars would therefore explain why they do not produce \hii regions.
 An alternative possibility is that the high accretion rates have created a
 quenched \hii region \citep{Walmsley1995b,Osorio1999a,Keto2006a}.  In the
 spherically symmetric version of this scenario, the accretion rate is faster
-than the ionization rate, such that there is always fresh neutral material to
-ionize at the surface of the star.  The critical rate for \hii region quenching
+than the ionization rate, such that there is always fresh neutral material 
+ at the surface of the star.  The critical rate for \hii region quenching
 is small, $\dot{M} \sim 4\ee{-6}$ \msun \peryr for a B0 star, so it is likely
 that, even if the central star has a hot photosphere, it is not capable of
 driving an expanding \hii region.  The main reason to disregard this scenario
@@ -1640,15 +1640,22 @@ suggests that the stellar photosphere is not emitting ionizing photons.
 High-mass stars preferentially form in multiples \citep{Zinnecker2007a}.  One
 explanation for the low ionizing luminosity but high total luminosity observed
 in the massive hot cores would be the presence of many moderate-mass
-($M\lesssim8$ \msun) stars forming together.  The presence of single bipolar
-outflows in e2e and north suggests that, if there are multiple systems, they
-are accreting from a common disk, though the changing direction of the outflows
-suggests that the disk may be rapidly evolving.  Given the mass reservoirs
-available, however, there is little reason to believe that multiplicity is the
-\emph{only} explanation for the high-luminosity, low-ionizing luminosity
-sources: if multiples are forming, we should expect at least one of them to
-reach O-star mass.  In short, on the scales we can probe, multiplicity does not
-produce any obvious observational effects.
+($M\lesssim8$ \msun) stars forming together.  We can rule out this situation,
+since $\sim10-15$ main-sequence $M\sim6$ \msun stars would be required within a
+tiny volume ($r<1000$ AU) to produce the observed total luminosity lower limit
+while staying under the Lyman continuum upper limit.
+
+The presence of single bipolar outflows in e2e and north suggests that, if
+there are multiple systems, they are accreting from a common disk, though the
+changing direction of the outflows suggests that the disk may be rapidly
+evolving.  Given the mass reservoirs available, however, there is little reason
+to believe that multiplicity is the \emph{only} explanation for the
+high-luminosity, low-ionizing luminosity sources: if multiples are forming, we
+should expect at least one of them to reach O-star mass.  In short, on the
+scales we can probe, multiplicity does not produce any obvious observational
+effects.
+
+
 
 \subsection{Fragmentation: Jeans analysis}
 \label{sec:fragmentation}
