@@ -503,7 +503,7 @@ def make_rprof(regions, ploteach=False):
                 label=name)
         if ii == 0:
             pl.fill_between([0, beam.major.to(u.arcsec).value], [100,100], [0,0], zorder=-5, alpha=0.1, color='k')
-        pl.ylabel("Cumulative Mass at T(CH$_3$OH)")
+        pl.ylabel("Cumulative Mass at T(CH$_3$OH) [M$_\\odot$]")
         pl.xlabel("Radius [arcsec]")
         if len(names) < 5:
             pl.legend(loc='upper left')

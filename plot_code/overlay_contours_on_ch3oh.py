@@ -107,7 +107,7 @@ for source in ('e8','north','e2',):
     pl.xlabel("Dust Brightness (Jy/beam)")
     pl.ylabel("N(CH$_3$OH) [cm$^{-2}$]")
     cb = pl.colorbar()
-    cb.set_label('CH$_3$OH-derived Temperature')
+    cb.set_label('CH$_3$OH-derived Temperature [K]')
     pl.savefig(paths.fpath('chemistry/{0}_CH3OH_LTE_vs_dust_brightness.png'.format(source)),
                bbox_inches='tight')
 
@@ -127,7 +127,7 @@ for source in ('e8','north','e2',):
     pl.xlabel("Dust-derived N(H$_2$) [cm$^{-2}$]")
     pl.ylabel("N(CH$_3$OH) [cm$^{-2}$]")
     cb = pl.colorbar()
-    cb.set_label('CH$_3$OH-derived Temperature')
+    cb.set_label('CH$_3$OH-derived Temperature [K]')
     pl.legend(loc='upper left')
     pl.savefig(paths.fpath('chemistry/{0}_CH3OH_LTE_vs_dust_column.png'.format(source)),
                bbox_inches='tight')
@@ -214,7 +214,7 @@ for source in ('e8','north','e2',):
     pl.ylabel("$X$(CH$_3$OH)")
     pl.gca().ticklabel_format(style='sci', axis='y', scilimits=(0,0), useOffset=False)
     cb = pl.colorbar()
-    cb.set_label('CH$_3$OH-derived Temperature')
+    cb.set_label('CH$_3$OH-derived Temperature [K]')
     pl.savefig(paths.fpath('chemistry/{0}_CH3OH_LTE_abundance_radial_profile.png'.format(source)),
                bbox_inches='tight')
 
@@ -233,7 +233,7 @@ for source in ('e8','north','e2',):
     pl.xlabel("Separation from {0} (\")".format(source))
     cb = pl.colorbar()
     cb.set_label("$X$(CH$_3$OH)")
-    pl.ylabel('CH$_3$OH-derived Temperature')
+    pl.ylabel('CH$_3$OH-derived Temperature [K]')
     pl.savefig(paths.fpath('chemistry/{0}_CH3OH_LTE_temperature_radial_profile.png'.format(source)),
                bbox_inches='tight')
 
@@ -263,7 +263,7 @@ for source in ('e8','north','e2',):
     pl.axis((50,600, 0.5e17,1e19))
     cb = pl.colorbar()
     cb.set_label("$X$(CH$_3$OH)")
-    pl.xlabel('CH$_3$OH-derived Temperature')
+    pl.xlabel('CH$_3$OH-derived Temperature [K]')
     pl.ylabel('N(CH$_3$OH) [cm$^{-2}$]')
     pl.savefig(paths.fpath('chemistry/{0}_CH3OH_LTE_temperature_vs_column.png'.format(source)),
                bbox_inches='tight')
@@ -280,7 +280,7 @@ for source in ('e8','north','e2',):
     pl.axis((50,600, 5e-8, 5e-6,))
     cb = pl.colorbar()
     pl.ylabel("$X$(CH$_3$OH)")
-    pl.xlabel('CH$_3$OH-derived Temperature')
+    pl.xlabel('CH$_3$OH-derived Temperature [K]')
     cb.set_label('N(CH$_3$OH) [cm$^{-2}$]')
     pl.savefig(paths.fpath('chemistry/{0}_CH3OH_LTE_temperature_vs_abundance.png'.format(source)),
                bbox_inches='tight')
