@@ -231,7 +231,8 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None,
             return 0*u.cm**-2, 0*u.K, 0, 0
         
         if errors is None:
-            # if errors are not specified, we set the upper limits as actual values
+            # if errors are not specified, we set the upper limits as values to
+            # be fitted
             # (which gives a somewhat useful upper limit on the temperature)
             nupperoverg_tofit[upperlim_mask] = uplims[upperlim_mask]
         else:
@@ -281,24 +282,30 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None,
         import pylab as pl
         L, = pl.plot(eupper, np.log10(nupperoverg_tofit), 'ro',
                      markeredgecolor='none', alpha=0.5)
-        L, = pl.plot(eupper, np.log10(nupperoverg), 'bo', alpha=0.2)
+        if uplims is not None:
+            L, = pl.plot(eupper[upperlim_mask],
+                         np.log10(uplims)[upperlim_mask], 'bv', alpha=0.2)
+            #L, = pl.plot(eupper[upperlim_mask],
+            #             np.log10(nupperoverg)[upperlim_mask], 'bv', alpha=0.2)
         if errors is not None:
             yerr = np.array([np.log10(nupperoverg_tofit)-np.log10(nupperoverg_tofit-errors),
                              np.log10(nupperoverg_tofit+errors)-np.log10(nupperoverg_tofit)])
             # if lower limit is nan, set to zero
             yerr[0,:] = np.nan_to_num(yerr[0,:])
             if np.any(np.isnan(yerr[1,:])):
-                print("*** Some upper limits are NAN")
-            pl.errorbar(eupper.value,
-                        np.log10(nupperoverg_tofit),
-                        yerr=yerr,
+                raise ValueError("*** Some upper limits are NAN")
+            # use 'good' to exclude plotting errorbars for upper limits
+            pl.errorbar(eupper.value[good],
+                        np.log10(nupperoverg_tofit)[good],
+                        yerr=yerr[:,good],
                         linestyle='none',
                         linewidth=0.5,
+                        color='k',
                         marker='.', zorder=-5)
         xax = np.array([0, eupper.max().value])
         line = (xax*result.slope.value +
                 result.intercept.value)
-        pl.plot(xax, np.log10(np.exp(line)), '-', color=L.get_color(),
+        pl.plot(xax, np.log10(np.exp(line)), '-', color='b',#L.get_color(),
                 alpha=0.3,
                 label='$T={0:0.1f}$ $\log(N)={1:0.1f}$'.format(tex, np.log10(Ntot.value)))
         pl.ylabel("log N$_u$ (cm$^{-2}$)")
@@ -560,7 +567,9 @@ if __name__ == "__main__":
         pl.subplots_adjust(hspace=0, wspace=0)
         pl.savefig(paths.fpath("chemistry/ch3oh_rotation_diagrams_{0}.png".format(sourcename)), bbox_inches='tight')
 
-        if True:
+        # Flip this bit if you just want the rotational diagram plots and not
+        # the fitted maps
+        if False:
             tmap,Nmap = fit_all_tex(xaxis, cube, cubefrequencies, indices, degeneracies,
                                     ecube=ecube,
                                     replace_bad=replace_bad)
