@@ -49,9 +49,9 @@ radio lines: ISM
     on the main sequence while they accrete the majority of their mass;
     instead, they may be bloated and cool.
 
-    In the appendices, we identify a likely radiation-driven dust bubble,
+    In the appendices, we present images of the detected outflows,
     provide detailed analysis of the compact millimeter source population, and
-    present images of the detected outflows.
+    identify a likely radiation-driven dust bubble.
     
     %These warm cores are presently stable against Jeans
     %fragmentation, but at their current density and lower temperature, they
@@ -948,7 +948,7 @@ measurement is dominated by the high-J transitions, which give a long
 energy baseline for the fit.  In the core exterior, the high-J lines are
 not detected, so the (possibly optically thick) low-J lines determine
 the temperature fit, which results in much lower accuracy and greater
-bias.}.
+potential bias.}.
 There is an abundance enhancement at the inner radii, but in the plot it
 appears to be a radial bump rather than a pure increase.  The abundance
 enhancement is probably real,
@@ -1020,9 +1020,10 @@ core.
 % scales up to XXXXX).
 
 All three sources show similar radial profiles, with each containing up to 3000
-\msun within a compact radius of 5400 AU (0.03 pc).  However, the temperature
+\msun within a compact radius of 5400 AU (0.03 pc) if we assume
+the dust temperature is constant at 40 K.  However, the temperature
 structure within these sources is certainly not homogeneous, and  likely a
-large fraction of the total flux comes from $T\gtrsim300$ K heated material
+large fraction of the total flux comes from $T\gtrsim100$ K heated material
 \citep[Section \ref{sec:ch3ohtem}; ][]{Goddi2016a}.  If the observed dust were
 all at 600 K instead of 40 K, the mass would be $17\times$ lower, $\sim100-200$
 \msun, which we treat as a strict lower bound as it is unlikely that the dust
@@ -1038,13 +1039,14 @@ true mass profile (though it is still a lower limit; see \S
 {figures/cumulative_radial_flux_massivecores.png}
 {figures/cumulative_radial_mass_of_TCH3OH_massivecores.png}
 {The cumulative (a) flux density radial profile and (b) mass radial profile
-centered on three massive protostellar cores.  The cores share similar profiles and
-are likely dominated by hot dust in their innermost regions, but they are more
-likely to be dominated by cooler dust in their outer, more massive regions.
-The cumulative mass distribution inferred from assuming the gas is at a
-constant temperature in (a) may therefore be deceptive.    In (b), we use the
-temperature map computed from \methanol in Section \ref{sec:methanol}; this
-plot should be at least qualitatively more realistic, though it is subject to
+centered on three massive protostellar cores.  The cores share similar profiles
+and are likely dominated by hot dust in their innermost regions, but they are
+more likely to be dominated by cooler dust in their outer, more massive
+regions.  The cumulative mass distribution inferred from assuming the gas is at
+a constant temperature $T=40$ K (the approximate Herschel dust temperature on a
+$\sim0.5$ pc scale) in (a) should be interpreted as an upper limit.  In (b), we
+use the temperature map computed from \methanol in Section \ref{sec:methanol};
+this plot is at least qualitatively more realistic, though it is subject to
 many uncertainties discussion in \S \ref{sec:methanol}.  The grey rectangle
 highlights the beam size.}
 {fig:hmradprof}{1}{8cm}
@@ -1054,8 +1056,9 @@ highlights the beam size.}
 The gas motion around the massive cores is traced consistently by many species.
 \methanol has some of the brightest and most isolated (i.e., not confused with
 other species) lines, so we show the kinematic structure of two
-moderately-excited \methanol lines for each MYSO core in Figures
-\ref{fig:kinematicse2}, \ref{fig:kinematicse8}, and \ref{fig:kinematicsnorth}.
+moderately-excited \methanol lines for the e2e MYSO core in Figure
+\ref{fig:kinematicse2} (similar plots for e8 and north are showin in the
+Appendix, figures \ref{fig:kinematicse8} and \ref{fig:kinematicsnorth}).
 
 \FigureOneCol{figures/methanol_velocity_moments_e2wide.png}
 {Moment 1 and 2 maps of the W51 e2 core over the velocity
@@ -1070,19 +1073,19 @@ the mm continuum at 0.15 Jy beam$^{-1}$.}
 
 
 There are two notable common features in these maps. First, there is no clear
-sign of systematic motion (i.e., rotation) in any of them.  Second, they have
-velocity dispersion uniformly much greater than the sound speed.  We determine
-temperatures below in Section \ref{sec:temperature}, giving $c_s\sim0.5$ \kms.
-With velocity dispersions $\sigma_{FWHM}\approx5-15$ \kms, the gas is typically
-moving at Mach numbers $\mathcal{M}\approx10-30$.
+sign of systematic motion, particularly rotation, in any of them.  Second, they
+have velocity dispersion uniformly much greater than the sound speed.  We
+determined temperatures in Section \ref{sec:ch3ohtem}, giving
+$c_s\sim0.5$ \kms.  With velocity dispersions $\sigma_{FWHM}\approx5-15$ \kms,
+the gas is typically moving at Mach numbers $\mathcal{M}\approx10-30$.
 
 Curiously, the most suggestive gradients, e.g., the east-west blue-red gradient
 in e8, are parallel to the outflows, though the \methanol lines do not trace
-these outflows.  In e2e, the spatial locations of both the blue and red lobe of
-the CO outflow are redshifted in the dense gas, while the rest of the core is
-blueshifted.  The outflow axis shows some of the lowest velocity dispersion in
-the e2e core, suggesting that the outflow is not responsible for driving the
-observed velocity dispersion.
+these outflows (Figure \ref{fig:ch3ohvscont}.  In e2e, the spatial locations of
+both the blue and red lobe of the CO outflow are redshifted in the dense gas,
+while the rest of the core is blueshifted.  The outflow axis shows some of the
+lowest velocity dispersion in the e2e core, suggesting that the outflow is not
+responsible for driving the observed velocity dispersion.
 
 An increase in the velocity dispersion toward the central protostar is clearly
 seen in both e2e and e8, though the opposite is seen in north.  We caution,
@@ -1094,10 +1097,14 @@ cores.
 The velocity structure around these sources is more complex than illustrated by
 the moment maps alone.  For example, to the northeast of e8, there is a gap in
 the emission of many lines accompanied by a double-peaked profile, hinting at
-the presence of an expanding bubble.
+the presence of an expanding bubble.  Multiple velocity components are seen
+along many lines of sight around each core.
 
 The overall appearance of these cores suggests that many different gas flows,
-both in and out, are intersecting and interacting.  
+both in and out, are intersecting and interacting.  While the high velocity
+dispersion suggests that the gas may be highly turbulent, it remains possible
+that the linewidths come from unresolved substructure in coherent flows
+such as infall along a wide range of angles.
 
 \subsubsection{Signs of infall toward e2?}
 \citet{Zhang1997a}  reported a measurement of fast infall onto e2.
