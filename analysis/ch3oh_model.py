@@ -5,20 +5,30 @@ import numpy as np
 import pyspeckit
 from pyspeckit.spectrum.models import model
 from pyspeckit.spectrum.models import lte_molecule
-from spectral_cube import SpectralCube
 from astropy import units as u
 from astropy import constants
 from astropy.io import fits
 from astropy import log
 from astroquery.splatalogue import Splatalogue
 
+import glob
+import paths
+from astropy import wcs
+import radio_beam
+
+
 from vamdclib import nodes
 from vamdclib import request
 from vamdclib import specmodel
 
-import pylab as pl
-pl.matplotlib.rc_file('pubfiguresrc')
 import line_to_image_list
+
+import pylab as pl
+pl.style.use('classic')
+pl.matplotlib.rc_file('pubfiguresrc')
+pl.rcParams['font.size'] = 10
+pl.rcParams['axes.labelsize'] = 12
+pl.rcParams['axes.titlesize'] = 14
 
 tbl = Splatalogue.query_lines(210*u.GHz, 235*u.GHz, chemical_name=' CH3OH',
                               energy_max=1840, energy_type='eu_k')
@@ -219,6 +229,7 @@ def show_modelfit(spectra, vel, width, tem, col, figsavename=None, fignum=1,
         ax.set_ylim(*ylim)
         ax.annotate(line_to_image_list.labeldict[linename],
                     (0.05, 0.85), horizontalalignment='left',
+                    fontsize=8,
                     xycoords='axes fraction')
 
         if ((plotnum-1) % ny == 0) and (((plotnum-1) // nx) == 1):
@@ -233,6 +244,9 @@ def show_modelfit(spectra, vel, width, tem, col, figsavename=None, fignum=1,
             pl.xlabel("$V_{LSR}$ [km/s]")
             #tl = pl.gca().get_yaxis().get_ticklabels()
             xax = pl.gca().get_xaxis()
+            xax.set_ticks([40,45,50,55,60,65,70])
+            pl.gca().tick_params(axis='both', which='major', labelsize=10)
+            pl.gca().tick_params(axis='both', which='minor', labelsize=8)
             if (plotnum-1) == (nx*ny-1):
                 pass
                 #xax.set_ticks((0,200,400,600,800))
@@ -246,6 +260,8 @@ def show_modelfit(spectra, vel, width, tem, col, figsavename=None, fignum=1,
             pl.xlabel("")
             pl.gca().get_xaxis().set_ticklabels([])
         pl.subplots_adjust(hspace=0, wspace=0)
+        pl.gca().tick_params(axis='both', which='major', labelsize=10)
+        pl.gca().tick_params(axis='both', which='minor', labelsize=8)
         plotnum += 1
 
     if figsavename is not None:
@@ -253,11 +269,6 @@ def show_modelfit(spectra, vel, width, tem, col, figsavename=None, fignum=1,
 
 
 def load_and_convert_spectra(globname):
-    import glob
-    import paths
-    from astropy import wcs
-    import pyspeckit
-    import radio_beam
     speclist = [pyspeckit.Spectrum(fn) for fn in
                 glob.glob(paths.spath(globname))]
     for sp in speclist:
@@ -322,6 +333,7 @@ if __name__ == "__main__":
         (2, 9999220, 99991.3e18, 55.6, 5.3, (-5,100)),
         (3, 9999167, 99995.7e17, 53.0, 5.3, (-5,100)),
         (4, 9999127, 99991.7e17, 54.0, 5.3, (-5,60)),
+        (5, 9999999, 9999999999, 55.8, 7.0, (-5,110)),
        ):
 
         # tem, col should be extractd from RTD fits

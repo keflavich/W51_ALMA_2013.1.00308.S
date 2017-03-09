@@ -4,10 +4,11 @@ from astropy import units as u
 import pyregion
 import radio_beam
 from spectral_cube import SpectralCube
+import paths
 
 tmplt = "full_W51{2}_spw{0}{1}_lines.fits"
 
-region_list = pyregion.open('three_e2_pixels.reg')
+region_list = pyregion.open(paths.rpath('three_e2_pixels.reg'))
 
 for extra1 in ("","_7m12m"):
     for extra2 in ("","_hires"):

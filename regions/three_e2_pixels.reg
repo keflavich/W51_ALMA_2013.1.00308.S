@@ -1,7 +1,8 @@
 # Region file format: DS9 version 4.1
 global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1
 fk5
-point(19:23:43.975,+14:30:35.04) # point=x text={SelectedPixel1}
-point(19:23:44.049,+14:30:35.14) # point=x text={SelectedPixel2}
-point(19:23:43.980,+14:30:36.11) # point=x text={SelectedPixel3}
-point(19:23:44.130,+14:30:34.90) # point=x text={SelectedPixel4}
+point(19:23:43.975,+14:30:35.040) # point=x text={SelectedPixel1}
+point(19:23:44.049,+14:30:35.140) # point=x text={SelectedPixel2}
+point(19:23:43.980,+14:30:36.110) # point=x text={SelectedPixel3}
+point(19:23:44.130,+14:30:34.900) # point=x text={SelectedPixel4}
+point(19:23:43.964,+14:30:34.530) # point=x text={SelectedPixel5}

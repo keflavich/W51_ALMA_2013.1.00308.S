@@ -281,10 +281,12 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None,
     if plot:
         import pylab as pl
         L, = pl.plot(eupper, np.log10(nupperoverg_tofit), 'ro',
-                     markeredgecolor='none', alpha=0.5)
+                     markeredgecolor='none', alpha=0.5,
+                     markersize=2)
         if uplims is not None:
             L, = pl.plot(eupper[upperlim_mask],
-                         np.log10(uplims)[upperlim_mask], 'bv', alpha=0.2)
+                         np.log10(uplims)[upperlim_mask], 'bv', alpha=0.2,
+                         markersize=2)
             #L, = pl.plot(eupper[upperlim_mask],
             #             np.log10(nupperoverg)[upperlim_mask], 'bv', alpha=0.2)
         if errors is not None:
@@ -301,12 +303,14 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None,
                         linestyle='none',
                         linewidth=0.5,
                         color='k',
-                        marker='.', zorder=-5)
+                        marker='.', zorder=-5,
+                        markersize=2)
         xax = np.array([0, eupper.max().value])
         line = (xax*result.slope.value +
                 result.intercept.value)
         pl.plot(xax, np.log10(np.exp(line)), '-', color='b',#L.get_color(),
                 alpha=0.3,
+                linewidth=1.0,
                 label='$T={0:0.1f}$ $\log(N)={1:0.1f}$'.format(tex, np.log10(Ntot.value)))
         pl.ylabel("log N$_u$ (cm$^{-2}$)")
         pl.xlabel("E$_u$ (K)")
@@ -451,7 +455,13 @@ def fit_all_tex(xaxis, cube, cubefrequencies, indices, degeneracies,
 
 if __name__ == "__main__":
     import pylab as pl
+    pl.style.use('classic')
     pl.matplotlib.rc_file('pubfiguresrc')
+    pl.rcParams['font.size'] = 8
+    pl.rcParams['axes.labelsize'] = 12
+    pl.rcParams['axes.titlesize'] = 14
+    pl.rcParams['figure.dpi'] = 80
+    pl.rcParams['savefig.dpi'] = 300
 
     # sigma ~0.055 - 0.065
     detection_threshold_jykms = 0.065 * 2
@@ -495,6 +505,9 @@ if __name__ == "__main__":
                               )
         xaxis,cube,ecube,maps,map_error,energies,cubefrequencies,indices,degeneracies,header = _
 
+        fig2 = pl.figure(2, figsize=(12,12))
+        if not np.all(fig2.get_size_inches() == (12,12)):
+            pl.close(2)
         pl.figure(2, figsize=(12,12)).clf()
         sample_pos = np.linspace(0,1,7)[1:-1]
         nx = len(sample_pos)
@@ -525,13 +538,13 @@ if __name__ == "__main__":
             #            horizontalalignment='center')
             pl.annotate("T={0:d}".format(int(tex.value)),
                         (0.65, 0.85), xycoords='axes fraction',
-                        horizontalalignment='left', fontsize=12)
+                        horizontalalignment='left', fontsize=6)
             pl.annotate("N={0:0.1f}".format(np.log10(Ntot.value)),
                         (0.65, 0.75), xycoords='axes fraction',
-                        horizontalalignment='left', fontsize=12)
+                        horizontalalignment='left', fontsize=6)
             pl.annotate("{0:0.2f},{1:0.2f}".format(spx,spy),
                         (0.05, 0.05), xycoords='axes fraction',
-                        horizontalalignment='left', fontsize=12)
+                        horizontalalignment='left', fontsize=6)
 
             # show upper limits
             # (this is automatically done now)
@@ -543,23 +556,35 @@ if __name__ == "__main__":
             #        linestyle='none', marker='_', color='k',
             #        markeredgewidth=2, alpha=0.5)
 
-            if (plotnum-1) % ny == 0:
+            # one title per axis
+            if plotnum == 11:
                 pl.ylabel("log($N_u / g_u$)")
+            else:
+                pl.ylabel("")
+
+            if plotnum == 23:
+                pl.xlabel("$E_u$ [K]")
+            else:
+                pl.xlabel("")
+
+
+            if (plotnum-1) % ny == 0:
                 if (plotnum-1) != (ny*(nx-1)):
                     ticks = pl.gca().get_yaxis().get_ticklocs()
                     pl.gca().get_yaxis().set_ticks(ticks[1:])
             else:
                 pl.gca().get_yaxis().set_ticklabels([])
                 pl.ylabel("")
+
+
             if (plotnum-1) >= (ny*(nx-1)):
-                pl.xlabel("$E_u$ [K]")
                 tl = pl.gca().get_yaxis().get_ticklabels()
                 xax = pl.gca().get_xaxis()
                 if (plotnum-1) == (nx*ny-1):
                     xax.set_ticks((0,200,400,600,800))
                 else:
                     xax.set_ticks((0,200,400,600))
-                xax.set_tick_params(labelsize=14)
+                #xax.set_tick_params(labelsize=14)
             else:
                 pl.gca().get_xaxis().set_ticklabels([])
                 pl.xlabel("")

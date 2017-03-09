@@ -49,8 +49,8 @@ lines.linewidth   : 2.0     # line width in points
 #lines.linestyle   : -       # solid line
 #lines.color       : blue
 #lines.marker      : None    # the default marker
-#lines.markeredgewidth  : 0.5     # the line width around the marker symbol
-#lines.markersize  : 6            # markersize, in points
+lines.markeredgewidth  : 0.5     # the line width around the marker symbol
+lines.markersize  : 6            # markersize, in points
 #lines.dash_joinstyle : miter        # miter|round|bevel
 #lines.dash_capstyle : butt          # butt|round|projecting
 #lines.solid_joinstyle : miter       # miter|round|bevel
@@ -166,6 +166,7 @@ font.size           : 20.0
 #axes.grid           : False   # display grid or not
 axes.titlesize      : 24      # fontsize of the axes title
 axes.labelsize      : 22      # fontsize of the x any y labels
+figure.titlesize : large
 #axes.labelcolor     : black
 axes.axisbelow      : True   # whether axis gridlines and ticks are below
                               # the axes elements (lines, text, etc)
@@ -299,3 +300,5 @@ image.origin : lower             # lower | upper
 #   from matplotlib import verbose.
 verbose.level  : silent      # one of silent, helpful, debug, debug-annoying
 #verbose.fileo  : sys.stdout  # a log filename, sys.stdout or sys.stderr
+mathtext.rm : serif
+mathtext.fontset : cm

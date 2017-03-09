@@ -10,7 +10,11 @@ import pylab as pl
 from astropy import units as u
 from astropy import wcs
 import image_tools
+pl.style.use('classic')
 matplotlib.rc_file('pubfiguresrc')
+pl.rcParams['font.size'] = 14
+pl.rcParams['axes.labelsize'] = 14
+pl.rcParams['axes.titlesize'] = 16
 
 for source in ('e8','north','e2',):
 
@@ -101,7 +105,7 @@ for source in ('e8','north','e2',):
     ch3ohN = ch3ohN_hdul[0].data
     ch3ohT = ch3ohT_hdul[0].data
     pl.scatter(dust_brightness, ch3ohN, c=ch3ohT, vmax=600, vmin=50,
-               edgecolor='none', alpha=0.9)
+               edgecolor='none', alpha=0.9, s=6, cmap=pl.cm.jet)
     pl.axis((1e-3, 0.2, 1e17, 1e19))
     pl.loglog()
     pl.xlabel("Dust Brightness (Jy/beam)")
@@ -113,15 +117,16 @@ for source in ('e8','north','e2',):
 
     bm = radio_beam.Beam.from_fits_header(paths.dpath("W51_te_continuum_best.fits"))
 
-    dust_column = dust_emissivity.dust.colofsnu(225*u.GHz, dust_brightness*u.Jy,
-                                                beamomega=bm,
+    dust_column = dust_emissivity.dust.colofsnu(225*u.GHz,
+                                                dust_brightness*u.Jy/bm,
+                                                #beamomega=bm,
                                                 temperature=ch3ohT*u.K)
 
     pl.figure(6).clf()
     pl.plot([1e23,1e25], [1e16, 1e18], 'k-', label='$X=10^{-7}$', zorder=-1)
     pl.plot([1e23,1e25], [1e17, 1e19], 'k--', label='$X=10^{-6}$', zorder=-2)
     pl.scatter(dust_column, ch3ohN, c=ch3ohT, vmax=600, vmin=50, edgecolor='none',
-               alpha=0.6)
+               alpha=0.6, s=6, cmap=pl.cm.jet)
     pl.loglog()
     pl.axis((1e23, 1e25, 1e17, 1e19))
     pl.xlabel("Dust-derived N(H$_2$) [cm$^{-2}$]")
@@ -204,8 +209,8 @@ for source in ('e8','north','e2',):
 
     pl.figure(8).clf()
     pl.scatter(rr_as.value[mask],
-               ch3oh_abundance[mask],
-               c=ch3ohT[mask], vmax=600, vmin=50, edgecolor='none', alpha=0.9)
+               ch3oh_abundance[mask], c=ch3ohT[mask], vmax=600, vmin=50,
+               edgecolor='none', alpha=0.9, s=6, cmap=pl.cm.jet)
     #pl.semilogy()
     pl.plot((radbins*pixscale).to(u.arcsec).value, radialprof, color='k', alpha=0.5, linewidth=2)
     pl.axis((0,3, #(rr.max()*pixscale).to(u.arcsec).value,
@@ -222,7 +227,7 @@ for source in ('e8','north','e2',):
     pl.scatter(rr_as.value[mask],
                ch3ohT[mask],
                c=ch3oh_abundance[mask], vmax=5e-6, vmin=5e-8, edgecolor='none', alpha=0.8,
-               norm=matplotlib.colors.LogNorm())
+               norm=matplotlib.colors.LogNorm(), s=6, cmap=pl.cm.jet)
     #pl.scatter(rr_as.value[~mask],
     #           ch3ohT[~mask],
     #           c=ch3oh_abundance[~mask], vmax=5e-6, vmin=5e-8, edgecolor='k', alpha=0.5,
@@ -255,8 +260,9 @@ for source in ('e8','north','e2',):
     pl.figure(10).clf()
     pl.scatter(ch3ohT[mask],
                ch3ohN[mask],
-               c=ch3oh_abundance[mask], vmax=5e-6, vmin=1e-7, edgecolor='none', alpha=0.8,
-               norm=matplotlib.colors.LogNorm())
+               c=ch3oh_abundance[mask], vmax=5e-6, vmin=1e-7, edgecolor='none',
+               alpha=0.8,
+               norm=matplotlib.colors.LogNorm(), s=6, cmap=pl.cm.jet)
     pl.semilogy()
     #pl.axis((0,(rr.max()*pixscale).to(u.arcsec).value,
     #         50,600))
@@ -273,7 +279,7 @@ for source in ('e8','north','e2',):
     pl.scatter(ch3ohT[mask],
                ch3oh_abundance[mask],
                c=ch3ohN[mask], vmax=1e17, vmin=1e19, edgecolor='none', alpha=0.8,
-               norm=matplotlib.colors.LogNorm())
+               norm=matplotlib.colors.LogNorm(), s=6, cmap=pl.cm.jet)
     pl.semilogy()
     #pl.axis((0,(rr.max()*pixscale).to(u.arcsec).value,
     #         50,600))
