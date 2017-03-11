@@ -410,7 +410,16 @@ local continuum.
 
 \section{Results \& Analysis}
 \label{sec:results}
-\subsection{Source Identification}
+
+\subsection{Continuum Sources}
+\label{sec:contsources}
+In this section, we describe our overall catalogue of continuum sources,
+then examine in detail the three most prominant hot cores that contain
+massive young stellar objects (MYSOs), W51 e2e, W51 e8, and W51 North.
+We also discuss W51 d2, which appears to be somewhat older and less massive
+than these three dominant objects.
+
+\subsubsection{Source Identification and Catalogue}
 \label{sec:sourceid}
 % dendrogramming.py
 We used the \texttt{dendrogram} method described by \citet{Rosolowsky2008c} and
@@ -576,8 +585,9 @@ lower-limit brightness temperature, the dust source is likely to be optically
 thin or less than beam-filling, making its upper limit dust mass 
 $M\ll18\msun$; if we assume $T_{dust} = T_{line,max} = 220 K$, the upper limit
 dust mass is $M<7$ \msun.  If d2 were a purely dust source, its lower limit
-luminosity is a meager 160 \lsun, which is belied by its evidently ionizing
-photosphere.
+luminosity is a meager 160 \lsun.  Since the lowest-luminosity 
+stars with ionizing photospheres have $L>10^4$ \lsun, d2 is unlikely to be a
+dust-only source.
 
 Additionally, unlike the three hot cores, d2 does not drive an outflow.  It
 does, however, power a unique set of ammonia (\ammonia) masers \citep[][Wootten
@@ -1023,8 +1033,8 @@ core.
 % scales up to XXXXX).
 
 All three sources show similar radial profiles.  Figure \ref{fig:hmradprof}b
-shows $M(R)$ using $T_{dust}=T_{\scriptsize{\methanol}}$, which is a reasonable
-approximation of the true mass profile (though it is likely a lower limit on
+shows $M(<R)$ using $T_{dust}=T_{\scriptsize{\methanol}}$, which is a reasonable
+approximation of the mass profile (though it is likely a lower limit on
 the mass; see \S \ref{sec:ch3ohtem}).  Assuming $T_{dust}=40$ K, approximately
 the hottest measured dust temperature in the region from Herschel SED fits,
 gives a mass upper limit in each core that is up to 3000 \msun within a compact
@@ -1033,11 +1043,9 @@ radius of 5400 AU (0.03 pc).  If the observed dust were all at 600 K instead of
 as a strict lower bound as it is unlikely that the dust at more than
 $r\gtrsim1000$ AU from the central heating source is so warm.  
 
-The mass profiles are  consistent with a power law profile with index in
-the range 1-2.  However, the systematic uncertainties on the shape of the
-profile are dramatic, including uncertainties in the gas temperature profile
-and the overall dust emission profile because of spatial filtering, so we do
-not examine these profiles quantitatively.
+%The mass profiles are  consistent with a power law profile with index in
+%the range 1-2.
+
 
 %  However, the temperature
 %structure within these sources is certainly not homogeneous, and  likely a
@@ -1089,13 +1097,15 @@ determined temperatures in Section \ref{sec:ch3ohtem}, giving
 $c_s\sim0.5$ \kms.  With velocity dispersions $\sigma_{FWHM}\approx5-15$ \kms,
 the gas is typically moving at Mach numbers $\mathcal{M}\approx10-30$.
 
-Curiously, the most suggestive gradients, e.g., the east-west blue-red gradient
-in e8, are parallel to the outflows, though the \methanol lines do not trace
-these outflows (Figure \ref{fig:ch3ohvscont}.  In e2e, the spatial locations of
-both the blue and red lobe of the CO outflow are redshifted in the dense gas,
-while the rest of the core is blueshifted.  The outflow axis shows some of the
-lowest velocity dispersion in the e2e core, suggesting that the outflow is not
-responsible for driving the observed velocity dispersion.
+%Some of the gradients (e.g., the east-west blue-red gradient in e8) are
+%parallel to the outflows, though the \methanol lines do not trace these
+%outflows spatially or kinematically.
+
+In e2e, the spatial locations of both the blue and red lobe of the CO outflow
+are redshifted in the dense gas, while the rest of the core is blueshifted.
+The outflow axis shows some of the lowest velocity dispersion in the e2e core,
+suggesting that the outflow is not responsible for driving the observed
+velocity dispersion.
 
 An increase in the velocity dispersion toward the central protostar is clearly
 seen in both e2e and e8, though the opposite is seen in north.  We caution,
@@ -1178,7 +1188,7 @@ so straightforwardly.
 Toward both e8 and north, the same observational caveats about the optical
 depth of the millimeter continuum apply.  We conclude that our ALMA data do
 not provide an unambiguous signature of infall, but this nondetection is caused
-by of observational limitations rather than a lack of infall motion.
+by observational limitations rather than a lack of infall motion.
 
 \subsubsection{Are there disks around the MYSOs?}
 \label{sec:disks}
@@ -1594,7 +1604,7 @@ MYSOs.
 % B. High accretion *reprocesses* stellar light into infrared, which heats the gas.
 % C. High accretion bloats the stars.
 
-\subsection{The accreting stars in the massive hot cores}
+\subsection{The accreting protostars in the massive hot cores}
 \label{sec:stellarproperties}
 In Sections \ref{sec:W51e2e} and \ref{sec:w51e8andnorth}, we noted that the
 \emph{lower limit} luminosities for the three most massive cores correspond to
@@ -1786,7 +1796,7 @@ the scale of individual beams.
 Within this large reservoir, there are few detected fragments.  In our data,
 within 6500 AU of W51 North, there is only 1 (ALMAmm35), around e2e there is
 the HII region e2w and possibly 2-3 others between 5000 and 6500 AU, and around
-e8 there are none.  Admittedly, our data are not very sensitive in the areas
+e8 there are none.  Admittedly, our data are not as sensitive in the areas
 immediately surrounding these cores because of dynamic range limitations.
 Nonetheless, the lack of compact core detections around the most massive
 sources is consistent with the interpretation that fragmentation is suppressed.
@@ -1838,7 +1848,7 @@ Given the current structure of the observed cores and their stability against
 fragmentation on small scales, but susceptibility to fragmentation on larger
 scales, it is unlikely that they could have existed at all without the presence
 of a central heating source.  Should these $>200$ \msun cores have been present
-before high-mass star formation initiated, resting at $T\sim20$ K as in a
+before high-mass star formation had initiated, resting at $T\sim20$ K as in a
 typical molecular cloud, they would have been subject to Jeans fragmentation on
 a much smaller scale and would have formed a cluster of smaller stars
 (\citet{Longmore2011a} reached the same conclusion that high-mass cores cannot
@@ -1852,12 +1862,13 @@ accretion' and `core accretion' models may apply, with mass dumping onto a sink
 source from large physical scales, yet assembling a quasi-stable core.
 
 
-The warm core with inhibited fragmentation suggests that, during their
-formation process, these massive stars may be the only accreting stars within a
-few thousand AU neighborhood.  Contrary to the ``fragmentation-induced
-starvation'' problem \citep{Peters2010a,Peters2010c,Girichidis2012b}, in which
-surrounding gas rapidly fragments and chokes off further accretion, these stars
-regulate their own environment.  This `enforced isolation' is a way for massive
+Our observations of warm cores with inhibited fragmentation suggests that,
+during their formation process, these massive stars may be the only accreting
+objects within a few thousand AU neighborhood.  Contrary to the
+``fragmentation-induced starvation'' problem
+\citep{Peters2010a,Peters2010c,Girichidis2012b}, in which surrounding gas
+rapidly fragments and chokes off further accretion, these stars regulate their
+own environment.  This `enforced isolation' is a way for massive
 star formation to proceed similarly independent of the size of the parent
 cloud: high-mass stars will form from similar size and shape cores whether in
 an `isolated' or `clustered' region because they govern gas conditions in their
@@ -2279,9 +2290,8 @@ From these observations, we have inferred the following:
         to significantly inhibit Jeans fragmentation.  Hot massive cores
         therefore serve as a mass reservoir for accretion onto possibly single
         massive stars.
-    \item Hot massive cores are heated by the accreting stars within them,
-        implying that young massive stars self-regulate their  core
-        structures.
+    \item Hot massive cores are heated by the accreting protostars within them,
+        implying that young massive stars self-regulate their core structures.
     \item Because the hot cores surround sources with tight upper limits
         on their free-free emission, yet the central stellar luminosities
         are consistent with main-sequence stars that would produce ionizing
