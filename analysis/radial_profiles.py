@@ -807,6 +807,15 @@ ax.plot(xx, 300*xx**2.0, 'k-', label='$\\rho\\propto R^{-1}$', alpha=0.5)
 pl.legend(loc='upper left')
 fig.savefig(paths.fpath("cumulative_radial_mass_of_TCH3OH_massivecores_withmodel.png"), bbox_inches='tight')
 
+# g31.41 overplot
+r_g31 = np.array([0.11,0.33,0.55,0.77,0.99,1.21,1.43,1.65]) * 7.9/5.4
+t_g31 = [544,436,343,233,182,136,110,114]
+fig = pl.figure(nplots*3+9)
+ax = fig.gca()
+ax.plot(r_g31, t_g31, color=(0.2,0.9,0.2), label='G31.41')
+pl.legend(loc='best')
+fig.savefig(paths.fpath("azimuthalaverage_radial_TCH3OH_massivecores_withG31.png"), bbox_inches='tight')
+
 #regions = pyregion.open(paths.rpath("cores.reg"))
 #make_rprof(regions, ploteach=False)
 #nplots = 3
