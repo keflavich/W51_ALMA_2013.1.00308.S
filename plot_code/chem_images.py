@@ -37,6 +37,18 @@ for key in list(labeldict.keys()):
     # SO2 v2 lines are too faint
     if 'SO2v2' in key:
         labeldict.pop(key)
+    if 'SO2_22715' in key:
+        labeldict.pop(key)
+    if 'CH3SH' in key:
+        labeldict.pop(key)
+    if 'H213CO312' in key:
+        labeldict.pop(key)
+    if 'HNCO1055-954' in key:
+        labeldict.pop(key)
+    if 'HC3Nv7' in key:
+        labeldict.pop(key)
+    if 'HCOOH' in key:
+        labeldict.pop(key)
 
 def get_cont(header):
     contfn = paths.dpath('W51_te_continuum_best.fits')
@@ -300,6 +312,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214),
     if figcounter != nplots - 1:
         log.critical("Figcounter={0} but nplots={1}".format(figcounter,nplots))
     ax5 = fig5.add_subplot(gs5[nplots-1])
+    ax5.cla()
 
     cont = get_cont(maxfh.header)
 
@@ -395,19 +408,7 @@ if __name__ == "__main__":
     linere = re.compile("W51_b6_12M.(.*).image.pbcor")
 
     chem_plot(linere, yslice=slice(357,477), xslice=slice(104,224),
-              vrange=[45,70]*u.km/u.s, sourcename='e2wide',
-              vmax_max=200,
-              contourlevels=[150,200,250,300],
-              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*e2e8*fits')))
-
-    chem_plot(linere, yslice=slice(357,477), xslice=slice(104,224),
               vrange=[51,60]*u.km/u.s, sourcename='e2',
-              vmax_max=200,
-              contourlevels=[150,200,250,300],
-              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*e2e8*fits')))
-
-    chem_plot(linere, yslice=slice(227,347), xslice=slice(119,239),
-              vrange=[48,68]*u.km/u.s, sourcename='e8wide',
               vmax_max=200,
               contourlevels=[150,200,250,300],
               filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*e2e8*fits')))
@@ -419,11 +420,6 @@ if __name__ == "__main__":
               contourlevels=[150,200,250,300],
               filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*e2e8*fits')))
 
-    chem_plot(linere, yslice=slice(31,231), xslice=slice(152,350),
-              vrange=[48,70]*u.km/u.s, sourcename='northwide',
-              vmax_max=200,
-              contourlevels=[150,200,250,300],
-              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*north*fits')))
 
     chem_plot(linere, yslice=slice(31,231), xslice=slice(152,350),
               vrange=[54,64]*u.km/u.s, sourcename='north',
@@ -440,6 +436,26 @@ if __name__ == "__main__":
     raise ValueError("Done")
 
     ### Below here are not used in the paper
+
+    chem_plot(linere, yslice=slice(357,477), xslice=slice(104,224),
+              vrange=[45,70]*u.km/u.s, sourcename='e2wide',
+              vmax_max=200,
+              contourlevels=[150,200,250,300],
+              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*e2e8*fits')))
+
+
+    chem_plot(linere, yslice=slice(227,347), xslice=slice(119,239),
+              vrange=[48,68]*u.km/u.s, sourcename='e8wide',
+              vmax_max=200,
+              contourlevels=[150,200,250,300],
+              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*e2e8*fits')))
+
+    chem_plot(linere, yslice=slice(31,231), xslice=slice(152,350),
+              vrange=[48,70]*u.km/u.s, sourcename='northwide',
+              vmax_max=200,
+              contourlevels=[150,200,250,300],
+              filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*north*fits')))
+
 
     chem_plot(linere, yslice=slice(83,133), xslice=slice(243,293),
               vrange=[58,67]*u.km/u.s, sourcename='d2',
