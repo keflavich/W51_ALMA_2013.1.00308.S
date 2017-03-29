@@ -43,7 +43,7 @@ for regfn,region,fignum,imtype,suffix,outsuffix in (
 
     reg = pyregion.open(paths.rpath(regfn))
 
-    path_template = paths.dpath("chemslices/chemical_{2}_slabs*_{0}*{1}.fits"
+    path_template = paths.dpath("chemslices/chemical_{2}_slabs_{0}_*{1}.fits"
                                 .format(region, suffix, imtype))
 
     files = glob.glob(path_template)
@@ -52,8 +52,8 @@ for regfn,region,fignum,imtype,suffix,outsuffix in (
                   for name in region_names}
 
     linere = re.compile("chemical_{0}_slabs_[^_]*_(.*?)"
-                        "(_merge.fits|_merge_natural.fits|.fits)"
-                        .format(imtype))
+                        "{1}.fits"
+                        .format(imtype, suffix))
 
     # start with continuum
     if 'merge' in suffix:
@@ -67,12 +67,17 @@ for regfn,region,fignum,imtype,suffix,outsuffix in (
         fig.clf()
         ax = pl.gca()
         #ax.set_title(region+suffix+" "+imtype)
+        
+        plotted_species = []
 
         for ii,fn in enumerate(files):
+            skip = False
             if 'merge' in fn and 'merge' not in suffix:
                 # this is a way to skip _merge when looking for chemname.fits
+                skip = True
                 continue
             if plotspecies not in fn and ii>0:
+                skip = True
                 continue
             fh = fits.open(fn)
 
@@ -80,12 +85,16 @@ for regfn,region,fignum,imtype,suffix,outsuffix in (
 
             if 'BMAJ' not in fh[0].header:
                 print("File {0} does not have BMAJ".format(fn))
+                skip = True
                 continue
             try:
                 beam = radio_beam.Beam.from_fits_header(fh[0].header)
             except KeyError:
                 print("File {0} doesn't have beam info in the header".format(fn))
+                skip = True
                 continue
+
+            assert not skip
 
             mywcs = wcs.WCS(fh[0].header)
             pixscale = (mywcs.pixel_scale_matrix.diagonal()**2).sum()**0.5
@@ -115,6 +124,9 @@ for regfn,region,fignum,imtype,suffix,outsuffix in (
                         linewidth=4, color='k')
             else:
                 species = linere.search(fn).groups()[0]
+                if species in plotted_species:
+                    raise ValueError("Duplicate")
+                plotted_species.append(species)
                 ax.plot(bins*pixscale*3600., rprof,
                         label=labeldict[species], linestyle=linestyle)
                 print(species, end=', ')
@@ -134,5 +146,8 @@ for regfn,region,fignum,imtype,suffix,outsuffix in (
 
         print("Completed {0} {1} {2} {3}".format(region, suffix, imtype, plotspecies))
         fig.savefig(paths.fpath("chemslices/radialprofile_{2}_{3}_{0}{4}{1}.png"
+                                .format(region, suffix, imtype, plotspecies, outsuffix)),
+                    bbox_inches='tight')
+        fig.savefig(paths.fpath("chemslices/radialprofile_{2}_{3}_{0}{4}{1}.pdf"
                                 .format(region, suffix, imtype, plotspecies, outsuffix)),
                     bbox_inches='tight')

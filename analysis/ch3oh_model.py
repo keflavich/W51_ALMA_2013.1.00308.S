@@ -361,7 +361,7 @@ if __name__ == "__main__":
         spectra.plotter(figure=selreg)
 
         show_modelfit(spectra, vel, width, tem, col,
-                      figsavename=paths.fpath("chemistry/ch3oh_rotdiagram_fits_SelectedPixel{0}.png"
+                      figsavename=paths.fpath("chemistry/ch3oh_rotdiagram_fits_SelectedPixel{0}.pdf"
                                               .format(selreg)),
                       fignum=4+selreg, ylim=ylim)
 

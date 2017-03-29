@@ -61,8 +61,11 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214),
               vmax_max=150,
               maxbeam=0.5*u.arcsec,
               contourlevels=None,
+              filetype='pdf',
              ):
     nplots = np.product(plotgrid)
+
+    text_fontsize = 4.5 if filetype=='png' else 9
 
     for ii in range(1,7):
         if not all(pl.figure(ii, figsize=figsize).get_size_inches() == figsize):
@@ -218,7 +221,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214),
 
         im1 = ax1.imshow(m0.value, vmin=-1.25*jtok.value, vmax=vmax_m0*jtok.value,
                          cmap=pl.cm.bone_r, interpolation='nearest', origin='lower')
-        ax1.text(3, 0.87*m0.shape[0], label, fontsize=4.5)
+        ax1.text(3, 0.87*m0.shape[0], label, fontsize=text_fontsize)
         ax1.set_xticklabels([])
         ax1.set_yticklabels([])
         ax1.set_xticks([])
@@ -229,7 +232,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214),
 
         im2 = ax2.imshow(m1.value, vmin=vrange[0].value, vmax=vrange[1].value,
                          cmap='seismic', interpolation='nearest', origin='lower')
-        ax2.text(3, 0.87*m0.shape[0], label, fontsize=4.5, color='g')
+        ax2.text(3, 0.87*m0.shape[0], label, fontsize=text_fontsize, color='g')
         ax2.set_xticklabels([])
         ax2.set_yticklabels([])
         ax2.set_xticks([])
@@ -245,7 +248,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214),
             contourlevels = [vmax_max, 300, 400, 500]
         qcs = ax3.contour(max_sub.value, levels=contourlevels, colors=['r','g','b','y'])
         #print("levels: {0} = {1}".format(qcs.levels, contourlevels))
-        ax3.text(3, 0.87*m0.shape[0], label, fontsize=4.5, color='r')
+        ax3.text(3, 0.87*m0.shape[0], label, fontsize=text_fontsize, color='r')
         ax3.set_xticklabels([])
         ax3.set_yticklabels([])
         ax3.set_xticks([])
@@ -260,7 +263,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214),
         qcs = ax5.contour(max.value, levels=contourlevels, colors=['r','g','b','y'])
         if False: # debug
             print("levels: {0} = {1}".format(qcs.levels, contourlevels))
-        ax5.text(3, 0.87*m0.shape[0], label, fontsize=4.5, color='r')
+        ax5.text(3, 0.87*m0.shape[0], label, fontsize=text_fontsize, color='r')
         ax5.set_xticklabels([])
         ax5.set_yticklabels([])
         ax5.set_xticks([])
@@ -271,7 +274,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214),
 
         im4 = ax4.imshow(madstd.value,
                          cmap=pl.cm.bone_r, interpolation='nearest', origin='lower')
-        ax4.text(3, 0.87*m0.shape[0], label, fontsize=4.5, color='r')
+        ax4.text(3, 0.87*m0.shape[0], label, fontsize=text_fontsize, color='r')
         ax4.set_xticklabels([])
         ax4.set_yticklabels([])
         ax4.set_xticks([])
@@ -282,7 +285,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214),
 
         im6 = ax6.imshow((m2**0.5).to(u.km/u.s).value * SIGMA2FWHM, vmin=0, vmax=15,
                          cmap='viridis', interpolation='nearest', origin='lower')
-        ax6.text(3, 0.87*m0.shape[0], label, fontsize=4.5, color='k')
+        ax6.text(3, 0.87*m0.shape[0], label, fontsize=text_fontsize, color='k')
         ax6.set_xticklabels([])
         ax6.set_yticklabels([])
         ax6.set_xticks([])
@@ -293,7 +296,10 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214),
 
 
     # add a continuum image to the 'max' plots
-    ax5 = fig5.add_subplot(gs5[figcounter])
+    # ax5 = fig5.add_subplot(gs5[figcounter])
+    if figcounter != nplots - 1:
+        log.critical("Figcounter={0} but nplots={1}".format(figcounter,nplots))
+    ax5 = fig5.add_subplot(gs5[nplots-1])
 
     cont = get_cont(maxfh.header)
 
@@ -301,7 +307,7 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214),
                      cmap=pl.cm.bone_r, interpolation='nearest', origin='lower')
     # add a contour to show the regions that are "saturated" above T_max
     ax5.contour(cont.value, levels=contourlevels, colors=['r','g','b','y'])
-    ax5.text(3, 0.87*m0.shape[0], 'Continuum', fontsize=4.5, color='r')
+    ax5.text(3, 0.87*m0.shape[0], 'Continuum', fontsize=text_fontsize, color='r')
     ax5.set_xticklabels([])
     ax5.set_yticklabels([])
     ax5.set_aspect('equal')
@@ -330,28 +336,28 @@ def chem_plot(linere, yslice=slice(367,467), xslice=slice(114,214),
     pl.draw()
     pl.show()
 
-    fig1.savefig(paths.fpath("chemical_m0_slabs_{0}{1}.png".format(sourcename,
-                                                                   suffix)),
+    fig1.savefig(paths.fpath("chemical_m0_slabs_{0}{1}.{2}".format(sourcename,
+                                                                   suffix, filetype)),
                  bbox_inches='tight', dpi=300)
 
-    fig2.savefig(paths.fpath("chemical_m1_slabs_{0}{1}.png".format(sourcename,
-                                                                   suffix)),
+    fig2.savefig(paths.fpath("chemical_m1_slabs_{0}{1}.{2}".format(sourcename,
+                                                                   suffix, filetype)),
                  bbox_inches='tight', dpi=300)
 
-    fig3.savefig(paths.fpath("chemical_max_contsub_slabs_{0}{1}.png"
-                             .format(sourcename, suffix)),
+    fig3.savefig(paths.fpath("chemical_max_contsub_slabs_{0}{1}.{2}"
+                             .format(sourcename, suffix, filetype)),
                  bbox_inches='tight', dpi=300)
 
-    fig4.savefig(paths.fpath("chemical_madstd_slabs_{0}{1}.png".format(sourcename,
-                                                                       suffix)),
+    fig4.savefig(paths.fpath("chemical_madstd_slabs_{0}{1}.{2}".format(sourcename,
+                                                                       suffix, filetype)),
                  bbox_inches='tight', dpi=300)
 
-    fig5.savefig(paths.fpath("chemical_max_slabs_{0}{1}.png"
-                             .format(sourcename, suffix)),
+    fig5.savefig(paths.fpath("chemical_max_slabs_{0}{1}.{2}"
+                             .format(sourcename, suffix, filetype)),
                  bbox_inches='tight', dpi=300)
 
-    fig6.savefig(paths.fpath("chemical_m2_slabs_{0}{1}.png".format(sourcename,
-                                                                   suffix)),
+    fig6.savefig(paths.fpath("chemical_m2_slabs_{0}{1}.{2}".format(sourcename,
+                                                                   suffix, filetype)),
                  bbox_inches='tight', dpi=300)
 
 
@@ -430,6 +436,8 @@ if __name__ == "__main__":
               vmax_max=100,
               contourlevels=[125,150,175,200],
               filelist=glob.glob(paths.dpath('12m/cutouts/W51_b6_12M.*ALMAmm14*fits')))
+
+    raise ValueError("Done")
 
     ### Below here are not used in the paper
 
