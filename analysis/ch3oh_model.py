@@ -24,11 +24,26 @@ from vamdclib import specmodel
 import line_to_image_list
 
 import pylab as pl
+
+filetype = 'pdf'
+
 pl.style.use('classic')
 pl.matplotlib.rc_file('pubfiguresrc')
-pl.rcParams['font.size'] = 10
-pl.rcParams['axes.labelsize'] = 12
-pl.rcParams['axes.titlesize'] = 14
+
+if filetype == 'png':
+    fontsize = 8
+    pl.rcParams['font.size'] = 10
+    pl.rcParams['axes.labelsize'] = 12
+    pl.rcParams['axes.titlesize'] = 14
+    major_labelsize = 10
+    minor_labelsize = 8
+elif filetype == 'pdf':
+    fontsize = 14
+    pl.rcParams['font.size'] = 18
+    pl.rcParams['axes.labelsize'] = 20
+    pl.rcParams['axes.titlesize'] = 22
+    major_labelsize = 20
+    minor_labelsize = 16
 
 tbl = Splatalogue.query_lines(210*u.GHz, 235*u.GHz, chemical_name=' CH3OH',
                               energy_max=1840, energy_type='eu_k')
@@ -229,7 +244,7 @@ def show_modelfit(spectra, vel, width, tem, col, figsavename=None, fignum=1,
         ax.set_ylim(*ylim)
         ax.annotate(line_to_image_list.labeldict[linename],
                     (0.05, 0.85), horizontalalignment='left',
-                    fontsize=8,
+                    fontsize=fontsize,
                     xycoords='axes fraction')
 
         if ((plotnum-1) % ny == 0) and (((plotnum-1) // nx) == 1):
@@ -245,23 +260,23 @@ def show_modelfit(spectra, vel, width, tem, col, figsavename=None, fignum=1,
             #tl = pl.gca().get_yaxis().get_ticklabels()
             xax = pl.gca().get_xaxis()
             xax.set_ticks([40,45,50,55,60,65,70])
-            pl.gca().tick_params(axis='both', which='major', labelsize=10)
-            pl.gca().tick_params(axis='both', which='minor', labelsize=8)
+            pl.gca().tick_params(axis='both', which='major', labelsize=major_labelsize)
+            pl.gca().tick_params(axis='both', which='minor', labelsize=minor_labelsize)
             if (plotnum-1) == (nx*ny-1):
                 pass
                 #xax.set_ticks((0,200,400,600,800))
             else:
                 pass
                 #xax.set_ticks((0,200,400,600))
-            xax.set_tick_params(labelsize=14)
+            xax.set_tick_params(labelsize=major_labelsize)
             log.debug("Xlabel -> labeled: {0}".format(plotnum))
         else:
             log.debug("Xlabel -> blank: {0}".format(plotnum))
             pl.xlabel("")
             pl.gca().get_xaxis().set_ticklabels([])
         pl.subplots_adjust(hspace=0, wspace=0)
-        pl.gca().tick_params(axis='both', which='major', labelsize=10)
-        pl.gca().tick_params(axis='both', which='minor', labelsize=8)
+        pl.gca().tick_params(axis='both', which='major', labelsize=major_labelsize)
+        pl.gca().tick_params(axis='both', which='minor', labelsize=minor_labelsize)
         plotnum += 1
 
     if figsavename is not None:
@@ -361,8 +376,8 @@ if __name__ == "__main__":
         spectra.plotter(figure=selreg)
 
         show_modelfit(spectra, vel, width, tem, col,
-                      figsavename=paths.fpath("chemistry/ch3oh_rotdiagram_fits_SelectedPixel{0}.pdf"
-                                              .format(selreg)),
+                      figsavename=paths.fpath("chemistry/ch3oh_rotdiagram_fits_SelectedPixel{0}.{1}"
+                                              .format(selreg, filetype)),
                       fignum=4+selreg, ylim=ylim)
 
         speclist = [pyspeckit.Spectrum(fn) for fn in
