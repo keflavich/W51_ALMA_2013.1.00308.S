@@ -13,10 +13,16 @@ from spectral_cube import SpectralCube
 from astropy.visualization import SqrtStretch,AsinhStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
+pl.style.use('classic')
+
+annotation_fontsize = 10
+
 co21fn = paths.dpath('12m/w51_12CO_21_contsub_hires.image.pbcor.fits')
 if not os.path.exists(co21fn):
     co21fn = paths.dpath('12m/w51_12CO_21_contsub_hires.image.pbcor.fits.gz')
 so65fn = paths.dpath('12m/w51_SO_65-54_contsub.fits')
+if not os.path.exists(so65fn):
+    so65fn = paths.dpath('12m/w51_SO_65-54_contsub.fits.gz')
 
 
 # I manually did this, which was pointless, but 7 km/s slices look best
@@ -65,7 +71,7 @@ for source, sourcename, radius, refvec in zip((e2e, e8fil, north),
         scube = cube_cutout = cube[(slice(None),)+cutout.slices_original]
         ghzaxis = scube.with_spectral_unit(u.GHz).spectral_axis
         scube = scube.to(u.K,
-                         scube.beam.jtok_equiv(ghzaxis[:,None,None]))
+                         scube.beam.jtok_equiv(ghzaxis))
 
         if refvec is None:
             refvec_pix = [], []
@@ -100,7 +106,7 @@ for source, sourcename, radius, refvec in zip((e2e, e8fil, north),
         for ii,(v1,v2) in enumerate(slabs):
             #pl.subplot(4, 4, ii+1)
             layer = layers[ii]
-            ax = axes[ii / Ncols, ii % Ncols]
+            ax = axes[int(ii / Ncols), int(ii % Ncols)]
             im = ax.imshow(layer.value, norm=ImageNormalize(vmin=mn, vmax=mx,
                                                             stretch=AsinhStretch(),),
                            cmap=pl.cm.gray_r)
@@ -109,7 +115,7 @@ for source, sourcename, radius, refvec in zip((e2e, e8fil, north),
             ax.annotate("${0:d} < v < {1:d}$".format(int(v1.value),
                                                      int(v2.value)), (0.1,
                                                                       0.8),
-                        xycoords='axes fraction', color='k', fontsize='large')
+                        xycoords='axes fraction', color='k', fontsize=annotation_fontsize)
             ax.axis(axlims)
 
         #fig.subplots_adjust(right=0.8)
@@ -148,6 +154,6 @@ for source, sourcename, radius, refvec in zip((e2e, e8fil, north),
         pl.subplots_adjust(hspace=0,
                            wspace=0)
         pl.savefig(paths.fpath('outflows/{0}_{1}_channelmaps.png'.format(sourcename,species)),
-                   bbox_inches='tight')
+                   bbox_inches='tight', dpi=150)
         pl.savefig(paths.fpath('outflows/{0}_{1}_channelmaps.pdf'.format(sourcename,species)),
                    bbox_inches='tight')
