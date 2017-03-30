@@ -14,6 +14,8 @@ from astropy.visualization import SqrtStretch,AsinhStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
 co21fn = paths.dpath('12m/w51_12CO_21_contsub_hires.image.pbcor.fits')
+if not os.path.exists(co21fn):
+    co21fn = paths.dpath('12m/w51_12CO_21_contsub_hires.image.pbcor.fits.gz')
 so65fn = paths.dpath('12m/w51_SO_65-54_contsub.fits')
 
 
@@ -146,4 +148,6 @@ for source, sourcename, radius, refvec in zip((e2e, e8fil, north),
         pl.subplots_adjust(hspace=0,
                            wspace=0)
         pl.savefig(paths.fpath('outflows/{0}_{1}_channelmaps.png'.format(sourcename,species)),
+                   bbox_inches='tight')
+        pl.savefig(paths.fpath('outflows/{0}_{1}_channelmaps.pdf'.format(sourcename,species)),
                    bbox_inches='tight')
