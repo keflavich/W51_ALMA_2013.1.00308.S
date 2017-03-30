@@ -31,19 +31,19 @@ pl.style.use('classic')
 pl.matplotlib.rc_file('pubfiguresrc')
 
 if filetype == 'png':
-    fontsize = 8
+    annotation_fontsize = 8
     pl.rcParams['font.size'] = 10
     pl.rcParams['axes.labelsize'] = 12
     pl.rcParams['axes.titlesize'] = 14
     major_labelsize = 10
     minor_labelsize = 8
 elif filetype == 'pdf':
-    fontsize = 14
-    pl.rcParams['font.size'] = 18
-    pl.rcParams['axes.labelsize'] = 20
-    pl.rcParams['axes.titlesize'] = 22
-    major_labelsize = 20
-    minor_labelsize = 16
+    annotation_fontsize = 8
+    pl.rcParams['font.size'] = 14
+    pl.rcParams['axes.labelsize'] = 14
+    pl.rcParams['axes.titlesize'] = 14
+    major_labelsize = 10
+    minor_labelsize = 8
 
 tbl = Splatalogue.query_lines(210*u.GHz, 235*u.GHz, chemical_name=' CH3OH',
                               energy_max=1840, energy_type='eu_k')
@@ -244,14 +244,15 @@ def show_modelfit(spectra, vel, width, tem, col, figsavename=None, fignum=1,
         ax.set_ylim(*ylim)
         ax.annotate(line_to_image_list.labeldict[linename],
                     (0.05, 0.85), horizontalalignment='left',
-                    fontsize=fontsize,
+                    fontsize=annotation_fontsize,
                     xycoords='axes fraction')
 
         if ((plotnum-1) % ny == 0) and (((plotnum-1) // nx) == 1):
             pl.ylabel("Brightness Temperature $T_B$ [K]")
             if (plotnum-1) != (ny*(nx-1)):
                 ticks = pl.gca().get_yaxis().get_ticklocs()
-                pl.gca().get_yaxis().set_ticks(ticks[1:])
+                if len(ticks) > 3:
+                    pl.gca().get_yaxis().set_ticks(ticks[1:])
         else:
             pl.ylabel("")
             pl.gca().get_yaxis().set_ticklabels([])
