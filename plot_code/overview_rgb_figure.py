@@ -1,15 +1,26 @@
+import matplotlib
+matplotlib.use('pdf')
+
 import numpy as np
 from astropy import wcs
 import aplpy
 import paths
 from astropy.io import fits
 import reproject
+import regions
 from vla_cont_cutout import fnku
 from matplotlib.colors import Normalize,LogNorm
 from matplotlib.colors import rgb_to_hsv,hsv_to_rgb
 import PIL
 from PIL import ImageEnhance
 import pyavm
+
+import pylab as pl
+pl.ioff()
+pl.style.use('classic')
+pl.rcParams['figure.dpi'] = 150
+
+assert matplotlib.get_backend() == 'pdf'
 
 if 'c18o' not in locals():
     fncont = paths.dpath('W51_te_continuum_best.fits')
@@ -134,8 +145,17 @@ avm.embed(outname, outname)
 #avm.embed(outname, outname)
 
 
-FF = aplpy.FITSFigure(outname)
+FF = aplpy.FITSFigure(outname, figsize=(20,14.5))
 FF.show_rgb(outname)
 FF.show_regions(paths.rpath('overview_labels.reg'), layer='labels')
 FF.save(paths.fpath("rgb_overview_aplpy_withlabels.png"), dpi=150)
-FF.save(paths.fpath("rgb_overview_aplpy_withlabels.pdf"), dpi=150)
+
+if matplotlib.get_backend() != 'pdf':
+    FF = aplpy.FITSFigure(outname, figsize=(40,29))
+    adjust = False
+else:
+    FF = aplpy.FITSFigure(outname, figsize=(10,7.25))
+    adjust = True
+FF.show_rgb(outname)
+FF.show_regions(paths.rpath('overview_labels.reg'), layer='labels')
+FF.save(paths.fpath("rgb_overview_aplpy_withlabels.pdf"), dpi=300, adjust_bbox=adjust)

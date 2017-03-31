@@ -1,3 +1,7 @@
+import matplotlib
+matplotlib.use('Qt5Agg')
+import pylab as pl
+assert matplotlib.get_backend() == 'Qt5Agg'
 import numpy as np
 import radio_beam
 import pyregion
@@ -10,7 +14,6 @@ from astropy.nddata import Cutout2D
 from astropy.io import fits
 from astropy import units as u
 from astropy import coordinates
-import pylab as pl
 import itertools
 import masscalc
 import dust_emissivity
@@ -18,10 +21,15 @@ import reproject
 from label_lines import labelLine
 
 pl.matplotlib.rc_file('pubfiguresrc')
+pl.rcParams['backend'] = 'Qt5Agg'
 pl.rcParams['axes.titlesize'] = 12
 pl.rcParams['axes.labelsize'] = 12
 pl.rcParams['font.size'] = 12
+pl.rcParams['figure.dpi'] = 150
 figsize=(10,10)
+pl.rcParams['figure.figsize'] = figsize
+
+assert matplotlib.get_backend() == 'Qt5Agg'
 
 ffiles = """
 selfcal_allspw_mfs.image.pbcor.fits
@@ -705,7 +713,7 @@ def make_rprof(regions, ploteach=False):
             #ax3.set_yticklabels(yticks_mass)
             #ax3.set_ylabel("Cumulative Mass (M$_\\odot$, $T=40$ K)")
 
-        pl.figure(nplots*3+14, figsize=figsize)
+        pl.figure(nplots*3+14)
         line, = pl.plot(angular_radii, azimuthal_average_MJ, label=name)
         pl.plot(angular_radii, azimuthal_average_mass,
                 linestyle='--', color=line.get_color())
@@ -747,8 +755,8 @@ def make_rprof(regions, ploteach=False):
             #ax3.set_ylabel("Cumulative Mass (M$_\\odot$, $T=40$ K)")
 
             box = ax.get_position()
-            ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
-            ax2.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+            ax.set_position([box.x0, box.y0, box.width * 1.0, box.height])
+            ax2.set_position([box.x0, box.y0, box.width * 1.0, box.height])
 
             # Put a legend to the right of the current axis
             ax.legend(handles, labels, loc='center left', bbox_to_anchor=(1, 0.5))
@@ -782,20 +790,22 @@ variables = make_rprof(regions, ploteach=True)
 for k,v in variables.items():
     globals()[k] = v
 nplots = len(regions)
-pl.figure(nplots*3+2).savefig(paths.fpath("cumulative_radial_flux_massivecores.png"), bbox_inches='tight')
-pl.figure(nplots*3+3).savefig(paths.fpath("cumulative_radial_mass_massivecores.png"), bbox_inches='tight')
-pl.figure(nplots*3+4).savefig(paths.fpath("cumulative_density_40K_massivecores.png"), bbox_inches='tight')
-pl.figure(nplots*3+5).savefig(paths.fpath("azimuthalaverage_density_40K_massivecores.png"), bbox_inches='tight')
-pl.figure(nplots*3+12).savefig(paths.fpath("azimuthalaverage_density_of_TCH3OH_massivecores.png"), bbox_inches='tight')
-pl.figure(nplots*3+6).savefig(paths.fpath("azimuthalaverage_radial_mj_40K_massivecores.png"), bbox_inches='tight')
-pl.figure(nplots*3+7).savefig(paths.fpath("azimuthalaverage_radial_mj_of_TCH3OH_massivecores.png"), bbox_inches='tight')
-pl.figure(nplots*3+8).savefig(paths.fpath("cumulative_radial_mass_of_TCH3OH_massivecores.png"), bbox_inches='tight')
-pl.figure(nplots*3+9).savefig(paths.fpath("azimuthalaverage_radial_TCH3OH_massivecores.png"), bbox_inches='tight')
-pl.figure(nplots*3+10).savefig(paths.fpath("azimuthalaverage_radial_rj_of_TCH3OH_massivecores.png"), bbox_inches='tight')
-pl.figure(nplots*3+11).savefig(paths.fpath("radialprofileexponent_of_TCH3OH_massivecores.png"), bbox_inches='tight')
-pl.figure(nplots*3+13).savefig(paths.fpath("cumulative_MJ_of_TCH3OH_massivecores.png"), bbox_inches='tight')
-pl.figure(nplots*3+14).savefig(paths.fpath("azimuthalaverage_radial_mj_and_mbar_of_TCH3OH_massivecores.png"), bbox_inches='tight')
-pl.figure(nplots*3+15).savefig(paths.fpath("compare_cumulative_to_average_density.png"), bbox_inches='tight')
+for suffix in ("png","pdf"):
+    pl.figure(nplots*3+2).savefig(paths.fpath("cumulative_radial_flux_massivecores.{0}".format(suffix)), bbox_inches='tight')
+    pl.figure(nplots*3+3).savefig(paths.fpath("cumulative_radial_mass_massivecores.{0}".format(suffix)), bbox_inches='tight')
+    pl.figure(nplots*3+4).savefig(paths.fpath("cumulative_density_40K_massivecores.{0}".format(suffix)), bbox_inches='tight')
+    pl.figure(nplots*3+5).savefig(paths.fpath("azimuthalaverage_density_40K_massivecores.{0}".format(suffix)), bbox_inches='tight')
+    pl.figure(nplots*3+12).savefig(paths.fpath("azimuthalaverage_density_of_TCH3OH_massivecores.{0}".format(suffix)), bbox_inches='tight')
+    pl.figure(nplots*3+6).savefig(paths.fpath("azimuthalaverage_radial_mj_40K_massivecores.{0}".format(suffix)), bbox_inches='tight')
+    pl.figure(nplots*3+7).savefig(paths.fpath("azimuthalaverage_radial_mj_of_TCH3OH_massivecores.{0}".format(suffix)), bbox_inches='tight')
+    pl.figure(nplots*3+8).savefig(paths.fpath("cumulative_radial_mass_of_TCH3OH_massivecores.{0}".format(suffix)), bbox_inches='tight')
+    pl.figure(nplots*3+9).savefig(paths.fpath("azimuthalaverage_radial_TCH3OH_massivecores.{0}".format(suffix)), bbox_inches='tight')
+    pl.figure(nplots*3+10).savefig(paths.fpath("azimuthalaverage_radial_rj_of_TCH3OH_massivecores.{0}".format(suffix)), bbox_inches='tight')
+    pl.figure(nplots*3+11).savefig(paths.fpath("radialprofileexponent_of_TCH3OH_massivecores.{0}".format(suffix)), bbox_inches='tight')
+    pl.figure(nplots*3+13).savefig(paths.fpath("cumulative_MJ_of_TCH3OH_massivecores.{0}".format(suffix)), bbox_inches='tight')
+    #assert all(pl.figure(nplots*3+14).get_size_inches() == (12,8))
+    pl.figure(nplots*3+14).savefig(paths.fpath("azimuthalaverage_radial_mj_and_mbar_of_TCH3OH_massivecores.{0}".format(suffix)), bbox_inches='tight')
+    pl.figure(nplots*3+15).savefig(paths.fpath("compare_cumulative_to_average_density.{0}".format(suffix)), bbox_inches='tight')
 
 fig = pl.figure(nplots*3+8, figsize=figsize)
 ax = fig.axes[0]

@@ -30,7 +30,7 @@
 #backend.qt4: PySide
 #backend : MacOSX
 #backend      : Qt4Agg
-backend      : TkAgg
+#backend      : TkAgg
 #numerix      : numpy  # numpy, Numeric or numarray
 #units        : True
 interactive  : True      # see http://matplotlib.sourceforge.net/interactive.html
