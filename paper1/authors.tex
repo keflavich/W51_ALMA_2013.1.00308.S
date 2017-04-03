@@ -1,21 +1,37 @@
 % for future reference, this is probably a better approach:
 % https://github.com/dfm/peerless/blob/af483ced97045c213650ed807c430b2f87d2c8c9/document/ms.tex#L104
 % assuming it's compatible with A&A
-\newcommand{\nrao}{$^{1}$}
-\newcommand{\eso}{$^{2}$}
-\newcommand{\radboud}{$^{3}$}
-\newcommand{\allegro}{$^{4}$}
-\newcommand{\zah}{$^{5}$}
-\newcommand{\casa}{$^{6}$}
-\newcommand{\jodrell}{$^{7}$}
-\newcommand{\morelia}{$^{8}$}
-\newcommand{\sjsu}{$^{9}$}
-\newcommand{\herts}{$^{10}$}
-\newcommand{\uofa}{$^{11}$}
-\newcommand{\arcetri}{$^{12}$}
-\newcommand{\exclus}{$^{13}$}
-\newcommand{\ljmu}{$^{14}$}
+%\newcommand{\nrao}{$^{1}$}
+%\newcommand{\eso}{$^{2}$}
+%\newcommand{\radboud}{$^{3}$}
+%\newcommand{\allegro}{$^{4}$}
+%\newcommand{\zah}{$^{5}$}
+%\newcommand{\casa}{$^{6}$}
+%\newcommand{\jodrell}{$^{7}$}
+%\newcommand{\morelia}{$^{8}$}
+%\newcommand{\sjsu}{$^{9}$}
+%\newcommand{\herts}{$^{10}$}
+%\newcommand{\uofa}{$^{11}$}
+%\newcommand{\arcetri}{$^{12}$}
+%\newcommand{\exclus}{$^{13}$}
+%\newcommand{\ljmu}{$^{14}$}
 %\newcommand{\mpe}{$^{18}$}
+\newcommand{\nrao}{\affiliation{\it{National Radio Astronomy Observatory, Socorro, NM 87801 USA }}}
+\newcommand{\eso}{ \affiliation{\it{ European Southern Observatory, Karl-Schwarzschild-Stra{\ss}e 2, D-85748 Garching bei München, Germany } } }
+\newcommand{\radboud}{\affiliation{\it{Department of Astrophysics/IMAPP, Radboud University Nijmegen, PO Box 9010, 6500 GL Nijmegen, the Netherlands}}}
+\newcommand{\allegro}{\affiliation{\it{ALLEGRO/Leiden Observatory, Leiden University, PO Box 9513, 2300 RA Leiden, the Netherlands}}}
+\newcommand{\zah}{\affiliation{\it{Astronomisches Rechen-Institut, Zentrum f{\"u}r Astronomie der Universit{\"a}t Heidelberg, M{\"o}nchhofstra{\ss}e 12-14, 69120 Heidelberg, Germany}}}
+\newcommand{\casa}{\affiliation{\it{CASA, University of Colorado, 389-UCB, Boulder, CO 80309}} }
+\newcommand{\jodrell}{\affiliation{\it{Jodrell Bank Centre for Astrophysics, School of Physics and Astronomy, University of Manchester, Oxford Road, Manchester M13 9PL, UK}}}
+\newcommand{\morelia}{\affiliation{\it{Instituto de Radioastronom{\'i}a y Astrof{\'i}sica, UNAM, A.P. 3-72, Xangari, Morelia, 58089, Mexico}}}
+\newcommand{\sjsu}{\affiliation{\it{{San Jose State University, One Washington Square, San Jose, CA 95192}}}}
+\newcommand{\herts}{\affiliation{\it{Centre for Astrophysics Research, University of Hertfordshire, College Lane, Hatfield, AL10 9AB, UK}}}
+\newcommand{\uofa}{\affiliation{\it{Dept. of Physics, University of Alberta, Edmonton, Alberta, Canada}}}
+\newcommand{\arcetri}{\affiliation{\it{INAF-Osservatorio Astrofisico di Arcetri, Largo E. Fermi 5, I-50125, Florence, Italy } } }
+\newcommand{\exclus}{\affiliation{\it{Excellence Cluster Universe, Boltzman str. 2, D-85748 Garching bei M\"unchen, Germany } }}
+\newcommand{\ljmu}{\affiliation{\it{Astrophysics Research Institute, Liverpool John Moores University, 146 Brownlow Hill, Liverpool L3 5RF, UK }}}
+
+
 
 %\newcommand{\cfa}{$^{8}$}
 %\newcommand{\lasp}{$^{9}$}
@@ -25,68 +41,52 @@
 
 %\newcommand{\excellence}{$^{6}$}
 
-\author{
-Adam Ginsburg{\nrao,\eso},
-% W.~M. Goss{\nrao},
-Ciriaco Goddi{\radboud$^{,}$\allegro},
-J.~M.~Diederik Kruijssen{\zah},
-John Bally{\casa},
-Rowan Smith{\jodrell},
-Roberto Galv{\'a}n-Madrid{\morelia},
-Elisabeth A.C. Mills {\sjsu},
-Ke Wang {\eso}
-James E. Dale{\herts},
-% Cara D.  Battersby{\cfa},
-% (not joining) Allison Youngblood{\lasp},
-% Ravi Sankrit{\sofia},
-Jeremy Darling{\casa},
-% Hauyu Baobab Liu{\eso}
-Erik Rosolowsky {\uofa},
-% (not joining) Malcolm Walmsley {}
-Robert Loughnane{\morelia},
-Leonardo Testi {\eso,\arcetri,\exclus},
-Nate Bastian {\ljmu}\\
-%Jaime E. Pineda {\mpe}\\
-% Joao Alves {\vienna}
-\begin{flushleft}
-\institutions
-\end{flushleft}
-        }
+\author[0000-0001-6431-9633]{Adam Ginsburg}
+\nrao
+\eso
 
-\institute{
-    {\nrao}{\it{National Radio Astronomy Observatory, Socorro, NM 87801 USA\\
-                      \email{aginsbur@nrao.edu} 
-                      }} \\
-    {\eso}{
-           \it{
-               European Southern Observatory, Karl-Schwarzschild-Stra{\ss}e 2, D-85748 Garching bei München, Germany
-               }
-           } \\ 
-    %{\saudi}{\it{Astron. Dept., King Abdulaziz University, P.O. Box 80203,
-    %Jeddah 21589, Saudi Arabia}}\\
-    %%{\edmonton}{\it{University of Alberta, Department of Physics, 4-181 CCIS, Edmonton AB T6G 2E1 Canada}} \\ 
-    %{\yale}{\it{Department of Astronomy, Yale University, P.O. Box 208101, New Haven, CT 06520-8101 USA}} \\ 
-    %%{\puertorico}{\it{Department of Physical Sciences, University of Puerto Rico, P.O. Box 23323, San Juan, PR 00931}}
-    %{\mpifr}{\it{Max Planck Institute for Radio Astronomy, auf dem Hugel, Bonn}}
-    {\radboud}{\it{Department of Astrophysics/IMAPP, Radboud University Nijmegen, PO Box 9010, 6500 GL Nijmegen, the Netherlands}} \\
-    {\allegro}{\it{ALLEGRO/Leiden Observatory, Leiden University, PO Box 9513, 2300 RA Leiden, the Netherlands}} \\
-    {\zah}{\it{Astronomisches Rechen-Institut, Zentrum f{\"u}r Astronomie der Universit{\"a}t Heidelberg, M{\"o}nchhofstra{\ss}e 12-14, 69120 Heidelberg, Germany}}\\
-    {\casa}{\it{CASA, University of Colorado, 389-UCB, Boulder, CO 80309}} \\ 
-    {\jodrell}{\it{Jodrell Bank Centre for Astrophysics, School of Physics and Astronomy, University of Manchester, Oxford Road, Manchester M13 9PL, UK}} \\
-    {\morelia}{\it{Instituto de Radioastronom{\'i}a y Astrof{\'i}sica, UNAM, A.P. 3-72, Xangari, Morelia, 58089, Mexico}} \\
-    {\sjsu{\it{{San Jose State University, One Washington Square, San Jose, CA 95192}}}}
-    {\herts}{\it{Centre for Astrophysics Research, University of Hertfordshire, College Lane, Hatfield, AL10 9AB, UK}}\\
-    {\uofa}{\it{Dept. of Physics, University of Alberta, Edmonton, Alberta, Canada}}\\
-    %{\mpe}{\it{Max-Planck-Institut f\"ur extraterrestrische Physik, Giessenbachstrasse 1, 85748 Garching, Germany}}\\
-    {\arcetri}{\it{INAF-Osservatorio Astrofisico di Arcetri, Largo E. Fermi 5, I-50125, Florence, Italy } } \\ 
-    {\exclus}{\it{Excellence Cluster Universe, Boltzman str. 2, D-85748 Garching bei M\"unchen, Germany } } \\
-    %{\oxford}{\it{Oxford}}
-    %{\chalmers}{\it{Chalmers}}
-    %{\excellence}{\it{University Observatory/Excellence Cluster `Universe' Scheinerstra{\ss}e 1, 81679 M{\"u}nchen, Germany}} \\
-    %{\cfa}{\it{Harvard-Smithsonian Center for Astrophysics, 60 Garden
-    %           Street, Cambridge, MA 02138, USA}} \\ 
-    %{\lasp}{\it{LASP, University of Colorado, 600 UCB, Boulder, CO 80309}}\\
-    %{\sofia}{\it{SOFIA Science Center, NASA Ames Research Center, M/S 232-12, Moffett Field, CA 94035, USA}}\\
-    %{\mpia}{\it{Max-Planck Institut f{\"u}r Astrophysik, Karl-Schwarzschild-Stra{\ss}e 1, 85748 Garching, Germany}} \\
-    {\ljmu{\it{Astrophysics Research Institute, Liverpool John Moores University, 146 Brownlow Hill, Liverpool L3 5RF, UK }}}\\
-    }
+\author{Ciriaco Goddi}
+\radboud
+\allegro
+
+\author{J.~M.~Diederik Kruijssen}
+\zah
+
+\author{John Bally}
+\casa
+
+\author{Rowan Smith}
+\jodrell
+
+\author{Roberto Galv{\'a}n-Madrid}
+\morelia
+
+\author{Elisabeth A.C. Mills }
+\sjsu
+
+\author{Ke Wang }
+\eso
+
+\author{James E. Dale}
+\herts
+
+\author{Jeremy Darling}
+\casa
+
+\author{Erik Rosolowsky }
+\uofa
+
+\author{Robert Loughnane}
+\morelia
+
+\author{Leonardo Testi }
+\eso
+\arcetri
+\exclus
+
+\author{Nate Bastian }
+\ljmu
+
+
+\correspondingauthor{Adam Ginsburg}
+\email{aginsbur@nrao.edu; adam.g.ginsburg@gmail.com}

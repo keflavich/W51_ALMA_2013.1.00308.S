@@ -1,4 +1,4 @@
-\documentclass[twocolumn]{aastex6}
+\documentclass[twocolumn]{aastex61}
 \input{preface}
 \begin{document}
 %\title{Cores and Outflows and Chemistry in the W51 Protoclusters}
@@ -72,9 +72,9 @@ radio lines: ISM
     %limited massive star growth even further than direct feedback.)
 \end{abstract}
 
-\ifpdf
-\maketitle
-\fi
+% \ifpdf
+% \maketitle
+% \fi
 
 %\section{Paper 1 to-do list}
 %\begin{enumerate}
@@ -2333,20 +2333,20 @@ grant number KR4801/1-1.
 K.W. is supported by grant WA3628-1/1 of the German Research Foundation (DFG)
 through the priority program 1573 (``Physics of the Interstellar Medium'').
 
-\textbf{Code Packages Used}:
+\facilities{ALMA, JVLA}
 
-\begin{itemize}
-    \item astropy \citep{Astropy-Collaboration2013a}
-    \item ipython \citep{Perez2007a}
-    \item CASA \url{https://casa.nrao.edu/}
-    \item pyspeckit \url{http://pyspeckit.bitbucket.org} \citet{Ginsburg2011c}
-    \item aplpy \url{https://aplpy.github.io/}
-    \item wcsaxes \url{http://wcsaxes.readthedocs.org}
-    \item pvextractor \url{http://pvextractor.readthedocs.org}
-    \item spectral cube \url{http://spectral-cube.readthedocs.org}
-    \item ds9 \url{http://ds9.si.edu}
-    \item \texttt{dust\_emissivity} \url{http://dust\_emissivity.readthedocs.org}
-\end{itemize}
+\software{
+    astropy \citep{Astropy-Collaboration2013a}
+    ipython \citep{Perez2007a}
+    CASA \url{https://casa.nrao.edu/}
+    pyspeckit \url{http://pyspeckit.bitbucket.org} \citet{Ginsburg2011c}
+    aplpy \url{https://aplpy.github.io/}
+    wcsaxes \url{http://wcsaxes.readthedocs.org}
+    pvextractor \url{http://pvextractor.readthedocs.org}
+    spectral cube \url{http://spectral-cube.readthedocs.org}
+    ds9 \url{http://ds9.si.edu}
+    \texttt{dust\_emissivity} \url{http://dust\_emissivity.readthedocs.org}
+    }
 
 \input{solobib}
 
@@ -3038,5 +3038,10 @@ confirming that they consist only of dust emission.
 }{fig:e5bubble}{1}{8cm}
 
 
+\section{Data Release}
+The reduced images and data cubes used in this paper are publicly available at
+\dataset{https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/8QJT3K}.
+The reduction and analysis scripts are at
+\url{https://github.com/adamginsburg/W51_ALMA_2013.1.00308.S}.
 
 \end{document}
