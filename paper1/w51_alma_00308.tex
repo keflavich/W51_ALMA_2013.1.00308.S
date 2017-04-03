@@ -3040,8 +3040,30 @@ confirming that they consist only of dust emission.
 
 \section{Data Release}
 The reduced images and data cubes used in this paper are publicly available at
-\dataset{https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/8QJT3K}.
+\dataset[doi:10.7910/DVN/8QJT3K]{https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/8QJT3K}.
 The reduction and analysis scripts are at
 \url{https://github.com/adamginsburg/W51_ALMA_2013.1.00308.S}.
+
+The continuum image used for source identification and analysis is
+\texttt{W51\_te\_continuum\_best.fits}.  Spectral cubes covering individual
+important lines are specified with filenames
+\texttt{w51\_\{linename\}\_contsub.image.pbcor.fits}, where \texttt{linename}
+is one of the lines imaged in this paper.  
+
+The data also include cutout images covering the full spectral range but a
+limited spatial area.  These cutouts are useful for spectral line searches and
+morphological comparison; most of the lines detected in our observations are
+only visible in the cutout regions.  These data are in files fitting the
+template
+\texttt{\{sourcename\}cutout\_full\_W51\_7m12m\_spw\{number\}\{optional
+suffix\}\_lines.fits}, where \texttt{sourcename} is one of the sources
+discussed in this paper (\texttt{e2}, \texttt{e8}, or \texttt{north}),
+\texttt{number} is one of the spectral windows \texttt{0-3} listed in Tables
+\ref{tab:linesspw0} - \ref{tab:linesspw3}, and \texttt{optional\_suffix} is
+either empty or \texttt{hires}; the hires cubes used robust=-0.5 and the others
+used robust=1.0 in \texttt{tclean}.  The higher robust parameter results
+in lower spatial resolution but better sensitivity.
+
+
 
 \end{document}
