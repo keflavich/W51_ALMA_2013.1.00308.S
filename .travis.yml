@@ -12,6 +12,7 @@ before_install:
      texlive-latex-recommended
      texlive-xetex
      texlive-publishers
+     texlive-humanities
      #- wget https://journals.aps.org/files/revtex/revtex4-1.zip
      #- unzip revtex4-1.zip
      #- cd revtex4-1
