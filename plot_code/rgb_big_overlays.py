@@ -7,6 +7,10 @@ from astropy import units as u
 from astropy.table import Table
 from astropy import log
 
+core_phot_tbl = Table.read(paths.tpath("continuum_photometry.ipac"), format='ascii.ipac')
+cores = coordinates.SkyCoord(core_phot_tbl['RA'], core_phot_tbl['Dec'],
+                             frame='fk5')
+
 
 for suffix in ('auto','99.99','max'):
     for (rgb_cube_fits, rgb_cube_png, star_color, core_color, rlabel, glabel,
@@ -57,10 +61,6 @@ for suffix in ('auto','99.99','max'):
         cmcoords = coordinates.SkyCoord(cmcontsrc['gracen'][cmok],
                                         cmcontsrc['gdeccen'][cmok], frame='fk5')
 
-
-        core_phot_tbl = Table.read(paths.tpath("continuum_photometry.ipac"), format='ascii.ipac')
-        cores = coordinates.SkyCoord(core_phot_tbl['RA'], core_phot_tbl['Dec'],
-                                     frame='fk5')
 
         F.show_markers(cmcoords.ra, cmcoords.dec, edgecolor=star_color, marker='*', alpha=0.75,
                        zorder=1, facecolor=star_color, layer='hiiregions')
