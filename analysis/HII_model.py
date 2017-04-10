@@ -291,9 +291,17 @@ def snu_dust(density=1e4*u.cm**-3, Td=40*u.K, radius=4000*u.au,
     flux = dust.snuofmass(nu=cfreq, mass=mass, beamomega=beam, temperature=Td,
                           distance=distance)
     return flux
+
+def EM_of_T(TB, Te=default_te, nu=default_freq):
+    " eqn 4.61 of Condon & Ransom inverted "
+    return (-3.05e6 * (Te/(1e4*u.K))**1.35 * (nu/u.GHz)**2.1 * np.log(1-TB/Te)
+            * u.cm**-6 * u.pc)
     
 def qlyc_of_tb(TB, Te=default_te, nu=default_freq, radius=1*u.pc):
-    return (-4/3. * np.pi * radius**2 * alpha_b * (3.28e-7)**-1 *
+    EM = EM_of_T(TB, Te=Te, nu=nu)
+    result = (4/3. * np.pi * radius**3 * alpha_b * EM / radius)
+    return result.to(u.s**-1)
+    return (-4/3. * np.pi * radius**3 * alpha_b * (3.28e-7)**-1 *
             (Te/(1e4*u.K))**1.35 * (nu/u.GHz)**2.1 * np.log(1-TB/Te) * u.cm**-6 *
             u.pc).to(u.s**-1)
 

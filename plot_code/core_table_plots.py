@@ -11,8 +11,12 @@ from matplotlib.patches import Circle
 import matplotlib
 from cycler import cycler
 import os
+from astropy import log
+import warnings
 import contextlib
 devnull = open(os.devnull,'w')
+
+log.setLevel('CRITICAL')
 
 pl.matplotlib.rc_file('pubfiguresrc')
 pl.mpl.rcParams['axes.color_cycle'] = ('338ADD', '9A44B6', 'A60628', '467821',
@@ -221,6 +225,34 @@ x,y = img.max(axis=0), img.max(axis=1)
 xlim = np.where(x)[0].min(),np.where(x)[0].max()
 ylim = np.where(y)[0].min(),np.where(y)[0].max()
 
+ppbeam = cores_merge['beam_area'].to(u.deg**2) / np.abs(np.product(mywcs.pixel_scale_matrix.diagonal())*u.deg**2)
+cores_merge['integrated'] = cores_merge['sum']/ppbeam
+
+
+
+fig2 = pl.figure(2)
+fig2.clf()
+ax2 = fig2.gca()
+
+print()
+print("Core distribution: integrated flux")
+with contextlib.redirect_stderr(devnull):
+    fit = powerlaw.Fit(cores_merge['integrated'])
+fit.plot_ccdf(color='k')
+fit.power_law.plot_ccdf(color='r', linestyle='--')
+ax2.set_ylabel("Fraction of sources")
+ax2.xaxis.set_label_position('top')
+ax2.xaxis.set_ticks_position('top')
+ax2.set_xlabel("Integrated Flux (Jy)")
+
+fig2.savefig(paths.fpath('coreplots/integrated_flux_powerlaw_histogram_fit.png'))
+
+print("Integrated Flux Fit parameters: alpha={0}".format(fit.power_law.alpha))
+
+
+
+
+
 fig2 = pl.figure(2)
 fig2.clf()
 ax2 = fig2.add_subplot(1,1,1, projection=mywcs)
@@ -277,9 +309,9 @@ bins = np.logspace(-3,1.05, 20)
 
 ax = pl.subplot(7,1,1)
 
-H,L,P = ax.hist(core_phot_tbl['peak'][starless], bins=bins, facecolor='none',
+H,L,P = ax.hist(cores_merge['peak'][starless], bins=bins, facecolor='none',
                 histtype='stepfilled', hatch='/')
-H,L,P = ax.hist(core_phot_tbl['peak'], bins=bins, facecolor='none',
+H,L,P = ax.hist(cores_merge['peak'], bins=bins, facecolor='none',
                 histtype='step')
 ax.set_xscale('log')
 ax.set_ylim(0, H.max()+1)
@@ -306,10 +338,9 @@ class_colors = {
     'UncertainExtended': 'y',
 }
 
-
 print()
 print("Fit each aperture excluding free-free fluxes")
-apertures = ('0p2', '0p4', '0p6', '0p8', '1p0', '1p5')
+apertures = ('0p2', '0p4', '0p6', '0p8', '1p0', '1p5',)
 for ii,aperture in enumerate(apertures):
     flux = (cores_merge['cont_flux{0}arcsec'.format(aperture)] -
             cores_merge['KUbandcont_flux{0}arcsec'.format(aperture)])
