@@ -1,8 +1,8 @@
-\beam_area_sr=3.0230943813297665e-12
 \column_conversion_factor='<Quantity nan 1 / cm2>'
+\mass_conversion_factor='<Quantity 708.2665893381508 solMass>'
 \ppbeam_mm=18.357923162719686
 \ppbeam_cm=12.861806527499521
-\mass_conversion_factor='<Quantity 708.2665893381508 solMass>'
+\beam_area_sr=3.0230943813297665e-12
 \pixel_scale_as=0.100000000000008
 |      name|SourceID|         peak|         mean|        integ|npix|          pixsize|   pixsize_phys|        peak_mass|         peak_col|         mean_col|       total_mass|      momentum|    mean_velo|     CoreMass|TCorrectedCoreMass|
 |      char|    char|       double|       double|       double|long|           double|         double|           double|           double|           double|           double|        double|       double|       double|            double|

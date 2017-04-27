@@ -13,7 +13,14 @@ from matplotlib.patches import Circle
 # can take time:
 from volume_integrals import mass_scalings
 
+pl.style.use('classic')
 pl.matplotlib.rc_file('pubfiguresrc')
+pl.mpl.rcParams['font.size'] = 14.0
+pl.mpl.rcParams['axes.titlesize'] = 16.0
+pl.mpl.rcParams['axes.labelsize'] = 15.0
+pl.mpl.rcParams['axes.color_cycle'] = ('338ADD', '9A44B6', 'A60628', '467821',
+                                       'CF4457', '188487', 'E24A33', 'b', 'r',
+                                       'g', 'm', 'k')
 
 #pruned_ppcat = Table.read(paths.tpath("dendrogram_continuum_catalog.ipac"), format='ascii.ipac')
 dendro_merge = Table.read(paths.tpath('dendro_merge_continuum_and_line.ipac'), format='ascii.ipac')
@@ -46,9 +53,10 @@ ax3.hist(dendro_merge['peak_cont_flux'], bins=np.logspace(-3,-0.5,15),
 ax3.set_xscale('log')
 fit.power_law.plot_pdf(color='r', linestyle='--')
 ax3.set_ylim(0.3, 51)
+ax2.set_xlim(ax3.get_xlim())
 ax3.set_xlabel("Peak flux density (Jy/beam)")
 ax3.set_ylabel("Number of sources")
-fig2.savefig(paths.fpath('coreplots/dendro_flux_powerlaw_histogram_fit.png'))
+fig2.savefig(paths.fpath('coreplots/dendro_flux_powerlaw_histogram_fit.png'), bbox_inches='tight')
 
 print("Fit parameters: alpha={0}".format(fit.power_law.alpha))
 
@@ -63,7 +71,7 @@ pl.plot(pradii, lines.T)
 pl.plot(pradii, lines[corelike].T)
 pl.xlabel("Aperture Radius (\")")
 pl.ylabel("Flux (Jy)")
-pl.savefig(paths.fpath('coreplots/flux_vs_aperture_radius_alldendrosources.png'))
+pl.savefig(paths.fpath('coreplots/flux_vs_aperture_radius_alldendrosources.png'), bbox_inches='tight')
 
 pl.clf()
 # 0.05" pixels
@@ -73,7 +81,7 @@ pl.plot(dendro_merge['peak_cont_flux'], background, '.')
 pl.plot(dendro_merge['peak_cont_flux'][corelike], background[corelike], '.')
 pl.xlabel("Peak Flux")
 pl.ylabel("Background Flux")
-pl.savefig(paths.fpath('coreplots/dendro_peak_vs_background.png'))
+pl.savefig(paths.fpath('coreplots/dendro_peak_vs_background.png'), bbox_inches='tight')
 
 
 pl.clf()
@@ -81,7 +89,7 @@ pl.plot(dendro_merge['peak_cont_flux'], (dendro_merge['peak_cont_flux']-backgrou
 pl.plot(dendro_merge['peak_cont_flux'][corelike], (dendro_merge['peak_cont_flux']-background)[corelike], '.')
 pl.xlabel("Peak Flux")
 pl.ylabel("Background-subtracted Flux")
-pl.savefig(paths.fpath('coreplots/dendro_peak_vs_peak_minus_background.png'))
+pl.savefig(paths.fpath('coreplots/dendro_peak_vs_peak_minus_background.png'), bbox_inches='tight')
 
 
 pl.clf()
@@ -102,7 +110,7 @@ pl.plot([0.,0.5], [0,0.5], 'k--', zorder=-5)
 pl.plot([0.,0.5], [0,0.5*aperture_correction], 'k:', zorder=-5)
 pl.xlabel("Peak Flux")
 pl.ylabel("0.2\" aperture flux")
-pl.savefig(paths.fpath('coreplots/dendro_peak_vs_0p2arcsec.png'))
+pl.savefig(paths.fpath('coreplots/dendro_peak_vs_0p2arcsec.png'), bbox_inches='tight')
 
 
 
@@ -119,21 +127,22 @@ ax3 = fig2.add_subplot(212)
 
 fit = powerlaw.Fit(dendro_merge['peak_cont_mass'])
 # doesn't work at all fit.plot_pdf(color='k')
-bmin, bmax = 0.2, 6.0
-bins = np.logspace(np.log10(bmin),np.log10(bmax),15)
-bins = np.linspace((bmin),(bmax),15)
+bmin, bmax = 0.1, 350
+bins = np.logspace(np.log10(bmin),np.log10(bmax),20)
+#bins = np.linspace((bmin),(bmax),15)
 H,L,P = ax3.hist(dendro_merge['peak_cont_mass'], bins=bins, color='k',
                  facecolor='none', histtype='step')
-pdf = fit.power_law.pdf(bins)*np.max(H)
+pdf = fit.power_law.pdf(bins)/fit.power_law.pdf(bins).max()*np.max(H)
 ax3.plot(bins[bins>fit.power_law.xmin], pdf, 'r--')
 #fit.power_law.plot_pdf(color='r', linestyle='--')
 #ax3.set_ylim(0.03, 0.5)
-#ax3.set_xscale('log')
+ax3.set_xscale('log')
+ax2.set_xlim(ax3.get_xlim())
 #ax3.set_yscale('log')
 ax3.set_xlabel("Temperature-corrected mass")
 #ax3.set_ylabel("Fraction of sources")
 ax3.set_ylabel("Number of sources")
-fig2.savefig(paths.fpath('coreplots/dendro_tcorr_mass_powerlaw_histogram_fit.png'))
+fig2.savefig(paths.fpath('coreplots/dendro_tcorr_mass_powerlaw_histogram_fit.png'), bbox_inches='tight')
 
 print("Fit parameters: alpha={0}".format(fit.power_law.alpha))
 
@@ -204,7 +213,7 @@ for ii,aperture in enumerate(apertures):
     ax.set_ylim(0, H.max()+1)
 ax.set_xlabel("Flux (Jy)")
 pl.subplots_adjust(hspace=0)
-pl.savefig(paths.fpath("coreplots/dendro_core_flux_histogram_apertureradius.png"))
+pl.savefig(paths.fpath("coreplots/dendro_core_flux_histogram_apertureradius.png"), bbox_inches='tight')
 #pl.legend(loc='best')
 
 powerlaw_par_table = Table()
@@ -244,13 +253,13 @@ H,L,P = ax3.hist(dendro_merge['peak_cont_mass'], bins=bins*0.99, color='k',
 #ax3.set_xlabel("Mass")
 #ax3.set_ylabel("Number of sources")
 #pl.legend(loc='best')
-#fig2.savefig(paths.fpath('coreplots/mass_histograms.png'))
+#fig2.savefig(paths.fpath('coreplots/mass_histograms.png'), bbox_inches='tight')
 #peak_plot[0].set_visible(False)
 #H,L,P = ax3.hist(cores_merge['peak_cont_mass'], bins=bins, color='b',
 #                 facecolor='none', histtype='step', label='M($20$K)',
 #                 linewidth=2, alpha=0.5)
 #ax3.set_xlim(0,7)
-#fig2.savefig(paths.fpath('coreplots/mass_histograms_low.png'))
+#fig2.savefig(paths.fpath('coreplots/mass_histograms_low.png'), bbox_inches='tight')
 #
 #
 #
@@ -290,17 +299,17 @@ ax5x.set_xlabel("Background Mass $M(20\\rm{K})$")
 ax5y = ax5.twinx()
 ax5y.set_yticklabels(m20ktickfunc(ax5.get_yticks()))
 ax5y.set_ylabel("Peak Mass $M(20\\rm{K})$")
-fig4.savefig(paths.fpath('coreplots/dendro_continuum_background_vs_peak.png'))
+fig4.savefig(paths.fpath('coreplots/dendro_continuum_background_vs_peak.png'), bbox_inches='tight')
 ax5.set_xlim(0, 0.4)
 ax5.set_ylim(0, 0.2)
 ax5x.set_xticklabels(m20ktickfunc(ax5.get_xticks()))
 ax5y.set_yticklabels(m20ktickfunc(ax5.get_yticks()))
-fig4.savefig(paths.fpath('coreplots/dendro_continuum_background_vs_peak_zoom.png'))
+fig4.savefig(paths.fpath('coreplots/dendro_continuum_background_vs_peak_zoom.png'), bbox_inches='tight')
 ax5.set_xlim(0, 0.25)
 ax5.set_ylim(0, 0.06)
 ax5x.set_xticklabels(m20ktickfunc(ax5.get_xticks()))
 ax5y.set_yticklabels(m20ktickfunc(ax5.get_yticks()))
-fig4.savefig(paths.fpath('coreplots/dendro_continuum_background_vs_peak_zoom_more.png'))
+fig4.savefig(paths.fpath('coreplots/dendro_continuum_background_vs_peak_zoom_more.png'), bbox_inches='tight')
 
 fig4 = pl.figure(4)
 fig4.clf()
@@ -323,12 +332,12 @@ ax5x.set_xlabel("Big Annulus mass $M(20\\rm{K})$")
 ax5y = ax5.twinx()
 ax5y.set_yticklabels(m20ktickfunc(ax5.get_yticks()))
 ax5y.set_ylabel("Small Annulus Mass $M(20\\rm{K})$")
-fig4.savefig(paths.fpath('coreplots/dendro_continuum_background_vs_peak_shell1to2.png'))
+fig4.savefig(paths.fpath('coreplots/dendro_continuum_background_vs_peak_shell1to2.png'), bbox_inches='tight')
 ax5.set_xlim(0, 0.4)
 ax5.set_ylim(0, 0.4)
 ax5x.set_xticklabels(m20ktickfunc(ax5.get_xticks()))
 ax5y.set_yticklabels(m20ktickfunc(ax5.get_yticks()))
-fig4.savefig(paths.fpath('coreplots/dendro_continuum_background_vs_peak_shell1to2_zoom.png'))
+fig4.savefig(paths.fpath('coreplots/dendro_continuum_background_vs_peak_shell1to2_zoom.png'), bbox_inches='tight')
 
 
 ########## REQUIRES LINE INFO ###########
@@ -344,7 +353,7 @@ ax4.set_xlabel("Continuum flux density (Jy/beam)")
 ax4.set_ylabel("Peak line brightness (K)")
 ax4.set_xlim([0, 0.4])
 pl.legend(loc='best', fontsize=14)
-fig3.savefig(paths.fpath('coreplots/dendro_peakTB_vs_continuum.png'))
+fig3.savefig(paths.fpath('coreplots/dendro_peakTB_vs_continuum.png'), bbox_inches='tight')
 
 fig3 = pl.figure(3)
 fig3.clf()
@@ -358,7 +367,7 @@ ax4.set_xlabel("Continuum Brightness (K)")
 ax4.set_ylabel("Peak line brightness (K)")
 ax4.set_xlim([0, 6])
 pl.legend(loc='best', fontsize=14)
-fig3.savefig(paths.fpath('coreplots/dendro_peakTB_vs_selfconsistentcontinuum.png'))
+fig3.savefig(paths.fpath('coreplots/dendro_peakTB_vs_selfconsistentcontinuum.png'), bbox_inches='tight')
 
 
 fig6 = pl.figure(6)
@@ -400,7 +409,7 @@ ax5.plot([0,20], [0,20], 'k--')
 ax5.set_ylim(ylims)
 ax5.set_xlabel("Mass at 20K [M$_\\odot$]")
 ax5.set_ylabel("Mass at peak $T_B$ [M$_\\odot$]")
-fig4.savefig(paths.fpath('coreplots/dendro_mass20K_vs_massTB.png'))
+fig4.savefig(paths.fpath('coreplots/dendro_mass20K_vs_massTB.png'), bbox_inches='tight')
 
 
 
@@ -451,7 +460,7 @@ ax2.add_patch(Circle([circlecen.ra.deg, circlecen.dec.deg], radius=0.0105479,
                      facecolor='none', edgecolor='k', zorder=-15, alpha=0.2,
                      linewidth=8, linestyle=':',
                      transform=ax2.get_transform('fk5')))
-fig2.savefig(paths.fpath('coreplots/dendro_core_spatial_distribution.png'))
+fig2.savefig(paths.fpath('coreplots/dendro_core_spatial_distribution.png'), bbox_inches='tight')
 
 
 pl.draw()

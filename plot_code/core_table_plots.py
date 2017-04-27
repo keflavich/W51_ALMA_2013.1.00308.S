@@ -9,16 +9,18 @@ from astropy.io import fits
 from astropy import wcs
 from matplotlib.patches import Circle
 import matplotlib
-from cycler import cycler
 import os
 from astropy import log
-import warnings
 import contextlib
 devnull = open(os.devnull,'w')
 
 log.setLevel('CRITICAL')
 
+pl.style.use('classic')
 pl.matplotlib.rc_file('pubfiguresrc')
+pl.mpl.rcParams['font.size'] = 14.0
+pl.mpl.rcParams['axes.titlesize'] = 16.0
+pl.mpl.rcParams['axes.labelsize'] = 15.0
 pl.mpl.rcParams['axes.color_cycle'] = ('338ADD', '9A44B6', 'A60628', '467821',
                                        'CF4457', '188487', 'E24A33', 'b', 'r',
                                        'g', 'm', 'k')
@@ -76,7 +78,7 @@ fit.power_law.plot_pdf(color='r', linestyle='--')
 ax3.set_ylim(0.3, 15)
 ax3.set_xlabel("Peak flux density (Jy/beam)")
 ax3.set_ylabel("Number of sources")
-fig2.savefig(paths.fpath('coreplots/flux_powerlaw_histogram_fit.png'))
+fig2.savefig(paths.fpath('coreplots/flux_powerlaw_histogram_fit.png'), bbox_inches='tight')
 
 print("Flux Fit parameters: alpha={0}".format(fit.power_law.alpha))
 
@@ -88,6 +90,7 @@ print()
 print("Core distribution: tem-corrected peak mass")
 with contextlib.redirect_stderr(devnull):
     fit = powerlaw.Fit(cores_merge['T_corrected_peakmass'])
+print("xmin = {0}, alpha = {1}".format(fit.xmin, fit.alpha))
 fit.plot_ccdf(color='k')
 fit.power_law.plot_ccdf(color='r', linestyle='--')
 ax2.set_ylabel("Fraction of sources")
@@ -98,20 +101,22 @@ with contextlib.redirect_stderr(devnull):
     fit = powerlaw.Fit(cores_merge['T_corrected_peakmass'])
 # doesn't work at all fit.plot_pdf(color='k')
 bmin, bmax = 0.2, 6.0
-bins = np.logspace(np.log10(bmin),np.log10(bmax),15)
-bins = np.linspace((bmin),(bmax),15)
+bmin, bmax = 1.0, 70
+bins = np.logspace(np.log10(bmin),np.log10(bmax),21)
+#bins = np.linspace((bmin),(bmax),15)
 H,L,P = ax3.hist(cores_merge['T_corrected_peakmass'], bins=bins, color='k',
                  facecolor='none', histtype='step')
-pdf = fit.power_law.pdf(bins)*np.max(H)
+pdf = fit.power_law.pdf(bins)/fit.power_law.pdf(bins).max()*np.max(H)
 ax3.plot(bins[bins>fit.power_law.xmin], pdf, 'r--')
 #fit.power_law.plot_pdf(color='r', linestyle='--')
 #ax3.set_ylim(0.03, 0.5)
-#ax3.set_xscale('log')
+ax3.set_xscale('log')
+ax2.set_xlim(ax3.get_xlim())
 #ax3.set_yscale('log')
 ax3.set_xlabel("Temperature-corrected mass")
 #ax3.set_ylabel("Fraction of sources")
 ax3.set_ylabel("Number of sources")
-fig2.savefig(paths.fpath('coreplots/tcorr_mass_powerlaw_histogram_fit.png'))
+fig2.savefig(paths.fpath('coreplots/tcorr_mass_powerlaw_histogram_fit.png'), bbox_inches='tight')
 
 print("Mass Fit parameters: alpha={0}".format(fit.power_law.alpha))
 
@@ -126,6 +131,7 @@ masses_to_fit = np.where(cores_merge['T_corrected_aperturemass'] < cores_merge['
 
 with contextlib.redirect_stderr(devnull):
     fit = powerlaw.Fit(masses_to_fit)
+print("xmin = {0}, alpha = {1}".format(fit.xmin, fit.alpha))
 fit.plot_ccdf(color='k')
 fit.power_law.plot_ccdf(color='r', linestyle='--')
 ax2.set_ylabel("Fraction of sources")
@@ -137,20 +143,21 @@ with contextlib.redirect_stderr(devnull):
 # doesn't work at all fit.plot_pdf(color='k')
 bmin, bmax = 0.1, 300.0
 bins = np.logspace(np.log10(bmin),np.log10(bmax),15)
-bins = np.linspace((bmin),(bmax),15)
+#bins = np.linspace((bmin),(bmax),15)
 H,L,P = ax3.hist(masses_to_fit, bins=bins, color='k',
                  facecolor='none', histtype='step')
 pdf = fit.power_law.pdf(bins)/fit.power_law.pdf(bins).max()*np.max(H)
-ax3.plot(bins[bins>fit.power_law.xmin]-np.mean(np.diff(bins))/2., pdf, 'r--')
+ax3.plot(bins[bins>fit.power_law.xmin], pdf, 'r--')
 #fit.power_law.plot_pdf(color='r', linestyle='--')
 #ax3.set_ylim(0.03, 0.5)
-#ax3.set_xscale('log')
+ax3.set_xscale('log')
+ax2.set_xlim(ax3.get_xlim())
 #ax3.set_yscale('log')
 ax3.set_xlabel("Temperature-corrected mass")
 #ax3.set_ylabel("Fraction of sources")
 ax3.set_ylabel("Number of sources")
 print("Aperture mass fit parameters: alpha={0}+/-{1}".format(fit.power_law.alpha, fit.power_law.sigma))
-fig2.savefig(paths.fpath('coreplots/tcorr_aperture_mass_powerlaw_histogram_fit.png'))
+fig2.savefig(paths.fpath('coreplots/tcorr_aperture_mass_powerlaw_histogram_fit.png'), bbox_inches='tight')
 
 
 
@@ -183,13 +190,13 @@ H,L,P = ax3.hist(protostellar['TMass'], bins=bins*1.01, color='g', linestyle='da
 ax3.set_xlabel("Mass")
 ax3.set_ylabel("Number of sources")
 pl.legend(loc='best')
-fig2.savefig(paths.fpath('coreplots/mass_histograms.png'))
+fig2.savefig(paths.fpath('coreplots/mass_histograms.png'), bbox_inches='tight')
 peak_plot[0].set_visible(False)
 H,L,P = ax3.hist(cores_merge['peak_mass'], bins=bins, color='b',
                  facecolor='none', histtype='step', label='M($20$K)',
                  linewidth=2, alpha=0.5)
 ax3.set_xlim(0,7)
-fig2.savefig(paths.fpath('coreplots/mass_histograms_low.png'))
+fig2.savefig(paths.fpath('coreplots/mass_histograms_low.png'), bbox_inches='tight')
 
 
 
@@ -203,7 +210,7 @@ ax4.plot([0,0.4], [0, 0.4*jy_to_k.value], 'k--')
 ax4.set_xlabel("Continuum flux density (Jy/beam)")
 ax4.set_ylabel("Peak line brightness (K)")
 ax4.set_xlim([0, 0.4])
-fig3.savefig(paths.fpath('coreplots/peakTB_vs_continuum.png'))
+fig3.savefig(paths.fpath('coreplots/peakTB_vs_continuum.png'), bbox_inches='tight')
 
 fig4 = pl.figure(4)
 fig4.clf()
@@ -214,7 +221,7 @@ ax5.plot([0,250], [0,250], 'k--')
 ax5.set_ylim(ylims)
 ax5.set_xlabel("Mass at 20K [M$_\\odot$]")
 ax5.set_ylabel("Mass at peak $T_B$ [M$_\\odot$]")
-fig4.savefig(paths.fpath('coreplots/mass20K_vs_massTB.png'))
+fig4.savefig(paths.fpath('coreplots/mass20K_vs_massTB.png'), bbox_inches='tight')
 
 
 
@@ -245,7 +252,7 @@ ax2.xaxis.set_label_position('top')
 ax2.xaxis.set_ticks_position('top')
 ax2.set_xlabel("Integrated Flux (Jy)")
 
-fig2.savefig(paths.fpath('coreplots/integrated_flux_powerlaw_histogram_fit.png'))
+fig2.savefig(paths.fpath('coreplots/integrated_flux_powerlaw_histogram_fit.png'), bbox_inches='tight')
 
 print("Integrated Flux Fit parameters: alpha={0}".format(fit.power_law.alpha))
 
@@ -293,7 +300,7 @@ ax2.add_patch(Circle([circlecen.ra.deg, circlecen.dec.deg], radius=0.0105479,
                      facecolor='none', edgecolor='k', zorder=-15, alpha=0.2,
                      linewidth=8, linestyle=':',
                      transform=ax2.get_transform('fk5')))
-fig2.savefig(paths.fpath('coreplots/core_spatial_distribution.png'))
+fig2.savefig(paths.fpath('coreplots/core_spatial_distribution.png'), bbox_inches='tight')
 
 
 
@@ -402,7 +409,7 @@ for ii,aperture in enumerate(apertures):
     ax.set_ylim(0, H.max()+1)
 ax.set_xlabel("Integrated or Peak Flux Density (Jy)")
 pl.subplots_adjust(hspace=0)
-pl.savefig(paths.fpath("coreplots/core_flux_histogram_apertureradius.png"))
+pl.savefig(paths.fpath("coreplots/core_flux_histogram_apertureradius.png"), bbox_inches='tight')
 
 
 pl.draw()
@@ -472,7 +479,7 @@ for pp, hh in zip(patches, ('//', '\\\\', '--', '||')*4):
 
 ax.legend(loc='best')
 ax.set_xlabel("$T_B$ [K]")
-fig4.savefig(paths.fpath('coreplots/brightest_line_histogram.png'))
+fig4.savefig(paths.fpath('coreplots/brightest_line_histogram.png'), bbox_inches='tight')
 
 fig6 = pl.figure(6)
 fig6.clf()
@@ -485,7 +492,7 @@ ax6.set_xlabel("Continuum brightness (K)")
 ax6.set_ylabel("Peak line brightness (K)")
 ax6.set_xlim([0, 105])
 ax6.set_ylim([0, 175])
-fig6.savefig(paths.fpath('coreplots/fittedpeakTB_vs_aperturecontinuum.png'))
+fig6.savefig(paths.fpath('coreplots/fittedpeakTB_vs_aperturecontinuum.png'), bbox_inches='tight')
 
 fig7 = pl.figure(7)
 fig7.clf()
@@ -506,7 +513,7 @@ ax7.set_ylim(ylims)
 ax7.set_xlim((4,2000))
 ax7.set_xlabel("Mass at 20K [M$_\\odot$]")
 ax7.set_ylabel("Mass at peak $T_B$ [M$_\\odot$]")
-fig7.savefig(paths.fpath('coreplots/aperture_mass20K_vs_massTB.png'))
+fig7.savefig(paths.fpath('coreplots/aperture_mass20K_vs_massTB.png'), bbox_inches='tight')
 
 
 
@@ -601,4 +608,4 @@ for ii,aperture in enumerate(apertures):
     ax.set_ylim(0, H.max()+1)
 ax.set_xlabel("Mass at peak $T_B$ [$M_\odot$]")
 pl.subplots_adjust(hspace=0)
-pl.savefig(paths.fpath("coreplots/core_mass_histogram_apertureradius.png"))
+pl.savefig(paths.fpath("coreplots/core_mass_histogram_apertureradius.png"), bbox_inches='tight')

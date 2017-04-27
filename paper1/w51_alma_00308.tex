@@ -86,7 +86,7 @@ radio lines: ISM
 %    % \item DONE create Table ref{tab:linelist} = \ref{tab:linelist} (Section
 %    %     \ref{sec:temperature})
 %    %\item DONE Show a `core' mass histogram in Section \ref{sec:temperature}
-%    %\item DONE Repeat Section \ref{sec:W51e2e} for e8 and north
+%    %\item DONE Repeat Section \ref{sec:W51e2e} for e8 and North
 %    %\item DONE - commented out: move Section \ref{sec:cheminterp} to discussion
 %    %\item Add a section ``building on Ginsburg+ 2016''
 %    %    (what did I mean by this?  looking at the feedback in IRS2? nice idea
@@ -169,7 +169,9 @@ The W51 cloud contains two protocluster regions, IRS2 and e1/e2, which each
 contain $M\gtrsim10^4$ \msun of gas and have large far-infrared luminosities
 that
 indicate the presence of embedded, recently-formed or forming massive stars
-\citep{Harvey1986a,Sievers1991a,Ginsburg2012a,Ginsburg2016b}.  Previous
+\citep[Figure
+\ref{fig:overview}][]{Harvey1986a,Sievers1991a,Ginsburg2012a,Ginsburg2016b}.
+Previous
 millimeter and centimeter observations have revealed the gas reservoir
 that is forming new stars and, because of the high masses of the individual
 cores detected, indicated that these new stars are likely to be massive
@@ -321,9 +323,9 @@ A continuum image combining all 4 spectral windows was produced using
 and flagged them out prior to imaging\footnote{The velocity
 range of e8, e2, and North is similar enough that a common range was acceptable
 for this process.  Note also that, while the sources are line-rich,
-failure to flag out the data results in a $<10\%$ error in the continuum estimates
-(see S{\'a}nchez-Monge et al, in prep, showing that even the richest
-sources in the Galaxy have $<40\%$ line contribution).}.  We then phase
+failure to flag out the data results in a $<10\%$ error in the continuum
+estimates \citep[see][showing that even the richest sources in the Galaxy have
+$<40\%$ line contribution.]{Sanchez-Monge2017a} }.  We then phase
 self-calibrated the data on baselines longer than 100m to increase the dynamic
 range.  The final image
 was cleaned to a threshold of 5 mJy.  The lowest noise
@@ -460,8 +462,8 @@ W51 Main and IRS 2 because the identification criteria were too conservative.
 When extracting properties of the `by-eye' sources, we used variable sized
 circular apertures, where the apertures were selected to include all of the
 detectable symmetric emission around a central peak up to a maximum radius
-$r\sim0.6$\arcsec.  This approach is necessary, as some of the sources are not
-centrally peaked and are therefore likely to be spatially resolved starless
+$r\sim0.6$\arcsec.  This approach is necessary because some of the sources are
+not centrally peaked and are therefore likely to be spatially resolved starless
 cores.
 
 Further information about and general discussion of the continuum sources is in
@@ -583,11 +585,11 @@ is little doubt that it contains a compact \hii region.  Because of this free-fr
 contamination, we cannot estimate the central core's dust mass.  If we assume
 the free-free is optically thin at 36 GHz \citep[the highest-frequency cm-wave
 measurement
-we have available][]{Goddi2015a}, with $S_{36 \mathrm{GHz}} = 29$ mJy and
+we have available;][]{Goddi2015a}, with $S_{36 \mathrm{GHz}} = 29$ mJy and
 $S_{227 \mathrm{GHz}}=110$
 mJy, the dust-produced flux would be $S_{227 \mathrm{GHz}} = 86$ mJy, or about
 $\sim20-25\%$ as bright as the other three cores ($T_{B}=65$ K).  With such a modest
-lower-limit brightness temperature, the dust source is likely to be optically
+lower limit brightness temperature, the dust source is likely to be optically
 thin or less than beam-filling, making its upper limit dust mass 
 $M\ll18\msun$; if we assume $T_{dust} = T_{line,max} = 220 K$, the upper limit
 dust mass is $M<7$ \msun.  If d2 were a purely dust source, its lower limit
@@ -623,7 +625,7 @@ $\alpha=3.5$ to convert the BGPS flux density measurements at 271.4 GHz to the
 mean ALMA frequency of 226.6 GHz.  The ALMA data (specifically, the
 0.2\arcsec resolution 12m-only data) have a total flux 23.2 Jy above a  conservative
 threshold of 10 mJy/beam in our
-mosaic; in the same area the BGPS data have a flux of 144 Jy, which scales down to
+mosaic; in the same area, the BGPS data have a flux of 144 Jy, which scales down to
 76.5 Jy.  The recovery fraction is 30$\pm3$\%, where the error bar accounts
 for a change in $\alpha\pm0.5$.  The threshold of 10 mJy/beam corresponds to a
 column threshold $N>1.3\ee{25}$ \percc for 20 K dust. This threshold also
@@ -670,7 +672,7 @@ Surrounding W51e2e, there are relatively sharp-edged and uniform-brightness
 regions in a few spectral lines over the range 51-60 \kms (Figure
 \ref{fig:chemmapse2}, especially the \methanol and \methylformate lines).  Some
 of these features are elongated in the direction
-of the outflow, but most have significant extent orthogonal to the outflow.
+of the outflow, but most have significant extents orthogonal to the outflow.
 The circularly symmetric features are prominent in \methanol, OCS, and
 \dimethylether, weak but present in \formaldehyde and SO, and absent in
 \cyanoacetylene and HNCO.
@@ -703,7 +705,7 @@ are only seen in the compact core ($R<0.4\arcsec\sim2000$ AU;
 core and the outflow, but not the greater extended emission.  \ketene seems to
 be associated with only the extended core, but not the compact core. Finally,
 there are the species that trace the broader ISM in addition to the cores and
-outflows: \formaldehyde, $^{13}$CS, OCS, C$^{18}$O and SO.  Both HCOOH and
+outflows: \formaldehyde, $^{13}$CS, OCS, \ceighteeno and SO.  Both HCOOH and
 N$_2$D$^+$ are weak and associated only with the innermost e2e core.
 
 The presence of these complex species symmetrically distributed at large
@@ -727,7 +729,7 @@ in H30$\alpha$ and a (moderately) extended chemical envelope.
 \kms.
 The cutouts are $6\arcsec\times6\arcsec$ ($3.2\ee{4}\times3.2\ee{4}$ AU).
 To illustrate the lower limit temperature implied by the observed brightness,
-the maps are not continuum-subtracted.  
+the maps are not continuum subtracted.  
 For additional contrast, contours are shown at 150, 200, 250, and 300 K
 (red, green, blue, yellow).
 There
@@ -745,7 +747,7 @@ centimeter emission in e2.
 \kms.
 The cutouts are $6\arcsec\times6\arcsec$ ($3.2\ee{4}\mathrm{~AU}\times3.2\ee{4}$ AU).
 To illustrate the lower limit temperature implied by the observed brightness,
-the maps are not continuum-subtracted.  
+the maps are not continuum subtracted.  
 For additional contrast, contours are shown at 150 and 200 K
 (red and green, respectively).
 As in e2 (Figure \ref{fig:chemmapse2}),
@@ -759,7 +761,7 @@ whereas the opposite is true in e2.
 different lines over the range 54 to 64 \kms.  The cutouts
 are $10\arcsec\times10\arcsec$ ($5.4\ee{4}\times5.4\ee{4}$ AU).  To illustrate
 the lower limit temperature implied by the observed brightness, the maps are
-not continuum-subtracted.  For additional contrast, contours are shown at 150
+not continuum subtracted.  For additional contrast, contours are shown at 150
 and 200 K (red and green, respectively).  Qualitatively, the relative extents
 of species seem comparable to e8 (Figure \ref{fig:chemmapse8}).  
 The W51 North core is the brightest region highlighted by the contours in some
@@ -823,7 +825,7 @@ The fitted temperature and \methanol column maps are shown in Figure
 \ref{fig:ch3ohe2}.
 Sample fitted rotational diagrams are displayed in Figure \ref{fig:ch3ohe2rot}.
 The line intensities are computed from moment maps integrating over the range
-(51, 60) \kms in continuum-subtracted spectral cubes, where the continuum
+(51, 60) \kms in continuum subtracted spectral cubes, where the continuum
 was estimated as the median over the ranges (25-35,85-95) \kms, except
 for the J$_u$=25 lines, which had a continuum estimated from the 10th percentile
 over the same range to exclude contamination from the SO outflow line wings.
@@ -918,7 +920,7 @@ overestimated, as can be seen in Figure \ref{fig:ch3ohe2epeaks}.
 
 % analysis/chem_radial_profile.py
 \Figure{figures/radialprofile_max_CH3OH_e2.pdf}
-{Radial profiles of the azimuthally-averaged peak surface brightness of the
+{Radial profiles of the azimuthally averaged peak surface brightness of the
 observed \methanol transitions along with the profile of the continuum
 brightness around e2e.  These profiles indicate \emph{lower limit} gas temperatures
 as a function of radius; the true temperature can be substantially higher even
@@ -933,7 +935,7 @@ the excitation is continuing to increase toward the center, even after the
 lower-J lines become optically thick.
 %The central dip shows where the lines go into absorption, though they are only
 %seen in absorption at $\sim55$ \kms.  The \methanol lines are
-%continuum-subtracted.}
+%continuum subtracted.}
 }
 {fig:methanolradialprofile}{1}{18cm}
 
@@ -948,11 +950,11 @@ lower-J lines become optically thick.
 but most of the high abundance regions are at high temperatures.
 (b) Temperature vs distance from e2e.  There is a clear trend toward higher
 temperatures closer  to the central source.
-The gray line shows the azimuthally-averaged peak $T_B(\methanol~
+The gray line shows the azimuthally averaged peak $T_B(\methanol~
 8_{0,8}-7_{1,7})$, which gives an approximate lower limit on the highest
 temperature at each line of sight.
 (c) Abundance vs distance from e2e.  The apparent dip at $r<1\arcsec$ is
-somewhat artificial, as it is driven by a rising dust emissivity that
+somewhat artificial because it is driven by a rising dust emissivity that
 corresponds to an increasing optical depth in the dust.  The \methanol column
 in this inner region is likely to be underestimated.   The gray
 line shows the azimuthally averaged abundance.
@@ -960,7 +962,7 @@ line shows the azimuthally averaged abundance.
 {fig:ch3ohtemX}
 
 A few features illustrate the effects of thermal radiative feedback on the gas.
-The temperature jump starting inwards of  $r\sim1.5\arcsec$ (8100 AU; Figure
+The temperature jump starting inward of  $r\sim1.5\arcsec$ (8100 AU; Figure
 \ref{fig:ch3ohtemX}b) is
 substantial, though the 100-200 K floor at greater radii is likely
 artificial\footnote{The low-J transitions have significant optical depth
@@ -1082,8 +1084,8 @@ highlights the beam size.}
 The gas motion around the massive cores is traced consistently by many species.
 \methanol has some of the brightest and most isolated (i.e., not confused with
 other species) lines, so we show the kinematic structure of two
-moderately-excited \methanol lines for the e2e MYSO core in Figure
-\ref{fig:kinematicse2} (similar plots for e8 and north are showin in the
+moderately excited \methanol lines for the e2e MYSO core in Figure
+\ref{fig:kinematicse2} (similar plots for e8 and North are showin in the
 Appendix, figures \ref{fig:kinematicse8} and \ref{fig:kinematicsnorth}).
 
 \FigureOneCol{figures/methanol_velocity_moments_e2wide.png}
@@ -1109,14 +1111,14 @@ the gas is typically moving at Mach numbers $\mathcal{M}\approx10-30$.
 %parallel to the outflows, though the \methanol lines do not trace these
 %outflows spatially or kinematically.
 
-In e2e, the spatial locations of both the blue and red lobe of the CO outflow
+In e2e, the spatial locations of both the blue and red lobes of the CO outflow
 are redshifted in the dense gas, while the rest of the core is blueshifted.
 The outflow axis shows some of the lowest velocity dispersion in the e2e core,
 suggesting that the outflow is not responsible for driving the observed
 velocity dispersion.
 
 An increase in the velocity dispersion toward the central protostar is clearly
-seen in both e2e and e8, though the opposite is seen in north.  We caution,
+seen in both e2e and e8, though the opposite is seen in the north.  We caution,
 though, that the high velocity dispersion toward the central source is likely
 to be affected by contamination from other molecular species.  There are many
 more complex species detected in the central pixel than elsewhere in these
@@ -1193,7 +1195,7 @@ so straightforwardly.
 % (or outflowing) more rapidly.
 
 
-Toward both e8 and north, the same observational caveats about the optical
+Toward both e8 and North, the same observational caveats about the optical
 depth of the millimeter continuum apply.  We conclude that our ALMA data do
 not provide an unambiguous signature of infall, but this nondetection is caused
 by observational limitations rather than a lack of infall motion.
@@ -1243,7 +1245,7 @@ perpendicular to the main outflow axis.  The vertical dashed line shows the
 position of peak continuum emission. The lines are (a) \methylformate
 $17_{3,14}-16_{3,13}$ 218.28083 GHz and (b) \methanol $8_{0,8}-7_{1,6}$
 220.07849 GHz.  The spectral resolution is 0.5 \kms in (a) and 1.2 \kms in (b).
-The data have been continuum-subtracted, highlighting the low line-to-continuum
+The data have been continuum subtracted, highlighting the low line-to-continuum
 contrast near the source.  The \methylformate line was selected because the
 molecule approximately traces the same material as \methanol, but the pair of
 \methylformate J=17 lines were in our high spectral resolution window, so the
@@ -1252,7 +1254,7 @@ velocity substructure can be seen.
 {fig:e2epvdiagrams}{1}{9cm}
 
 
-We repeated this exercise for e8 and north, although their outflow directions
+We repeated this exercise for e8 and North, though their outflow directions
 are more ambiguous, and we found similar features (i.e., a lack of any clear
 rotation signature) at all plausible position angles.
 
@@ -1296,7 +1298,7 @@ such regions are observed surrounding the compact \hii regions.
 % transitions.
 
 The chemical maps shown in Section \ref{sec:chemistrymaps} show the volumes of
-gas clearly affected by newly-forming high-luminosity stars.  The
+gas clearly affected by newly forming high-luminosity stars.  The
 \methanol-enhanced region around W51e2e extends 0.04 pc, or 8500 AU (see Section
 \ref{sec:ch3ohtem}). Other locally enhanced species, especially the nitrogenic
 molecules HNCO and \formamide, occupy a smaller and more asymmetric region
@@ -1306,7 +1308,7 @@ no radio detection; they are most likely heated by direct infrared radiation
 from these sources.
 
 The luminosities of the other \uchii and \hchii regions throughout the observed
-area are high enough, $L\gtrsim10^4$ \lsun, to produce chemically-enhanced
+area are high enough, $L\gtrsim10^4$ \lsun, to produce chemically enhanced
 molecular envelopes if they were surrounded by dense ($n(\hh)\gtrsim10^4$
 \percc) molecular gas.  Since few such regions are detected, we conclude that
 these \hii regions are not surrounded by such high-density gas but instead are
@@ -1351,8 +1353,8 @@ tracing the diffuse IRS 2 \hii region.}
 \subsection{Outflows}
 \label{sec:mainoutflows}
 While many outflows were detected, we defer their discussion to Appendix
-\ref{sec:outflows}, as the details of these flows is not relevant to the main
-point of the paper.  However, we note that out of the dozen or so outflows
+\ref{sec:outflows} because the details of these flows is not relevant to the
+main point of the paper.  However, we note that out of the dozen or so outflows
 detected, \emph{none} come from radio continuum sources (\hii regions).  All
 outflows that have a clear origin come from millimeter-detected,
 centimeter-faint sources, suggesting that these sources are accreting molecular
@@ -1441,7 +1443,7 @@ heating its surroundings.
 The different effects of ionizing vs thermal radiation can be seen directly in
 the three main massive star forming regions, e2, e8, and North.  Figures
 \ref{fig:e2methanolhnco} and \ref{fig:northmethanolhnco} show both the
-highly-excited warm molecular gas in color and the free-free emission from
+highly excited warm molecular gas in color and the free-free emission from
 ionized gas in contours.  As described in Section
 \ref{sec:nonionizingradiation}, the spatial differences indicate that the
 ionizing radiation sources - the exposed OB stars - have little effect on the
@@ -1593,7 +1595,7 @@ evidence for ionized accretion onto e2w is diminished.
 There is one clear example of a \hchii region surrounded by molecular gas in
 our sample, the source d2.  However, it does not have an associated molecular
 outflow, so there is no direct evidence of ongoing accretion.
-Following the discussion of this source in Section \ref{sec:w51d2}, we suggest
+Following the discussion of this source in Section \ref{sec:w51d2}, we suggest that
 this core contains an early B ($M~8-20$ \msun) star that has just recently
 reached the main sequence, making it older and less massive than the three main
 MYSOs.
@@ -1617,18 +1619,18 @@ MYSOs.
 In Sections \ref{sec:W51e2e} and \ref{sec:w51e8andnorth}, we noted that the
 \emph{lower limit} luminosities for the three most massive cores correspond to
 early B-type photospheres.  Such stars should emit enough radiation to ignite
-luminous compact \hii regions. %, $Q_{lyc}=5\ee{45}$ \pers \citep{Vacca1996a}.
+luminous compact \hii regions. %, $Q_{\textrm{lyc}}=5\ee{45}$ \pers \citep{Vacca1996a}.
 
 % see hii_limits.py
 If we assume a uniform, spherical \hii region (a Strömgren sphere), we can
-obtain the Lyman continuum luminosity $Q_{lyc}$ required to produce our
+obtain the Lyman continuum luminosity $Q_{\textrm{lyc}}$ required to produce our
 $2-\sigma$ upper limit for e2e:
 \begin{equation}
-    Q_{lyc} = \frac{4}{3} \pi R^2 \alpha_B EM
+    Q_{\textrm{lyc}} = \frac{4}{3} \pi R^2 \alpha_B EM
 \end{equation}
 where $\alpha_B = 3\ee{-13}$ cm$^{3}$ s$^{-1}$, the emission measure $EM$ has
-units cm$^{-6}$ pc, and $Q_{lyc}$ has units \pers.  We infer the emission measure
-using Equation 4.60 of \citet{Condon2007a} and inverting their equation 4.61 to
+units cm$^{-6}$ pc, and $Q_{\textrm{lyc}}$ has units \pers.  We infer the emission measure
+using Equation 4.60 of \citet{Condon2007a} and inverting their Equation 4.61 to
 get
 
 \begin{equation}
@@ -1639,10 +1641,10 @@ EM = -3.05\ee{6}
 \end{equation}
 using numerical constants
 from \citet{Mezger1967a}.  If we use the centimeter
-continuum beam size (FWHM) as the radius, the resulting $Q_{lyc}<6\ee{45}$ \pers 
-is well below the lowest tabulated $Q_{lyc}$ in \citet{Vacca1996a} and
+continuum beam size (FWHM) as the radius, the resulting $Q_{\textrm{lyc}}<6\ee{45}$ \pers 
+is well below the lowest tabulated $Q_{\textrm{lyc}}$ in \citet{Vacca1996a} and
 \citet{Sternberg2003a},
-$Q_{lyc}(\mathrm{B0.5V}) = 5\ee{47}$ \pers.  Using the stellar parameters from
+$Q_{\textrm{lyc}}(\mathrm{B0.5V}) = 5\ee{47}$ \pers.  Using the stellar parameters from
 \citet{Pecaut2013a} and assuming the stars are pure blackbodies, the upper
 limit Lyman continuum implies a star later than about B2, or $M<7$ \msun.
 %A similar limit is acquired......
@@ -1650,14 +1652,14 @@ If instead we assume the \hii region is optically thick, the implied radius is
 about $R_{\scriptsize{\hii}}<100$ AU, which gives a density limit but not
 a luminosity limit.  We favor the optically thin assumption because the outflow
 should provide an escape outlet for the ionized gas to expand into.
-%which allows $Q_{lyc}\leq6\ee{45}$ \pers,
+%which allows $Q_{\textrm{lyc}}\leq6\ee{45}$ \pers,
 %corresponding to spectral type $<$B2.5, or $M<6$ \msun.  
 
 
 The stellar luminosity inferred for e2e from the dust continuum is
 $L>2.3\ee{4}$ \lsun (Section \ref{sec:W51e2e}), which corresponds to at least a
 B1V star, or $M>11$ \msun.  The upper limits on the Lyman continuum luminosity
-and lower limits on the bolometric luminosity are similar for e8 and north.
+and lower limits on the bolometric luminosity are similar for e8 and North.
 The contradiction between the two luminosity limits implies that the accreting
 stars are not yet on the main sequence.
 
@@ -1742,7 +1744,7 @@ turbulent medium, intersecting shocks create local overdensities that can
 greatly exceed the local Jeans mass even if gas temperatures are quite high.
 In general, the properties of turbulence in the regime we are exploring
 ($T\gtrsim100$ K, $n\gtrsim10^6$ \percc) are not well explored.  If we take the
-observed line widths (\S \ref{sec:kinematics}) as purely turbulent motion, the
+observed linewidths (\S \ref{sec:kinematics}) as purely turbulent motion, the
 cores are extremely turbulent and barely bound, if at all.  However, as noted
 in that section, some portion of the large linewidths can be resolved into
 individual components, and the linewidths may therefore indicate that there are
@@ -1806,10 +1808,10 @@ the scale of individual beams.
 
 
 Within this large reservoir, there are few detected fragments.  In our data,
-within 6500 AU of W51 North, there is only 1 (ALMAmm35), around e2e there is
-the HII region e2w and possibly 2-3 others between 5000 and 6500 AU, and around
-e8 there are none.  Admittedly, our data are not as sensitive in the areas
-immediately surrounding these cores because of dynamic range limitations.
+within 6500 AU of W51 North, there is only one (ALMAmm35), around e2e there is
+the HII region e2w and possibly two to three others between 5000 and 6500 AU,
+and around e8 there are none.  Admittedly, our data are not as sensitive in the
+areas immediately surrounding these cores because of dynamic range limitations.
 Nonetheless, the lack of compact core detections around the most massive
 sources is consistent with the interpretation that fragmentation is suppressed.
 
@@ -2001,26 +2003,15 @@ have not prevented the formation of the observed  massive cores.
 % regulated by thermal feedback from one or more massive stars during cloud
 % collapse.
  
-% methanol_and_outflow.py
-\FigureTwo
-{figures/outflows_over_methanol_e2e.png}
-{figures/methanol_scalebar_e2e.png}
-{The e2e core as seen in the peak intensity of the \methanol $8_{0,8}-7_{1,6}$
-line, with continuum included, is shown in greyscale.
-(a) The integrated \twelveco 2-1 outflow is overlaid in red (73 to 180 \kms)
-and blue (0 to 45 \kms).  The `core' is circularly symmetric, while the outflow
-is clearly bipolar. Panel (b) is included to make the comparison clearer.}
-{fig:outflowonmethanol}{1}{8cm}
-
 
 \subsection{High-mass star formation within dense protoclusters:\\
 Cooperative accretion or assembly line}
 \label{sec:cooperative}
-The conditions we currently observe in W51 are not `initial conditions', but
-they are intermediate preconditions for high-mass (and maybe very high-mass)
+The conditions we currently observe in W51 are not ``initial conditions'', but
+they are intermediate preconditions for high-mass (and maybe very-high-mass)
 star formation.  We are observing a state in which high-mass stars have
 recently reached the main sequence within the same volume of gas as
-presently-forming, rapidly accreting protostars.  These conditions are rare in
+presently forming, rapidly accreting protostars.  These conditions are rare in
 our galaxy, appearing only in a handful of high-mass star-forming regions,
 specifically in the dense, dusty protoclusters (e.g., W49, Sgr B2, G333) that
 are the likely precursors of $>10^4$ \msun young massive clusters (e.g., NGC
@@ -2038,7 +2029,7 @@ and stars) protocluster environment.
 % initial conditions were.  Did the current generation of forming massive stars
 % start life the same way as previous generations?
 
-The simultaneous presence of hyper- and ultra-compact \hii regions and
+The simultaneous presence of hyper- and ultracompact \hii regions and
 molecular cores indicates that there are at least two generations (likely
 separated by at most a few thousand years) of massive stars forming within each
 of the clusters.  How do these generations interact, and did the first
@@ -2046,7 +2037,7 @@ generation - the present-day \hchii and \uchii drivers, which we refer to here
 as main-sequence stars - affect the second?
 
 One possibility is that the first generation helped produce the second,
-which we call `cooperative accretion'.
+which we call ``cooperative accretion.''
 If the main-sequence stars formed in the same way as the current generation of
 forming stars, i.e., they heated their own surrounding cores as suggested in
 the `enforced isolation' scenario above, they may have completely changed the
@@ -2066,7 +2057,7 @@ and would therefore be higher mass than the first.
 %fragmentation into the sub-solar mass objects typical in local clouds until
 %enough gas was present to collapse into a substantially larger object.  
 
-This toy model is analogous to the `cooperative accretion' mode suggested by
+This toy model is analogous to the ``cooperative accretion'' mode suggested by
 \citet{Zinnecker2007a}, but at a much earlier stage in the cluster development
 when the gas is still molecular and dusty and therefore capable of efficient
 cooling.  In the ionized cooperative accretion scenario, the most massive star
@@ -2108,7 +2099,7 @@ with the dense gas.  It is possible, though, that these stars are only
 effective at dense gas heating \emph{before} they ignite Lyman continuum
 emission and blow out cavities, and afterward they are merely uninteractive
 witnesses to continued collapse \citep{Peters2010c}.  In this case, it is
-critical that the main sequence stars somehow became dynamically decoupled from
+critical that the main-sequence stars somehow became dynamically decoupled from
 their dense cores.
 
 
@@ -2237,7 +2228,7 @@ likely requires multiwavelength data.
 
 These limitations prevent us from drawing any robust conclusions from these
 data.  However, they are presented in full detail in Appendix
-\ref{sec:contsrcs}, including description of the spatial structure,
+\ref{sec:contsrcs}, including a description of the spatial structure,
 characterization technique, and flux distribution.
 
 
@@ -2254,7 +2245,7 @@ forming stars.
 The key observational results include:
 \begin{itemize}
     \item We identified chemically enhanced regions around high-mass protostars
-        and suggest they are radiatively heated zones in which previously
+        and suggest that they are radiatively heated zones in which previously
         frozen-out chemical species have desorbed into the gas phase.
     \item We measured the temperature and mass structure surrounding the three
         highest-mass cores, W51 e2e, e8, and North.  All three have masses
@@ -2500,6 +2491,22 @@ of the long continuum filament is e8.}
 connects the northwest and southeast extrema of the flow.}
 {fig:e2ecooutflow}{1}{18cm}
 
+Figure \ref{fig:outflowonmethanol} shows the e2e outflow overlaid on the
+emission from a \methanol line.  It illustrates that the \methanol enhancement
+is not produced by the outflow.
+
+% methanol_and_outflow.py
+\FigureTwo
+{figures/outflows_over_methanol_e2e.png}
+{figures/methanol_scalebar_e2e.png}
+{The e2e core as seen in the peak intensity of the \methanol $8_{0,8}-7_{1,6}$
+line, with continuum included, is shown in greyscale.
+(a) The integrated \twelveco 2-1 outflow is overlaid in red (73 to 180 \kms)
+and blue (0 to 45 \kms).  The `core' is circularly symmetric, while the outflow
+is clearly bipolar. Panel (b) is included to make the comparison clearer.}
+{fig:outflowonmethanol}{1}{8cm}
+
+
 \subsection{e8}
 There are at least four distinct outflows coming from the e8 filament.
 The e8 core is launching a redshifted outflow to the northwest.  A blueshifted
@@ -2581,7 +2588,7 @@ temperature is equal to the source's peak line brightness temperature (Section
 
 
 Except where noted below, the hand-selected sources are used for further
-analysis as they are more reliable.
+analysis because they are more reliable.
 %However, to encourage reproducible results
 %- which hand-extracted source positions defy - we also provide the
 %algorithmically-extracted and selected dendrogram catalog.
@@ -2748,7 +2755,7 @@ the spectra obtained from the brightest continuum pixel within the source
 aperture.  To obtain the peak line brightness, we fit Gaussian profiles to each
 identified line listed in Tables \ref{tab:linesspw0}-\ref{tab:linesspw3},
 rejecting those with poor fits.  The line brightnesses reported in the figure
-are the sum of the continuum-subtracted peak line brightness and the continuum
+are the sum of the continuum subtracted peak line brightness and the continuum
 brightness (i.e., they are the raw observed peak brightness).  Excepting CO and
 \formaldehyde, which are excluded from the plot, \methanol is the brightest
 line toward most sources. 
@@ -2869,20 +2876,20 @@ We classified each of the 75 hand-selected sources on the following parameters:
 
 These classifications are set in the `Categories' column of Table
 \ref{tab:photometry1}.  They serve as a broad guideline for further
-analysis.   
+analysis.   Table \ref{tab:photometry2} lists the measured source properties and classifications.
 
 
 % \section{Intersection of cylindrical and spherical annuli in a power-law
 % density profile}
 
 \section{Additional kinematic plots}
-Kinematics figures for the e8 and north cores are shown in this Appendix to
+Kinematics figures for the e8 and North cores are shown in this Appendix to
 minimize clutter in the main text.
 
 Figures \ref{fig:kinematicse8} and \ref{fig:kinematicsnorth} show the moment 1
 and moment 2 maps of two \methanol lines as described in Section
 \ref{sec:kinematics}.  W51 e8 has notably narrower lines in some parts of 
-the core than either e2 or north.
+the core than either e2 or North.
 
 \Figure{figures/methanol_velocity_moments_e8wide.png}
 {Moment 1 and 2 maps of the W51 e8 core over the velocity
@@ -2899,9 +2906,10 @@ because the northeast component of the core is interacting
 with the IRS2 \hii region. See Figure \ref{fig:kinematicse2}.}
 {fig:kinematicsnorth}{1}{0.9\textwidth}
 
-Figures \ref{fig:kinematicse8} and \ref{fig:kinematicsnorth} show the moment 1
-and moment 2 maps of two \methanol lines as described in Section
-\ref{sec:kinematics}.
+Figures \ref{fig:e8pvdiagrams} and \ref{fig:northpvdiagrams} show
+position-velocity diagrams of a \methanol line and a \methylformate line as
+described in Section \ref{sec:kinematics}.  They illustrate that there is no
+clear rotation signature indicating the presence of a large ($>1000$ AU) disk.
 
 \FigureTwo
 {figures/perpcoW51_b6_12M.CH3OCHO17314-16313A.e8_diskpv.png}
@@ -2912,7 +2920,7 @@ unambiguous bipolar outflow on small scales.  The vertical dashed line shows the
 position of peak continuum emission. The lines are (a) \methylformate
 $17_{3,14}-16_{3,13}$ 218.28083 GHz and (b) \methanol $8_{0,8}-7_{1,6}$
 220.07849 GHz.  The spectral resolution is 0.5 \kms in (a) and 1.2 \kms in (b).
-The data have been continuum-subtracted, highlighting the low line-to-continuum
+The data have been continuum subtracted, highlighting the low line-to-continuum
 contrast near the source.  The \methylformate line was selected because the
 molecule approximately traces the same material as \methanol, but the pair of
 \methylformate J=17 lines were in our high spectral resolution window, so the
@@ -2928,7 +2936,7 @@ perpendicular to the large-scale CO outflow.  The vertical dashed line shows the
 position of peak continuum emission. The lines are (a) \methylformate
 $17_{3,14}-16_{3,13}$ 218.28083 GHz and (b) \methanol $8_{0,8}-7_{1,6}$
 220.07849 GHz.  The spectral resolution is 0.5 \kms in (a) and 1.2 \kms in (b).
-The data have been continuum-subtracted, highlighting the low line-to-continuum
+The data have been continuum subtracted, highlighting the low line-to-continuum
 contrast near the source.  The \methylformate line was selected because the
 molecule approximately traces the same material as \methanol, but the pair of
 \methylformate J=17 lines were in our high spectral resolution window, so the
@@ -2990,7 +2998,7 @@ $R_{\rm HII}(t)\approx0.04$\,pc, while at $t=10^5$\,yr, it is $R_{\rm
 HII}\approx0.16$\,pc, which is comparable to the observed radius
 ($r_{obs} \sim 0.13-0.19$ pc)\\
 \\
-Whitworth et al. 1994 give the fragmentation timescale as
+\citet{Whitworth1994a} give the fragmentation timescale as
 \begin{eqnarray}
 t_{\rm frag}\sim1.56\left(\frac{c_{\rm s}}{0.2{\rm km\,s}^{-1}}\right)^{\frac{7}{11}}\left(\frac{Q_{\rm H}}{10^{49}{\rm s}^{-1}}\right)^{-\frac{1}{11}}\left(\frac{n}{10^{3}{\rm cm}^{-3}}\right)^{-\frac{5}{11}}{\rm Myr}.
 \end{eqnarray} 
