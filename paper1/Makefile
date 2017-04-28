@@ -21,7 +21,8 @@ w51_alma_00308:
 diff:
 	python2 parse_macros.py w51_alma_00308.tex w51_alma_00308_fordiff.tex
 	#python parse_macros.py w51_alma_00308_aug13.tex w51_alma_00308_aug13_fordiff.tex
-	python2 parse_macros.py w51_alma_00308_submittedJan16.tex original_for_diff.tex
+	#python2 parse_macros.py w51_alma_00308_submittedJan16.tex original_for_diff.tex
+	python2 parse_macros.py w51_alma_00308_accepted_preproofs.tex original_for_diff.tex
 	latexdiff original_for_diff.tex w51_alma_00308_fordiff.tex > diff.tex
 	${SKIPERR} diff.tex
 	${BIBTEX} diff
