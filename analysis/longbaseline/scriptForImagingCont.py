@@ -11,7 +11,9 @@ thesteps = []
 step_title = {0: 'Image cont natural',
               1: 'Image cont briggs R=0.5',
               2: 'Image cont uniform',
-              3: 'Image cont super-uniform'}
+              3: 'Image cont super-uniform',
+              4: 'Image cont tapered',
+             }
 #              20: ' glob all files and make fits'}
 
 
@@ -247,3 +249,54 @@ if(mystep in thesteps):
 
 
 #clean(vis="w51e2_w51n_cax_new.ms",imagename="W51ncax.cont_super100",outlierfile="",field="1",spw="0:815~820;880~890;900~910;1465~1500;1640~1650,1:18~24;395~415,2:100~105;239~242,3:461~468,6:191~195;403~409,7:305~315,9:315~320;395~400;700~708;790~796;1380~1385;1560~1565;1725~1732,10:815~820;880~890;900~910;1465~1500;1640~1650,11:18~24;395~415,12:100~105;239~242,13:461~468,16:191~195;403~409,17:305~315,19:315~320;395~400;700~708;790~796;1380~1385;1560~1565;1725~1732,20:815~820;880~890;900~910;1465~1500;1640~1650,21:18~24;395~415,22:100~105;239~242,23:461~468,26:191~195;403~409,27:305~315,29:315~320;395~400;700~708;790~796;1380~1385;1560~1565;1725~1732",selectdata=True,timerange="",uvrange=">10m",antenna="",scan="",observation="",intent="",mode="mfs",resmooth=False,gridmode="",wprojplanes=-1,facets=1,cfcache="cfcache.dir",rotpainc=5.0,painc=360.0,aterm=True,psterm=False,mterm=True,wbawp=False,conjbeams=True,epjtable="",interpolation="linear",niter=1000,gain=0.1,threshold="0.5mJy",psfmode="clark",imagermode="csclean",ftmachine="mosaic",mosweight=False,scaletype="SAULT",multiscale=[0],negcomponent=-1,smallscalebias=0.6,interactive=True,mask="",nchan=-1,start=0,width=1,outframe="LSRK",veltype="radio",imsize=5120,cell="0.002arcsec",phasecenter="",restfreq="",stokes="I",weighting="superuniform",robust=0.0,uvtaper=False,outertaper=[''],innertaper=['1.0'],modelimage="",restoringbeam=[''],pbcor=False,minpb=0.2,usescratch=False,noise="1.0Jy",npixels=0,npercycle=100,cyclefactor=1.5,cyclespeedup=-1,nterms=1,reffreq="",chaniter=False,flatnoise=True,allowchunk=False)
+
+mystep = 4  ## tapered
+if(mystep in thesteps):
+    casalog.post('Step '+str(mystep)+' '+step_title[mystep],'INFO')
+    print 'Step ', mystep, step_title[mystep]
+# CHECK NOISE LEVELLLLLLLLLLAND RESIDUALS
+    cell='0.005arcsec'
+    imagesize=5120
+    thre='0.5mJy'
+    weighting_scheme = 'natural'
+    os.system('rm -rf '+souname1+weighting_scheme+'tapered*')
+    os.system('rm -rf '+souname2+weighting_scheme+'tapered*')
+
+    tclean(vis=visname,
+           spw = spwcont1,
+           imagename = souname1+weighting_scheme+"tapered",
+           field='0',
+           cell=cell,
+           imsize=imagesize,
+           outframe='LSRK',
+           niter=20000,
+           interactive=False,
+           threshold=thre,
+           weighting=weighting_scheme,
+           specmode='mfs',
+           deconvolver='mtmfs',
+           nterms=2,
+           scales=[0,3,9,15],
+           uvrange='<3000m',
+           )
+
+
+    tclean(vis=visname,
+           spw = spwcont2,
+           imagename = souname2+weighting_scheme+"tapered",
+           field='1',
+           cell=cell,
+           imsize=imagesize,
+           outframe='LSRK',
+           niter=20000,
+           interactive=False,
+           threshold=thre,
+           weighting=weighting_scheme,
+           #robust=0.5,
+           specmode='mfs',
+           deconvolver='mtmfs',
+           nterms=2,
+           scales=[0,3,9,15],
+           uvrange='<3000m',
+          )
+
