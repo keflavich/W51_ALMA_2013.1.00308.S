@@ -27,6 +27,17 @@ if (thesteps==[]):
     print 'Executing all steps: ', thesteps
 
 
+def makefits(myimagebase):
+    impbcor(imagename=myimagebase+'.image.tt0', pbimage=myimagebase+'.pb.tt0', outfile=myimagebase+'.image.tt0.pbcor', overwrite=True) # perform PBcorr
+    exportfits(imagename=myimagebase+'.image.tt0.pbcor', fitsimage=myimagebase+'.image.tt0.pbcor.fits', dropdeg=True, overwrite=True) # export the corrected image
+    exportfits(imagename=myimagebase+'.image.tt1', fitsimage=myimagebase+'.image.tt1.fits', dropdeg=True, overwrite=True) # export the corrected image
+    exportfits(imagename=myimagebase+'.pb.tt0', fitsimage=myimagebase+'.pb.tt0.fits', dropdeg=True, overwrite=True) # export the PB image
+    exportfits(imagename=myimagebase+'.model.tt0', fitsimage=myimagebase+'.model.tt0.fits', dropdeg=True, overwrite=True) # export the PB image
+    exportfits(imagename=myimagebase+'.model.tt1', fitsimage=myimagebase+'.model.tt1.fits', dropdeg=True, overwrite=True) # export the PB image
+    exportfits(imagename=myimagebase+'.residual.tt0', fitsimage=myimagebase+'.residual.tt0.fits', dropdeg=True, overwrite=True) # export the PB image
+    exportfits(imagename=myimagebase+'.alpha', fitsimage=myimagebase+'.alpha.fits', dropdeg=True, overwrite=True)
+    exportfits(imagename=myimagebase+'.alpha.error', fitsimage=myimagebase+'.alpha.error.fits', dropdeg=True, overwrite=True)
+
 
 
 
@@ -254,10 +265,10 @@ mystep = 4  ## tapered
 if(mystep in thesteps):
     casalog.post('Step '+str(mystep)+' '+step_title[mystep],'INFO')
     print 'Step ', mystep, step_title[mystep]
-# CHECK NOISE LEVELLLLLLLLLLAND RESIDUALS
+    # CHECK NOISE LEVELLLLLLLLLLAND RESIDUALS
     cell='0.005arcsec'
     imagesize=5120
-    thre='0.5mJy'
+    thre='5.0mJy'
     weighting_scheme = 'natural'
     os.system('rm -rf '+souname1+weighting_scheme+'tapered*')
     os.system('rm -rf '+souname2+weighting_scheme+'tapered*')
@@ -279,6 +290,7 @@ if(mystep in thesteps):
            scales=[0,3,9,15],
            uvrange='<3000m',
            )
+    makefits(souname1+weighting_scheme+"tapered")
 
 
     tclean(vis=visname,
@@ -299,4 +311,4 @@ if(mystep in thesteps):
            scales=[0,3,9,15],
            uvrange='<3000m',
           )
-
+    makefits(souname2+weighting_scheme+"tapered")
