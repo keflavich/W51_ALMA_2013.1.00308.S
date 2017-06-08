@@ -268,7 +268,7 @@ if(mystep in thesteps):
     # CHECK NOISE LEVELLLLLLLLLLAND RESIDUALS
     cell='0.005arcsec'
     imagesize=5120
-    thre='5.0mJy'
+    thre='50.0mJy'
     weighting_scheme = 'natural'
     os.system('rm -rf '+souname1+weighting_scheme+'tapered*')
     os.system('rm -rf '+souname2+weighting_scheme+'tapered*')
@@ -288,7 +288,7 @@ if(mystep in thesteps):
            deconvolver='mtmfs',
            nterms=2,
            scales=[0,3,9,15],
-           uvrange='<3000m',
+           uvrange='60~2400klambda',
            )
     makefits(souname1+weighting_scheme+"tapered")
 
@@ -309,6 +309,6 @@ if(mystep in thesteps):
            deconvolver='mtmfs',
            nterms=2,
            scales=[0,3,9,15],
-           uvrange='<3000m',
+           uvrange='60~2400klambda',
           )
     makefits(souname2+weighting_scheme+"tapered")
