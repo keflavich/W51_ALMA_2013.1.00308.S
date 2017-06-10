@@ -64,3 +64,6 @@ def pspath(x):
 
 def simpath(x):
     return path(x, simulation_path)
+
+def lbpath(x):
+    return os.path.join(datapath, 'longbaseline', x)

@@ -268,10 +268,13 @@ if(mystep in thesteps):
     # CHECK NOISE LEVELLLLLLLLLLAND RESIDUALS
     cell='0.005arcsec'
     imagesize=5120
-    thre='50.0mJy'
+    thre='25.0mJy'
     weighting_scheme = 'natural'
     os.system('rm -rf '+souname1+weighting_scheme+'tapered*')
     os.system('rm -rf '+souname2+weighting_scheme+'tapered*')
+
+    #flagdata(vis=visname, mode='manual', antenna='DA45&DV03,DA61&DA60,DV14&DV18,DV03&DV10,DA45&DV10',
+    #         cmdreason="Get rid of short baselines since there are too few")
 
     tclean(vis=visname,
            spw = spwcont1,
@@ -288,7 +291,7 @@ if(mystep in thesteps):
            deconvolver='mtmfs',
            nterms=2,
            scales=[0,3,9,15],
-           uvrange='60~2400klambda',
+           uvrange='200~2400klambda',
            )
     makefits(souname1+weighting_scheme+"tapered")
 
@@ -309,6 +312,6 @@ if(mystep in thesteps):
            deconvolver='mtmfs',
            nterms=2,
            scales=[0,3,9,15],
-           uvrange='60~2400klambda',
+           uvrange='200~2400klambda',
           )
     makefits(souname2+weighting_scheme+"tapered")
