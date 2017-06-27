@@ -163,7 +163,7 @@ if(mystep in thesteps):
 
     cell='0.005arcsec'
     imagesize=5120
-    thre='0.25mJy'## measured noise ~0.3mJy
+    thre='1.0mJy'## measured noise ~0.2mJy
     weighting_scheme = 'uniform'
     os.system('rm -rf '+souname1+weighting_scheme+'*')
     os.system('rm -rf '+souname2+weighting_scheme+'*')
@@ -179,12 +179,16 @@ if(mystep in thesteps):
       interactive=False,
       threshold=thre,
       weighting=weighting_scheme,
-  #    robust=0.5,
-           specmode='mfs',
-           deconvolver='mtmfs',
-           nterms=2,
+      #    robust=0.5,
+      specmode='mfs',
+      deconvolver='mtmfs',
+      nterms=2,
+      scales=[0,3,9,15],
       uvrange='>300m',
       mask='W51e2cax.cont_super.mask')  ## 2 boxes as a list
+    makefits(souname1+weighting_scheme)
+
+
 
 
     tclean(vis=visname,
@@ -198,12 +202,34 @@ if(mystep in thesteps):
       interactive=False,
       threshold=thre,
       weighting=weighting_scheme,
-           specmode='mfs',
-           deconvolver='mtmfs',
-           nterms=2,
-  #    robust=0.5,
+      specmode='mfs',
+      deconvolver='mtmfs',
+      nterms=2,
+      #    robust=0.5,
+      scales=[0,3,9,15],
       uvrange='>300m',
-      mask = 'W51ncax.cont_super100.mask')
+      #mask = 'W51ncax.cont_super100.mask',
+      mask='w51n_mask_0.75mJy.mask',
+     )
+    makefits(souname2+weighting_scheme)
+
+    if False:
+        # run this once, by hand, to get a mask
+        ia.open(souname2+weighting_scheme+".image.tt0")
+        ia.calcmask(mask=souname2+weighting_scheme+".image.tt0 > 0.00075", name='clean_mask_threshold0.75mJy')
+        ia.close()
+        makemask(mode='copy', inpimage=souname2+weighting_scheme+".image.tt0",
+                 inpmask=souname2+weighting_scheme+".image.tt0:clean_mask_threshold0.75mJy",
+                 output='w51n_mask_0.75mJy.mask', overwrite=True)
+        ia.open('w51n_mask_0.75mJy.mask')
+        arr = ia.getchunk().squeeze()
+        mycs = ia.coordsys()
+        ia.done()
+        from scipy.ndimage import morphology
+        newarr = morphology.binary_dilation(morphology.binary_erosion(arr))[:,:,None,None]
+        newmask = ia.fromarray(pixels=newarr.astype('int'), csys=mycs.torecord(), outfile='w51n_mask_0.75mJy.mask', overwrite=True)
+        exportfits('w51n_mask_0.75mJy.mask', 'w51n_mask_0.75mJy.mask.fits',
+                   overwrite=True)
 
 
 

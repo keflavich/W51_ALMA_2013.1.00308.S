@@ -1,3 +1,4 @@
+import numpy as np
 import os
 import pylab as pl
 import paths
@@ -11,10 +12,14 @@ core_phot_tbl = Table.read(paths.tpath("continuum_photometry.ipac"), format='asc
 cores = coordinates.SkyCoord(core_phot_tbl['RA'], core_phot_tbl['Dec'],
                              frame='fk5')
 
+fnhc3n = paths.dpath('merge/moments/W51_b6_7M_12M.HC3N24-23.image.pbcor_medsub_max.fits')
 
 for suffix in ('auto','99.99','max'):
     for (rgb_cube_fits, rgb_cube_png, star_color, core_color, rlabel, glabel,
          blabel) in (
+                     ('c18o_h2co_ku_rgb.fits', 'c18o_h2co_ku_rgb_logred.png', 'w',
+                      'y', "14.5 GHz Continuum", "H$_2$CO", "C$^{18}$O",
+                     ),
                      ('ku_hc3n_ch3oh_rgb.fits', 'ku_hc3n_ch3oh_rgb_auto.png', 'w', 'b',
                       'Ku', 'HC$_3$N', 'CH$_3$OH'),
                      ('ku_hc3n_ch3oh_rgb.fits', 'ku_hc3n_ch3oh_rgb_max.png', 'w', 'b',
@@ -24,9 +29,6 @@ for suffix in ('auto','99.99','max'):
                      ('full_h2co_rgb.fits', 'full_h2co_rgb_auto.png', 'y', 'b',
                       'H$_2$CO $3_{0,3}-2_{0,2}$', 'H$_2$CO $3_{2,1}-2_{2,0}$',
                       'H$_2$CO $3_{2,2}-2_{2,1}$',),
-                     ('c18o_h2co_ku_rgb.fits', 'c18o_h2co_ku_rgb_logred.png', 'w',
-                      'y', "14.5 GHz Continuum", "H$_2$CO", "C$^{18}$O",
-                     ),
                      ('hc3n_ch3oh_ocs_rgb.fits', 'hc3n_ch3oh_ocs_rgb_auto.png', 'y', 'b',
                       'HC$_3$N', 'CH$_3$OH', 'OCS')
                     ):
@@ -62,7 +64,7 @@ for suffix in ('auto','99.99','max'):
                                         cmcontsrc['gdeccen'][cmok], frame='fk5')
 
 
-        F.show_markers(cmcoords.ra, cmcoords.dec, edgecolor=star_color, marker='*', alpha=0.75,
+        F.show_markers(cmcoords.ra.deg, cmcoords.dec.deg, edgecolor=star_color, marker='*', alpha=0.75,
                        zorder=1, facecolor=star_color, layer='hiiregions')
         #F.hide_layer('hiiregions_text')
         F.save(paths.fpath("W51e2_{0}_aplpy_hiiregions.png".format(name)))
@@ -78,3 +80,7 @@ for suffix in ('auto','99.99','max'):
         F.save(paths.fpath("W51e2_{0}_aplpy_cores.pdf".format(name)))
 
         F.hide_layer('cores')
+
+        F.show_contour(fnhc3n, levels=np.linspace(0.05,0.55,11), colors=['w']*11)
+        F.save(paths.fpath("W51e2_{0}_aplpy_hc3ncontours.png".format(name)), dpi=300)
+        F.save(paths.fpath("W51e2_{0}_aplpy_hc3ncontours.pdf".format(name)))
