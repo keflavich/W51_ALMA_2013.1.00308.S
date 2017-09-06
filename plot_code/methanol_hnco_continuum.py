@@ -17,11 +17,16 @@ from get_m0 import get_mom0
 fn = paths.dpath('merge/W51_b6_7M_12M.CH3OH808-716.image.pbcor.fits')
 m0ch3oh = get_mom0(fn, iterate=False) # iteration takes longer but doesn't risk eating 100% memory
 
-cont_fits = fits.open(paths.dpath('w51_te_continuum_best.fits'))
 
 
-def zoomfigure(target=e2e, targetname='e2e', radius=7.5*u.arcsec, cutout='e2e8',
-               zoom_radius=3*u.arcsec, tick_spacing=1.8*u.arcsec):
+def zoomfigure(target=e2e, targetname='e2e', radius=7.5*u.arcsec,
+               cutout='e2e8', zoom_radius=3*u.arcsec,
+               tick_spacing=1.8*u.arcsec,
+               cont_fits=fits.open(paths.dpath('w51_te_continuum_best.fits')),
+               contour_fits=paths.vpath('data/W51Ku_BDarray_continuum_2048_both_uniform.hires.clean.image.fits'),
+               contourname='ku',
+               levels=np.array([0.0015,0.0045,0.0135,0.0270,0.054,0.108])*1.25,
+              ):
 
     fn = paths.dpath('merge/cutouts/W51_b6_7M_12M.HNCO10010-909.image.pbcor_{0}cutout.fits'.format(cutout))
     m0hnco = get_mom0(fn, iterate=False)
@@ -82,23 +87,30 @@ def zoomfigure(target=e2e, targetname='e2e', radius=7.5*u.arcsec, cutout='e2e8',
     F.save(paths.fpath("rgb_zooms/W51{0}_ch3oh_hnco_continuum_aplpy.png".format(targetname)))
     F.save(paths.fpath("rgb_zooms/W51{0}_ch3oh_hnco_continuum_aplpy.pdf".format(targetname)))
 
-    F.show_contour(paths.vpath('data/W51Ku_BDarray_continuum_2048_both_uniform.hires.clean.image.fits'),
-                   levels=np.array([0.0015,0.0045,0.0135,0.0270,0.054,0.108])*1.25,
+    F.show_contour(contour_fits,
+                   levels=levels,
                    colors=['w']*7, layer='evla_cont')
-    F.save(paths.fpath("rgb_zooms/W51{0}_ch3oh_hnco_continuum_aplpy_kucontours.png".format(targetname)))
-    F.save(paths.fpath("rgb_zooms/W51{0}_ch3oh_hnco_continuum_aplpy_kucontours.pdf".format(targetname)))
+    F.save(paths.fpath("rgb_zooms/W51{0}_ch3oh_hnco_continuum_aplpy_{1}contours.png".format(targetname, contourname)))
+    F.save(paths.fpath("rgb_zooms/W51{0}_ch3oh_hnco_continuum_aplpy_{1}contours.pdf".format(targetname, contourname)))
 
-zoomfigure(target=e2e, targetname='e2e', radius=7.5*u.arcsec, cutout='e2e8',
-           zoom_radius=3*u.arcsec, tick_spacing=1.8*u.arcsec)
-zoomfigure(target=e8fil, targetname='e8fil', radius=15*u.arcsec, cutout='e2e8',
-           zoom_radius=10*u.arcsec, tick_spacing=5*u.arcsec)
-zoomfigure(target=e8, targetname='e8', radius=8.5*u.arcsec, cutout='e2e8',
-           zoom_radius=4*u.arcsec, tick_spacing=2*u.arcsec)
-zoomfigure(target=e8south, targetname='e8south', radius=15*u.arcsec,
-           cutout='e2e8', zoom_radius=5*u.arcsec, tick_spacing=2*u.arcsec)
-zoomfigure(target=north, targetname='north', radius=10*u.arcsec,
-           cutout='north', zoom_radius=4*u.arcsec, tick_spacing=2*u.arcsec)
-zoomfigure(target=d2, targetname='d2', radius=10*u.arcsec,
-           cutout='north', zoom_radius=4*u.arcsec, tick_spacing=2*u.arcsec)
-zoomfigure(target=e1, targetname='e1', radius=8.5*u.arcsec,
-           cutout='e2e8', zoom_radius=4*u.arcsec, tick_spacing=2*u.arcsec)
+if __name__ == "__main__":
+    zoomfigure(target=e2e, targetname='e2e', radius=7.5*u.arcsec, cutout='e2e8',
+               zoom_radius=3*u.arcsec, tick_spacing=1.8*u.arcsec,
+               contour_fits='/Users/adam/work/w51/vla_q/FITS/W51e2w_QbandAarray_cont_spws_continuum_cal_clean_robust0_wproj.image.pbcor.fits',
+               contourname='qband',
+               levels=np.array([0.001, 0.005,0.010, 0.015]),
+              )
+#    zoomfigure(target=e2e, targetname='e2e', radius=7.5*u.arcsec, cutout='e2e8',
+#               zoom_radius=3*u.arcsec, tick_spacing=1.8*u.arcsec)
+#    zoomfigure(target=e8fil, targetname='e8fil', radius=15*u.arcsec, cutout='e2e8',
+#               zoom_radius=10*u.arcsec, tick_spacing=5*u.arcsec)
+#    zoomfigure(target=e8, targetname='e8', radius=8.5*u.arcsec, cutout='e2e8',
+#               zoom_radius=4*u.arcsec, tick_spacing=2*u.arcsec)
+#    zoomfigure(target=e8south, targetname='e8south', radius=15*u.arcsec,
+#               cutout='e2e8', zoom_radius=5*u.arcsec, tick_spacing=2*u.arcsec)
+#    zoomfigure(target=north, targetname='north', radius=10*u.arcsec,
+#               cutout='north', zoom_radius=4*u.arcsec, tick_spacing=2*u.arcsec)
+#    zoomfigure(target=d2, targetname='d2', radius=10*u.arcsec,
+#               cutout='north', zoom_radius=4*u.arcsec, tick_spacing=2*u.arcsec)
+#    zoomfigure(target=e1, targetname='e1', radius=8.5*u.arcsec,
+#               cutout='e2e8', zoom_radius=4*u.arcsec, tick_spacing=2*u.arcsec)
