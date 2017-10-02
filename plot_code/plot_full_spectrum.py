@@ -42,7 +42,7 @@ def plot_whole_spectrum(spectra, line_id=line_ids, velocity=55*u.km/u.s,
         for ii in (1,2,3):
             ax = fig.add_subplot(7,1,2*ii)
             spectra[ii].xarr.convert_to_unit(u.GHz)
-            cropspec = spectra[ii][:spectra[ii].shape[0]/2]
+            cropspec = spectra[ii][:int(spectra[ii].shape[0]/2)]
             cropspec.plotter(axis=ax)
             if do_line_ids:
                 cropspec.plotter.line_ids(list(line_id.keys()),
@@ -55,7 +55,7 @@ def plot_whole_spectrum(spectra, line_id=line_ids, velocity=55*u.km/u.s,
                                          )
 
             ax = fig.add_subplot(7,1,2*ii+1)
-            cropspec = spectra[ii][spectra[ii].shape[0]/2:]
+            cropspec = spectra[ii][int(spectra[ii].shape[0]/2):]
             cropspec.plotter(axis=ax)
             if do_line_ids:
                 cropspec.plotter.line_ids(list(line_id.keys()),

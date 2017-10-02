@@ -5,12 +5,17 @@ import copy
 import pyregion
 import radio_beam
 from spectral_cube import SpectralCube
+import os
 
 tmplt = "full_W51{2}_spw{0}{1}_lines.fits"
 
-region_list = (pyregion.open('outflow_spectralextraction_ellipses.reg') +
-               pyregion.open("cores.reg") +
-               pyregion.open('cm_continuum_apertures.reg'))
+def rpath(x, basepath='/Users/adam/work/w51/alma/regions/'):
+    return os.path.join(basepath,x)
+
+#region_list = (pyregion.open(rpath('outflow_spectralextraction_ellipses.reg')) +
+#               pyregion.open(rpath("cores.reg")) +
+#               pyregion.open(rpath('cm_continuum_apertures.reg')))
+region_list = (pyregion.open(rpath('vla_pointsource_centroids.reg')))
 
 for extra1 in ("","_7m12m"):
     for extra2 in ("","_hires"):
@@ -55,9 +60,9 @@ for extra1 in ("","_7m12m"):
                         spec.meta['beam'] = beam
                         bgspec.meta['beam'] = beam
                     spec.hdu.writeto("spectra/{0}_spw{1}{2}{3}_mean.fits".format(name, spw, extra1, extra2),
-                                     clobber=True)
+                                     overwrite=True)
                     bgspec.hdu.writeto("spectra/{0}_spw{1}{2}{3}_background_mean.fits".format(name, spw, extra1, extra2),
-                                       clobber=True)
+                                       overwrite=True)
                 elif name and reg.name in ('point',):
                     print("Extracting {0} from {1}".format(name, spw))
                     coord = coordinates.SkyCoord(reg.coord_list[0], reg.coord_list[1],
@@ -65,10 +70,17 @@ for extra1 in ("","_7m12m"):
                     xpix, ypix = cube.wcs.celestial.wcs_world2pix(coord.ra.deg,
                                                                   coord.dec.deg,
                                                                   0)
-                    spec = cube[:,int(ypix),int(xpix)]
+                    try:
+                        spec = cube[:,int(np.round(ypix)),int(np.round(xpix))]
+                    except IndexError:
+                        print("Skipping {0} because it is outside the cube."
+                              "  xpix={1} ypix={2} ra={3} dec={4}"
+                              .format(name, xpix, ypix, coord.ra, coord.dec))
+                        continue
                     assert not all(np.isnan(spec))
 
                     if beam is not None:
                         spec.meta['beam'] = beam
-                    spec.hdu.writeto("spectra/{0}_spw{1}{2}{3}_mean.fits".format(name, spw, extra1, extra2),
-                                     clobber=True)
+                    spec.hdu.writeto("spectra/{0}_spw{1}{2}{3}_singlepixelspectrum.fits"
+                                     .format(name, spw, extra1, extra2),
+                                     overwrite=True)
