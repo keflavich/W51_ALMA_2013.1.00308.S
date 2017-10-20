@@ -1,10 +1,12 @@
 
+import pylab as pl
 import os
 import numpy as np
 from astropy.convolution import convolve_fft, Gaussian2DKernel
 from astropy.utils.console import ProgressBar
 from astropy import constants
 from astropy import units as u
+import astropy.visualization
 from astropy import log
 import paths
 from astropy.io import fits
@@ -59,17 +61,17 @@ wcs_north = wcs.WCS(contfile_north[0].header)
 beam_radius_north = ((beam_north.sr/(2*np.pi))**0.5 *
                      masscalc.distance).to(u.pc, u.dimensionless_angles())
 
-e2 = regions.CircleSkyRegion(coordinates.SkyCoord('19:23:43.969 +14:30:34.518', frame='fk5', unit=(u.hour, u.deg)),
+e2 = regions.CircleSkyRegion(coordinates.SkyCoord('19:23:43.969 +14:30:34.518', frame='icrs', unit=(u.hour, u.deg)),
                              radius=0.616*u.arcsec)
 e2pix = e2.to_pixel(wcs_e2e8)
 e2mask = e2pix.to_mask()
 
-e8 = regions.CircleSkyRegion(coordinates.SkyCoord('19:23:43.907 +14:30:28.267', frame='fk5', unit=(u.hour, u.deg)),
+e8 = regions.CircleSkyRegion(coordinates.SkyCoord('19:23:43.907 +14:30:28.267', frame='icrs', unit=(u.hour, u.deg)),
                              radius=0.464*u.arcsec)
 e8pix = e8.to_pixel(wcs_e2e8)
 e8mask = e8pix.to_mask()
 
-north = regions.CircleSkyRegion(coordinates.SkyCoord('19:23:40.054 +14:31:05.513', frame='fk5', unit=(u.hour, u.deg)),
+north = regions.CircleSkyRegion(coordinates.SkyCoord('19:23:40.054 +14:31:05.513', frame='icrs', unit=(u.hour, u.deg)),
                                 radius=0.412*u.arcsec)
 northpix = north.to_pixel(wcs_north)
 northmask = northpix.to_mask()
@@ -155,20 +157,22 @@ print("Integrated mass of north: {0}".format(integmass_north))
 print()
 
 
-integmass_e2 = integ_e2 * masscalc.mass_conversion_factor(100*u.K)/u.Jy
-integmass_e8 = integ_e8 * masscalc.mass_conversion_factor(100*u.K)/u.Jy
-integmass_north = integ_north * masscalc.mass_conversion_factor(100*u.K)/u.Jy
+integmass_e2 = integ_e2 * masscalc.mass_conversion_factor(200*u.K)/u.Jy
+integmass_e8 = integ_e8 * masscalc.mass_conversion_factor(200*u.K)/u.Jy
+integmass_north = integ_north * masscalc.mass_conversion_factor(200*u.K)/u.Jy
 
-print("Integrated mass of e2 at T=100K: {0}".format(integmass_e2))
-print("Integrated mass of e8 at T=100K: {0}".format(integmass_e8))
-print("Integrated mass of north at T=100K: {0}".format(integmass_north))
+print("Integrated mass of e2 at T=200K: {0}".format(integmass_e2))
+print("Integrated mass of e8 at T=200K: {0}".format(integmass_e8))
+print("Integrated mass of north at T=200K: {0}".format(integmass_north))
 
 
 # use dendrograms to identify structures and measure masses
 dende2 = astrodendro.Dendrogram.compute(cutout_e2.value, min_value=0.0005,
                                         min_delta=0.0005, wcs=wcs_e2e8.celestial)
 
-e2cutoutpix = e2.to_pixel(wcs_e2e8.celestial[e2mask.bbox.iymin:, e2mask.bbox.ixmin:])
+wcs_e2cutout = wcs_e2e8.celestial[e2mask.bbox.iymin:, e2mask.bbox.ixmin:]
+
+e2cutoutpix = e2.to_pixel(wcs_e2cutout)
 struct = dende2.structure_at((int(e2cutoutpix.center.x), int(e2cutoutpix.center.y)))
 trunk = struct.ancestor
 
@@ -176,43 +180,67 @@ e2inner = struct.values().sum() * u.Jy / ppbeam_e2e8
 e2total = trunk.values().sum() * u.Jy / ppbeam_e2e8
 e2filaments = e2total - e2inner
 
-e2innermass = e2inner * masscalc.mass_conversion_factor(100*u.K) / u.Jy
-e2totalmass = e2total * masscalc.mass_conversion_factor(100*u.K) / u.Jy
-e2filamentsmass = e2filaments * masscalc.mass_conversion_factor(100*u.K) / u.Jy
+e2innermass = e2inner * masscalc.mass_conversion_factor(200*u.K) / u.Jy
+e2totalmass = e2total * masscalc.mass_conversion_factor(200*u.K) / u.Jy
+e2filamentsmass = e2filaments * masscalc.mass_conversion_factor(200*u.K) / u.Jy
 
 e2innermass_pktb = e2inner * masscalc.mass_conversion_factor(e2etbpeak) / u.Jy
 e2totalmass_pktb = e2total * masscalc.mass_conversion_factor(e2etbpeak) / u.Jy
 e2filamentsmass_pktb = e2filaments * masscalc.mass_conversion_factor(e2etbpeak) / u.Jy
 
+nbeams_inner = struct.get_npix() / ppbeam_e2e8
+
+mass_per_beam_thick = ((beam_e2e8.sr*masscalc.distance**2).to(u.cm**2,
+                                                              u.dimensionless_angles())
+                       * (1/0.0083*u.cm**-2*u.g / (2.8*u.Da)).to(u.cm**-2) *
+                       2.8*u.Da).to(u.M_sun)
 
 print()
+print("e2 nbeams at inner={0}, total={1}, filaments={2}".format(nbeams_inner,
+                                                                trunk.get_npix() / ppbeam_e2e8,
+                                                                (trunk.get_npix() - struct.get_npix())/ppbeam_e2e8))
+print("optically thick mass of inner: {0}".format(nbeams_inner * mass_per_beam_thick))
 print("Integrated intensity of inner e2 = {0:0.2f}, e2 total = {1:0.2f}, e2 filaments = {2:0.2f}"
       .format(e2inner, e2total, e2filaments))
-print("Mass at 100K of inner e2 = {0:0.2f}, e2 total = {1:0.2f}, e2 filaments = {2:0.2f}"
+print("Mass at 200K of inner e2 = {0:0.2f}, e2 total = {1:0.2f}, e2 filaments = {2:0.2f}"
       .format(e2innermass, e2totalmass, e2filamentsmass))
 print("Mass at {3:0.1f} of inner e2 = {0:0.2f}, e2 total = {1:0.2f}, e2 filaments = {2:0.2f}"
       .format(e2innermass_pktb, e2totalmass_pktb, e2filamentsmass_pktb, e2etbpeak))
 
 
+fig1 = pl.figure(1)
+fig1.clf()
+ax = pl.axes(projection=wcs_e2cutout)
+fig1.add_axes(ax)
+norm = astropy.visualization.ImageNormalize(cutout_e2, stretch=astropy.visualization.AsinhStretch())
+ax.imshow(cutout_e2, origin='lower', interpolation='none', cmap='gray', norm=norm)
+ax.contour(struct.get_mask(), levels=[0.5], colors=['orange'], origin='lower')
+ax.contour(trunk.get_mask(), levels=[0.5], colors=['red'], origin='lower')
+ax.set_xlabel("Right Ascension")
+ax.set_ylabel("Declination")
+fig1.savefig(paths.fpath("longbaseline/e2cutout_contours_for_masscalc.pdf"), bbox_inches='tight')
 
 
 dende8 = astrodendro.Dendrogram.compute(cutout_e8.value, min_value=0.0005,
                                         min_delta=0.00001, wcs=wcs_e2e8.celestial)
 
-e8filament = regions.CircleSkyRegion(coordinates.SkyCoord('19:23:43.900 +14:30:28.400',
-                                                          frame='fk5', unit=(u.hour, u.deg)),
+e8filament = regions.CircleSkyRegion(coordinates.SkyCoord('19:23:43.899 +14:30:28.382',
+                                                          frame='icrs', unit=(u.hour, u.deg)),
                                      radius=0.001*u.arcsec)
-e8cutoutpix = e8filament.to_pixel(wcs_e2e8.celestial[e8mask.bbox.iymin:, e8mask.bbox.ixmin:])
-struct = dende8.structure_at((int(e8cutoutpix.center.x), int(e8cutoutpix.center.y)))
+wcs_e8cutout = wcs_e2e8.celestial[e8mask.bbox.iymin:, e8mask.bbox.ixmin:]
+e8cutoutpix = e8filament.to_pixel(wcs_e8cutout)
+struct = dende8.structure_at((int(e8cutoutpix.center.y), int(e8cutoutpix.center.x)))
+assert struct.idx == 63
+print('e8 struct: {0}'.format(struct))
 trunk = struct.ancestor
 
 e8inner = struct.values().sum() * u.Jy / ppbeam_e2e8
 e8total = trunk.values().sum() * u.Jy / ppbeam_e2e8
 e8filaments = e8total - e8inner
 
-e8innermass = e8inner * masscalc.mass_conversion_factor(100*u.K) / u.Jy
-e8totalmass = e8total * masscalc.mass_conversion_factor(100*u.K) / u.Jy
-e8filamentsmass = e8filaments * masscalc.mass_conversion_factor(100*u.K) / u.Jy
+e8innermass = e8inner * masscalc.mass_conversion_factor(200*u.K) / u.Jy
+e8totalmass = e8total * masscalc.mass_conversion_factor(200*u.K) / u.Jy
+e8filamentsmass = e8filaments * masscalc.mass_conversion_factor(200*u.K) / u.Jy
 
 e8innermass_pktb = e8inner * masscalc.mass_conversion_factor(e8tbpeak) / u.Jy
 e8totalmass_pktb = e8total * masscalc.mass_conversion_factor(e8tbpeak) / u.Jy
@@ -222,7 +250,60 @@ e8filamentsmass_pktb = e8filaments * masscalc.mass_conversion_factor(e8tbpeak) /
 print()
 print("Integrated intensity of inner e8 = {0:0.2f}, e8 total = {1:0.2f}, e8 filaments = {2:0.2f}"
       .format(e8inner, e8total, e8filaments))
-print("Mass at 100K of inner e8 = {0:0.2f}, e8 total = {1:0.2f}, e8 filaments = {2:0.2f}"
+print("Mass at 200K of inner e8 = {0:0.2f}, e8 total = {1:0.2f}, e8 filaments = {2:0.2f}"
       .format(e8innermass, e8totalmass, e8filamentsmass))
 print("Mass at {3:0.1f} of inner e8 = {0:0.2f}, e8 total = {1:0.2f}, e8 filaments = {2:0.2f}"
       .format(e8innermass_pktb, e8totalmass_pktb, e8filamentsmass_pktb, e8tbpeak))
+
+
+fig1 = pl.figure(1)
+fig1.clf()
+ax = pl.axes(projection=wcs_e8cutout)
+fig1.add_axes(ax)
+norm = astropy.visualization.ImageNormalize(cutout_e8, stretch=astropy.visualization.AsinhStretch())
+ax.imshow(cutout_e8, origin='lower', interpolation='none', cmap='gray', norm=norm)
+ax.contour(struct.get_mask(), levels=[0.5], colors=['orange'], origin='lower')
+ax.contour(trunk.get_mask(), levels=[0.5], colors=['red'], origin='lower')
+ax.set_xlabel("Right Ascension")
+ax.set_ylabel("Declination")
+fig1.savefig(paths.fpath("longbaseline/e8cutout_contours_for_masscalc.pdf"), bbox_inches='tight')
+
+
+
+
+
+
+
+dendnorth = astrodendro.Dendrogram.compute(cutout_north.value,
+                                           min_value=0.0005, min_delta=0.0001,
+                                           wcs=wcs_north.celestial)
+
+northneighbor = regions.CircleSkyRegion(coordinates.SkyCoord(290.916939905898*u.deg, 14.51817652776441*u.deg,
+                                                             frame='icrs'),
+                                        radius=0.001*u.arcsec)
+northcutoutpix = northneighbor.to_pixel(wcs_north.celestial[northmask.bbox.iymin:, northmask.bbox.ixmin:])
+print('north cutout pix should be approximately x=73 y=118',northcutoutpix)
+nstruct = dendnorth.structure_at((int(northcutoutpix.center.y), int(northcutoutpix.center.x)))
+not_neighbor = [x for x in nstruct.parent.children if x is not nstruct][0]
+struct = not_neighbor
+
+northinner = struct.values().sum() * u.Jy / ppbeam_north
+#northtotal = trunk.values().sum() * u.Jy / ppbeam_north
+#northfilaments = northtotal - northinner
+
+northinnermass = northinner * masscalc.mass_conversion_factor(200*u.K) / u.Jy
+#northtotalmass = northtotal * masscalc.mass_conversion_factor(200*u.K) / u.Jy
+#northfilamentsmass = northfilaments * masscalc.mass_conversion_factor(200*u.K) / u.Jy
+
+northinnermass_pktb = northinner * masscalc.mass_conversion_factor(northtbpeak) / u.Jy
+#northtotalmass_pktb = northtotal * masscalc.mass_conversion_factor(northtbpeak) / u.Jy
+#northfilamentsmass_pktb = northfilaments * masscalc.mass_conversion_factor(northtbpeak) / u.Jy
+
+
+print()
+print("Integrated intensity of north = {0:0.2f}"
+      .format(northinner, ))
+print("Mass at 200K of north = {0:0.2f}"
+      .format(northinnermass))
+print("Mass at {1:0.1f} of north = {0:0.2f}"
+      .format(northinnermass_pktb, northtbpeak))
