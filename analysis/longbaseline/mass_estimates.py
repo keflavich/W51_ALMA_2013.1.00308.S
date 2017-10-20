@@ -231,7 +231,7 @@ wcs_e8cutout = wcs_e2e8.celestial[e8mask.bbox.iymin:, e8mask.bbox.ixmin:]
 e8cutoutpix = e8filament.to_pixel(wcs_e8cutout)
 struct = dende8.structure_at((int(e8cutoutpix.center.y), int(e8cutoutpix.center.x)))
 assert struct.idx == 63
-print('e8 struct: {0}'.format(struct))
+#print('e8 struct: {0}'.format(struct))
 trunk = struct.ancestor
 
 e8inner = struct.values().sum() * u.Jy / ppbeam_e2e8
@@ -248,6 +248,8 @@ e8filamentsmass_pktb = e8filaments * masscalc.mass_conversion_factor(e8tbpeak) /
 
 
 print()
+nbeams_inner = struct.get_npix() / ppbeam_e2e8
+print("optically thick mass of inner: {0}".format(nbeams_inner * mass_per_beam_thick))
 print("Integrated intensity of inner e8 = {0:0.2f}, e8 total = {1:0.2f}, e8 filaments = {2:0.2f}"
       .format(e8inner, e8total, e8filaments))
 print("Mass at 200K of inner e8 = {0:0.2f}, e8 total = {1:0.2f}, e8 filaments = {2:0.2f}"
@@ -281,29 +283,46 @@ dendnorth = astrodendro.Dendrogram.compute(cutout_north.value,
 northneighbor = regions.CircleSkyRegion(coordinates.SkyCoord(290.916939905898*u.deg, 14.51817652776441*u.deg,
                                                              frame='icrs'),
                                         radius=0.001*u.arcsec)
-northcutoutpix = northneighbor.to_pixel(wcs_north.celestial[northmask.bbox.iymin:, northmask.bbox.ixmin:])
-print('north cutout pix should be approximately x=73 y=118',northcutoutpix)
+wcs_northcutout = wcs_north.celestial[northmask.bbox.iymin:, northmask.bbox.ixmin:]
+northcutoutpix = northneighbor.to_pixel(wcs_northcutout)
+#print('north cutout pix should be approximately x=73 y=118',northcutoutpix)
 nstruct = dendnorth.structure_at((int(northcutoutpix.center.y), int(northcutoutpix.center.x)))
 not_neighbor = [x for x in nstruct.parent.children if x is not nstruct][0]
 struct = not_neighbor
 
 northinner = struct.values().sum() * u.Jy / ppbeam_north
-#northtotal = trunk.values().sum() * u.Jy / ppbeam_north
+peanutmask = (cutout_north > 8.3*u.mJy/u.beam)
+northpeanut = cutout_north[peanutmask].sum() * u.beam / ppbeam_north
 #northfilaments = northtotal - northinner
 
 northinnermass = northinner * masscalc.mass_conversion_factor(200*u.K) / u.Jy
-#northtotalmass = northtotal * masscalc.mass_conversion_factor(200*u.K) / u.Jy
+northpeanutmass = northpeanut * masscalc.mass_conversion_factor(200*u.K) / u.Jy
 #northfilamentsmass = northfilaments * masscalc.mass_conversion_factor(200*u.K) / u.Jy
 
 northinnermass_pktb = northinner * masscalc.mass_conversion_factor(northtbpeak) / u.Jy
-#northtotalmass_pktb = northtotal * masscalc.mass_conversion_factor(northtbpeak) / u.Jy
+northpeanutmass_pktb = northpeanut * masscalc.mass_conversion_factor(northtbpeak) / u.Jy
 #northfilamentsmass_pktb = northfilaments * masscalc.mass_conversion_factor(northtbpeak) / u.Jy
 
 
 print()
-print("Integrated intensity of north = {0:0.2f}"
-      .format(northinner, ))
-print("Mass at 200K of north = {0:0.2f}"
-      .format(northinnermass))
-print("Mass at {1:0.1f} of north = {0:0.2f}"
-      .format(northinnermass_pktb, northtbpeak))
+nbeams_inner = peanutmask.sum() / ppbeam_e2e8
+print("optically thick mass of peanut: {0}".format(nbeams_inner * mass_per_beam_thick))
+print("Integrated intensity of north = {0:0.2f}, peanut = {1:0.2f}  north-peanut={2:0.2f}"
+      .format(northinner, northpeanut, northinner-northpeanut))
+print("Mass at 200K of north = {0:0.2f}, peanut = {1:0.2f}, north-peanut={2:0.2f}"
+      .format(northinnermass, northpeanutmass, northinnermass-northpeanutmass))
+print("Mass at {1:0.1f} of north = {0:0.2f} peanut = {2:0.2f}  north-peanut={3:0.2f}"
+      .format(northinnermass_pktb, northtbpeak, northpeanutmass_pktb, northinnermass_pktb-northpeanutmass_pktb))
+
+fig1 = pl.figure(1)
+fig1.clf()
+ax = pl.axes(projection=wcs_northcutout)
+fig1.add_axes(ax)
+norm = astropy.visualization.ImageNormalize(cutout_north, stretch=astropy.visualization.AsinhStretch())
+ax.imshow(cutout_north, origin='lower', interpolation='none', cmap='gray', norm=norm)
+#ax.contour(trunk.get_mask(), levels=[0.5], colors=['red'], origin='lower')
+ax.contour(struct.get_mask(), levels=[0.5], colors=['red'], origin='lower')
+ax.contour(peanutmask, levels=[0.5], colors=['orange'], origin='lower')
+ax.set_xlabel("Right Ascension")
+ax.set_ylabel("Declination")
+fig1.savefig(paths.fpath("longbaseline/northcutout_contours_for_masscalc.pdf"), bbox_inches='tight')
