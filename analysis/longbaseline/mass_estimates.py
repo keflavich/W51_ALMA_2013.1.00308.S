@@ -165,7 +165,64 @@ print("Integrated mass of north at T=100K: {0}".format(integmass_north))
 
 
 # use dendrograms to identify structures and measure masses
-dende2 = astrodendro.Dendrogram.compute(cutout_e2.value, min_value=0.001,
-                                        min_delta=0.0005, wcs=wcse2e8)
-$
+dende2 = astrodendro.Dendrogram.compute(cutout_e2.value, min_value=0.0005,
+                                        min_delta=0.0005, wcs=wcs_e2e8.celestial)
 
+e2cutoutpix = e2.to_pixel(wcs_e2e8.celestial[e2mask.bbox.iymin:, e2mask.bbox.ixmin:])
+struct = dende2.structure_at((int(e2cutoutpix.center.x), int(e2cutoutpix.center.y)))
+trunk = struct.ancestor
+
+e2inner = struct.values().sum() * u.Jy / ppbeam_e2e8
+e2total = trunk.values().sum() * u.Jy / ppbeam_e2e8
+e2filaments = e2total - e2inner
+
+e2innermass = e2inner * masscalc.mass_conversion_factor(100*u.K) / u.Jy
+e2totalmass = e2total * masscalc.mass_conversion_factor(100*u.K) / u.Jy
+e2filamentsmass = e2filaments * masscalc.mass_conversion_factor(100*u.K) / u.Jy
+
+e2innermass_pktb = e2inner * masscalc.mass_conversion_factor(e2etbpeak) / u.Jy
+e2totalmass_pktb = e2total * masscalc.mass_conversion_factor(e2etbpeak) / u.Jy
+e2filamentsmass_pktb = e2filaments * masscalc.mass_conversion_factor(e2etbpeak) / u.Jy
+
+
+print()
+print("Integrated intensity of inner e2 = {0:0.2f}, e2 total = {1:0.2f}, e2 filaments = {2:0.2f}"
+      .format(e2inner, e2total, e2filaments))
+print("Mass at 100K of inner e2 = {0:0.2f}, e2 total = {1:0.2f}, e2 filaments = {2:0.2f}"
+      .format(e2innermass, e2totalmass, e2filamentsmass))
+print("Mass at {3:0.1f} of inner e2 = {0:0.2f}, e2 total = {1:0.2f}, e2 filaments = {2:0.2f}"
+      .format(e2innermass_pktb, e2totalmass_pktb, e2filamentsmass_pktb, e2etbpeak))
+
+
+
+
+dende8 = astrodendro.Dendrogram.compute(cutout_e8.value, min_value=0.0005,
+                                        min_delta=0.00001, wcs=wcs_e2e8.celestial)
+
+e8filament = regions.CircleSkyRegion(coordinates.SkyCoord('19:23:43.900 +14:30:28.400',
+                                                          frame='fk5', unit=(u.hour, u.deg)),
+                                     radius=0.001*u.arcsec)
+e8cutoutpix = e8filament.to_pixel(wcs_e2e8.celestial[e8mask.bbox.iymin:, e8mask.bbox.ixmin:])
+struct = dende8.structure_at((int(e8cutoutpix.center.x), int(e8cutoutpix.center.y)))
+trunk = struct.ancestor
+
+e8inner = struct.values().sum() * u.Jy / ppbeam_e2e8
+e8total = trunk.values().sum() * u.Jy / ppbeam_e2e8
+e8filaments = e8total - e8inner
+
+e8innermass = e8inner * masscalc.mass_conversion_factor(100*u.K) / u.Jy
+e8totalmass = e8total * masscalc.mass_conversion_factor(100*u.K) / u.Jy
+e8filamentsmass = e8filaments * masscalc.mass_conversion_factor(100*u.K) / u.Jy
+
+e8innermass_pktb = e8inner * masscalc.mass_conversion_factor(e8tbpeak) / u.Jy
+e8totalmass_pktb = e8total * masscalc.mass_conversion_factor(e8tbpeak) / u.Jy
+e8filamentsmass_pktb = e8filaments * masscalc.mass_conversion_factor(e8tbpeak) / u.Jy
+
+
+print()
+print("Integrated intensity of inner e8 = {0:0.2f}, e8 total = {1:0.2f}, e8 filaments = {2:0.2f}"
+      .format(e8inner, e8total, e8filaments))
+print("Mass at 100K of inner e8 = {0:0.2f}, e8 total = {1:0.2f}, e8 filaments = {2:0.2f}"
+      .format(e8innermass, e8totalmass, e8filamentsmass))
+print("Mass at {3:0.1f} of inner e8 = {0:0.2f}, e8 total = {1:0.2f}, e8 filaments = {2:0.2f}"
+      .format(e8innermass_pktb, e8totalmass_pktb, e8filamentsmass_pktb, e8tbpeak))
