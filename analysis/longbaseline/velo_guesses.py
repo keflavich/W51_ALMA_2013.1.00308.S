@@ -35,4 +35,10 @@ guesses = {
            'ALMAmm35peak2': 62,
            'ALMAmm35peak3': 63,
            'ALMAmm35peak3broad': 64,
+           'e2e_blue_outflow_lobe': 60,
+           'north_peak_right': 60,
+           'north_peak_left':60,
+           'north_blue_outflow_lobe_close':60,
+           'north_blue_outflow_lobe_far':60,
+           'north_red_outflow_lobe':60,
 }

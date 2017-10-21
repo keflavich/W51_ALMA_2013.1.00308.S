@@ -12,7 +12,7 @@ pl.figure(2).clf()
 
 # sanity check: are the regions in the right place?
 F = aplpy.FITSFigure(paths.dpath('longbaseline/W51e2cax.cont.image.pbcor.fits'),
-                     figure=pl.figure(1))
+                     figure=pl.figure(1), slices=[0,1])
 F.show_grayscale(vmax=0.015)
 region_list = pyregion.open(paths.rpath("cores_longbaseline_spectralextractionregions.reg"))
 F.show_regions(region_list)

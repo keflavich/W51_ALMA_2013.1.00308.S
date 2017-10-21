@@ -26,6 +26,8 @@ vdiff = (np.array((freqs-freqs[0])/freqs[0])*constants.c).to(u.km/u.s)
 slaim = Splatalogue.query_lines(210*u.GHz, 235*u.GHz, chemical_name='CH3CN',
                                 energy_max=1840, energy_type='eu_k',
                                 line_lists=['SLAIM'],
+                                noHFS=True, # there seems to be a problem where HFS
+                                # for K >= 6 is included *incorrectly*
                                 show_upper_degeneracy=True)
 freqs = np.array(slaim['Freq-GHz'])*u.GHz
 aij = slaim['Log<sub>10</sub> (A<sub>ij</sub>)']
@@ -77,17 +79,23 @@ def ch3cn_model(xarr, vcen, width, tex, column, background=None, tbg=2.73):
     if hasattr(width, 'unit'):
         width = width.value
 
+    if background is not None:
+        tbg = background
+
     # assume equal-width channels
     kwargs = dict(rest=ref_freq)
     equiv = u.doppler_radio(**kwargs)
     channelwidth = np.abs(xarr[1].to(u.Hz, equiv) - xarr[0].to(u.Hz, equiv)).value
     velo = xarr.to(u.km/u.s, equiv).value
-    model = np.zeros_like(xarr).value
+    mol_model = np.zeros_like(xarr).value
 
     freqs_ = freqs.to(u.Hz).value
 
     Q = m.calculate_partitionfunction(result.data['States'],
                                       temperature=tex)[ch3cn.Id]
+
+    jnu_bg = lte_molecule.Jnu_cgs(xarr.to(u.Hz).value, tbg)
+    bg_model = np.ones_like(xarr).value * jnu_bg
 
     for voff, A, g, nu, eu in zip(vdiff, aij, deg, freqs_, EU):
         tau_per_dnu = lte_molecule.line_tau_cgs(tex,
@@ -98,12 +106,25 @@ def ch3cn_model(xarr, vcen, width, tex, column, background=None, tbg=2.73):
                                                 eu,
                                                 10**A)
         s = np.exp(-(velo-vcen-voff)**2/(2*width**2))*tau_per_dnu/channelwidth
-        jnu = (lte_molecule.Jnu_cgs(nu, tex)-lte_molecule.Jnu_cgs(nu, tbg))
+        jnu_mol = lte_molecule.Jnu_cgs(nu, tex)
 
-        model = model + jnu*(1-np.exp(-s))
+        # the "emission" model is generally zero everywhere, so we can just
+        # add to it as we move along
+        mol_model = mol_model + jnu_mol*(1-np.exp(-s))
 
-    if background is not None:
-        return background-model
+        # background is assumed to start as a uniform value, then each
+        # absorption line multiplies to reduce it.  s is zero for most velocities,
+        # so this is mostly bg_model *= 1
+        bg_model *= np.exp(-s)
+
+    if background:
+        # subtract jnu_bg because we *must* rezero for the case of
+        # having multiple components, otherwise the backgrounds add,
+        # which is nonsense
+        model = bg_model + mol_model - jnu_bg
+    else:
+        model = mol_model
+
     return model
 
 def nupper_of_kkms(kkms, freq, Aul, degeneracies):

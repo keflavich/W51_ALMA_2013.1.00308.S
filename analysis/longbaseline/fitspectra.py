@@ -25,6 +25,9 @@ for region in regions:
     name = region.attr[1]['text']
 
     spectral_files = glob.glob(paths.dpath('longbaseline/spectra/{0}_W51*_spw*.fits'.format(name)))
+    if len(spectral_files) <= 0:
+        print("Skipping {0} because there are no files".format(name))
+        continue
     spectra = pyspeckit.Spectra(spectral_files)
     stats = spectra.stats()
     err = stats['std'] # overly conservative guess
@@ -81,12 +84,15 @@ for region in regions:
                               limits=[(-5,5), (vcen-5, vcen+5), (0,10)],
                              )
 
-                sp_sl.plotter(axis=pl.subplot(6,6,plotnum))
-                plotnum += 1
-                sp_sl.specfit.plot_fit(annotate=False)
-                sp_sl.plotter.axis.set_ylabel('')
-                sp_sl.plotter.axis.set_xlabel('')
-                sp_sl.plotter.axis.annotate(linename, (0.5, 0.85), xycoords='axes fraction')
+                if plotnum >= 37:
+                    print("Skipping {0}".format(linename))
+                else:
+                    sp_sl.plotter(axis=pl.subplot(6,6,plotnum))
+                    plotnum += 1
+                    sp_sl.specfit.plot_fit(annotate=False)
+                    sp_sl.plotter.axis.set_ylabel('')
+                    sp_sl.plotter.axis.set_xlabel('')
+                    sp_sl.plotter.axis.annotate(linename, (0.5, 0.85), xycoords='axes fraction')
 
                 # write fit to table
                 line_row['{0}FittedAmplitude'.format(name)] = sp_sl.specfit.parinfo['AMPLITUDE0'].value
