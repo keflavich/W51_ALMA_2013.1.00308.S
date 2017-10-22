@@ -3,6 +3,7 @@ copied from ch3cn
 """
 import numpy as np
 import pyspeckit
+import paths
 from astropy.utils.console import ProgressBar
 from pyspeckit.spectrum.models import lte_molecule
 from spectral_cube import SpectralCube
@@ -12,6 +13,13 @@ from astropy import log
 from astropy.io import fits
 from astroquery.splatalogue import Splatalogue
 from astropy import modeling
+from astropy.convolution import Gaussian1DKernel
+from astropy import wcs
+import pyregion
+from astropy import coordinates
+import image_tools
+import os
+
 
 from vamdclib import nodes
 from vamdclib import request as r
@@ -169,6 +177,7 @@ if __name__ == "__main__":
 
     print("nh2, assuming all Si in SiO: {0}".format(nsio/cosmic_si_abundance))
 
+    # Leurini+ 2013 suggest X_sio ~ 1-5x10^-8, upper limit 2e-7
     xsio = 1e-7
 
     print("nh2, X(SiO) = {1}: {0}".format(nsio/xsio, xsio))
@@ -189,3 +198,78 @@ if __name__ == "__main__":
           .format((nsio/cosmic_si_abundance*beam_area*u.Da/0.739).to(u.M_sun)/timescale.to(u.yr),
                   (nsio/xsio*beam_area*2.8*u.Da).to(u.M_sun)/timescale.to(u.yr)))
 
+    north_ds = paths.dpath('longbaseline/W51north_siocube_downsampled.fits')
+    if os.path.exists(north_ds):
+        sm_sio_cube = SpectralCube.read(north_ds)
+    else:
+        siocube = (SpectralCube.read(
+            paths.dpath('longbaseline/linked/W51northcax.SPW0_ALL_medsub_cutout.fits'))
+            .with_spectral_unit(u.km/u.s, rest_value=ref_freq,
+                                velocity_convention='radio')
+            .spectral_slab(-140*u.km/u.s, 260*u.km/u.s)
+        )
+        fwhm_factor = np.sqrt(8*np.log(2))
+        hanning_factor = 1129/977
+        current_resolution = np.mean(np.diff(siocube.spectral_axis)) * hanning_factor
+        target_resolution = 10.0 * u.km/u.s
+        pixel_scale = current_resolution
+        gaussian_width = ((target_resolution**2 - current_resolution**2)**0.5 /
+                          pixel_scale / fwhm_factor)
+        kernel = Gaussian1DKernel(gaussian_width)
+
+        new_xaxis = np.arange(-140, 265, 5) * u.km/u.s
+        sm_sio_cube = siocube.spectral_smooth(kernel).spectral_interpolate(new_xaxis)
+
+        sm_sio_cube.write(north_ds)
+
+
+    celhdr = sm_sio_cube.wcs.celestial.to_header()
+    celhdr['NAXIS1'] = sm_sio_cube.shape[2]
+    celhdr['NAXIS2'] = sm_sio_cube.shape[1]
+    bluemask = pyregion.open(paths.rpath('sio_blue_boxmask_lb_north.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube[0,:,:].hdu)
+    redmask = pyregion.open(paths.rpath('sio_red_boxmask_lb_north.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube[0,:,:].hdu)
+
+    sio_m0_blue = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment0() / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
+    sio_m0_red = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0() / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
+    sio_m1_blue = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
+    sio_m1_red = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
+
+    north_center = coordinates.SkyCoord(290.91688055555557*u.deg,
+                                        14.51818888888889*u.deg,
+                                        frame='icrs')
+    nc_x, nc_y = sm_sio_cube.wcs.celestial.wcs_world2pix(north_center.ra.deg,
+                                                         north_center.dec.deg,
+                                                         0)
+    yy,xx = np.indices(sio_m0_blue.shape)
+    rr = ((yy-nc_y)**2 + (xx-nc_x)**2)**0.5
+
+    nr,centers,profile = image_tools.azimuthalAverage(np.nan_to_num(sio_m0_blue),
+                                                      mask=np.isfinite(sio_m0_blue),
+                                                      center=(nc_x,nc_y),
+                                                      binsize=2,
+                                                      return_nr=True)
+
+    vnr,vcenters,vprofile = image_tools.azimuthalAverage(np.nan_to_num(sio_m1_blue),
+                                                         mask=np.isfinite(sio_m1_blue),
+                                                         center=(nc_x,nc_y),
+                                                         binsize=2,
+                                                         return_nr=True)
+
+    pixscale = (wcs.utils.proj_plane_pixel_scales(sm_sio_cube.wcs)[0]*u.deg * 5.4*u.kpc).to(u.pc, u.dimensionless_angles())
+    inclination = 45*u.deg
+    # hard-coded: 50 pixels was measured approximately from the radial graph
+    # 42 km/s was also selected as v_lsr = 18, v_lsr(north)=60
+    age = (pixscale*50 / (42*u.km/u.s / np.tan(inclination))).to(u.yr)
+
+    ppbeam = (beam_area / pixscale**2).decompose()
+
+    nsio_profile = ntot_of_nupper(nupper_of_kkms((profile*u.K*u.km/u.s),
+                                                 ref_freq, 10**aij.mean(), 1),
+                                  tbl[-1]['E_U (K)']*u.K*constants.k_B,
+                                  250*u.K)
+
+    m_sio_profile = (nsio_profile * nr * beam_area / xsio * 2.8*u.Da).to(u.M_sun) / ppbeam
+
+    massloss_rate = m_sio_profile / age
+
+    single_event_rate = np.nansum(massloss_rate)
