@@ -1,6 +1,7 @@
 """
 copied from ch3cn
 """
+import pylab as pl
 import numpy as np
 import pyspeckit
 import paths
@@ -175,16 +176,16 @@ if __name__ == "__main__":
 
     cosmic_si_abundance = 650 / 739000
 
-    print("nh2, assuming all Si in SiO: {0}".format(nsio/cosmic_si_abundance))
+    print("north nh2, assuming all Si in SiO: {0}".format(nsio/cosmic_si_abundance))
 
     # Leurini+ 2013 suggest X_sio ~ 1-5x10^-8, upper limit 2e-7
     xsio = 1e-7
 
-    print("nh2, X(SiO) = {1}: {0}".format(nsio/xsio, xsio))
+    print("north nh2, X(SiO) = {1}: {0}".format(nsio/xsio, xsio))
 
     beam_area = 1e31*u.cm**2
 
-    print("Mass assuming 1 beam = {0} to {1}"
+    print("north Mass assuming 1 beam = {0} to {1}"
           .format((nsio/cosmic_si_abundance*beam_area*u.Da/0.739).to(u.M_sun),
                   (nsio/xsio*beam_area*2.8*u.Da).to(u.M_sun)))
 
@@ -194,7 +195,7 @@ if __name__ == "__main__":
 
     timescale = distance / peak_velocity
 
-    print("Mass rate = {0} to {1}"
+    print("north Mass rate = {0} to {1}"
           .format((nsio/cosmic_si_abundance*beam_area*u.Da/0.739).to(u.M_sun)/timescale.to(u.yr),
                   (nsio/xsio*beam_area*2.8*u.Da).to(u.M_sun)/timescale.to(u.yr)))
 
@@ -259,7 +260,13 @@ if __name__ == "__main__":
     inclination = 45*u.deg
     # hard-coded: 50 pixels was measured approximately from the radial graph
     # 42 km/s was also selected as v_lsr = 18, v_lsr(north)=60
-    age = (pixscale*50 / (42*u.km/u.s / np.tan(inclination))).to(u.yr)
+    max_velocity = (60+25)*u.km/u.s
+    max_velocity = 25*u.km/u.s
+
+    age = (pixscale*50 / (max_velocity / np.tan(inclination))).to(u.yr)
+    dmax = (0.285*u.arcsec*5.4*u.kpc).to(u.pc, u.dimensionless_angles())
+    age = (dmax /
+           (max_velocity / np.tan(inclination))).to(u.yr)
 
     ppbeam = (beam_area / pixscale**2).decompose()
 
@@ -273,3 +280,245 @@ if __name__ == "__main__":
     massloss_rate = m_sio_profile / age
 
     single_event_rate = np.nansum(massloss_rate)
+
+    single_event_mass = np.nansum(m_sio_profile)
+    print("north Mass accreted = {0} in {1} years gives rate {2}"
+          .format(single_event_mass, age, single_event_rate,))
+
+    distances = centers*pixscale
+    age_profile = (distances / (max_velocity / np.tan(inclination))).to(u.yr)
+    massloss_profile = m_sio_profile / age_profile
+
+    integintens_at_max = profile[np.argmin(np.abs(distances-dmax))]
+    surfdens_at_max = nsio_profile[np.argmin(np.abs(distances-dmax))]
+    print("north integ intens, Surface density at maxdist = {1}, {0}".format(surfdens_at_max, integintens_at_max))
+    north_blob_area = (np.pi*(0.04*u.arcsec)**2*(5.4*u.kpc)**2).to(u.cm**2, u.dimensionless_angles())
+    north_blob_mass = (north_blob_area * surfdens_at_max / xsio * 2.8*u.Da).to(u.M_sun)
+    print("north blob area, mass = {0}, {1}".format(north_blob_area, north_blob_mass))
+    print("north accr. rate = {0}".format(2*north_blob_mass / age))
+    
+    fig1 = pl.figure(1)
+    fig1.clf()
+    ax = fig1.gca()
+    ax.plot(age_profile, massloss_profile)
+    ax.set_xlabel("Age (yr)")
+    ax.set_ylabel("Mass Ejection Rate ($M_\odot$ yr$^{-1}$)")
+    fig1.savefig(paths.fpath('longbaseline/sio_masslossrate_history_north.png'))
+
+    fig3 = pl.figure(3)
+    fig3.clf()
+    ax = fig3.gca()
+    ax.plot((centers*pixscale).to(u.au), m_sio_profile.to(u.M_sun))
+    ax.set_xlabel("Distance from Central Source (AU)")
+    ax.set_ylabel("Mass in Outflow ($M_\odot$)")
+    fig3.savefig(paths.fpath('longbaseline/sio_massvsdistance_north.png'))
+
+
+
+
+    e2_ds = paths.dpath('longbaseline/W51e2_siocube_downsampled.fits')
+    if os.path.exists(e2_ds):
+        sm_sio_cube_e2 = SpectralCube.read(e2_ds)
+    else:
+        siocube = (SpectralCube.read(
+            paths.dpath('longbaseline/linked/W51e2cax.SPW0_ALL_medsub_cutout.fits'))
+            .with_spectral_unit(u.km/u.s, rest_value=ref_freq,
+                                velocity_convention='radio')
+            .spectral_slab(-140*u.km/u.s, 260*u.km/u.s)
+        )
+        fwhm_factor = np.sqrt(8*np.log(2))
+        hanning_factor = 1129/977
+        current_resolution = np.mean(np.diff(siocube.spectral_axis)) * hanning_factor
+        target_resolution = 10.0 * u.km/u.s
+        pixel_scale = current_resolution
+        gaussian_width = ((target_resolution**2 - current_resolution**2)**0.5 /
+                          pixel_scale / fwhm_factor)
+        kernel = Gaussian1DKernel(gaussian_width)
+
+        new_xaxis = np.arange(-140, 265, 5) * u.km/u.s
+        sm_sio_cube_e2 = siocube.spectral_smooth(kernel).spectral_interpolate(new_xaxis)
+
+        sm_sio_cube_e2.write(e2_ds)
+
+
+    celhdr = sm_sio_cube_e2.wcs.celestial.to_header()
+    celhdr['NAXIS1'] = sm_sio_cube_e2.shape[2]
+    celhdr['NAXIS2'] = sm_sio_cube_e2.shape[1]
+    bluemask = pyregion.open(paths.rpath('sio_blue_boxmask_lb_e2.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube_e2[0,:,:].hdu)
+    redmask = pyregion.open(paths.rpath('sio_red_boxmask_lb_e2.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube_e2[0,:,:].hdu)
+
+    sio_m0_blue = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment0() / u.Jy * sm_sio_cube_e2.beam.jtok(ref_freq)
+    sio_m0_red = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0() / u.Jy * sm_sio_cube_e2.beam.jtok(ref_freq)
+    sio_m1_blue = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
+    sio_m1_red = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
+
+    e2_center = coordinates.SkyCoord('19:23:43.976', '14:30:34.500',
+                                     unit=(u.hour, u.deg), frame='icrs')
+    nc_x, nc_y = sm_sio_cube_e2.wcs.celestial.wcs_world2pix(e2_center.ra.deg,
+                                                            e2_center.dec.deg,
+                                                            0)
+    yy,xx = np.indices(sio_m0_blue.shape)
+    rr = ((yy-nc_y)**2 + (xx-nc_x)**2)**0.5
+
+    nr,centers,profile = image_tools.azimuthalAverage(np.nan_to_num(sio_m0_blue),
+                                                      mask=np.isfinite(sio_m0_blue),
+                                                      center=(nc_x,nc_y),
+                                                      binsize=2,
+                                                      return_nr=True)
+
+    vnr,vcenters,vprofile = image_tools.azimuthalAverage(np.nan_to_num(sio_m1_blue),
+                                                         mask=np.isfinite(sio_m1_blue),
+                                                         center=(nc_x,nc_y),
+                                                         binsize=2,
+                                                         return_nr=True)
+
+    pixscale = (wcs.utils.proj_plane_pixel_scales(sm_sio_cube_e2.wcs)[0]*u.deg * 5.4*u.kpc).to(u.pc, u.dimensionless_angles())
+    inclination = 45*u.deg
+
+    max_velocity = 105*u.km/u.s
+    dmax = (0.474*u.arcsec*5.4*u.kpc).to(u.pc, u.dimensionless_angles())
+    age = (dmax /
+           (max_velocity / np.tan(inclination))).to(u.yr)
+
+    ppbeam = (beam_area / pixscale**2).decompose()
+
+    # we assume T=250 K, which is close to the peak brightness temperature
+    # The total N(SiO) is approximately linear with temperature in this regime
+    # (Q~T), so the errors resulting from this estimate are small
+    nsio_profile = ntot_of_nupper(nupper_of_kkms((profile*u.K*u.km/u.s),
+                                                 ref_freq, 10**aij.mean(), 1),
+                                  tbl[-1]['E_U (K)']*u.K*constants.k_B,
+                                  250*u.K)
+
+    m_sio_profile = (nsio_profile * nr * beam_area / xsio * 2.8*u.Da).to(u.M_sun) / ppbeam
+
+    massloss_rate = m_sio_profile / age
+
+    single_event_rate = np.nansum(massloss_rate)
+
+    single_event_mass = np.nansum(m_sio_profile)
+    print("e2 Mass accreted = {0} in {1} years gives rate {2}"
+          .format(single_event_mass, age, single_event_rate,))
+
+    distances = centers*pixscale
+    age_profile = (distances / (max_velocity / np.tan(inclination))).to(u.yr)
+    massloss_profile = m_sio_profile / age_profile
+
+    integintens_at_max = profile[np.argmin(np.abs(distances-dmax))]
+    surfdens_at_max = nsio_profile[np.argmin(np.abs(distances-dmax))]
+    print("e2 integ intens, Surface density at maxdist = {1}, {0}".format(surfdens_at_max, integintens_at_max))
+    e2_blob_area = (np.pi*0.058*u.arcsec*0.031*u.arcsec*(5.4*u.kpc)**2).to(u.cm**2,
+                                                                         u.dimensionless_angles())
+    e2_blob_mass = (e2_blob_area * surfdens_at_max / xsio * 2.8*u.Da).to(u.M_sun)
+    print("e2 blob area, mass = {0}, {1}".format(e2_blob_area, e2_blob_mass))
+    print("e2 accr. rate = {0}".format(2*e2_blob_mass / age))
+
+    fig2 = pl.figure(2)
+    fig2.clf()
+    ax = fig2.gca()
+    ax.plot(age_profile, massloss_profile)
+    ax.set_xlabel("Age (yr)")
+    ax.set_ylabel("Mass Ejection Rate ($M_\odot$ yr$^{-1}$)")
+    ax.set_xlim(0, 200)
+    fig2.savefig(paths.fpath('longbaseline/sio_masslossrate_history_e2.png'))
+
+
+    fig4 = pl.figure(4)
+    fig4.clf()
+    ax = fig4.gca()
+    ax.plot((centers*pixscale).to(u.au), m_sio_profile.to(u.M_sun))
+    ax.set_xlabel("Distance from Central Source (AU)")
+    ax.set_ylabel("Mass in Outflow ($M_\odot$)")
+    ax.set_xlim(0, 3000)
+    fig4.savefig(paths.fpath('longbaseline/sio_massvsdistance_e2.png'))
+
+
+
+
+
+    e8_ds = paths.dpath('longbaseline/W51e8_siocube_downsampled.fits')
+    if os.path.exists(e8_ds):
+        sm_sio_cube_e8 = SpectralCube.read(e8_ds)
+    else:
+        siocube = (SpectralCube.read(
+            paths.dpath('longbaseline/linked/W51e8cax.SPW0_ALL_medsub_cutout.fits'))
+            .with_spectral_unit(u.km/u.s, rest_value=ref_freq,
+                                velocity_convention='radio')
+            .spectral_slab(-140*u.km/u.s, 260*u.km/u.s)
+        )
+        fwhm_factor = np.sqrt(8*np.log(2))
+        hanning_factor = 1129/977
+        current_resolution = np.mean(np.diff(siocube.spectral_axis)) * hanning_factor
+        target_resolution = 10.0 * u.km/u.s
+        pixel_scale = current_resolution
+        gaussian_width = ((target_resolution**2 - current_resolution**2)**0.5 /
+                          pixel_scale / fwhm_factor)
+        kernel = Gaussian1DKernel(gaussian_width)
+
+        new_xaxis = np.arange(-140, 265, 5) * u.km/u.s
+        sm_sio_cube_e8 = siocube.spectral_smooth(kernel).spectral_interpolate(new_xaxis)
+
+        sm_sio_cube_e8.write(e8_ds)
+
+
+
+
+    celhdr = sm_sio_cube_e8.wcs.celestial.to_header()
+    celhdr['NAXIS1'] = sm_sio_cube_e8.shape[2]
+    celhdr['NAXIS2'] = sm_sio_cube_e8.shape[1]
+    bluemask = pyregion.open(paths.rpath('sio_blue_boxmask_lb_e8.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube_e8[0,:,:].hdu)
+    redmask = pyregion.open(paths.rpath('sio_red_boxmask_lb_e8.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube_e8[0,:,:].hdu)
+
+    sio_m0_blue = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment0() / u.Jy * sm_sio_cube_e8.beam.jtok(ref_freq)
+    sio_m0_red = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0() / u.Jy * sm_sio_cube_e8.beam.jtok(ref_freq)
+    sio_m1_blue = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
+    sio_m1_red = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
+
+    e8_center = coordinates.SkyCoord('19:23:43.976', '14:30:34.500',
+                                     unit=(u.hour, u.deg), frame='icrs')
+    nc_x, nc_y = sm_sio_cube_e8.wcs.celestial.wcs_world2pix(e8_center.ra.deg,
+                                                            e8_center.dec.deg,
+                                                            0)
+    yy,xx = np.indices(sio_m0_blue.shape)
+    rr = ((yy-nc_y)**2 + (xx-nc_x)**2)**0.5
+
+    nr,centers,profile = image_tools.azimuthalAverage(np.nan_to_num(sio_m0_blue),
+                                                      mask=np.isfinite(sio_m0_blue),
+                                                      center=(nc_x,nc_y),
+                                                      binsize=2,
+                                                      return_nr=True)
+
+    vnr,vcenters,vprofile = image_tools.azimuthalAverage(np.nan_to_num(sio_m1_blue),
+                                                         mask=np.isfinite(sio_m1_blue),
+                                                         center=(nc_x,nc_y),
+                                                         binsize=2,
+                                                         return_nr=True)
+
+    pixscale = (wcs.utils.proj_plane_pixel_scales(sm_sio_cube_e8.wcs)[0]*u.deg * 5.4*u.kpc).to(u.pc, u.dimensionless_angles())
+    inclination = 45*u.deg
+    age = ((0.667*u.arcsec*5.4*u.kpc).to(u.pc,
+                                         u.dimensionless_angles()) /
+           (42*u.km/u.s / np.tan(inclination))).to(u.yr)
+
+    ppbeam = (beam_area / pixscale**2).decompose()
+
+    # we assume T=250 K, which is close to the peak brightness temperature
+    # The total N(SiO) is approximately linear with temperature in this regime
+    # (Q~T), so the errors resulting from this estimate are small
+    nsio_profile = ntot_of_nupper(nupper_of_kkms((profile*u.K*u.km/u.s),
+                                                 ref_freq, 10**aij.mean(), 1),
+                                  tbl[-1]['E_U (K)']*u.K*constants.k_B,
+                                  250*u.K)
+
+    m_sio_profile = (nsio_profile * nr * beam_area / xsio * 2.8*u.Da).to(u.M_sun) / ppbeam
+
+    massloss_rate = m_sio_profile / age
+
+    single_event_rate = np.nansum(massloss_rate)
+
+    single_event_mass = np.nansum(m_sio_profile)
+    print("e8 Mass accreted = {0} in {1} years gives rate {2}"
+          .format(single_event_mass, age, single_event_rate,))
+
+
+
