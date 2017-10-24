@@ -230,10 +230,10 @@ if __name__ == "__main__":
     bluemask = pyregion.open(paths.rpath('sio_blue_boxmask_lb_north.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube[0,:,:].hdu)
     redmask = pyregion.open(paths.rpath('sio_red_boxmask_lb_north.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube[0,:,:].hdu)
 
-    sio_m0_blue = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment0() / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
-    sio_m0_red = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0() / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
-    sio_m1_blue = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
-    sio_m1_red = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
+    sio_m0_blue_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment0() / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
+    sio_m0_red_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0() / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
+    sio_m1_blue_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
+    sio_m1_red_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
 
     north_center = coordinates.SkyCoord(290.91688055555557*u.deg,
                                         14.51818888888889*u.deg,
@@ -241,17 +241,17 @@ if __name__ == "__main__":
     nc_x, nc_y = sm_sio_cube.wcs.celestial.wcs_world2pix(north_center.ra.deg,
                                                          north_center.dec.deg,
                                                          0)
-    yy,xx = np.indices(sio_m0_blue.shape)
+    yy,xx = np.indices(sio_m0_blue_north.shape)
     rr = ((yy-nc_y)**2 + (xx-nc_x)**2)**0.5
 
-    nr,centers,profile = image_tools.azimuthalAverage(np.nan_to_num(sio_m0_blue),
-                                                      mask=np.isfinite(sio_m0_blue),
+    nr,centers,profile = image_tools.azimuthalAverage(np.nan_to_num(sio_m0_blue_north),
+                                                      mask=np.isfinite(sio_m0_blue_north),
                                                       center=(nc_x,nc_y),
                                                       binsize=2,
                                                       return_nr=True)
 
-    vnr,vcenters,vprofile = image_tools.azimuthalAverage(np.nan_to_num(sio_m1_blue),
-                                                         mask=np.isfinite(sio_m1_blue),
+    vnr,vcenters,vprofile = image_tools.azimuthalAverage(np.nan_to_num(sio_m1_blue_north),
+                                                         mask=np.isfinite(sio_m1_blue_north),
                                                          center=(nc_x,nc_y),
                                                          binsize=2,
                                                          return_nr=True)
@@ -291,11 +291,13 @@ if __name__ == "__main__":
 
     integintens_at_max = profile[np.argmin(np.abs(distances-dmax))]
     surfdens_at_max = nsio_profile[np.argmin(np.abs(distances-dmax))]
+    print("north dmax = {0}".format(dmax.to(u.au)))
     print("north integ intens, Surface density at maxdist = {1}, {0}".format(surfdens_at_max, integintens_at_max))
     north_blob_area = (np.pi*(0.04*u.arcsec)**2*(5.4*u.kpc)**2).to(u.cm**2, u.dimensionless_angles())
     north_blob_mass = (north_blob_area * surfdens_at_max / xsio * 2.8*u.Da).to(u.M_sun)
     print("north blob area, mass = {0}, {1}".format(north_blob_area, north_blob_mass))
     print("north accr. rate = {0}".format(2*north_blob_mass / age))
+    print()
     
     fig1 = pl.figure(1)
     fig1.clf()
@@ -347,9 +349,9 @@ if __name__ == "__main__":
     bluemask = pyregion.open(paths.rpath('sio_blue_boxmask_lb_e2.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube_e2[0,:,:].hdu)
     redmask = pyregion.open(paths.rpath('sio_red_boxmask_lb_e2.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube_e2[0,:,:].hdu)
 
-    sio_m0_blue = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment0() / u.Jy * sm_sio_cube_e2.beam.jtok(ref_freq)
+    sio_m0_blue_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment0() / u.Jy * sm_sio_cube_e2.beam.jtok(ref_freq)
     sio_m0_red = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0() / u.Jy * sm_sio_cube_e2.beam.jtok(ref_freq)
-    sio_m1_blue = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
+    sio_m1_blue_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
     sio_m1_red = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
 
     e2_center = coordinates.SkyCoord('19:23:43.976', '14:30:34.500',
@@ -357,17 +359,17 @@ if __name__ == "__main__":
     nc_x, nc_y = sm_sio_cube_e2.wcs.celestial.wcs_world2pix(e2_center.ra.deg,
                                                             e2_center.dec.deg,
                                                             0)
-    yy,xx = np.indices(sio_m0_blue.shape)
+    yy,xx = np.indices(sio_m0_blue_e2.shape)
     rr = ((yy-nc_y)**2 + (xx-nc_x)**2)**0.5
 
-    nr,centers,profile = image_tools.azimuthalAverage(np.nan_to_num(sio_m0_blue),
-                                                      mask=np.isfinite(sio_m0_blue),
+    nr,centers,profile = image_tools.azimuthalAverage(np.nan_to_num(sio_m0_blue_e2),
+                                                      mask=np.isfinite(sio_m0_blue_e2),
                                                       center=(nc_x,nc_y),
                                                       binsize=2,
                                                       return_nr=True)
 
-    vnr,vcenters,vprofile = image_tools.azimuthalAverage(np.nan_to_num(sio_m1_blue),
-                                                         mask=np.isfinite(sio_m1_blue),
+    vnr,vcenters,vprofile = image_tools.azimuthalAverage(np.nan_to_num(sio_m1_blue_e2),
+                                                         mask=np.isfinite(sio_m1_blue_e2),
                                                          center=(nc_x,nc_y),
                                                          binsize=2,
                                                          return_nr=True)
@@ -406,12 +408,14 @@ if __name__ == "__main__":
 
     integintens_at_max = profile[np.argmin(np.abs(distances-dmax))]
     surfdens_at_max = nsio_profile[np.argmin(np.abs(distances-dmax))]
+    print("e2 dmax = {0}".format(dmax.to(u.au)))
     print("e2 integ intens, Surface density at maxdist = {1}, {0}".format(surfdens_at_max, integintens_at_max))
     e2_blob_area = (np.pi*0.058*u.arcsec*0.031*u.arcsec*(5.4*u.kpc)**2).to(u.cm**2,
                                                                          u.dimensionless_angles())
     e2_blob_mass = (e2_blob_area * surfdens_at_max / xsio * 2.8*u.Da).to(u.M_sun)
     print("e2 blob area, mass = {0}, {1}".format(e2_blob_area, e2_blob_mass))
     print("e2 accr. rate = {0}".format(2*e2_blob_mass / age))
+    print()
 
     fig2 = pl.figure(2)
     fig2.clf()
@@ -469,27 +473,27 @@ if __name__ == "__main__":
     bluemask = pyregion.open(paths.rpath('sio_blue_boxmask_lb_e8.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube_e8[0,:,:].hdu)
     redmask = pyregion.open(paths.rpath('sio_red_boxmask_lb_e8.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube_e8[0,:,:].hdu)
 
-    sio_m0_blue = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment0() / u.Jy * sm_sio_cube_e8.beam.jtok(ref_freq)
-    sio_m0_red = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0() / u.Jy * sm_sio_cube_e8.beam.jtok(ref_freq)
-    sio_m1_blue = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
-    sio_m1_red = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
+    sio_m0_blue_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment0() / u.Jy * sm_sio_cube_e8.beam.jtok(ref_freq)
+    sio_m0_red_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0() / u.Jy * sm_sio_cube_e8.beam.jtok(ref_freq)
+    sio_m1_blue_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
+    sio_m1_red_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
 
     e8_center = coordinates.SkyCoord('19:23:43.976', '14:30:34.500',
                                      unit=(u.hour, u.deg), frame='icrs')
     nc_x, nc_y = sm_sio_cube_e8.wcs.celestial.wcs_world2pix(e8_center.ra.deg,
                                                             e8_center.dec.deg,
                                                             0)
-    yy,xx = np.indices(sio_m0_blue.shape)
+    yy,xx = np.indices(sio_m0_blue_e8.shape)
     rr = ((yy-nc_y)**2 + (xx-nc_x)**2)**0.5
 
-    nr,centers,profile = image_tools.azimuthalAverage(np.nan_to_num(sio_m0_blue),
-                                                      mask=np.isfinite(sio_m0_blue),
+    nr,centers,profile = image_tools.azimuthalAverage(np.nan_to_num(sio_m0_blue_e8),
+                                                      mask=np.isfinite(sio_m0_blue_e8),
                                                       center=(nc_x,nc_y),
                                                       binsize=2,
                                                       return_nr=True)
 
-    vnr,vcenters,vprofile = image_tools.azimuthalAverage(np.nan_to_num(sio_m1_blue),
-                                                         mask=np.isfinite(sio_m1_blue),
+    vnr,vcenters,vprofile = image_tools.azimuthalAverage(np.nan_to_num(sio_m1_blue_e8),
+                                                         mask=np.isfinite(sio_m1_blue_e8),
                                                          center=(nc_x,nc_y),
                                                          binsize=2,
                                                          return_nr=True)
