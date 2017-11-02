@@ -23,24 +23,31 @@ def getmoments(cubefilename, vmin=40*u.km/u.s, vmax=75*u.km/u.s,
                signal_range=(50,65)*u.km/u.s,
                cutoutregion=e2e_cutoutregion,
                threshold=-6*u.mJy,
+               do_check_results=True,
               ):
 
     cube = SpectralCube.read(cubefilename).with_spectral_unit(u.km/u.s)
+    print(cube)
+    print(cube.spectral_extrema)
 
     bl,tr = coordinates.SkyCoord(cutoutregion, frame='fk5', unit=(u.hour,
                                                                   u.deg)).transform_to(cube.wcs.wcs.radesys.lower())
+    print(bl,tr)
 
     xxbl, yybl = map(lambda x: int(np.round(x)), cube.wcs.celestial.wcs_world2pix(bl.ra.deg, bl.dec.deg, 0))
     xxtr, yytr = map(lambda x: int(np.round(x)), cube.wcs.celestial.wcs_world2pix(tr.ra.deg, tr.dec.deg, 0))
     
-    cube = cube[:, yybl:yytr, xxbl:xxtr]
+    ccube = cube[:, yybl:yytr, xxbl:xxtr].mask_out_bad_beams(0.1)
+    if any([x==0 for x in ccube.shape]):
+        raise ValueError("Cutout out of range")
+    print(ccube.spectral_extrema)
 
-    vmask = ((cube.spectral_axis < signal_range[0]) |
-             (cube.spectral_axis > signal_range[1]))[:,None,None]
+    vmask = ((ccube.spectral_axis < signal_range[0]) |
+             (ccube.spectral_axis > signal_range[1]))[:,None,None]
 
-    cont = cube.with_mask(vmask).spectral_slab(vmin,vmax).percentile(50, axis=0)
+    cont = ccube.with_mask(vmask).spectral_slab(vmin,vmax).percentile(50, axis=0)
 
-    cscube = cube - cont
+    cscube = ccube - cont
 
     smask = cscube.min(axis=0) < threshold
 
@@ -48,7 +55,8 @@ def getmoments(cubefilename, vmin=40*u.km/u.s, vmax=75*u.km/u.s,
     m1 = cscube.spectral_slab(*signal_range).with_mask(smask).moment1()
 
     #check_results(m1, cscube, vmin=signal_range[0], vmax=signal_range[1])
-    check_results(m1, cscube, vmin=vmin, vmax=vmax)
+    if do_check_results:
+        check_results(m1, cscube, vmin=vmin, vmax=vmax)
 
     return m1, cscube
 
@@ -72,8 +80,12 @@ def check_results(m1, cscube, vmin=40*u.km/u.s, vmax=65*u.km/u.s,
 
         xx, yy = map(lambda x: int(np.round(x)), cscube.wcs.celestial.wcs_world2pix(coord.ra.deg, coord.dec.deg, 0))
 
-        m1.FITSFigure.ax.text(xx, yy, str(ii), color='w')
-        m1.FITSFigure.ax.plot(xx, yy, color='w', marker='+')
+        try:
+            ffax = m1.FITSFigure.ax
+        except AttributeError:
+            ffax = m1.FITSFigure._ax1
+        ffax.text(xx, yy, str(ii), color='w')
+        ffax.plot(xx, yy, color='w', marker='+')
 
         ax = fig2.add_subplot(2,2,ii+1)
         
