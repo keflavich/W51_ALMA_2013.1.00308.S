@@ -235,6 +235,30 @@ if __name__ == "__main__":
     sio_m1_blue_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
     sio_m1_red_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
 
+    pixscale = (wcs.utils.proj_plane_pixel_scales(sm_sio_cube.wcs)[0]*u.deg * 5.4*u.kpc).to(u.pc, u.dimensionless_angles())
+
+    kkms_to_mass = ntot_of_nupper(nupper_of_kkms(1*u.K*u.km/u.s, ref_freq,
+                                                 10**aij.mean(),
+                                                 degeneracies=1),
+                                  eupper=tbl[-1]['E_U (K)']*u.K*constants.k_B,
+                                  tex=250*u.K) * 2.8*u.Da * pixscale**2
+    dv = np.mean(np.diff(sm_sio_cube.spectral_axis))
+
+    mass_sm_sio_cube = ((sm_sio_cube / u.Jy * sm_sio_cube.beam.jtok(ref_freq) *
+                         kkms_to_mass * dv) / (u.K*u.km/u.s)).to(u.M_sun)
+    velcenter = 60*u.km/u.s
+    velprofile = mass_sm_sio_cube.spectral_axis - velcenter
+    sio_momentum_blue_north = ((mass_sm_sio_cube * velprofile[:,None,None])
+                               .with_mask(sm_sio_cube > 2*u.mJy)
+                               .with_mask(bluemask)
+                               .spectral_slab(-140*u.km/u.s, 60*u.km/u.s)
+                               .sum(axis=0))
+    sio_momentum_red_north = ((mass_sm_sio_cube * velprofile[:,None,None])
+                              .with_mask(sm_sio_cube > 2*u.mJy)
+                              .with_mask(redmask)
+                              .spectral_slab(60*u.km/u.s, 260*u.km/u.s)
+                              .sum(axis=0))
+
     north_center = coordinates.SkyCoord(290.91688055555557*u.deg,
                                         14.51818888888889*u.deg,
                                         frame='icrs')
@@ -256,7 +280,6 @@ if __name__ == "__main__":
                                                          binsize=2,
                                                          return_nr=True)
 
-    pixscale = (wcs.utils.proj_plane_pixel_scales(sm_sio_cube.wcs)[0]*u.deg * 5.4*u.kpc).to(u.pc, u.dimensionless_angles())
     inclination = 45*u.deg
     # hard-coded: 50 pixels was measured approximately from the radial graph
     # 42 km/s was also selected as v_lsr = 18, v_lsr(north)=60
@@ -269,6 +292,13 @@ if __name__ == "__main__":
            (max_velocity / np.tan(inclination))).to(u.yr)
 
     ppbeam = (beam_area / pixscale**2).decompose()
+
+    print("north total momentum: blue={0}, red={1}".format(np.nansum(sio_momentum_blue_north)/xsio,
+                                                     np.nansum(sio_momentum_red_north)/xsio))
+    windspeed = 500*u.km/u.s
+    print("north momentum -> mass loss: blue={0}, red={1}"
+          .format(np.nansum(sio_momentum_blue_north)/xsio/age/windspeed,
+                  np.nansum(sio_momentum_red_north)/xsio/age/windspeed))
 
     nsio_profile = ntot_of_nupper(nupper_of_kkms((profile*u.K*u.km/u.s),
                                                  ref_freq, 10**aij.mean(), 1),
@@ -376,6 +406,37 @@ if __name__ == "__main__":
 
     pixscale = (wcs.utils.proj_plane_pixel_scales(sm_sio_cube_e2.wcs)[0]*u.deg * 5.4*u.kpc).to(u.pc, u.dimensionless_angles())
     inclination = 45*u.deg
+
+    # just in case pixscale changed...
+    kkms_to_mass = ntot_of_nupper(nupper_of_kkms(1*u.K*u.km/u.s, ref_freq,
+                                                 10**aij.mean(),
+                                                 degeneracies=1),
+                                  eupper=tbl[-1]['E_U (K)']*u.K*constants.k_B,
+                                  tex=250*u.K) * 2.8*u.Da * pixscale**2
+    dv = np.mean(np.diff(sm_sio_cube_e2.spectral_axis))
+
+    mass_sm_sio_cube_e2 = ((sm_sio_cube_e2 / u.Jy *
+                            sm_sio_cube_e2.beam.jtok(ref_freq) * kkms_to_mass *
+                            dv) / (u.K*u.km/u.s)).to(u.M_sun)
+    velcenter = 60*u.km/u.s
+    velprofile = mass_sm_sio_cube_e2.spectral_axis - velcenter
+    sio_momentum_blue_e2 = ((mass_sm_sio_cube_e2 * velprofile[:,None,None])
+                            .with_mask(sm_sio_cube_e2 > 2*u.mJy)
+                            .with_mask(bluemask)
+                            .spectral_slab(-140*u.km/u.s, 60*u.km/u.s)
+                            .sum(axis=0))
+    sio_momentum_red_e2 = ((mass_sm_sio_cube_e2 * velprofile[:,None,None])
+                           .with_mask(sm_sio_cube_e2 > 2*u.mJy)
+                           .with_mask(redmask)
+                           .spectral_slab(60*u.km/u.s, 260*u.km/u.s)
+                           .sum(axis=0))
+    print("e2 total momentum: blue={0}, red={1}".format(np.nansum(sio_momentum_blue_e2)/xsio,
+                                                     np.nansum(sio_momentum_red_e2)/xsio))
+    windspeed = 500*u.km/u.s
+    print("e2 momentum -> mass loss: blue={0}, red={1}"
+          .format(np.nansum(sio_momentum_blue_e2)/xsio/age/windspeed,
+                  np.nansum(sio_momentum_red_e2)/xsio/age/windspeed))
+
 
     max_velocity = 105*u.km/u.s
     dmax = (0.474*u.arcsec*5.4*u.kpc).to(u.pc, u.dimensionless_angles())
@@ -500,6 +561,42 @@ if __name__ == "__main__":
 
     pixscale = (wcs.utils.proj_plane_pixel_scales(sm_sio_cube_e8.wcs)[0]*u.deg * 5.4*u.kpc).to(u.pc, u.dimensionless_angles())
     inclination = 45*u.deg
+
+    # just in case pixscale changed...
+    kkms_to_mass = ntot_of_nupper(nupper_of_kkms(1*u.K*u.km/u.s, ref_freq,
+                                                 10**aij.mean(),
+                                                 degeneracies=1),
+                                  eupper=tbl[-1]['E_U (K)']*u.K*constants.k_B,
+                                  tex=250*u.K) * 2.8*u.Da * pixscale**2
+    dv = np.mean(np.diff(sm_sio_cube_e8.spectral_axis))
+
+    mass_sm_sio_cube_e8 = ((sm_sio_cube_e8 / u.Jy *
+                            sm_sio_cube_e8.beam.jtok(ref_freq) * kkms_to_mass *
+                            dv) / (u.K*u.km/u.s)).to(u.M_sun)
+    velcenter = 60*u.km/u.s
+    velprofile = mass_sm_sio_cube_e8.spectral_axis - velcenter
+    sio_momentum_blue_e8 = ((mass_sm_sio_cube_e8 * velprofile[:,None,None])
+                            .with_mask(sm_sio_cube_e8 > 2*u.mJy)
+                            .with_mask(bluemask)
+                            .spectral_slab(-140*u.km/u.s, 60*u.km/u.s)
+                            .sum(axis=0))
+    sio_momentum_red_e8 = ((mass_sm_sio_cube_e8 * velprofile[:,None,None])
+                           .with_mask(sm_sio_cube_e8 > 2*u.mJy)
+                           .with_mask(redmask)
+                           .spectral_slab(60*u.km/u.s, 260*u.km/u.s)
+                           .sum(axis=0))
+    print("e8 total momentum: blue={0}, red={1}".format(np.nansum(sio_momentum_blue_e8)/xsio,
+                                                     np.nansum(sio_momentum_red_e8)/xsio))
+    windspeed = 500*u.km/u.s
+    print("e8 momentum -> mass loss: blue={0}, red={1}"
+          .format(np.nansum(sio_momentum_blue_e8)/xsio/age/windspeed,
+                  np.nansum(sio_momentum_red_e8)/xsio/age/windspeed))
+
+
+
+
+
+
     age = ((0.667*u.arcsec*5.4*u.kpc).to(u.pc,
                                          u.dimensionless_angles()) /
            (42*u.km/u.s / np.tan(inclination))).to(u.yr)
