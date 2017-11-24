@@ -234,6 +234,8 @@ if __name__ == "__main__":
     sio_m0_red_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0() / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
     sio_m1_blue_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
     sio_m1_red_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
+    sio_peak_blue_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).max(axis=0) / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
+    sio_peak_red_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).max(axis=0) / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
 
     pixscale = (wcs.utils.proj_plane_pixel_scales(sm_sio_cube.wcs)[0]*u.deg * 5.4*u.kpc).to(u.pc, u.dimensionless_angles())
 
@@ -247,13 +249,13 @@ if __name__ == "__main__":
     mass_sm_sio_cube = ((sm_sio_cube / u.Jy * sm_sio_cube.beam.jtok(ref_freq) *
                          kkms_to_mass * dv) / (u.K*u.km/u.s)).to(u.M_sun)
     velcenter = 60*u.km/u.s
-    velprofile = mass_sm_sio_cube.spectral_axis - velcenter
-    sio_momentum_blue_north = ((mass_sm_sio_cube * velprofile[:,None,None])
+    velaxis = mass_sm_sio_cube.spectral_axis - velcenter
+    sio_momentum_blue_north = ((mass_sm_sio_cube * velaxis[:,None,None])
                                .with_mask(sm_sio_cube > 2*u.mJy)
                                .with_mask(bluemask)
                                .spectral_slab(-140*u.km/u.s, 60*u.km/u.s)
                                .sum(axis=0))
-    sio_momentum_red_north = ((mass_sm_sio_cube * velprofile[:,None,None])
+    sio_momentum_red_north = ((mass_sm_sio_cube * velaxis[:,None,None])
                               .with_mask(sm_sio_cube > 2*u.mJy)
                               .with_mask(redmask)
                               .spectral_slab(60*u.km/u.s, 260*u.km/u.s)
@@ -299,6 +301,9 @@ if __name__ == "__main__":
     print("north momentum -> mass loss: blue={0}, red={1}"
           .format(np.nansum(sio_momentum_blue_north)/xsio/age/windspeed,
                   np.nansum(sio_momentum_red_north)/xsio/age/windspeed))
+
+    # this is nonsense velmom1_north = np.nansum(velaxis * profile)/np.nansum(profile[np.isfinite(velaxis)])
+    # this is nonsense print("north Average Velocity (moment 1): {0}".format(velmom1_north))
 
     nsio_profile = ntot_of_nupper(nupper_of_kkms((profile*u.K*u.km/u.s),
                                                  ref_freq, 10**aij.mean(), 1),
@@ -380,9 +385,15 @@ if __name__ == "__main__":
     redmask = pyregion.open(paths.rpath('sio_red_boxmask_lb_e2.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube_e2[0,:,:].hdu)
 
     sio_m0_blue_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment0() / u.Jy * sm_sio_cube_e2.beam.jtok(ref_freq)
-    sio_m0_red = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0() / u.Jy * sm_sio_cube_e2.beam.jtok(ref_freq)
+    sio_m0_red_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0() / u.Jy * sm_sio_cube_e2.beam.jtok(ref_freq)
     sio_m1_blue_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
     sio_m1_red = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
+    sio_peak_blue_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).max(axis=0) / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
+    sio_peak_red_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).max(axis=0) / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
+
+    # DEBUG - trying to understand where the various peaks are
+    # pl.contour(sio_peak_red_e2, levels=[5,10,25,50,100,150,200,250,300,350], colors=['r']*20)
+    # pl.contour(sio_peak_blue_e2, levels=[5,10,25,50,100,150,200,250,300,350], colors=['b']*20)
 
     e2_center = coordinates.SkyCoord('19:23:43.976', '14:30:34.500',
                                      unit=(u.hour, u.deg), frame='icrs')
@@ -419,29 +430,53 @@ if __name__ == "__main__":
                             sm_sio_cube_e2.beam.jtok(ref_freq) * kkms_to_mass *
                             dv) / (u.K*u.km/u.s)).to(u.M_sun)
     velcenter = 60*u.km/u.s
-    velprofile = mass_sm_sio_cube_e2.spectral_axis - velcenter
-    sio_momentum_blue_e2 = ((mass_sm_sio_cube_e2 * velprofile[:,None,None])
+    velaxis = mass_sm_sio_cube_e2.spectral_axis - velcenter
+    sio_momentum_blue_e2 = ((mass_sm_sio_cube_e2 * velaxis[:,None,None])
                             .with_mask(sm_sio_cube_e2 > 2*u.mJy)
                             .with_mask(bluemask)
                             .spectral_slab(-140*u.km/u.s, 60*u.km/u.s)
                             .sum(axis=0))
-    sio_momentum_red_e2 = ((mass_sm_sio_cube_e2 * velprofile[:,None,None])
+    sio_momentum_red_e2 = ((mass_sm_sio_cube_e2 * velaxis[:,None,None])
                            .with_mask(sm_sio_cube_e2 > 2*u.mJy)
                            .with_mask(redmask)
                            .spectral_slab(60*u.km/u.s, 260*u.km/u.s)
                            .sum(axis=0))
     print("e2 total momentum: blue={0}, red={1}".format(np.nansum(sio_momentum_blue_e2)/xsio,
-                                                     np.nansum(sio_momentum_red_e2)/xsio))
+                                                        np.nansum(sio_momentum_red_e2)/xsio))
     windspeed = 500*u.km/u.s
     print("e2 momentum -> mass loss: blue={0}, red={1}"
           .format(np.nansum(sio_momentum_blue_e2)/xsio/age/windspeed,
                   np.nansum(sio_momentum_red_e2)/xsio/age/windspeed))
 
+    # this is nonsense velmom1_e2 = np.nansum(velaxis * profile)/np.nansum(profile[np.isfinite(velaxis)])
+    # this is nonsense print("e2 Average Velocity (moment 1): {0}".format(velmom1_e2))
 
     max_velocity = 105*u.km/u.s
     dmax = (0.474*u.arcsec*5.4*u.kpc).to(u.pc, u.dimensionless_angles())
     age = (dmax /
            (max_velocity / np.tan(inclination))).to(u.yr)
+
+    print("e2 age estimate from max velocity={0} separation={1} age={2}"
+          .format(max_velocity, dmax, age))
+
+    # second age estimate
+    # this time, we use the location of the highest value in the moment 0 map
+    # to represent the "average" outflowing mass.
+    # If we're looking at a single event, i.e., a hubble flow, the age should
+    # be the same for the average and the max.
+    # If we're looking at a constantly-driven outflow... we should see the same
+    # velocities at all points and the age should be lower because we're looking closer
+    # to the source
+    bymax,bxmax = np.unravel_index(np.nanargmax(sio_m0_blue_e2), sio_m0_blue_e2.shape)
+    rymax,rxmax = np.unravel_index(np.nanargmax(sio_m0_red_e2), sio_m0_red_e2.shape)
+    m0pk_sep_blue_e2 = ((bxmax-nc_x)**2 + (bymax-nc_y)**2)**0.5 * pixscale
+    vatmax_blue_e2 = sio_m1_blue_e2[bymax, bxmax]
+    avg_age_blue_e2 = (m0pk_sep_blue_e2 / vatmax_blue_e2).to(u.yr)
+
+    print("e2 age estimate from avg velocity={0} separation={1} age={2}"
+          .format(vatmax_blue_e2, m0pk_sep_blue_e2, avg_age_blue_e2))
+
+
 
     ppbeam = (beam_area / pixscale**2).decompose()
 
@@ -538,6 +573,9 @@ if __name__ == "__main__":
     sio_m0_red_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0() / u.Jy * sm_sio_cube_e8.beam.jtok(ref_freq)
     sio_m1_blue_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
     sio_m1_red_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
+    sio_peak_blue_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).max(axis=0) / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
+    sio_peak_red_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).max(axis=0) / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
+    
 
     e8_center = coordinates.SkyCoord('19:23:43.976', '14:30:34.500',
                                      unit=(u.hour, u.deg), frame='icrs')
@@ -574,24 +612,26 @@ if __name__ == "__main__":
                             sm_sio_cube_e8.beam.jtok(ref_freq) * kkms_to_mass *
                             dv) / (u.K*u.km/u.s)).to(u.M_sun)
     velcenter = 60*u.km/u.s
-    velprofile = mass_sm_sio_cube_e8.spectral_axis - velcenter
-    sio_momentum_blue_e8 = ((mass_sm_sio_cube_e8 * velprofile[:,None,None])
+    velaxis = mass_sm_sio_cube_e8.spectral_axis - velcenter
+    sio_momentum_blue_e8 = ((mass_sm_sio_cube_e8 * velaxis[:,None,None])
                             .with_mask(sm_sio_cube_e8 > 2*u.mJy)
                             .with_mask(bluemask)
                             .spectral_slab(-140*u.km/u.s, 60*u.km/u.s)
                             .sum(axis=0))
-    sio_momentum_red_e8 = ((mass_sm_sio_cube_e8 * velprofile[:,None,None])
+    sio_momentum_red_e8 = ((mass_sm_sio_cube_e8 * velaxis[:,None,None])
                            .with_mask(sm_sio_cube_e8 > 2*u.mJy)
                            .with_mask(redmask)
                            .spectral_slab(60*u.km/u.s, 260*u.km/u.s)
                            .sum(axis=0))
     print("e8 total momentum: blue={0}, red={1}".format(np.nansum(sio_momentum_blue_e8)/xsio,
-                                                     np.nansum(sio_momentum_red_e8)/xsio))
+                                                        np.nansum(sio_momentum_red_e8)/xsio))
     windspeed = 500*u.km/u.s
     print("e8 momentum -> mass loss: blue={0}, red={1}"
           .format(np.nansum(sio_momentum_blue_e8)/xsio/age/windspeed,
                   np.nansum(sio_momentum_red_e8)/xsio/age/windspeed))
 
+    # this is nonsense velmom1_e8 = np.nansum(velaxis * profile)/np.nansum(profile[np.isfinite(velaxis)])
+    # this is nonsense print("e8 Average Velocity (moment 1): {0}".format(velmom1_e8))
 
 
 
@@ -620,6 +660,3 @@ if __name__ == "__main__":
     single_event_mass = np.nansum(m_sio_profile)
     print("e8 Mass accreted = {0} in {1} years gives rate {2}"
           .format(single_event_mass, age, single_event_rate,))
-
-
-
