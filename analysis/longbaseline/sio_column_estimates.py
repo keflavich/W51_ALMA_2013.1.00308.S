@@ -310,11 +310,11 @@ if __name__ == "__main__":
     rymax,rxmax = np.unravel_index(np.nanargmax(sio_m0_red_north), sio_m0_red_north.shape)
 
     # find the offset from the central position, the velocity offset, and compute age
-    m0pk_sep_blue_north = ((bxmax-nc_x)**2 + (bymax-nc_y)**2)**0.5 * pixscale
+    m0pk_sep_blue_north = (((bxmax-nc_x)**2 + (bymax-nc_y)**2)**0.5 * pixscale).to(u.au)
     vatmax_blue_north = sio_m1_blue_north[bymax, bxmax] - velcenter
     avg_age_blue_north = (m0pk_sep_blue_north / vatmax_blue_north).to(u.yr)
 
-    m0pk_sep_red_north = ((rxmax-nc_x)**2 + (rymax-nc_y)**2)**0.5 * pixscale
+    m0pk_sep_red_north = (((rxmax-nc_x)**2 + (rymax-nc_y)**2)**0.5 * pixscale).to(u.au)
     vatmax_red_north = sio_m1_red_north[rymax, rxmax] - velcenter
     avg_age_red_north = (m0pk_sep_red_north / vatmax_red_north).to(u.yr)
 
@@ -505,11 +505,11 @@ if __name__ == "__main__":
     rymax,rxmax = np.unravel_index(np.nanargmax(sio_m0_red_e2), sio_m0_red_e2.shape)
 
     # find the offset from the central position, the velocity offset, and compute age
-    m0pk_sep_blue_e2 = ((bxmax-nc_x)**2 + (bymax-nc_y)**2)**0.5 * pixscale
+    m0pk_sep_blue_e2 = (((bxmax-nc_x)**2 + (bymax-nc_y)**2)**0.5 * pixscale).to(u.au)
     vatmax_blue_e2 = sio_m1_blue_e2[bymax, bxmax] - velcenter
     avg_age_blue_e2 = (m0pk_sep_blue_e2 / vatmax_blue_e2).to(u.yr)
 
-    m0pk_sep_red_e2 = ((rxmax-nc_x)**2 + (rymax-nc_y)**2)**0.5 * pixscale
+    m0pk_sep_red_e2 = (((rxmax-nc_x)**2 + (rymax-nc_y)**2)**0.5 * pixscale).to(u.au)
     vatmax_red_e2 = sio_m1_red_e2[rymax, rxmax] - velcenter
     avg_age_red_e2 = (m0pk_sep_red_e2 / vatmax_red_e2).to(u.yr)
 
@@ -701,11 +701,11 @@ if __name__ == "__main__":
     rymax,rxmax = np.unravel_index(np.nanargmax(sio_m0_red_e8), sio_m0_red_e8.shape)
 
     # find the offset from the central position, the velocity offset, and compute age
-    m0pk_sep_blue_e8 = ((bxmax-nc_x)**2 + (bymax-nc_y)**2)**0.5 * pixscale
+    m0pk_sep_blue_e8 = (((bxmax-nc_x)**2 + (bymax-nc_y)**2)**0.5 * pixscale).to(u.au)
     vatmax_blue_e8 = sio_m1_blue_e8[bymax, bxmax] - velcenter
     avg_age_blue_e8 = (m0pk_sep_blue_e8 / vatmax_blue_e8).to(u.yr)
 
-    m0pk_sep_red_e8 = ((rxmax-nc_x)**2 + (rymax-nc_y)**2)**0.5 * pixscale
+    m0pk_sep_red_e8 = (((rxmax-nc_x)**2 + (rymax-nc_y)**2)**0.5 * pixscale).to(u.au)
     vatmax_red_e8 = sio_m1_red_e8[rymax, rxmax] - velcenter
     avg_age_red_e8 = (m0pk_sep_red_e8 / vatmax_red_e8).to(u.yr)
 
