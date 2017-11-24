@@ -293,6 +293,38 @@ if __name__ == "__main__":
     age = (dmax /
            (max_velocity / np.tan(inclination))).to(u.yr)
 
+    print("north age estimate from max velocity={0} separation={1} age={2}"
+          .format(max_velocity, dmax, age))
+
+    # second age estimate
+    # this time, we use the location of the highest value in the moment 0 map
+    # to represent the "average" outflowing mass.
+    # If we're looking at a single event, i.e., a hubble flow, the age should
+    # be the same for the average and the max.
+    # If we're looking at a constantly-driven outflow... we should see the same
+    # velocities at all points and the age should be lower because we're looking closer
+    # to the source
+
+    # compute the positions of brightest integrated emission
+    bymax,bxmax = np.unravel_index(np.nanargmax(sio_m0_blue_north), sio_m0_blue_north.shape)
+    rymax,rxmax = np.unravel_index(np.nanargmax(sio_m0_red_north), sio_m0_red_north.shape)
+
+    # find the offset from the central position, the velocity offset, and compute age
+    m0pk_sep_blue_north = ((bxmax-nc_x)**2 + (bymax-nc_y)**2)**0.5 * pixscale
+    vatmax_blue_north = sio_m1_blue_north[bymax, bxmax] - velcenter
+    avg_age_blue_north = (m0pk_sep_blue_north / vatmax_blue_north).to(u.yr)
+
+    m0pk_sep_red_north = ((rxmax-nc_x)**2 + (rymax-nc_y)**2)**0.5 * pixscale
+    vatmax_red_north = sio_m1_red_north[rymax, rxmax] - velcenter
+    avg_age_red_north = (m0pk_sep_red_north / vatmax_red_north).to(u.yr)
+
+    print("north blue age estimate from avg velocity={0} separation={1} age={2}"
+          .format(vatmax_blue_north, m0pk_sep_blue_north, avg_age_blue_north))
+    print("north red age estimate from avg velocity={0} separation={1} age={2}"
+          .format(vatmax_red_north, m0pk_sep_red_north, avg_age_red_north))
+
+
+
     ppbeam = (beam_area / pixscale**2).decompose()
 
     print("north total momentum: blue={0}, red={1}".format(np.nansum(sio_momentum_blue_north)/xsio,
@@ -387,7 +419,7 @@ if __name__ == "__main__":
     sio_m0_blue_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment0() / u.Jy * sm_sio_cube_e2.beam.jtok(ref_freq)
     sio_m0_red_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0() / u.Jy * sm_sio_cube_e2.beam.jtok(ref_freq)
     sio_m1_blue_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
-    sio_m1_red = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
+    sio_m1_red_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
     sio_peak_blue_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).max(axis=0) / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
     sio_peak_red_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).max(axis=0) / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
 
@@ -467,14 +499,24 @@ if __name__ == "__main__":
     # If we're looking at a constantly-driven outflow... we should see the same
     # velocities at all points and the age should be lower because we're looking closer
     # to the source
+
+    # compute the positions of brightest integrated emission
     bymax,bxmax = np.unravel_index(np.nanargmax(sio_m0_blue_e2), sio_m0_blue_e2.shape)
     rymax,rxmax = np.unravel_index(np.nanargmax(sio_m0_red_e2), sio_m0_red_e2.shape)
+
+    # find the offset from the central position, the velocity offset, and compute age
     m0pk_sep_blue_e2 = ((bxmax-nc_x)**2 + (bymax-nc_y)**2)**0.5 * pixscale
-    vatmax_blue_e2 = sio_m1_blue_e2[bymax, bxmax]
+    vatmax_blue_e2 = sio_m1_blue_e2[bymax, bxmax] - velcenter
     avg_age_blue_e2 = (m0pk_sep_blue_e2 / vatmax_blue_e2).to(u.yr)
 
-    print("e2 age estimate from avg velocity={0} separation={1} age={2}"
+    m0pk_sep_red_e2 = ((rxmax-nc_x)**2 + (rymax-nc_y)**2)**0.5 * pixscale
+    vatmax_red_e2 = sio_m1_red_e2[rymax, rxmax] - velcenter
+    avg_age_red_e2 = (m0pk_sep_red_e2 / vatmax_red_e2).to(u.yr)
+
+    print("e2 blue age estimate from avg velocity={0} separation={1} age={2}"
           .format(vatmax_blue_e2, m0pk_sep_blue_e2, avg_age_blue_e2))
+    print("e2 red age estimate from avg velocity={0} separation={1} age={2}"
+          .format(vatmax_red_e2, m0pk_sep_red_e2, avg_age_red_e2))
 
 
 
@@ -637,9 +679,43 @@ if __name__ == "__main__":
 
 
 
-    age = ((0.667*u.arcsec*5.4*u.kpc).to(u.pc,
-                                         u.dimensionless_angles()) /
-           (42*u.km/u.s / np.tan(inclination))).to(u.yr)
+    dmax = (0.667*u.arcsec*5.4*u.kpc).to(u.pc, u.dimensionless_angles())
+    max_velocity = 42*u.km/u.s
+    age = (dmax /
+           (max_velocity / np.tan(inclination))).to(u.yr)
+
+    print("e8 age estimate from max velocity={0} separation={1} age={2}"
+          .format(max_velocity, dmax, age))
+
+    # second age estimate
+    # this time, we use the location of the highest value in the moment 0 map
+    # to represent the "average" outflowing mass.
+    # If we're looking at a single event, i.e., a hubble flow, the age should
+    # be the same for the average and the max.
+    # If we're looking at a constantly-driven outflow... we should see the same
+    # velocities at all points and the age should be lower because we're looking closer
+    # to the source
+
+    # compute the positions of brightest integrated emission
+    bymax,bxmax = np.unravel_index(np.nanargmax(sio_m0_blue_e8), sio_m0_blue_e8.shape)
+    rymax,rxmax = np.unravel_index(np.nanargmax(sio_m0_red_e8), sio_m0_red_e8.shape)
+
+    # find the offset from the central position, the velocity offset, and compute age
+    m0pk_sep_blue_e8 = ((bxmax-nc_x)**2 + (bymax-nc_y)**2)**0.5 * pixscale
+    vatmax_blue_e8 = sio_m1_blue_e8[bymax, bxmax] - velcenter
+    avg_age_blue_e8 = (m0pk_sep_blue_e8 / vatmax_blue_e8).to(u.yr)
+
+    m0pk_sep_red_e8 = ((rxmax-nc_x)**2 + (rymax-nc_y)**2)**0.5 * pixscale
+    vatmax_red_e8 = sio_m1_red_e8[rymax, rxmax] - velcenter
+    avg_age_red_e8 = (m0pk_sep_red_e8 / vatmax_red_e8).to(u.yr)
+
+    print("e8 blue age estimate from avg velocity={0} separation={1} age={2}"
+          .format(vatmax_blue_e8, m0pk_sep_blue_e8, avg_age_blue_e8))
+    print("e8 red age estimate from avg velocity={0} separation={1} age={2}"
+          .format(vatmax_red_e8, m0pk_sep_red_e8, avg_age_red_e8))
+
+
+
 
     ppbeam = (beam_area / pixscale**2).decompose()
 
