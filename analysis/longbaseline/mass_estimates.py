@@ -221,14 +221,16 @@ ax.set_xlabel("Right Ascension")
 ax.set_ylabel("Declination")
 fig1.savefig(paths.fpath("longbaseline/e2cutout_contours_for_masscalc.pdf"), bbox_inches='tight')
 
-print("e2 lower contour Jy, K: {0}, {1}".format(struct.height*u.Jy,
-                                                u.Quantity(struct.height,
-                                                           u.Jy).to(u.K,
-                                                                    beam_e2e8.jtok_equiv(226*u.GHz))))
-print("e2 upper contour Jy, K: {0}, {1}".format(trunk.height*u.Jy,
-                                                u.Quantity(trunk.height,
-                                                           u.Jy).to(u.K,
-                                                                    beam_e2e8.jtok_equiv(226*u.GHz))))
+print("e2 upper contour Jy, K: {0}, {1}, {2}%"
+      .format(struct.vmin*u.Jy, u.Quantity(struct.vmin, u.Jy).to(u.K,
+                                                                 beam_e2e8.jtok_equiv(226*u.GHz)),
+              struct.vmin / struct.values().max() * 100,
+     ))
+print("e2 lower contour Jy, K: {0}, {1}, {2}%"
+      .format(trunk.vmin*u.Jy, u.Quantity(trunk.vmin, u.Jy).to(u.K,
+                                                               beam_e2e8.jtok_equiv(226*u.GHz)),
+              trunk.vmin / struct.values().max() * 100
+     ))
 
 
 dende8 = astrodendro.Dendrogram.compute(cutout_e8.value, min_value=0.0005,
@@ -282,14 +284,16 @@ fig1.savefig(paths.fpath("longbaseline/e8cutout_contours_for_masscalc.pdf"), bbo
 
 
 
-print("e8 lower contour Jy, K: {0}, {1}".format(struct.height*u.Jy,
-                                                u.Quantity(struct.height,
-                                                           u.Jy).to(u.K,
-                                                                    beam_e2e8.jtok_equiv(226*u.GHz))))
-print("e8 upper contour Jy, K: {0}, {1}".format(trunk.height*u.Jy,
-                                                u.Quantity(trunk.height,
-                                                           u.Jy).to(u.K,
-                                                                    beam_e2e8.jtok_equiv(226*u.GHz))))
+print("e8 upper contour Jy, K: {0}, {1}, {2}%"
+      .format(struct.vmin*u.Jy, u.Quantity(struct.vmin, u.Jy).to(u.K,
+                                                                 beam_e2e8.jtok_equiv(226*u.GHz)),
+              struct.vmin / struct.values().max() * 100,
+     ))
+print("e8 lower contour Jy, K: {0}, {1}, {2}%"
+      .format(trunk.vmin*u.Jy, u.Quantity(trunk.vmin, u.Jy).to(u.K,
+                                                               beam_e2e8.jtok_equiv(226*u.GHz)),
+              trunk.vmin / struct.values().max() * 100
+     ))
 
 
 
@@ -346,11 +350,14 @@ ax.set_xlabel("Right Ascension")
 ax.set_ylabel("Declination")
 fig1.savefig(paths.fpath("longbaseline/northcutout_contours_for_masscalc.pdf"), bbox_inches='tight')
 
-print("north lower contour Jy, K: {0}, {1}".format(struct.height*u.Jy,
-                                                   u.Quantity(struct.height,
-                                                              u.Jy).to(u.K,
-                                                                       beam_north.jtok_equiv(226*u.GHz))))
-print("north upper contour Jy, K: {0}, {1}".format(0.0083*u.Jy,
-                                                   u.Quantity(0.0083,
-                                                              u.Jy).to(u.K,
-                                                                       beam_north.jtok_equiv(226*u.GHz))))
+print("north upper contour Jy, K: {0}, {1}, {2}%"
+      .format(struct.vmin*u.Jy, u.Quantity(struct.vmin, u.Jy).to(u.K,
+                                                                 beam_north.jtok_equiv(226*u.GHz)),
+              struct.vmin / struct.values().max() * 100,
+             )
+     )
+print("north upper contour Jy, K: {0}, {1}, {2}%"
+      .format(0.0083*u.Jy, u.Quantity(0.0083, u.Jy).to(u.K,
+                                                       beam_north.jtok_equiv(226*u.GHz)),
+              0.0083 / struct.values().max() * 100)
+     )
