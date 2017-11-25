@@ -287,6 +287,7 @@ if __name__ == "__main__":
     # 42 km/s was also selected as v_lsr = 18, v_lsr(north)=60
     max_velocity = (60+25)*u.km/u.s
     max_velocity = 25*u.km/u.s
+    max_velocity = 95 * u.km/u.s # we see blue emission starting at -35 km/s
 
     age = (pixscale*50 / (max_velocity / np.tan(inclination))).to(u.yr)
     dmax = (0.285*u.arcsec*5.4*u.kpc).to(u.pc, u.dimensionless_angles())
@@ -328,7 +329,7 @@ if __name__ == "__main__":
     ppbeam = (beam_area / pixscale**2).decompose()
 
     print("north total momentum: blue={0}, red={1}".format(np.nansum(sio_momentum_blue_north)/xsio,
-                                                     np.nansum(sio_momentum_red_north)/xsio))
+                                                           np.nansum(sio_momentum_red_north)/xsio))
     windspeed = 500*u.km/u.s
     print("north momentum -> mass loss: blue={0}, red={1}"
           .format(np.nansum(sio_momentum_blue_north)/xsio/age/windspeed,

@@ -208,6 +208,7 @@ print("Mass at {3:0.1f} of inner e2 = {0:0.2f}, e2 total = {1:0.2f}, e2 filament
       .format(e2innermass_pktb, e2totalmass_pktb, e2filamentsmass_pktb, e2etbpeak))
 
 
+
 fig1 = pl.figure(1)
 fig1.clf()
 ax = pl.axes(projection=wcs_e2cutout)
@@ -219,6 +220,15 @@ ax.contour(trunk.get_mask(), levels=[0.5], colors=['red'], origin='lower')
 ax.set_xlabel("Right Ascension")
 ax.set_ylabel("Declination")
 fig1.savefig(paths.fpath("longbaseline/e2cutout_contours_for_masscalc.pdf"), bbox_inches='tight')
+
+print("e2 lower contour Jy, K: {0}, {1}".format(struct.height*u.Jy,
+                                                u.Quantity(struct.height,
+                                                           u.Jy).to(u.K,
+                                                                    beam_e2e8.jtok_equiv(226*u.GHz))))
+print("e2 upper contour Jy, K: {0}, {1}".format(trunk.height*u.Jy,
+                                                u.Quantity(trunk.height,
+                                                           u.Jy).to(u.K,
+                                                                    beam_e2e8.jtok_equiv(226*u.GHz))))
 
 
 dende8 = astrodendro.Dendrogram.compute(cutout_e8.value, min_value=0.0005,
@@ -271,6 +281,15 @@ ax.set_ylabel("Declination")
 fig1.savefig(paths.fpath("longbaseline/e8cutout_contours_for_masscalc.pdf"), bbox_inches='tight')
 
 
+
+print("e8 lower contour Jy, K: {0}, {1}".format(struct.height*u.Jy,
+                                                u.Quantity(struct.height,
+                                                           u.Jy).to(u.K,
+                                                                    beam_e2e8.jtok_equiv(226*u.GHz))))
+print("e8 upper contour Jy, K: {0}, {1}".format(trunk.height*u.Jy,
+                                                u.Quantity(trunk.height,
+                                                           u.Jy).to(u.K,
+                                                                    beam_e2e8.jtok_equiv(226*u.GHz))))
 
 
 
@@ -326,3 +345,12 @@ ax.contour(peanutmask, levels=[0.5], colors=['orange'], origin='lower')
 ax.set_xlabel("Right Ascension")
 ax.set_ylabel("Declination")
 fig1.savefig(paths.fpath("longbaseline/northcutout_contours_for_masscalc.pdf"), bbox_inches='tight')
+
+print("north lower contour Jy, K: {0}, {1}".format(struct.height*u.Jy,
+                                                   u.Quantity(struct.height,
+                                                              u.Jy).to(u.K,
+                                                                       beam_north.jtok_equiv(226*u.GHz))))
+print("north upper contour Jy, K: {0}, {1}".format(0.0083*u.Jy,
+                                                   u.Quantity(0.0083,
+                                                              u.Jy).to(u.K,
+                                                                       beam_north.jtok_equiv(226*u.GHz))))

@@ -30,7 +30,7 @@ core_phot_tbl = Table.read(paths.tpath("continuum_photometry.ipac"), format='asc
 cores_merge = Table.read(paths.tpath('core_continuum_and_line.ipac'), format='ascii.ipac')
 
 beam_area = cores_merge['beam_area']
-jy_to_k = (1*u.Jy).to(u.K, u.brightness_temperature(beam_area,
+jy_to_k = (1*u.Jy).to(u.K, u.brightness_temperature(u.Quantity(beam_area, u.sr),
                                                     226*u.GHz)).mean()
 
 fig1 = pl.figure(1)
@@ -81,6 +81,15 @@ ax3.set_ylabel("Number of sources")
 fig2.savefig(paths.fpath('coreplots/flux_powerlaw_histogram_fit.png'), bbox_inches='tight')
 
 print("Flux Fit parameters: alpha={0}".format(fit.power_law.alpha))
+
+fig = pl.figure(1)
+fig.clf()
+ax = fig.gca()
+ax.hist(core_phot_tbl['peak'] * jy_to_k, histtype='step', facecolor='none', color='k',
+        bins=np.linspace(0,100,26))
+ax.set_xlabel("Peak $T_B$ [K]")
+fig.savefig(paths.fpath('coreplots/peaktb_histogram.png'), bbox_inches='tight')
+
 
 fig2 = pl.figure(2)
 fig2.clf()
