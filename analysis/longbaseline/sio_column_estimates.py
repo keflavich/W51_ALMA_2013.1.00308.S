@@ -295,7 +295,7 @@ if __name__ == "__main__":
            (max_velocity / np.tan(inclination))).to(u.yr)
 
     print("north age estimate from max velocity={0} separation={1} age={2}"
-          .format(max_velocity, dmax, age))
+          .format(max_velocity, dmax.to(u.au), age))
 
     # second age estimate
     # this time, we use the location of the highest value in the moment 0 map
@@ -490,7 +490,7 @@ if __name__ == "__main__":
            (max_velocity / np.tan(inclination))).to(u.yr)
 
     print("e2 age estimate from max velocity={0} separation={1} age={2}"
-          .format(max_velocity, dmax, age))
+          .format(max_velocity, dmax.to(u.au), age))
 
     # second age estimate
     # this time, we use the location of the highest value in the moment 0 map
@@ -620,7 +620,7 @@ if __name__ == "__main__":
     sio_peak_red_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).max(axis=0) / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
     
 
-    e8_center = coordinates.SkyCoord('19:23:43.976', '14:30:34.500',
+    e8_center = coordinates.SkyCoord('19:23:43.9053', '14:30:28.2385',
                                      unit=(u.hour, u.deg), frame='icrs')
     nc_x, nc_y = sm_sio_cube_e8.wcs.celestial.wcs_world2pix(e8_center.ra.deg,
                                                             e8_center.dec.deg,
@@ -642,6 +642,9 @@ if __name__ == "__main__":
 
     pixscale = (wcs.utils.proj_plane_pixel_scales(sm_sio_cube_e8.wcs)[0]*u.deg * 5.4*u.kpc).to(u.pc, u.dimensionless_angles())
     inclination = 45*u.deg
+    # For e8, it's probably better to assume something closer to 75 deg?
+    inclination = 75*u.deg
+    # this is supposed to be nearly edge-on
 
     # just in case pixscale changed...
     kkms_to_mass = ntot_of_nupper(nupper_of_kkms(1*u.K*u.km/u.s, ref_freq,
@@ -680,13 +683,19 @@ if __name__ == "__main__":
 
 
 
+    # 0.667 contains *all* of the sio (i.e., is the most distant SiO)
     dmax = (0.667*u.arcsec*5.4*u.kpc).to(u.pc, u.dimensionless_angles())
+    # this is the extent of the "bright" sio
+    dmax = (0.195*u.arcsec*5.4*u.kpc).to(u.pc, u.dimensionless_angles())
+    # the approximate distance to the highest-velocity thing
+    dmax = (0.072*u.arcsec*5.4*u.kpc).to(u.pc, u.dimensionless_angles())
     max_velocity = 42*u.km/u.s
     age = (dmax /
            (max_velocity / np.tan(inclination))).to(u.yr)
 
+    print('e8 inclination: {0}'.format(inclination))
     print("e8 age estimate from max velocity={0} separation={1} age={2}"
-          .format(max_velocity, dmax, age))
+          .format(max_velocity, dmax.to(u.au), age))
 
     # second age estimate
     # this time, we use the location of the highest value in the moment 0 map
@@ -700,6 +709,18 @@ if __name__ == "__main__":
     # compute the positions of brightest integrated emission
     bymax,bxmax = np.unravel_index(np.nanargmax(sio_m0_blue_e8), sio_m0_blue_e8.shape)
     rymax,rxmax = np.unravel_index(np.nanargmax(sio_m0_red_e8), sio_m0_red_e8.shape)
+    
+    if False:
+        # DEBUG: copy and paste this script to do some simple diagnostics
+        mxe8 = sm_sio_cube_e8.max(axis=0)
+        pl.clf()
+        pl.imshow(mxe8, cmap='gray', interpolation='none', origin='lower')
+        pl.contour(sio_m0_blue_e8, colors=['b']*10)
+        pl.contour(sio_m0_red_e8, colors=['r']*10)
+        pl.plot([bxmax], [bymax], 'bx')
+        pl.plot([rxmax], [rymax], 'rx')
+        pl.plot([nc_x], [nc_y], 'wo')
+        pl.axis([334, 474, 420, 495])
 
     # find the offset from the central position, the velocity offset, and compute age
     m0pk_sep_blue_e8 = (((bxmax-nc_x)**2 + (bymax-nc_y)**2)**0.5 * pixscale).to(u.au)
