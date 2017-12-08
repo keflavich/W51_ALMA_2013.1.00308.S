@@ -201,7 +201,7 @@ if __name__ == "__main__":
 
     north_ds = paths.dpath('longbaseline/W51north_siocube_downsampled.fits')
     if os.path.exists(north_ds):
-        sm_sio_cube = SpectralCube.read(north_ds)
+        sm_sio_cube_north = sm_sio_cube = SpectralCube.read(north_ds)
     else:
         siocube = (SpectralCube.read(
             paths.dpath('longbaseline/linked/W51northcax.SPW0_ALL_medsub_cutout.fits'))
@@ -350,7 +350,7 @@ if __name__ == "__main__":
     single_event_rate = np.nansum(massloss_rate)
 
     single_event_mass = np.nansum(m_sio_profile)
-    print("north Mass accreted = {0} in {1} years gives rate {2}"
+    print("north Mass accreted = {0} in {1} years gives rate {2} (assuming 100% accreted in single event)"
           .format(single_event_mass, age, single_event_rate,))
 
     distances = centers*pixscale
@@ -364,13 +364,14 @@ if __name__ == "__main__":
     north_blob_area = (np.pi*(0.04*u.arcsec)**2*(5.4*u.kpc)**2).to(u.cm**2, u.dimensionless_angles())
     north_blob_mass = (north_blob_area * surfdens_at_max / xsio * 2.8*u.Da).to(u.M_sun)
     print("north blob area, mass = {0}, {1}".format(north_blob_area, north_blob_mass))
-    print("north accr. rate = {0}".format(2*north_blob_mass / age))
+    print("north accr. rate (single blob at age {1}) = {0}".format(2*north_blob_mass / age, age))
     print()
     
     fig1 = pl.figure(1)
     fig1.clf()
     ax = fig1.gca()
     ax.plot(age_profile, massloss_profile)
+    ax.set_title('north')
     ax.set_xlabel("Age (yr)")
     ax.set_ylabel("Mass Ejection Rate ($M_\odot$ yr$^{-1}$)")
     fig1.savefig(paths.fpath('longbaseline/sio_masslossrate_history_north.png'))
@@ -378,11 +379,24 @@ if __name__ == "__main__":
     fig3 = pl.figure(3)
     fig3.clf()
     ax = fig3.gca()
+    ax.set_title('north')
     ax.plot((centers*pixscale).to(u.au), m_sio_profile.to(u.M_sun))
     ax.set_xlabel("Distance from Central Source (AU)")
     ax.set_ylabel("Mass in Outflow ($M_\odot$)")
     fig3.savefig(paths.fpath('longbaseline/sio_massvsdistance_north.png'))
 
+    mxnorth = sm_sio_cube_north.max(axis=0)
+    pl.figure(7)
+    pl.clf()
+    pl.title('north')
+    pl.imshow(mxnorth, cmap='gray', interpolation='none', origin='lower')
+    pl.contour(sio_m0_blue_north, colors=['b']*10)
+    pl.contour(sio_m0_red_north, colors=['r']*10)
+    pl.plot([bxmax], [bymax], 'bx')
+    pl.plot([rxmax], [rymax], 'rx')
+    pl.plot([nc_x], [nc_y], 'wo')
+    pl.axis([197, 320, 216, 302])
+    pl.savefig(paths.fpath('longbaseline/sio_contour_figure_north.png'))
 
 
 
@@ -428,7 +442,8 @@ if __name__ == "__main__":
     # pl.contour(sio_peak_red_e2, levels=[5,10,25,50,100,150,200,250,300,350], colors=['r']*20)
     # pl.contour(sio_peak_blue_e2, levels=[5,10,25,50,100,150,200,250,300,350], colors=['b']*20)
 
-    e2_center = coordinates.SkyCoord('19:23:43.976', '14:30:34.500',
+    #e2_center = coordinates.SkyCoord('19:23:43.76', '14:30:34.500',
+    e2_center = coordinates.SkyCoord('19:23:43.9665', '14:30:34.505',
                                      unit=(u.hour, u.deg), frame='icrs')
     nc_x, nc_y = sm_sio_cube_e2.wcs.celestial.wcs_world2pix(e2_center.ra.deg,
                                                             e2_center.dec.deg,
@@ -533,12 +548,13 @@ if __name__ == "__main__":
 
     m_sio_profile = (nsio_profile * nr * beam_area / xsio * 2.8*u.Da).to(u.M_sun) / ppbeam
 
+    # this assumes a hubble flow: all mass sent out at same age
     massloss_rate = m_sio_profile / age
 
     single_event_rate = np.nansum(massloss_rate)
 
     single_event_mass = np.nansum(m_sio_profile)
-    print("e2 Mass accreted = {0} in {1} years gives rate {2}"
+    print("e2 Mass accreted = {0} in {1} years gives rate {2} from the integrated profile of SiO column profile / age"
           .format(single_event_mass, age, single_event_rate,))
 
     distances = centers*pixscale
@@ -550,15 +566,16 @@ if __name__ == "__main__":
     print("e2 dmax = {0}".format(dmax.to(u.au)))
     print("e2 integ intens, Surface density at maxdist = {1}, {0}".format(surfdens_at_max, integintens_at_max))
     e2_blob_area = (np.pi*0.058*u.arcsec*0.031*u.arcsec*(5.4*u.kpc)**2).to(u.cm**2,
-                                                                         u.dimensionless_angles())
+                                                                           u.dimensionless_angles())
     e2_blob_mass = (e2_blob_area * surfdens_at_max / xsio * 2.8*u.Da).to(u.M_sun)
     print("e2 blob area, mass = {0}, {1}".format(e2_blob_area, e2_blob_mass))
-    print("e2 accr. rate = {0}".format(2*e2_blob_mass / age))
+    print("e2 accr. rate from this single blob at age {1} = {0}".format(2*e2_blob_mass / age, age))
     print()
 
     fig2 = pl.figure(2)
     fig2.clf()
     ax = fig2.gca()
+    ax.set_title('e2')
     ax.plot(age_profile, massloss_profile)
     ax.set_xlabel("Age (yr)")
     ax.set_ylabel("Mass Ejection Rate ($M_\odot$ yr$^{-1}$)")
@@ -569,12 +586,25 @@ if __name__ == "__main__":
     fig4 = pl.figure(4)
     fig4.clf()
     ax = fig4.gca()
+    ax.set_title('e2')
     ax.plot((centers*pixscale).to(u.au), m_sio_profile.to(u.M_sun))
     ax.set_xlabel("Distance from Central Source (AU)")
     ax.set_ylabel("Mass in Outflow ($M_\odot$)")
     ax.set_xlim(0, 3000)
     fig4.savefig(paths.fpath('longbaseline/sio_massvsdistance_e2.png'))
 
+    mxe2 = sm_sio_cube_e2.max(axis=0)
+    pl.figure(5)
+    pl.clf()
+    pl.title('e2')
+    pl.imshow(mxe2, cmap='gray', interpolation='none', origin='lower')
+    pl.contour(sio_m0_blue_e2, colors=['b']*10)
+    pl.contour(sio_m0_red_e2, colors=['r']*10)
+    pl.plot([bxmax], [bymax], 'bx')
+    pl.plot([rxmax], [rymax], 'rx')
+    pl.plot([nc_x], [nc_y], 'wo')
+    pl.axis([268, 439, 305, 428])
+    pl.savefig(paths.fpath('longbaseline/sio_contour_figure_e2.png'))
 
 
 
@@ -710,17 +740,18 @@ if __name__ == "__main__":
     bymax,bxmax = np.unravel_index(np.nanargmax(sio_m0_blue_e8), sio_m0_blue_e8.shape)
     rymax,rxmax = np.unravel_index(np.nanargmax(sio_m0_red_e8), sio_m0_red_e8.shape)
     
-    if False:
-        # DEBUG: copy and paste this script to do some simple diagnostics
-        mxe8 = sm_sio_cube_e8.max(axis=0)
-        pl.clf()
-        pl.imshow(mxe8, cmap='gray', interpolation='none', origin='lower')
-        pl.contour(sio_m0_blue_e8, colors=['b']*10)
-        pl.contour(sio_m0_red_e8, colors=['r']*10)
-        pl.plot([bxmax], [bymax], 'bx')
-        pl.plot([rxmax], [rymax], 'rx')
-        pl.plot([nc_x], [nc_y], 'wo')
-        pl.axis([334, 474, 420, 495])
+    mxe8 = sm_sio_cube_e8.max(axis=0)
+    pl.figure(6)
+    pl.clf()
+    pl.title('e8')
+    pl.imshow(mxe8, cmap='gray', interpolation='none', origin='lower')
+    pl.contour(sio_m0_blue_e8, colors=['b']*10)
+    pl.contour(sio_m0_red_e8, colors=['r']*10)
+    pl.plot([bxmax], [bymax], 'bx')
+    pl.plot([rxmax], [rymax], 'rx')
+    pl.plot([nc_x], [nc_y], 'wo')
+    pl.axis([334, 474, 420, 495])
+    pl.savefig(paths.fpath('longbaseline/sio_contour_figure_e8.png'))
 
     # find the offset from the central position, the velocity offset, and compute age
     m0pk_sep_blue_e8 = (((bxmax-nc_x)**2 + (bymax-nc_y)**2)**0.5 * pixscale).to(u.au)
