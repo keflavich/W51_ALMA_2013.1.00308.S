@@ -29,8 +29,10 @@ from vamdclib import request as r
 from vamdclib import specmodel as m
 from vamdclib import specmodel
 
-warnings.filterwarnings('ignore', message='requires loading the entire cube', append=True)
-
+warnings.filterwarnings('ignore', message='This function (.*) requires loading the entire cube', append=True)
+warnings.filterwarnings('ignore', message='All-NaN slice encountered')
+warnings.filterwarnings('ignore', message='invalid value encountered in true_divide')
+ 
 tbl = Splatalogue.query_lines(210*u.GHz, 235*u.GHz, chemical_name='SiO',
                               energy_max=1840, energy_type='eu_k')
 freqs = np.unique(tbl['Freq-GHz'])
@@ -176,20 +178,20 @@ if __name__ == "__main__":
                           tbl[-1]['E_U (K)']*u.K*constants.k_B,
                           250*u.K)
 
-    print("nsio = {0}, log={1}".format(nsio, np.log10(nsio.value)))
+    print("nsio = {0:0.3g}, log={1:0.3g}".format(nsio, np.log10(nsio.value)))
 
     cosmic_si_abundance = 650 / 739000
 
-    print("north nh2, assuming all Si in SiO: {0}".format(nsio/cosmic_si_abundance))
+    print("north nh2, assuming all Si in SiO: {0:0.3g}".format(nsio/cosmic_si_abundance))
 
     # Leurini+ 2013 suggest X_sio ~ 1-5x10^-8, upper limit 2e-7
     xsio = 1e-7
 
-    print("north nh2, X(SiO) = {1}: {0}".format(nsio/xsio, xsio))
+    print("north nh2, X(SiO) = {1:0.3g}: {0:0.3g}".format(nsio/xsio, xsio))
 
     beam_area = 1e31*u.cm**2
 
-    print("north Mass assuming 1 beam = {0} to {1}"
+    print("north Mass assuming 1 beam = {0:0.3g} to {1:0.3g}"
           .format((nsio/cosmic_si_abundance*beam_area*u.Da/0.739).to(u.M_sun),
                   (nsio/xsio*beam_area*2.8*u.Da).to(u.M_sun)))
 
@@ -199,7 +201,7 @@ if __name__ == "__main__":
 
     timescale = distance / peak_velocity
 
-    print("north Mass rate = {0} to {1}"
+    print("north Mass rate = {0:0.3g} to {1:0.3g}"
           .format((nsio/cosmic_si_abundance*beam_area*u.Da/0.739).to(u.M_sun)/timescale.to(u.yr),
                   (nsio/xsio*beam_area*2.8*u.Da).to(u.M_sun)/timescale.to(u.yr)))
 
@@ -286,7 +288,10 @@ if __name__ == "__main__":
                                                          binsize=2,
                                                          return_nr=True)
 
+    # inclination is probably close to 75 deg, but we want to put it in the paper
+    # as "quantity tan(ii/45)"
     inclination = 75*u.deg
+    inclination = 45*u.deg
     # hard-coded: 50 pixels was measured approximately from the radial graph
     # 42 km/s was also selected as v_lsr = 18, v_lsr(north)=60
     max_velocity = (60+25)*u.km/u.s
@@ -297,9 +302,9 @@ if __name__ == "__main__":
     dmax = (0.285*u.arcsec*5.4*u.kpc).to(u.pc, u.dimensionless_angles())
     age = (dmax / max_velocity).to(u.yr) / np.tan(inclination)
 
-    print("North inclination = {0}".format(inclination))
-    print("North: dmax/velocity = {0}".format((dmax/max_velocity).to(u.yr)))
-    print("north age estimate from max velocity={0} separation={1} age={2}"
+    print("North inclination = {0:0.3g}".format(inclination))
+    print("North: dmax/velocity = {0:0.3g}".format((dmax/max_velocity).to(u.yr)))
+    print("north age estimate from max velocity={0:0.3g} separation={1:0.3g} age={2:0.3g}"
           .format(max_velocity, dmax.to(u.au), age))
 
     # second age estimate
@@ -324,24 +329,25 @@ if __name__ == "__main__":
     vatmax_red_north = sio_m1_red_north[rymax, rxmax] - velcenter
     avg_age_red_north = (m0pk_sep_red_north / vatmax_red_north).to(u.yr) / np.tan(inclination)
 
-    print("north blue age estimate from avg velocity={0} separation={1} age={2}"
+    print("north blue age estimate from avg velocity={0:0.3g} separation={1:0.3g} age={2:0.3g}"
           .format(vatmax_blue_north, m0pk_sep_blue_north, avg_age_blue_north))
-    print("north red age estimate from avg velocity={0} separation={1} age={2}"
+    print("north red age estimate from avg velocity={0:0.3g} separation={1:0.3g} age={2:0.3g}"
           .format(vatmax_red_north, m0pk_sep_red_north, avg_age_red_north))
 
 
 
     ppbeam = (beam_area / pixscale**2).decompose()
 
-    print("north total momentum: blue={0}, red={1}".format(np.nansum(sio_momentum_blue_north)/xsio,
-                                                           np.nansum(sio_momentum_red_north)/xsio))
+    print("north total momentum: blue={0:0.3g}, red={1:0.3g}"
+          .format(np.nansum(sio_momentum_blue_north)/xsio,
+                  np.nansum(sio_momentum_red_north)/xsio))
     windspeed = 500*u.km/u.s
-    print("north momentum -> mass loss: blue={0}, red={1}"
+    print("north momentum -> mass loss: blue={0:0.3g}, red={1:0.3g}"
           .format(np.nansum(sio_momentum_blue_north)/xsio/age/windspeed,
                   np.nansum(sio_momentum_red_north)/xsio/age/windspeed))
 
     # this is nonsense velmom1_north = np.nansum(velaxis * profile)/np.nansum(profile[np.isfinite(velaxis)])
-    # this is nonsense print("north Average Velocity (moment 1): {0}".format(velmom1_north))
+    # this is nonsense print("north Average Velocity (moment 1): {0:0.3g}".format(velmom1_north))
 
     nsio_profile = ntot_of_nupper(nupper_of_kkms((profile*u.K*u.km/u.s),
                                                  ref_freq, 10**aij.mean(), 1),
@@ -355,7 +361,7 @@ if __name__ == "__main__":
     single_event_rate = np.nansum(massloss_rate)
 
     single_event_mass = np.nansum(m_sio_profile)
-    print("north Mass accreted = {0} in {1} years gives rate {2} (assuming 100% accreted in single event)"
+    print("north Mass accreted = {0:0.3g} in {1:0.3g} years gives rate {2:0.3g} (assuming 100% accreted in single event)"
           .format(single_event_mass, age, single_event_rate,))
 
     distances = centers*pixscale
@@ -364,12 +370,12 @@ if __name__ == "__main__":
 
     integintens_at_max = profile[np.argmin(np.abs(distances-dmax))]
     surfdens_at_max = nsio_profile[np.argmin(np.abs(distances-dmax))]
-    print("north dmax = {0}".format(dmax.to(u.au)))
-    print("north integ intens, Surface density at maxdist = {1}, {0}".format(surfdens_at_max, integintens_at_max))
+    print("north dmax = {0:0.3g}".format(dmax.to(u.au)))
+    print("north integ intens, Surface density at maxdist = {1:0.3g}, {0:0.3g}".format(surfdens_at_max, integintens_at_max))
     north_blob_area = (np.pi*(0.04*u.arcsec)**2*(5.4*u.kpc)**2).to(u.cm**2, u.dimensionless_angles())
     north_blob_mass = (north_blob_area * surfdens_at_max / xsio * 2.8*u.Da).to(u.M_sun)
-    print("north blob area, mass = {0}, {1}".format(north_blob_area, north_blob_mass))
-    print("north accr. rate (single blob at age {1}) = {0}".format(2*north_blob_mass / age, age))
+    print("north blob area, mass = {0:0.3g}, {1:0.3g}".format(north_blob_area, north_blob_mass))
+    print("north accr. rate (single blob at age {1:0.3g}) = {0:0.3g}".format(2*north_blob_mass / age, age))
     print()
     
     fig1 = pl.figure(1)
@@ -494,21 +500,22 @@ if __name__ == "__main__":
                            .with_mask(redmask)
                            .spectral_slab(60*u.km/u.s, 260*u.km/u.s)
                            .sum(axis=0))
-    print("e2 total momentum: blue={0}, red={1}".format(np.nansum(sio_momentum_blue_e2)/xsio,
-                                                        np.nansum(sio_momentum_red_e2)/xsio))
+    print("e2 total momentum: blue={0:0.3g}, red={1:0.3g}"
+          .format(np.nansum(sio_momentum_blue_e2)/xsio,
+                  np.nansum(sio_momentum_red_e2)/xsio))
     windspeed = 500*u.km/u.s
-    print("e2 momentum -> mass loss: blue={0}, red={1}"
+    print("e2 momentum -> mass loss: blue={0:0.3g}, red={1:0.3g}"
           .format(np.nansum(sio_momentum_blue_e2)/xsio/age/windspeed,
                   np.nansum(sio_momentum_red_e2)/xsio/age/windspeed))
 
     # this is nonsense velmom1_e2 = np.nansum(velaxis * profile)/np.nansum(profile[np.isfinite(velaxis)])
-    # this is nonsense print("e2 Average Velocity (moment 1): {0}".format(velmom1_e2))
+    # this is nonsense print("e2 Average Velocity (moment 1): {0:0.3g}".format(velmom1_e2))
 
     max_velocity = 105*u.km/u.s
     dmax = (0.474*u.arcsec*5.4*u.kpc).to(u.pc, u.dimensionless_angles())
     age = (dmax / max_velocity).to(u.yr) / np.tan(inclination)
 
-    print("e2 age estimate from max velocity={0} separation={1} age={2}"
+    print("e2 age estimate from max velocity={0:0.3g} separation={1:0.3g} age={2:0.3g}"
           .format(max_velocity, dmax.to(u.au), age))
 
     # second age estimate
@@ -533,9 +540,9 @@ if __name__ == "__main__":
     vatmax_red_e2 = sio_m1_red_e2[rymax, rxmax] - velcenter
     avg_age_red_e2 = (m0pk_sep_red_e2 / vatmax_red_e2).to(u.yr) / np.tan(inclination)
 
-    print("e2 blue age estimate from avg velocity={0} separation={1} age={2}"
+    print("e2 blue age estimate from avg velocity={0:0.3g} separation={1:0.3g} age={2:0.3g}"
           .format(vatmax_blue_e2, m0pk_sep_blue_e2, avg_age_blue_e2))
-    print("e2 red age estimate from avg velocity={0} separation={1} age={2}"
+    print("e2 red age estimate from avg velocity={0:0.3g} separation={1:0.3g} age={2:0.3g}"
           .format(vatmax_red_e2, m0pk_sep_red_e2, avg_age_red_e2))
 
 
@@ -558,7 +565,7 @@ if __name__ == "__main__":
     single_event_rate = np.nansum(massloss_rate)
 
     single_event_mass = np.nansum(m_sio_profile)
-    print("e2 Mass accreted = {0} in {1} years gives rate {2} from the integrated profile of SiO column profile / age"
+    print("e2 Mass accreted = {0:0.3g} in {1:0.3g} years gives rate {2:0.3g} from the integrated profile of SiO column profile / age"
           .format(single_event_mass, age, single_event_rate,))
 
     distances = centers*pixscale
@@ -567,13 +574,13 @@ if __name__ == "__main__":
 
     integintens_at_max = profile[np.argmin(np.abs(distances-dmax))]
     surfdens_at_max = nsio_profile[np.argmin(np.abs(distances-dmax))]
-    print("e2 dmax = {0}".format(dmax.to(u.au)))
-    print("e2 integ intens, Surface density at maxdist = {1}, {0}".format(surfdens_at_max, integintens_at_max))
+    print("e2 dmax = {0:0.3g}".format(dmax.to(u.au)))
+    print("e2 integ intens, Surface density at maxdist = {1:0.3g}, {0:0.3g}".format(surfdens_at_max, integintens_at_max))
     e2_blob_area = (np.pi*0.058*u.arcsec*0.031*u.arcsec*(5.4*u.kpc)**2).to(u.cm**2,
                                                                            u.dimensionless_angles())
     e2_blob_mass = (e2_blob_area * surfdens_at_max / xsio * 2.8*u.Da).to(u.M_sun)
-    print("e2 blob area, mass = {0}, {1}".format(e2_blob_area, e2_blob_mass))
-    print("e2 accr. rate from this single blob at age {1} = {0}".format(2*e2_blob_mass / age, age))
+    print("e2 blob area, mass = {0:0.3g}, {1:0.3g}".format(e2_blob_area, e2_blob_mass))
+    print("e2 accr. rate from this single blob at age {1:0.3g} = {0:0.3g}".format(2*e2_blob_mass / age, age))
     print()
 
     fig2 = pl.figure(2)
@@ -675,10 +682,11 @@ if __name__ == "__main__":
                                                          return_nr=True)
 
     pixscale = (wcs.utils.proj_plane_pixel_scales(sm_sio_cube_e8.wcs)[0]*u.deg * 5.4*u.kpc).to(u.pc, u.dimensionless_angles())
-    inclination = 45*u.deg
     # For e8, it's probably better to assume something closer to 75 deg?
-    inclination = 75*u.deg
     # this is supposed to be nearly edge-on
+    inclination = 75*u.deg
+    # but we're putting it in the paper as quantity*tan(ii/45deg)
+    inclination = 45*u.deg
 
     # just in case pixscale changed...
     kkms_to_mass = ntot_of_nupper(nupper_of_kkms(1*u.K*u.km/u.s, ref_freq,
@@ -703,15 +711,16 @@ if __name__ == "__main__":
                            .with_mask(redmask)
                            .spectral_slab(60*u.km/u.s, 260*u.km/u.s)
                            .sum(axis=0))
-    print("e8 total momentum: blue={0}, red={1}".format(np.nansum(sio_momentum_blue_e8)/xsio,
-                                                        np.nansum(sio_momentum_red_e8)/xsio))
+    print("e8 total momentum: blue={0:0.3g}, red={1:0.3g}"
+          .format(np.nansum(sio_momentum_blue_e8)/xsio,
+                  np.nansum(sio_momentum_red_e8)/xsio))
     windspeed = 500*u.km/u.s
-    print("e8 momentum -> mass loss: blue={0}, red={1}"
+    print("e8 momentum -> mass loss: blue={0:0.3g}, red={1:0.3g}"
           .format(np.nansum(sio_momentum_blue_e8)/xsio/age/windspeed,
                   np.nansum(sio_momentum_red_e8)/xsio/age/windspeed))
 
     # this is nonsense velmom1_e8 = np.nansum(velaxis * profile)/np.nansum(profile[np.isfinite(velaxis)])
-    # this is nonsense print("e8 Average Velocity (moment 1): {0}".format(velmom1_e8))
+    # this is nonsense print("e8 Average Velocity (moment 1): {0:0.3g}".format(velmom1_e8))
 
 
 
@@ -726,8 +735,8 @@ if __name__ == "__main__":
     max_velocity = 42*u.km/u.s
     age = (dmax / max_velocity).to(u.yr) / np.tan(inclination)
 
-    print('e8 inclination: {0}'.format(inclination))
-    print("e8 age estimate from max velocity={0} separation={1} age={2}"
+    print('e8 inclination: {0:0.3g}'.format(inclination))
+    print("e8 age estimate from max velocity={0:0.3g} separation={1:0.3g} age={2:0.3g}"
           .format(max_velocity, dmax.to(u.au), age))
 
     # second age estimate
@@ -765,9 +774,9 @@ if __name__ == "__main__":
     vatmax_red_e8 = sio_m1_red_e8[rymax, rxmax] - velcenter
     avg_age_red_e8 = (m0pk_sep_red_e8 / vatmax_red_e8).to(u.yr) / np.tan(inclination)
 
-    print("e8 blue age estimate from avg velocity={0} separation={1} age={2}"
+    print("e8 blue age estimate from avg velocity={0:0.3g} separation={1:0.3g} age={2:0.3g}"
           .format(vatmax_blue_e8, m0pk_sep_blue_e8, avg_age_blue_e8))
-    print("e8 red age estimate from avg velocity={0} separation={1} age={2}"
+    print("e8 red age estimate from avg velocity={0:0.3g} separation={1:0.3g} age={2:0.3g}"
           .format(vatmax_red_e8, m0pk_sep_red_e8, avg_age_red_e8))
 
 
@@ -790,5 +799,5 @@ if __name__ == "__main__":
     single_event_rate = np.nansum(massloss_rate)
 
     single_event_mass = np.nansum(m_sio_profile)
-    print("e8 Mass accreted = {0} in {1} years gives rate {2}"
+    print("e8 Mass accreted = {0:0.3g} in {1:0.3g} years gives rate {2:0.3g}"
           .format(single_event_mass, age, single_event_rate,))
