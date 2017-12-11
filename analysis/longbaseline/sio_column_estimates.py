@@ -21,11 +21,15 @@ from astropy import coordinates
 import image_tools
 import os
 
+import warnings
+
 
 from vamdclib import nodes
 from vamdclib import request as r
 from vamdclib import specmodel as m
 from vamdclib import specmodel
+
+warnings.filterwarnings('ignore', message='requires loading the entire cube', append=True)
 
 tbl = Splatalogue.query_lines(210*u.GHz, 235*u.GHz, chemical_name='SiO',
                               energy_max=1840, energy_type='eu_k')
@@ -314,11 +318,11 @@ if __name__ == "__main__":
     # find the offset from the central position, the velocity offset, and compute age
     m0pk_sep_blue_north = (((bxmax-nc_x)**2 + (bymax-nc_y)**2)**0.5 * pixscale).to(u.au)
     vatmax_blue_north = sio_m1_blue_north[bymax, bxmax] - velcenter
-    avg_age_blue_north = (m0pk_sep_blue_north / vatmax_blue_north).to(u.yr)
+    avg_age_blue_north = (m0pk_sep_blue_north / vatmax_blue_north).to(u.yr) / np.tan(inclination)
 
     m0pk_sep_red_north = (((rxmax-nc_x)**2 + (rymax-nc_y)**2)**0.5 * pixscale).to(u.au)
     vatmax_red_north = sio_m1_red_north[rymax, rxmax] - velcenter
-    avg_age_red_north = (m0pk_sep_red_north / vatmax_red_north).to(u.yr)
+    avg_age_red_north = (m0pk_sep_red_north / vatmax_red_north).to(u.yr) / np.tan(inclination)
 
     print("north blue age estimate from avg velocity={0} separation={1} age={2}"
           .format(vatmax_blue_north, m0pk_sep_blue_north, avg_age_blue_north))
@@ -523,11 +527,11 @@ if __name__ == "__main__":
     # find the offset from the central position, the velocity offset, and compute age
     m0pk_sep_blue_e2 = (((bxmax-nc_x)**2 + (bymax-nc_y)**2)**0.5 * pixscale).to(u.au)
     vatmax_blue_e2 = sio_m1_blue_e2[bymax, bxmax] - velcenter
-    avg_age_blue_e2 = (m0pk_sep_blue_e2 / vatmax_blue_e2).to(u.yr)
+    avg_age_blue_e2 = (m0pk_sep_blue_e2 / vatmax_blue_e2).to(u.yr) / np.tan(inclination)
 
     m0pk_sep_red_e2 = (((rxmax-nc_x)**2 + (rymax-nc_y)**2)**0.5 * pixscale).to(u.au)
     vatmax_red_e2 = sio_m1_red_e2[rymax, rxmax] - velcenter
-    avg_age_red_e2 = (m0pk_sep_red_e2 / vatmax_red_e2).to(u.yr)
+    avg_age_red_e2 = (m0pk_sep_red_e2 / vatmax_red_e2).to(u.yr) / np.tan(inclination)
 
     print("e2 blue age estimate from avg velocity={0} separation={1} age={2}"
           .format(vatmax_blue_e2, m0pk_sep_blue_e2, avg_age_blue_e2))
@@ -755,11 +759,11 @@ if __name__ == "__main__":
     # find the offset from the central position, the velocity offset, and compute age
     m0pk_sep_blue_e8 = (((bxmax-nc_x)**2 + (bymax-nc_y)**2)**0.5 * pixscale).to(u.au)
     vatmax_blue_e8 = sio_m1_blue_e8[bymax, bxmax] - velcenter
-    avg_age_blue_e8 = (m0pk_sep_blue_e8 / vatmax_blue_e8).to(u.yr)
+    avg_age_blue_e8 = (m0pk_sep_blue_e8 / vatmax_blue_e8).to(u.yr) / np.tan(inclination)
 
     m0pk_sep_red_e8 = (((rxmax-nc_x)**2 + (rymax-nc_y)**2)**0.5 * pixscale).to(u.au)
     vatmax_red_e8 = sio_m1_red_e8[rymax, rxmax] - velcenter
-    avg_age_red_e8 = (m0pk_sep_red_e8 / vatmax_red_e8).to(u.yr)
+    avg_age_red_e8 = (m0pk_sep_red_e8 / vatmax_red_e8).to(u.yr) / np.tan(inclination)
 
     print("e8 blue age estimate from avg velocity={0} separation={1} age={2}"
           .format(vatmax_blue_e8, m0pk_sep_blue_e8, avg_age_blue_e8))
