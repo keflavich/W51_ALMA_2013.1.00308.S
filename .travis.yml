@@ -3,16 +3,26 @@ rvm:
 - 2.0.0
 script: /bin/bash paper1/gh-publisher-scripts/gh-publisher.sh
 before_install:
-- yes "" | sudo apt-add-repository ppa:texlive-backports/ppa
+#- yes "" | sudo apt-add-repository ppa:texlive-backports/ppa
 - sudo apt-get update -y
 - sudo apt-get install -y
      inkscape
+     texlive-full
      texlive-fonts-recommended
      texlive-latex-extra
      texlive-latex-recommended
      texlive-xetex
      texlive-publishers
      texlive-humanities
+install:
+    - PYTHON=3.6
+    - PYTHON_VERSION=3.6
+    - NUMPY_VERSION=stable
+    - ASTROPY_VERSION=stable
+    - git clone git://github.com/astropy/ci-helpers.git
+    - source ci-helpers/travis/setup_conda_$TRAVIS_OS_NAME.sh
+    - which python
+    - python -c "import astropy"
      #- wget https://journals.aps.org/files/revtex/revtex4-1.zip
      #- unzip revtex4-1.zip
      #- cd revtex4-1
