@@ -282,7 +282,7 @@ if __name__ == "__main__":
                                                          binsize=2,
                                                          return_nr=True)
 
-    inclination = 45*u.deg
+    inclination = 75*u.deg
     # hard-coded: 50 pixels was measured approximately from the radial graph
     # 42 km/s was also selected as v_lsr = 18, v_lsr(north)=60
     max_velocity = (60+25)*u.km/u.s
@@ -294,6 +294,7 @@ if __name__ == "__main__":
     age = (dmax /
            (max_velocity / np.tan(inclination))).to(u.yr)
 
+    print("North inclination = {0}".format(inclination))
     print("north age estimate from max velocity={0} separation={1} age={2}"
           .format(max_velocity, dmax.to(u.au), age))
 
