@@ -289,11 +289,12 @@ if __name__ == "__main__":
     max_velocity = 25*u.km/u.s
     max_velocity = 95 * u.km/u.s # we see blue emission starting at -35 km/s
 
-    age = (pixscale*50 / max_velocity).to(u.yr) * np.tan(inclination)
+    age = (pixscale*50 / max_velocity).to(u.yr) / np.tan(inclination)
     dmax = (0.285*u.arcsec*5.4*u.kpc).to(u.pc, u.dimensionless_angles())
-    age = (dmax / max_velocity).to(u.yr) * np.tan(inclination)
+    age = (dmax / max_velocity).to(u.yr) / np.tan(inclination)
 
     print("North inclination = {0}".format(inclination))
+    print("North: dmax/velocity = {0}".format((dmax/max_velocity).to(u.yr)))
     print("north age estimate from max velocity={0} separation={1} age={2}"
           .format(max_velocity, dmax.to(u.au), age))
 
@@ -354,7 +355,7 @@ if __name__ == "__main__":
           .format(single_event_mass, age, single_event_rate,))
 
     distances = centers*pixscale
-    age_profile = (distances / max_velocity).to(u.yr) * np.tan(inclination)
+    age_profile = (distances / max_velocity).to(u.yr) / np.tan(inclination)
     massloss_profile = m_sio_profile / age_profile
 
     integintens_at_max = profile[np.argmin(np.abs(distances-dmax))]
@@ -501,7 +502,7 @@ if __name__ == "__main__":
 
     max_velocity = 105*u.km/u.s
     dmax = (0.474*u.arcsec*5.4*u.kpc).to(u.pc, u.dimensionless_angles())
-    age = (dmax / max_velocity).to(u.yr) * np.tan(inclination)
+    age = (dmax / max_velocity).to(u.yr) / np.tan(inclination)
 
     print("e2 age estimate from max velocity={0} separation={1} age={2}"
           .format(max_velocity, dmax.to(u.au), age))
@@ -557,7 +558,7 @@ if __name__ == "__main__":
           .format(single_event_mass, age, single_event_rate,))
 
     distances = centers*pixscale
-    age_profile = (distances / max_velocity).to(u.yr) * np.tan(inclination)
+    age_profile = (distances / max_velocity).to(u.yr) / np.tan(inclination)
     massloss_profile = m_sio_profile / age_profile
 
     integintens_at_max = profile[np.argmin(np.abs(distances-dmax))]
@@ -719,7 +720,7 @@ if __name__ == "__main__":
     # the approximate distance to the highest-velocity thing
     dmax = (0.072*u.arcsec*5.4*u.kpc).to(u.pc, u.dimensionless_angles())
     max_velocity = 42*u.km/u.s
-    age = (dmax / max_velocity).to(u.yr) * np.tan(inclination)
+    age = (dmax / max_velocity).to(u.yr) / np.tan(inclination)
 
     print('e8 inclination: {0}'.format(inclination))
     print("e8 age estimate from max velocity={0} separation={1} age={2}"
