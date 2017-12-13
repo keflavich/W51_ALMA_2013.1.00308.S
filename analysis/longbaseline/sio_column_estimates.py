@@ -381,9 +381,11 @@ if __name__ == "__main__":
     north_blob_mass = (north_blob_area * surfdens_at_max / xsio * 2.8*u.Da).to(u.M_sun)
     print("Another estimate that is probably not useful, since it assumes "
           "that a single blob was ejected over its dynamical age (which is "
-          "not self-consistent).")
-    print("north blob area, mass = {0:0.3g}, {1:0.3g}".format(north_blob_area, north_blob_mass))
-    print("north accr. rate (single blob at age {1:0.3g}) = {0:0.3g}".format(2*north_blob_mass / age, age))
+          "not self-consistent):")
+    print("  north blob area, mass = {0:0.3g}, {1:0.3g}"
+          .format(north_blob_area, north_blob_mass))
+    print("  north accr. rate (single blob at age {1:0.3g}) = {0:0.3g}"
+          .format(2*north_blob_mass / age, age))
     print()
     
     fig1 = pl.figure(1)
@@ -485,6 +487,10 @@ if __name__ == "__main__":
     pixscale = (wcs.utils.proj_plane_pixel_scales(sm_sio_cube_e2.wcs)[0]*u.deg * dw51).to(u.pc, u.dimensionless_angles())
     inclination = 45*u.deg
 
+    max_velocity = 105*u.km/u.s
+    dmax = (0.474*u.arcsec*dw51).to(u.pc, u.dimensionless_angles())
+    age = (dmax / max_velocity).to(u.yr) / np.tan(inclination)
+
     # just in case pixscale changed...
     kkms_to_mass = ntot_of_nupper(nupper_of_kkms(1*u.K*u.km/u.s, ref_freq,
                                                  10**aij.mean(),
@@ -521,9 +527,6 @@ if __name__ == "__main__":
     # this is nonsense velmom1_e2 = np.nansum(velaxis * profile)/np.nansum(profile[np.isfinite(velaxis)])
     # this is nonsense print("e2 Average Velocity (moment 1): {0:0.3g}".format(velmom1_e2))
 
-    max_velocity = 105*u.km/u.s
-    dmax = (0.474*u.arcsec*dw51).to(u.pc, u.dimensionless_angles())
-    age = (dmax / max_velocity).to(u.yr) / np.tan(inclination)
 
     print("e2 age estimate from max velocity={0:0.3g} separation={1:0.3g} age={2:0.3g}"
           .format(max_velocity, dmax.to(u.au), age))
@@ -589,8 +592,11 @@ if __name__ == "__main__":
     e2_blob_area = (np.pi*0.058*u.arcsec*0.031*u.arcsec*(dw51)**2).to(u.cm**2,
                                                                            u.dimensionless_angles())
     e2_blob_mass = (e2_blob_area * surfdens_at_max / xsio * 2.8*u.Da).to(u.M_sun)
-    print("e2 blob area, mass = {0:0.3g}, {1:0.3g}".format(e2_blob_area, e2_blob_mass))
-    print("e2 accr. rate from this single blob at age {1:0.3g} = {0:0.3g}".format(2*e2_blob_mass / age, age))
+    print("Another estimate that is probably not useful, since it assumes "
+          "that a single blob was ejected over its dynamical age (which is "
+          "not self-consistent):")
+    print("  e2 blob area, mass = {0:0.3g}, {1:0.3g}".format(e2_blob_area, e2_blob_mass))
+    print("  e2 accr. rate from this single blob at age {1:0.3g} = {0:0.3g}".format(2*e2_blob_mass / age, age))
     print()
 
     fig2 = pl.figure(2)
@@ -698,6 +704,17 @@ if __name__ == "__main__":
     # but we're putting it in the paper as quantity*tan(ii/45deg)
     inclination = 45*u.deg
 
+
+    # 0.667 contains *all* of the sio (i.e., is the most distant SiO)
+    dmax = (0.667*u.arcsec*dw51).to(u.pc, u.dimensionless_angles())
+    # this is the extent of the "bright" sio
+    dmax = (0.195*u.arcsec*dw51).to(u.pc, u.dimensionless_angles())
+    # the approximate distance to the highest-velocity thing
+    dmax = (0.072*u.arcsec*dw51).to(u.pc, u.dimensionless_angles())
+    max_velocity = 42*u.km/u.s
+    age = (dmax / max_velocity).to(u.yr) / np.tan(inclination)
+
+
     # just in case pixscale changed...
     kkms_to_mass = ntot_of_nupper(nupper_of_kkms(1*u.K*u.km/u.s, ref_freq,
                                                  10**aij.mean(),
@@ -733,19 +750,6 @@ if __name__ == "__main__":
 
     # this is nonsense velmom1_e8 = np.nansum(velaxis * profile)/np.nansum(profile[np.isfinite(velaxis)])
     # this is nonsense print("e8 Average Velocity (moment 1): {0:0.3g}".format(velmom1_e8))
-
-
-
-
-
-    # 0.667 contains *all* of the sio (i.e., is the most distant SiO)
-    dmax = (0.667*u.arcsec*dw51).to(u.pc, u.dimensionless_angles())
-    # this is the extent of the "bright" sio
-    dmax = (0.195*u.arcsec*dw51).to(u.pc, u.dimensionless_angles())
-    # the approximate distance to the highest-velocity thing
-    dmax = (0.072*u.arcsec*dw51).to(u.pc, u.dimensionless_angles())
-    max_velocity = 42*u.km/u.s
-    age = (dmax / max_velocity).to(u.yr) / np.tan(inclination)
 
     print('e8 inclination: {0:0.3g}'.format(inclination))
     print("e8 age estimate from max velocity={0:0.3g} separation={1:0.3g} age={2:0.3g}"
