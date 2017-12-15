@@ -23,11 +23,15 @@ import os
 
 import warnings
 
+import sys
 
 from vamdclib import nodes
 from vamdclib import request as r
 from vamdclib import specmodel as m
 from vamdclib import specmodel
+
+outfile = open('sio_column_estimate_results.txt', 'w')
+sys.stdout = outfile
 
 dw51 = 5.4*u.kpc
 
@@ -817,3 +821,6 @@ if __name__ == "__main__":
     single_event_mass = np.nansum(m_sio_profile)
     print("e8 Mass accreted = {0:0.3g} in {1:0.3g} years gives rate {2:0.3g}"
           .format(single_event_mass, age, single_event_rate,))
+
+sys.stdout = sys.__stdout__
+outfile.close()
