@@ -63,6 +63,7 @@ for spw in range(4):
     sp.plotter.savefig("w51_spw{0}_contfind.png".format(spw))
 
 
+    # these get written to the linechannels* files
     # then CASA:
     # These are the bands that should be flagged out
     print("Line bands to flag out:")
