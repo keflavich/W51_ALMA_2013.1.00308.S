@@ -1,6 +1,8 @@
 import numpy as np
 from spectral_cube import SpectralCube
 from astropy import units as u
+from astropy import coordinates
+from astropy.table import Table
 import paths
 import pyregion
 from astropy.io import fits
@@ -11,6 +13,7 @@ import radio_beam
 import pylab as pl
 
 regions = pyregion.open(paths.rpath('cores.reg'))
+dendro_merge = Table.read(paths.tpath('dendro_merge_continuum_and_line.ipac'), format='ascii.ipac')
 
 fh = fits.open(paths.dpath("w51_te_continuum_best.fits"))
 
@@ -38,7 +41,7 @@ ax.set_xlabel('Right Ascension')
 ax.set_ylabel('Declination')
 
 ax.axis([626, 2513, 588, 2385])
-fig1.savefig(paths.fpath("continuum.png"), bbox_inches='tight')
+fig1.savefig(paths.fpath("continuum.png"), bbox_inches='tight', dpi=150)
 
 ra = [reg.coord_list[0] for reg in regions if len(reg.coord_list) == 3]
 dec = [reg.coord_list[1] for reg in regions if len(reg.coord_list) == 3]
@@ -48,36 +51,77 @@ scat = ax.scatter(ra, dec, s=size, transform=ax.get_transform('world'),
 
 #ax.axis([290.93636, 290.90752, 14.496992, 14.524811], transform=ax.get_transform('world'))
 ax.axis([626, 2513, 588, 2385])
-fig1.savefig(paths.fpath("continuum_with_cores.png"), bbox_inches='tight')
-
+fig1.savefig(paths.fpath("continuum_with_cores.png"), bbox_inches='tight', dpi=150)
 
 scat.set_visible(False)
+
+coords = coordinates.SkyCoord(dendro_merge['x_cen'].data, dendro_merge['y_cen'].data,
+                              unit=(u.deg, u.deg),
+                              frame='fk5')
+dendscat = ax.scatter(coords.ra.deg, coords.dec.deg, marker='.', s=120,
+                      transform=ax.get_transform('world'), c='none',
+                      edgecolors='r')
+ax.axis([626, 2513, 588, 2385])
+fig1.savefig(paths.fpath("continuum_with_dendrocores.png"), bbox_inches='tight', dpi=150)
+
+dendscat.set_visible(False)
+
 beam = radio_beam.Beam.from_fits_header(fh[0].header)
 data_K = (fh[0].data * u.Unit(fh[0].header['BUNIT']) * u.beam).to(u.K, beam.jtok_equiv(continuum_frequency))
 
 im = ax.imshow(data_K, cmap=cm, origin='lower', interpolation='none', vmin=0,
-               vmax=252)
+               vmax=50)
 cont = ax.contour(data_K, colors=[(0,0,0,0), 'g','b','m','c','y','w','r', (0,1,0,1)], levels=[0, 50, 100,125,150,175,200,225,250])
 cb = fig1.colorbar(mappable=im)
-fig1.colorbar(mappable=cont, cax=cb.ax)
+#fig1.colorbar(mappable=cont, cax=cb.ax)
 cb.set_label("$T_B$ [K]")
 
 # e2 big
 ax.axis((816,921,1335,1436))
-fig1.savefig(paths.fpath('continuum_e2_zoom_TB.png'), bbox_inches='tight')
+fig1.savefig(paths.fpath('continuum_e2_zoom_TB.png'), bbox_inches='tight', dpi=150)
+dendscat.set_visible(True)
+fig1.savefig(paths.fpath('continuum_e2_zoom_TB_dendrocores.png'), bbox_inches='tight', dpi=150)
+dendscat.set_visible(False)
+scat.set_visible(True)
+fig1.savefig(paths.fpath('continuum_e2_zoom_TB_cores.png'), bbox_inches='tight', dpi=150)
+scat.set_visible(False)
 
 # e2 tight
 ax.axis((846,881,1365,1396))
-fig1.savefig(paths.fpath('continuum_e2_zoom_tight_TB.png'), bbox_inches='tight')
+fig1.savefig(paths.fpath('continuum_e2_zoom_tight_TB.png'), bbox_inches='tight', dpi=150)
+dendscat.set_visible(True)
+fig1.savefig(paths.fpath('continuum_e2_zoom_tight_TB_dendrocores.png'), bbox_inches='tight', dpi=150)
+dendscat.set_visible(False)
+scat.set_visible(True)
+fig1.savefig(paths.fpath('continuum_e2_zoom_tight_TB_cores.png'), bbox_inches='tight', dpi=150)
+scat.set_visible(False)
 
 # e8
 ax.axis((866,890,1226,1270))
-fig1.savefig(paths.fpath('continuum_e8_zoom_TB.png'), bbox_inches='tight')
+fig1.savefig(paths.fpath('continuum_e8_zoom_TB.png'), bbox_inches='tight', dpi=150)
+dendscat.set_visible(True)
+fig1.savefig(paths.fpath('continuum_e8_zoom_TB_dendrocores.png'), bbox_inches='tight', dpi=150)
+dendscat.set_visible(False)
+scat.set_visible(True)
+fig1.savefig(paths.fpath('continuum_e8_zoom_TB_cores.png'), bbox_inches='tight', dpi=150)
+scat.set_visible(False)
 
 # north tight
 ax.axis((1980,2017,1983,2013))
-fig1.savefig(paths.fpath('continuum_north_zoom_tight_TB.png'), bbox_inches='tight')
+fig1.savefig(paths.fpath('continuum_north_zoom_tight_TB.png'), bbox_inches='tight', dpi=150)
+dendscat.set_visible(True)
+fig1.savefig(paths.fpath('continuum_north_zoom_tight_TB_dendrocores.png'), bbox_inches='tight', dpi=150)
+dendscat.set_visible(False)
+scat.set_visible(True)
+fig1.savefig(paths.fpath('continuum_north_zoom_tight_TB_cores.png'), bbox_inches='tight', dpi=150)
+scat.set_visible(False)
 
 # north broad
 ax.axis((1961,2105,1966,2016))
-fig1.savefig(paths.fpath('continuum_north_zoom_TB.png'), bbox_inches='tight')
+fig1.savefig(paths.fpath('continuum_north_zoom_TB.png'), bbox_inches='tight', dpi=150)
+dendscat.set_visible(True)
+fig1.savefig(paths.fpath('continuum_north_zoom_TB_dendrocores.png'), bbox_inches='tight', dpi=150)
+dendscat.set_visible(False)
+scat.set_visible(True)
+fig1.savefig(paths.fpath('continuum_north_zoom_TB_cores.png'), bbox_inches='tight', dpi=150)
+scat.set_visible(False)

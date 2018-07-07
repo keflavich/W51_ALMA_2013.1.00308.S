@@ -21,9 +21,15 @@ pl.matplotlib.rc_file('pubfiguresrc')
 pl.mpl.rcParams['font.size'] = 14.0
 pl.mpl.rcParams['axes.titlesize'] = 16.0
 pl.mpl.rcParams['axes.labelsize'] = 15.0
-pl.mpl.rcParams['axes.color_cycle'] = ('338ADD', '9A44B6', 'A60628', '467821',
-                                       'CF4457', '188487', 'E24A33', 'b', 'r',
-                                       'g', 'm', 'k')
+pl.mpl.rcParams['axes.prop_cycle'] = matplotlib.cycler('color', ('338ADD',
+                                                                 '9A44B6',
+                                                                 'A60628',
+                                                                 '467821',
+                                                                 'CF4457',
+                                                                 '188487',
+                                                                 'E24A33', 'b',
+                                                                 'r', 'g', 'm',
+                                                                 'k'))
 
 core_velo_tbl = Table.read(paths.tpath("core_velocities.ipac"), format="ascii.ipac")
 core_phot_tbl = Table.read(paths.tpath("continuum_photometry.ipac"), format='ascii.ipac')
@@ -326,7 +332,7 @@ bins = np.logspace(-3,1.05, 20)
 ax = pl.subplot(7,1,1)
 
 H,L,P = ax.hist(cores_merge['peak'][starless], bins=bins, facecolor='none',
-                histtype='stepfilled', hatch='/')
+                histtype='stepfilled', hatch='/', edgecolor='k')
 H,L,P = ax.hist(cores_merge['peak'], bins=bins, facecolor='none',
                 histtype='step')
 ax.set_xscale('log')
@@ -395,6 +401,7 @@ for ii,aperture in enumerate(apertures):
                     facecolor='none',
                     #alpha=0.5,
                     histtype='stepfilled',
+                    edgecolor='k',
                     hatch='/',
                     label=aperture)
 
@@ -438,6 +445,17 @@ pl.xlabel("0.2\" aperture flux")
 pl.ylabel("0.2\" over 0.4\" concentration parameter")
 pl.ylim(0,1.5)
 
+fig9 = pl.figure(9)
+fig9.clf()
+pl.plot(cores_merge['cont_flux0p4arcsec'],
+        cores_merge['KUbandcont_flux0p4arcsec'],
+        'o', alpha=0.75)
+ax = pl.gca().axis()
+pl.plot([0.01, 0.01, 5.5], [5.5, 0.01, 0.01], 'k-', zorder=-10, alpha=0.5)
+pl.gca().axis(ax)
+pl.xlabel("0.4\" 1mm aperture flux")
+pl.ylabel("0.4\" 2cm aperture flux")
+pl.savefig(paths.fpath('coreplots/mm_vs_cm_flux_0.4arcsec_apertures.png'), bbox_inches='tight', dpi=150)
 
 fig4 = pl.figure(4)
 fig4.clf()
@@ -534,7 +552,7 @@ bins = np.logspace(-0.5,3.5, 30)
 ax = pl.subplot(7,1,1)
 
 H,L,P = ax.hist(cores_merge['T_corrected_peakmass'][starless], bins=bins,
-                facecolor='none', histtype='stepfilled', hatch='/')
+                facecolor='none', histtype='stepfilled', hatch='/', edgecolor='k')
 H,L,P = ax.hist(cores_merge['T_corrected_peakmass'], bins=bins,
                 facecolor='none', histtype='step')
 ax.set_xscale('log')
@@ -595,6 +613,7 @@ for ii,aperture in enumerate(apertures):
                     #alpha=0.5,
                     histtype='stepfilled',
                     hatch='/',
+                    edgecolor='k',
                     label=aperture)
 
 
