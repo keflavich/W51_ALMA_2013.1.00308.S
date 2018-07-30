@@ -65,7 +65,7 @@ split(vis=finalvis,
 
 # Check the weights. You will need to change antenna and field to
 # appropriate values
-plotms(vis=contvis, yaxis='wtsp',xaxis='freq',spw='',antenna='DA61',field='4')
+plotms(vis=contvis, yaxis='wtsp',xaxis='freq',spw='',antenna='DA61',field='w51n')
 
 # If you flagged any line channels, restore the previous flags
 flagmanager(vis=finalvis,mode='restore',
@@ -81,7 +81,7 @@ plotms(vis=contvis,xaxis='uvdist',yaxis='amp',coloraxis='spw')
 # source parameters
 # ------------------
 
-field='4' # science field(s). For a mosaic, select all mosaic fields. DO NOT LEAVE BLANK ('') OR YOU WILL POTENTIALLY TRIGGER A BUG IN CLEAN THAT WILL PUT THE WRONG COORDINATE SYSTEM ON YOUR FINAL IMAGE.
+field='w51n' # science field(s). For a mosaic, select all mosaic fields. DO NOT LEAVE BLANK ('') OR YOU WILL POTENTIALLY TRIGGER A BUG IN CLEAN THAT WILL PUT THE WRONG COORDINATE SYSTEM ON YOUR FINAL IMAGE.
 gridder='standard' # uncomment if single field 
 
 # image parameters.
@@ -117,7 +117,7 @@ threshold = '0.0mJy'
 # Set the ms and continuum image name.
 contvis = 'calibrated_final_cont.ms'         
 
-contimagename = 'w51e2_sci.spw0_1_2_3_4_5_6_7_8_9_10_11_12_13_14_15_16_17_18_19.mfs.I.manual' 
+contimagename = 'w51north_sci.spw0_1_2_3_4_5_6_7_8_9_10_11_12_13_14_15_16_17_18_19.mfs.I.manual' 
 
 # If necessary, run the following commands to get rid of older clean
 # data.
@@ -209,7 +209,7 @@ restfreq='85.98GHz' # Typically the rest frequency of the line of
 
 spw='0,4,8,12,16' # uncomment and replace with appropriate spw 
 
-lineimagename =  'w51e2_sci.spw0_4_8_12_16.cube.I.manual'
+lineimagename =  'w51north_sci.spw0_4_8_12_16.cube.I.manual'
 
 start='-250km/s' # start velocity. See science goals for appropriate value.
 width='2km/s' # velocity width. See science goals.
@@ -264,11 +264,11 @@ tclean(vis=linevis,
 
 import glob
 
-myimages = glob.glob("w51e2*.pbcor")
+myimages = glob.glob("w51north*.pbcor")
 for image in myimages:
     exportfits(imagename=image, fitsimage=image+'.fits',overwrite=True)
 
-myimages = glob.glob("w51e2*.pb")
+myimages = glob.glob("w51north*.pb")
 for image in myimages:
     exportfits(imagename=image, fitsimage=image+'.fits',overwrite=True) 
 
