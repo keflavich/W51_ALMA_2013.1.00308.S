@@ -18,6 +18,9 @@ finalvis='calibrated_final.ms' # This is your output ms from the data
                                # preparation script.
 contvis='calibrated_final_cont.ms'
 
+contspws_lo = '0,1,4,5,8,9,12,13,16,17'
+contspws_hi = '2,3,6,7,10,11,14,15,18,19'
+
 if not os.path.exists(contvis):
     # Use plotms to identify line and continuum spectral windows.
     plotms(vis=finalvis, xaxis='channel', yaxis='amplitude',
@@ -166,6 +169,53 @@ if not os.path.exists(contimagename+'.image.tt0.pbcor'):
     #os.system('cp -ir ' + contimagename + '.mask ' + contmaskname)
 
 
+contimagename = 'w51north_sci.spw{0}.mfs.I.manual'.format(contspws_hi.replace(",","_"))
+
+if not os.path.exists(contimagename+'.image.tt0.pbcor'):
+    tclean(vis=contvis,
+           imagename=contimagename,
+           field=field,
+           spw=contspws_hi,
+           specmode='mfs',
+           #deconvolver='hogbom', 
+           # Uncomment the below to image with nterms>1 when the fractional bandwidth is greater than 10%.
+           deconvolver='mtmfs',
+           nterms=2,
+           imsize = imsize, 
+           cell= cell, 
+           weighting = weighting,
+           robust = robust,
+           niter = niter, 
+           threshold = threshold,
+           interactive = True,
+           gridder = gridder,
+           pbcor = True,
+           mask='cont.mask')
+
+contimagename = 'w51north_sci.spw{0}.mfs.I.manual'.format(contspws_lo.replace(",","_"))
+
+if not os.path.exists(contimagename+'.image.tt0.pbcor'):
+    tclean(vis=contvis,
+           imagename=contimagename,
+           field=field,
+           spw=contspws_lo,
+           specmode='mfs',
+           #deconvolver='hogbom', 
+           # Uncomment the below to image with nterms>1 when the fractional bandwidth is greater than 10%.
+           deconvolver='mtmfs',
+           nterms=2,
+           imsize = imsize, 
+           cell= cell, 
+           weighting = weighting,
+           robust = robust,
+           niter = niter, 
+           threshold = threshold,
+           interactive = True,
+           gridder = gridder,
+           pbcor = True,
+           mask='cont.mask')
+
+
     ########################################
     # Continuum Subtraction for Line Imaging
 
@@ -211,58 +261,60 @@ robust=-1.5
 #                        # rest frequency of the
 #                        # line.
 
-for spw in ('0,4,8,12,16',
-            '1,5,9,13,17',
-            '2,6,10,14,18',
-            '3,7,11,15,19',
-           ):
+# Skip GIGANTIC cube making...
+if False:
+    for spw in ('0,4,8,12,16',
+                '1,5,9,13,17',
+                '2,6,10,14,18',
+                '3,7,11,15,19',
+               ):
 
-    lineimagename =  'w51north_sci.spw{0}.robustm1.5.cube.I.manual'.format(spw.replace(",","_"))
+        lineimagename =  'w51north_sci.spw{0}.robustm1.5.cube.I.manual'.format(spw.replace(",","_"))
 
-    #start='-250km/s' # start velocity. See science goals for appropriate value.
-    #width='2km/s' # velocity width. See science goals.
-    #nchan = 175  # number of channels. See science goals for appropriate value.
+        #start='-250km/s' # start velocity. See science goals for appropriate value.
+        #width='2km/s' # velocity width. See science goals.
+        #nchan = 175  # number of channels. See science goals for appropriate value.
 
 
-    # If necessary, run the following commands to get rid of older clean
-    # data.
+        # If necessary, run the following commands to get rid of older clean
+        # data.
 
-    #clearcal(vis=linevis)
-    #delmod(vis=linevis)
+        #clearcal(vis=linevis)
+        #delmod(vis=linevis)
 
-    if not os.path.exists(lineimagename+".image"):
-        for ext in ['.image','.mask','.model','.image.pbcor','.psf','.residual','.pb','.sumwt']:
-            rmtables(lineimagename + ext)
+        if not os.path.exists(lineimagename+".image"):
+            for ext in ['.image','.mask','.model','.image.pbcor','.psf','.residual','.pb','.sumwt']:
+                rmtables(lineimagename + ext)
 
-        tclean(vis=linevis,
-               imagename=lineimagename, 
-               field=field,
-               spw=spw,
-               # phasecenter=phasecenter, # uncomment if mosaic.      
-               specmode='cube',
-               outframe=outframe,
-               veltype=veltype, 
-               niter=niter,  
-               threshold=threshold, 
-               interactive=False,
-               cell=cell,
-               imsize=imsize, 
-               weighting=weighting,
-               robust=robust,
-               gridder=gridder,
-               pbcor=True,
-               restoringbeam='common',
-               chanchunks=-1) # break up large cubes automatically so that you don't run out of memory.
+            tclean(vis=linevis,
+                   imagename=lineimagename, 
+                   field=field,
+                   spw=spw,
+                   # phasecenter=phasecenter, # uncomment if mosaic.      
+                   specmode='cube',
+                   outframe=outframe,
+                   veltype=veltype, 
+                   niter=niter,  
+                   threshold=threshold, 
+                   interactive=False,
+                   cell=cell,
+                   imsize=imsize, 
+                   weighting=weighting,
+                   robust=robust,
+                   gridder=gridder,
+                   pbcor=True,
+                   restoringbeam='common',
+                   chanchunks=-1) # break up large cubes automatically so that you don't run out of memory.
 
-    # If you'd like to redo your clean, but don't want to make a new mask
-    # use the following commands to save your original mask. This is an
-    # optional step.
-    # linemaskname = 'line.mask'
-    ## rmtables(linemaskname) # uncomment if you want to overwrite the mask.
-    # os.system('cp -ir ' + lineimagename + '.mask ' + linemaskname)
+        # If you'd like to redo your clean, but don't want to make a new mask
+        # use the following commands to save your original mask. This is an
+        # optional step.
+        # linemaskname = 'line.mask'
+        ## rmtables(linemaskname) # uncomment if you want to overwrite the mask.
+        # os.system('cp -ir ' + lineimagename + '.mask ' + linemaskname)
 
-##############################################
-# Export the images
+    ##############################################
+    # Export the images
 
 import glob
 

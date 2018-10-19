@@ -17,62 +17,66 @@ if casadef.casa_version < '4.4.0' :
 finalvis='calibrated_final.ms' # This is your output ms from the data
                                # preparation script.
 
-# Use plotms to identify line and continuum spectral windows.
-plotms(vis=finalvis, xaxis='channel', yaxis='amplitude',
-       ydatacolumn='data',
-       avgtime='1e8', avgscan=True, avgchannel='1', 
-       iteraxis='spw' )
+contspws_lo = '0,1,4,5,8,9,12,13,16,17'
+contspws_hi = '2,3,6,7,10,11,14,15,18,19'
+
+if not os.path.exists(contvis):
+    # Use plotms to identify line and continuum spectral windows.
+    plotms(vis=finalvis, xaxis='channel', yaxis='amplitude',
+           ydatacolumn='data',
+           avgtime='1e8', avgscan=True, avgchannel='1', 
+           iteraxis='spw' )
 
 
 
 
 
 
-# Set spws to be used to form continuum
-contspws = '0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19'
+    # Set spws to be used to form continuum
+    contspws = '0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19'
 
-# If you have complex line emission and no dedicated continuum
-# windows, you will need to flag the line channels prior to averaging.
-flagmanager(vis=finalvis,mode='save',
-            versionname='before_cont_flags')
+    # If you have complex line emission and no dedicated continuum
+    # windows, you will need to flag the line channels prior to averaging.
+    flagmanager(vis=finalvis,mode='save',
+                versionname='before_cont_flags')
 
-initweights(vis=finalvis,wtmode='weight',dowtsp=True)
+    initweights(vis=finalvis,wtmode='weight',dowtsp=True)
 
-# Flag the "line channels"
-flagchannels='0:62~76;180~192;219~247;317~334;366~390;465~480;512~519;548~555;572~580;605~617;649~669;795~806;812~826;925~931;948~960;1125~1132;1209~1239;1250~1259;1345~1380;1398~1420;1453~1467;1479~1497;1558~1573;1596~1612;1716~1739;1796~1816;1847~1885;2063~2078;2442~2606;2793~2813;2928~2936;3105~3122;3203~3223;3261~3285;3663~3698;3770~3787,1:85~96;146~180;196~211;380~413;560~577;887~897;911~922;946~954;961~970;1213~1232;1414~1435;1490~1521;1665~1675;1686~1693;1740~1749,2:268~283;369~382;393~401;675~695;728~740;880~906;971~999;1135~1159;1233~1254;1311~1343;1384~1443;1455~1479;1504~1524;1695~1708;1722~1807,3:0~8;138~183;229~280;312~347;430~444;466~485;520~536;544~560;672~692;719~738;819~831;984~995;1029~1050;1184~1213;1251~1292;1426~1472;1581~1592;1608~1621;1651~1666;1678~1692,4:62~77;135~153;176~192;238~246;366~386;607~618;650~668;793~811;1211~1237;1355~1385;1401~1417;1454~1467;1481~1500;1563~1574;1597~1612;1718~1736;1795~1815;1848~1885;2040~2083;2459~2605;2795~2808;3204~3232;3257~3287;3582~3595;3665~3697;3765~3787,5:81~93;147~174;197~206;379~411;561~576;848~863;882~893;909~921;943~975;1216~1233;1419~1432;1496~1519;1665~1697,6:269~292;347~417;675~695;728~741;874~905;976~1004;1130~1156;1237~1247;1315~1342;1376~1413;1424~1440;1462~1475;1508~1521;1697~1711;1720~1804,7:0~10;149~181;234~251;262~274;429~439;519~530;676~694;716~740;822~835;982~992;1029~1051;1180~1208;1254~1292;1428~1472;1611~1620;1651~1667;1677~1692,8:61~84;177~195;218~250;366~392;543~561;601~616;644~665;794~807;946~963;1209~1239;1351~1381;1399~1415;1450~1465;1483~1496;1564~1578;1593~1611;1714~1734;1800~1812;1843~1881;2061~2078;2441~2605;2789~2814;3187~3218;3249~3292;3657~3698;3754~3787,9:85~95;147~179;196~213;377~416;560~574;880~979;1220~1235;1413~1432;1492~1521;1669~1696,10:272~283;367~381;396~417;667~703;727~739;875~912;971~1000;1130~1161;1227~1254;1274~1291;1314~1337;1379~1480;1511~1522;1724~1808,11:0~12;137~182;231~282;314~350;520~534;666~739;982~998;1030~1050;1253~1292;1425~1477;1605~1629;1653~1665;1681~1693,12:55~81;172~197;236~246;360~392;608~618;650~664;1213~1246;1357~1415;1449~1497;1719~1735;1801~1816;1848~1888;2057~2083;2470~2600;2790~2816;3204~3294;3658~3704;3763~3792,13:79~94;144~180;197~213;374~413;562~574;885~953;1220~1230;1414~1432;1492~1523;1663~1697,14:269~292;371~409;669~695;875~891;982~996;1127~1162;1305~1350;1371~1484;1720~1807,15:0~9;139~192;230~277;519~528;670~693;718~730;1008~1052;1256~1294;1420~1468;1603~1625;1649~1666,16:62~80;176~195;366~392;607~621;644~663;799~807;1214~1235;1357~1383;1400~1415;1498~1502;1593~1619;1714~1736;1793~1816;1846~1891;2064~2083;2451~2605;2789~2816;3202~3222;3261~3286;3666~3697;3760~3800,17:79~94;155~178;197~208;348~421;562~577;879~973;1217~1233;1416~1433;1490~1521;1668~1696,18:268~283;367~404;674~695;878~908;978~999;1131~1160;1236~1247;1307~1336;1372~1443;1461~1479;1503~1521;1697~1809,19:0~13;130~187;231~283;672~689;722~735;980~999;1031~1058;1254~1297;1425~1471;1605~1624;1647~1666;1681~1693'
-
-
-flagdata(vis=finalvis,mode='manual',
-          spw=flagchannels,flagbackup=False)
-
-# check that flags are as expected, NOTE must check reload on plotms
-# gui if its still open.
-plotms(vis=finalvis,yaxis='amp',xaxis='channel',
-       avgchannel='1',avgtime='1e8',avgscan=True,iteraxis='spw') 
-
-# Average the channels within spws
-contvis='calibrated_final_cont.ms'
-rmtables(contvis)
-os.system('rm -rf ' + contvis + '.flagversions')
+    # Flag the "line channels"
+    flagchannels='0:62~76;180~192;219~247;317~334;366~390;465~480;512~519;548~555;572~580;605~617;649~669;795~806;812~826;925~931;948~960;1125~1132;1209~1239;1250~1259;1345~1380;1398~1420;1453~1467;1479~1497;1558~1573;1596~1612;1716~1739;1796~1816;1847~1885;2063~2078;2442~2606;2793~2813;2928~2936;3105~3122;3203~3223;3261~3285;3663~3698;3770~3787,1:85~96;146~180;196~211;380~413;560~577;887~897;911~922;946~954;961~970;1213~1232;1414~1435;1490~1521;1665~1675;1686~1693;1740~1749,2:268~283;369~382;393~401;675~695;728~740;880~906;971~999;1135~1159;1233~1254;1311~1343;1384~1443;1455~1479;1504~1524;1695~1708;1722~1807,3:0~8;138~183;229~280;312~347;430~444;466~485;520~536;544~560;672~692;719~738;819~831;984~995;1029~1050;1184~1213;1251~1292;1426~1472;1581~1592;1608~1621;1651~1666;1678~1692,4:62~77;135~153;176~192;238~246;366~386;607~618;650~668;793~811;1211~1237;1355~1385;1401~1417;1454~1467;1481~1500;1563~1574;1597~1612;1718~1736;1795~1815;1848~1885;2040~2083;2459~2605;2795~2808;3204~3232;3257~3287;3582~3595;3665~3697;3765~3787,5:81~93;147~174;197~206;379~411;561~576;848~863;882~893;909~921;943~975;1216~1233;1419~1432;1496~1519;1665~1697,6:269~292;347~417;675~695;728~741;874~905;976~1004;1130~1156;1237~1247;1315~1342;1376~1413;1424~1440;1462~1475;1508~1521;1697~1711;1720~1804,7:0~10;149~181;234~251;262~274;429~439;519~530;676~694;716~740;822~835;982~992;1029~1051;1180~1208;1254~1292;1428~1472;1611~1620;1651~1667;1677~1692,8:61~84;177~195;218~250;366~392;543~561;601~616;644~665;794~807;946~963;1209~1239;1351~1381;1399~1415;1450~1465;1483~1496;1564~1578;1593~1611;1714~1734;1800~1812;1843~1881;2061~2078;2441~2605;2789~2814;3187~3218;3249~3292;3657~3698;3754~3787,9:85~95;147~179;196~213;377~416;560~574;880~979;1220~1235;1413~1432;1492~1521;1669~1696,10:272~283;367~381;396~417;667~703;727~739;875~912;971~1000;1130~1161;1227~1254;1274~1291;1314~1337;1379~1480;1511~1522;1724~1808,11:0~12;137~182;231~282;314~350;520~534;666~739;982~998;1030~1050;1253~1292;1425~1477;1605~1629;1653~1665;1681~1693,12:55~81;172~197;236~246;360~392;608~618;650~664;1213~1246;1357~1415;1449~1497;1719~1735;1801~1816;1848~1888;2057~2083;2470~2600;2790~2816;3204~3294;3658~3704;3763~3792,13:79~94;144~180;197~213;374~413;562~574;885~953;1220~1230;1414~1432;1492~1523;1663~1697,14:269~292;371~409;669~695;875~891;982~996;1127~1162;1305~1350;1371~1484;1720~1807,15:0~9;139~192;230~277;519~528;670~693;718~730;1008~1052;1256~1294;1420~1468;1603~1625;1649~1666,16:62~80;176~195;366~392;607~621;644~663;799~807;1214~1235;1357~1383;1400~1415;1498~1502;1593~1619;1714~1736;1793~1816;1846~1891;2064~2083;2451~2605;2789~2816;3202~3222;3261~3286;3666~3697;3760~3800,17:79~94;155~178;197~208;348~421;562~577;879~973;1217~1233;1416~1433;1490~1521;1668~1696,18:268~283;367~404;674~695;878~908;978~999;1131~1160;1236~1247;1307~1336;1372~1443;1461~1479;1503~1521;1697~1809,19:0~13;130~187;231~283;672~689;722~735;980~999;1031~1058;1254~1297;1425~1471;1605~1624;1647~1666;1681~1693'
 
 
-split(vis=finalvis,
-     spw=contspws,      
-     outputvis=contvis,
-      width=[256,128,128,128,256,128,128,128,256,128,128,128,256,128,128,128,256,128,128,128], # number of channels to average together. The final channel width should be less than 125MHz in Bands 3, 4, and 6 and 250MHz in Band 7.
-     datacolumn='data')
+    flagdata(vis=finalvis,mode='manual',
+              spw=flagchannels,flagbackup=False)
+
+    # check that flags are as expected, NOTE must check reload on plotms
+    # gui if its still open.
+    plotms(vis=finalvis,yaxis='amp',xaxis='channel',
+           avgchannel='1',avgtime='1e8',avgscan=True,iteraxis='spw') 
+
+    # Average the channels within spws
+    contvis='calibrated_final_cont.ms'
+    rmtables(contvis)
+    os.system('rm -rf ' + contvis + '.flagversions')
 
 
-# Check the weights. You will need to change antenna and field to
-# appropriate values
-plotms(vis=contvis, yaxis='wtsp',xaxis='freq',spw='',antenna='DA61',field='4')
+    split(vis=finalvis,
+         spw=contspws,      
+         outputvis=contvis,
+          width=[256,128,128,128,256,128,128,128,256,128,128,128,256,128,128,128,256,128,128,128], # number of channels to average together. The final channel width should be less than 125MHz in Bands 3, 4, and 6 and 250MHz in Band 7.
+         datacolumn='data')
 
-# If you flagged any line channels, restore the previous flags
-flagmanager(vis=finalvis,mode='restore',
-            versionname='before_cont_flags')
 
-# Inspect continuum for any problems
-plotms(vis=contvis,xaxis='uvdist',yaxis='amp',coloraxis='spw')
+    # Check the weights. You will need to change antenna and field to
+    # appropriate values
+    plotms(vis=contvis, yaxis='wtsp',xaxis='freq',spw='',antenna='DA61',field='4')
+
+    # If you flagged any line channels, restore the previous flags
+    flagmanager(vis=finalvis,mode='restore',
+                versionname='before_cont_flags')
+
+    # Inspect continuum for any problems
+    plotms(vis=contvis,xaxis='uvdist',yaxis='amp',coloraxis='spw')
 
 # #############################################
 # Image Parameters
@@ -125,42 +129,88 @@ contimagename = 'w51e2_sci.spw0_1_2_3_4_5_6_7_8_9_10_11_12_13_14_15_16_17_18_19.
 #clearcal(vis=contvis)
 #delmod(vis=contvis)
 
-for ext in ['.image','.mask','.model','.image.pbcor','.psf','.residual','.pb','.sumwt']:
-    rmtables(contimagename+ext)
+if not os.path.exists(contimagename+'.image.tt0.pbcor'):
+    for ext in ['.image','.mask','.model','.image.pbcor','.psf','.residual','.pb','.sumwt']:
+        rmtables(contimagename+ext)
 
 
 
-tclean(vis=contvis,
-       imagename=contimagename,
-       field=field,
-       #  phasecenter=phasecenter, # uncomment if mosaic.      
-       specmode='mfs',
-       #deconvolver='hogbom', 
-       # Uncomment the below to image with nterms>1 when the fractional bandwidth is greater than 10%.
-       deconvolver='mtmfs',
-       nterms=2,
-       imsize = imsize, 
-       cell= cell, 
-       weighting = weighting,
-       robust = robust,
-       niter = niter, 
-       threshold = threshold,
-       interactive = True,
-       gridder = gridder,
-       pbcor = True,
-       mask='cont.mask')
-       
-# 4146 iterations
-# beam: 0.067" by 0.041"
-# RMS: 2.04e-5 Jy/beam over 
+    tclean(vis=contvis,
+           imagename=contimagename,
+           field=field,
+           #  phasecenter=phasecenter, # uncomment if mosaic.      
+           specmode='mfs',
+           #deconvolver='hogbom', 
+           # Uncomment the below to image with nterms>1 when the fractional bandwidth is greater than 10%.
+           deconvolver='mtmfs',
+           nterms=2,
+           imsize = imsize, 
+           cell= cell, 
+           weighting = weighting,
+           robust = robust,
+           niter = niter, 
+           threshold = threshold,
+           interactive = True,
+           gridder = gridder,
+           pbcor = True,
+           mask='cont.mask')
+           
+    # 4146 iterations
+    # beam: 0.067" by 0.041"
+    # RMS: 2.04e-5 Jy/beam over 
 
 
-# If you'd like to redo your clean, but don't want to make a new mask
-# use the following commands to save your original mask. This is an optional step.
-#contmaskname = 'cont.mask'
-##rmtables(contmaskname) # if you want to delete the old mask
-#os.system('cp -ir ' + contimagename + '.mask ' + contmaskname)
+    # If you'd like to redo your clean, but don't want to make a new mask
+    # use the following commands to save your original mask. This is an optional step.
+    #contmaskname = 'cont.mask'
+    ##rmtables(contmaskname) # if you want to delete the old mask
+    #os.system('cp -ir ' + contimagename + '.mask ' + contmaskname)
 
+contimagename = 'w51e2_sci.spw{0}.mfs.I.manual'.format(contspws_hi.replace(",","_"))
+
+if not os.path.exists(contimagename+'.image.tt0.pbcor'):
+    tclean(vis=contvis,
+           imagename=contimagename,
+           field=field,
+           spw=contspws_hi,
+           specmode='mfs',
+           #deconvolver='hogbom', 
+           # Uncomment the below to image with nterms>1 when the fractional bandwidth is greater than 10%.
+           deconvolver='mtmfs',
+           nterms=2,
+           imsize = imsize, 
+           cell= cell, 
+           weighting = weighting,
+           robust = robust,
+           niter = niter, 
+           threshold = threshold,
+           interactive = True,
+           gridder = gridder,
+           pbcor = True,
+           mask='cont.mask')
+
+contimagename = 'w51e2_sci.spw{0}.mfs.I.manual'.format(contspws_lo.replace(",","_"))
+
+if not os.path.exists(contimagename+'.image.tt0.pbcor'):
+    tclean(vis=contvis,
+           imagename=contimagename,
+           field=field,
+           spw=contspws_lo,
+           specmode='mfs',
+           #deconvolver='hogbom', 
+           # Uncomment the below to image with nterms>1 when the fractional bandwidth is greater than 10%.
+           deconvolver='mtmfs',
+           nterms=2,
+           imsize = imsize, 
+           cell= cell, 
+           weighting = weighting,
+           robust = robust,
+           niter = niter, 
+           threshold = threshold,
+           interactive = True,
+           gridder = gridder,
+           pbcor = True,
+           mask='cont.mask')
 
 ########################################
 # Continuum Subtraction for Line Imaging
@@ -200,64 +250,67 @@ linevis = finalvis # uncomment if you neither continuum subtracted nor self-cali
 # linevis = finalvis + '.selfcal' # uncomment if just self-calibrated (no continuum subtraction)
 
 robust=-1.5
-restfreq='85.98GHz' # Typically the rest frequency of the line of
+#restfreq='85.98GHz' # Typically the rest frequency of the line of
                         # interest. If the source has a significant
                         # redshift (z>0.2), use the observed sky
                         # frequency (nu_rest/(1+z)) instead of the
                         # rest frequency of the
                         # line.
 
-spw='0,4,8,12,16' # uncomment and replace with appropriate spw 
+# skip GIGANTIC cube making
+if False:
+    for spw in ('0,4,8,12,16',
+                '1,5,9,13,17',
+                '2,6,10,14,18',
+                '3,7,11,15,19',
+               ):
 
-lineimagename =  'w51e2_sci.spw0_4_8_12_16.cube.I.manual'
+        lineimagename =  'w51north_sci.spw{0}.robustm1.5.cube.I.manual'.format(spw.replace(",","_"))
+        # start='-250km/s' # start velocity. See science goals for appropriate value.
+        # width='2km/s' # velocity width. See science goals.
+        # nchan = 175  # number of channels. See science goals for appropriate value.
 
-start='-250km/s' # start velocity. See science goals for appropriate value.
-width='2km/s' # velocity width. See science goals.
-nchan = 175  # number of channels. See science goals for appropriate value.
 
+    # If necessary, run the following commands to get rid of older clean
+    # data.
 
-# If necessary, run the following commands to get rid of older clean
-# data.
+    #clearcal(vis=linevis)
+    #delmod(vis=linevis)
 
-#clearcal(vis=linevis)
-#delmod(vis=linevis)
+        if not os.path.exists(lineimagename+".image"):
+            for ext in ['.image','.mask','.model','.image.pbcor','.psf','.residual','.pb','.sumwt']:
+                rmtables(lineimagename + ext)
 
-for ext in ['.image','.mask','.model','.image.pbcor','.psf','.residual','.pb','.sumwt']:
-    rmtables(lineimagename + ext)
+            tclean(vis=linevis,
+                   imagename=lineimagename, 
+                   field=field,
+                   spw=spw,
+                   # phasecenter=phasecenter, # uncomment if mosaic.      
+                   specmode='cube',
+                   outframe=outframe,
+                   veltype=veltype, 
+                   restfreq=restfreq, 
+                   niter=niter,  
+                   threshold=threshold, 
+                   interactive=True,
+                   cell=cell,
+                   imsize=imsize, 
+                   weighting=weighting,
+                   robust=robust,
+                   gridder=gridder,
+                   pbcor=True,
+                   restoringbeam='common',
+                   chanchunks=-1) # break up large cubes automatically so that you don't run out of memory.
+            # 3926 iterations
+            # beam: 0.073" by 0.053"
+            # RMS: 0.85 mJy/beam over 2 km/s
 
-tclean(vis=linevis,
-       imagename=lineimagename, 
-       field=field,
-       spw=spw,
-       # phasecenter=phasecenter, # uncomment if mosaic.      
-       specmode='cube',
-       start=start,
-       width=width,
-       nchan=nchan, 
-       outframe=outframe,
-       veltype=veltype, 
-       restfreq=restfreq, 
-       niter=niter,  
-       threshold=threshold, 
-       interactive=True,
-       cell=cell,
-       imsize=imsize, 
-       weighting=weighting,
-       robust=robust,
-       gridder=gridder,
-       pbcor=True,
-       restoringbeam='common',
-       chanchunks=-1) # break up large cubes automatically so that you don't run out of memory.
-# 3926 iterations
-# beam: 0.073" by 0.053"
-# RMS: 0.85 mJy/beam over 2 km/s
-
-# If you'd like to redo your clean, but don't want to make a new mask
-# use the following commands to save your original mask. This is an
-# optional step.
-# linemaskname = 'line.mask'
-## rmtables(linemaskname) # uncomment if you want to overwrite the mask.
-# os.system('cp -ir ' + lineimagename + '.mask ' + linemaskname)
+            # If you'd like to redo your clean, but don't want to make a new mask
+            # use the following commands to save your original mask. This is an
+            # optional step.
+            # linemaskname = 'line.mask'
+            ## rmtables(linemaskname) # uncomment if you want to overwrite the mask.
+            # os.system('cp -ir ' + lineimagename + '.mask ' + linemaskname)
 
 ##############################################
 # Export the images

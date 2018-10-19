@@ -1,0 +1,35 @@
+Title: Classification of millimeter sources in W51 Main / IRS2
+
+Abstract: We cross-match several radio and millimeter source catalogs
+in the W51 IRS2 and Main regions to obtain SEDs.  We classify the sources
+as HII regions, dusty YSOs, or other.
+
+Data:
+Describe ALMA, VLA data sets
+
+Methods:
+Describe the dendrocat package.
+
+
+Analysis:
+-Flux-Flux plots & histograms of SED power-law slope parameter Alpha
+ - classification of some sources as HII regions
+
+-Comparison of flux recovery in Goddi+ 0.04" resolution data to Ginsburg+ 0.2"
+resolution data.
+Sources with high flux recovery (>80%?) are 'compact' and probably have no significant
+envelope, while sources with low flux recovery (<20%?) may be "starless" cores.
+Can compare this to Robitaille+ 2007 SED models.
+
+
+Discussion:
+What fraction of sources are YSOs, HII regions?  What fraction of sources would have been
+misclassified using other (e.g., Ginsburg+ 2017) criteria?
+
+What fraction of Ginsburg+ 2017 sources do not have high-resolution counterparts (in the overlap region)?
+
+What fraction of Ginsburg+ 2017 sources have multiple associations?  Can
+anything useful be said about these sources?
+
+What fraction of high-resolution sources are not detected in Ginsburg+ 2017
+because they are hidden by confusion?
