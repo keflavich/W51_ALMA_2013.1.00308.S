@@ -6,6 +6,7 @@ from line_to_image_list import line_to_image_list
 from astropy import units as u
 import paths
 import pylab as pl
+from astroquery.splatalogue import Splatalogue, utils
 
 plot_kwargs = {'color':'r', 'linestyle':'--'}
 annotate_kwargs = {'color': 'r'}
@@ -33,6 +34,17 @@ for target in velo:
         frequencies = u.Quantity([float(x[1].strip("GHz")) for x in line_to_image_list],
                                  unit=u.GHz)
 
+        splat = Splatalogue.query_lines(sp.xarr.min(), sp.xarr.max(),
+                                        chemical_name='NaCl|KCl',
+                                        line_lists=['CDMS'])
+        if len(splat) > 0:
+            splat = utils.minimize_table(splat)
+            species_names = [row['Species'] + row['QNs'] for row in splat]
+            frequencies = u.Quantity(splat['Freq'], u.GHz)
+        else:
+            species_names = []
+            frequencies = []
+
         sp.plotter(figure=pl.figure(1))
         sp.plotter(figure=pl.figure(1))
 
@@ -41,8 +53,8 @@ for target in velo:
         sp.plotter.savefig(outname, bbox_extra_artists=[])
 
         okfreqs = (frequencies > sp.xarr.min()) & (frequencies < sp.xarr.max())
-        #print(frequencies)
-        #print(okfreqs)
+        #print(list(zip(species_names, frequencies)))
+        #print(frequencies[okfreqs])
 
         sp.plotter.line_ids(np.array(species_names)[okfreqs],
                             u.Quantity(frequencies)[okfreqs],
