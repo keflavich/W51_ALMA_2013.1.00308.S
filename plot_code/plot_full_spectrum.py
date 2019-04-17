@@ -20,7 +20,7 @@ def plot_whole_spectrum(spectra, line_id=line_ids, velocity=55*u.km/u.s,
                         fontsize=4, linewidth=0.25):
     pl.close(fignum)
     fig = pl.figure(fignum, figsize=figsize)
-    
+
     with mpl.rc_context(rc={'font.size': 12,
                             'axes.labelsize':'medium',
                             'axes.titlesize':'medium'}):
