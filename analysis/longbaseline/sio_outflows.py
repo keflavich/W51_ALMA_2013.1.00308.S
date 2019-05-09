@@ -93,3 +93,22 @@ for line, freq in (('SiO',217.10498*u.GHz),
 
     d2siored = d2mslab.spectral_slab(74*u.km/u.s, 118*u.km/u.s).moment0()
     d2siored.write('/Users/adam/work/w51/alma/FITS/longbaseline/{line}_74to118kms_d2.fits'.format(line=line), overwrite=True)
+
+
+# band 3
+
+line = 'SiOJ21'
+e2sioj21 = SpectralCube.read('/Users/adam/work/w51/alma/FITS/longbaseline/velo_cutouts/w51e2e_siov0_j2-1_r0.5_medsub.fits')
+e2sioj21blue = e2sioj21.spectral_slab(-32*u.km/u.s, 55*u.km/u.s).moment0()
+e2sioj21blue.write('/Users/adam/work/w51/alma/FITS/longbaseline/{line}_m32to55kms_e2.fits'.format(line=line), overwrite=True)
+
+e2sioj21red = e2sioj21.spectral_slab(74*u.km/u.s, 118*u.km/u.s).moment0()
+e2sioj21red.write('/Users/adam/work/w51/alma/FITS/longbaseline/{line}_74to118kms_e2.fits'.format(line=line), overwrite=True)
+
+line = 'CS21'
+e2CSj21 = SpectralCube.read('/Users/adam/work/w51/alma/FITS/longbaseline/velo_cutouts/w51e2e_csv0_j2-1_r0.5_medsub.fits')
+e2CSj21blue = e2CSj21.spectral_slab(-32*u.km/u.s, 55*u.km/u.s).moment0()
+e2CSj21blue.write('/Users/adam/work/w51/alma/FITS/longbaseline/{line}_m32to55kms_e2.fits'.format(line=line), overwrite=True)
+
+e2CSj21red = e2CSj21.spectral_slab(74*u.km/u.s, 118*u.km/u.s).moment0()
+e2CSj21red.write('/Users/adam/work/w51/alma/FITS/longbaseline/{line}_74to118kms_e2.fits'.format(line=line), overwrite=True)
