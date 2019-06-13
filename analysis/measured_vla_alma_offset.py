@@ -29,6 +29,7 @@ chi2shift = image_registration.chi2_shift(proj_7mmto3mm, cutout_3mm.data, err=er
 print(chi2shift)
 print(chi2shift[:2] * cutout_3mm.wcs.wcs.cdelt * 3600)
 print(chi2shift[:2] * cutout_3mm.wcs.wcs.cdelt)
+print((((chi2shift[:2] * cutout_3mm.wcs.wcs.cdelt * 3600)**2).sum())**0.5)
 """
 [-4.295500000000004, 3.9625000000000057, 0.0034999999999999892, 0.003500000000000003]
 [0.0214775 0.0198125]
