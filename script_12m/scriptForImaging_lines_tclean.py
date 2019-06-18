@@ -53,7 +53,7 @@ for line, restfreq, velocity_res, spw in line_to_image_list:
 
     if not os.path.exists(output+".image.pbcor.fits"):
         print("Imaging {0}".format(line))
-        os.system('rm -rf ' + output + '*/')
+        os.system('rm -rf "' + output + '*/"')
         tclean(vis=outms,
                imagename=output,
                field='w51',
@@ -83,7 +83,7 @@ for line, restfreq, velocity_res, spw in line_to_image_list:
         exportfits(imagename=myimagebase+'.residual', fitsimage=myimagebase+'.residual.fits', overwrite=True, dropdeg=True)
         for suffix in ('pb', 'weight', 'sumwt', 'psf', 'model', 'mask',
                        'image', 'residual'):
-            os.system('rm -rf {0}.{1}'.format(output, suffix))
+            os.system('rm -rf "{0}.{1}"'.format(output, suffix))
 
     print("Completed {0}".format(line))
 
