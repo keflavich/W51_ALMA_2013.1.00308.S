@@ -23,6 +23,9 @@ e2sioj21red = fits.open('/Users/adam/work/w51/alma/FITS/longbaseline/{line}_74to
 
 cont3mm = fits.open('/Users/adam/work/w51/alma/FITS/longbaseline/w51e2_sci.spw0_1_2_3_4_5_6_7_8_9_10_11_12_13_14_15_16_17_18_19.mfs.I.manual.image.tt0.pbcor.fits.gz')
 
+e2CSj21cube = SpectralCube.read('/Users/adam/work/w51/alma/FITS/longbaseline/velo_cutouts/w51e2e_csv0_j2-1_r0.5_medsub.fits').to(u.K)
+cs21max = e2CSj21cube.spectral_slab(-32*u.km/u.s, 118*u.km/u.s).max(axis=0)
+
 cs10cube = SpectralCube.read('/Users/adam/work/w51/vla_q/FITS/cutouts/W51e2e_CS_cutout.fits').to(u.K)
 cs10max = cs10cube.spectral_slab(-32*u.km/u.s, 118*u.km/u.s).max(axis=0)
 #cs10blue = cs10cube.spectral_slab(-32*u.km/u.s, 55*u.km/u.s).moment0(axis=0)
@@ -52,9 +55,11 @@ rgbim = np.array([siorednorm(e2siored[0].data),
 ax.imshow(rgbim.T.swapaxes(0,1), origin='lower', interpolation='none')
 
 #csblue_reproj,_ = reproject.reproject_interp(e2sioj21blue, e2siored[0].header)
-ax.contour(e2CSj21blue[0].data,
-           transform=ax.get_transform(wcs.WCS(e2CSj21blue[0].header)),
-           levels=[0.1, 0.2, 0.5, 0.8], colors=[(1,1,1,0.9)]*10,
+ax.contour(#e2CSj21blue[0].data,
+           cs21max.value,
+           #transform=ax.get_transform(wcs.WCS(e2CSj21blue[0].header)),
+           transform=ax.get_transform(cs21max.wcs),
+           levels=[2000, 4000, 6000], colors=[(1,1,1,0.9)]*10,
            linewidths=[0.5]*10)
 
 # ADD CORRECTION from measured_vla_alma_offset
