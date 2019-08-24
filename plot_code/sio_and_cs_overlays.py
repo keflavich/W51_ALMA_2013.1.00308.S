@@ -1,4 +1,5 @@
 import numpy as np
+import radio_beam
 from astropy.io import fits
 from astropy import wcs
 #from astropy.visualization import AsinhStretch, imshow_norm, LogStretch, LinearStretch, MinMaxInterval, PercentileInterval
@@ -21,7 +22,8 @@ line = 'SiOJ21'
 e2sioj21blue = fits.open('/Users/adam/work/w51/alma/FITS/longbaseline/{line}_m32to55kms_e2.fits'.format(line=line))
 e2sioj21red = fits.open('/Users/adam/work/w51/alma/FITS/longbaseline/{line}_74to118kms_e2.fits'.format(line=line))
 
-cont3mm = fits.open('/Users/adam/work/w51/alma/FITS/longbaseline/w51e2_sci.spw0_1_2_3_4_5_6_7_8_9_10_11_12_13_14_15_16_17_18_19.mfs.I.manual.image.tt0.pbcor.fits.gz')
+#cont3mm = fits.open('/Users/adam/work/w51/alma/FITS/longbaseline/w51e2_sci.spw0_1_2_3_4_5_6_7_8_9_10_11_12_13_14_15_16_17_18_19.mfs.I.manual.image.tt0.pbcor.fits.gz')
+cont1mm = fits.open('/Users/adam/work/w51/alma/FITS/longbaseline/W51e2_cont_uniform.image.tt0.pbcor.fits')
 
 e2CSj21cube = SpectralCube.read('/Users/adam/work/w51/alma/FITS/longbaseline/velo_cutouts/w51e2e_csv0_j2-1_r0.5_medsub.fits').to(u.K)
 cs21max = e2CSj21cube.spectral_slab(-32*u.km/u.s, 118*u.km/u.s).max(axis=0)
@@ -34,22 +36,25 @@ cs10mid = cs10cube.spectral_slab(55*u.km/u.s, 74*u.km/u.s).moment0(axis=0)
 
 wcs_sio54 = wcs.WCS(e2siored[0].header)
 
-cont3mm_proj,_ = reproject.reproject_interp((cont3mm[0].data.squeeze(),
-                                             wcs.WCS(cont3mm[0].header).celestial),
+#cont3mm_proj,_ = reproject.reproject_interp((cont3mm[0].data.squeeze(),
+#                                             wcs.WCS(cont3mm[0].header).celestial),
+#                                            e2siored[0].header)
+cont1mm_proj,_ = reproject.reproject_interp((cont1mm[0].data.squeeze(),
+                                             wcs.WCS(cont1mm[0].header).celestial),
                                             e2siored[0].header)
-
 
 fig = pl.figure(1)
 fig.set_size_inches(8,8)
 fig.clf()
 ax = pl.subplot(projection=wcs_sio54)
+pixscale = np.mean(wcs.utils.proj_plane_pixel_scales(wcs_sio54))*u.deg
 
-contnorm = vis.ManualInterval(-0.0005, 0.01)
+contnorm = vis.ManualInterval(-0.0005, 0.007)
 siorednorm = vis.ManualInterval(-0.05, 0.15)
 siobluenorm = vis.ManualInterval(-0.15, 0.60)
 
 rgbim = np.array([siorednorm(e2siored[0].data),
-                  contnorm(cont3mm_proj),
+                  contnorm(cont1mm_proj),
                   siobluenorm(e2sioblue[0].data)])
 
 ax.imshow(rgbim.T.swapaxes(0,1), origin='lower', interpolation='none')
@@ -121,6 +126,31 @@ def make_scalebar(ax, left_side, length, color='w', linestyle='-', label='',
 
 make_scalebar(ax, coordinates.SkyCoord('19:23:43.95 +14:30:34.0', unit=(u.hour, u.deg), frame='icrs'),
               length=0.2*u.arcsec, label='0.2" = 1000 AU', fontsize=14, text_offset=0.02*u.arcsec)
+
+
+beam_sio21 = radio_beam.Beam.from_fits_header(e2sioj21red[0].header)
+beam_sio54 = radio_beam.Beam.from_fits_header(e2siored[0].header)
+beam_cont = radio_beam.Beam.from_fits_header(cont1mm[0].header)
+
+crd_21 = coordinates.SkyCoord('19:23:44.0025 +14:30:34.02', unit=(u.hour, u.deg), frame='icrs')
+crd_54 = coordinates.SkyCoord('19:23:43.9975 +14:30:34.02', unit=(u.hour, u.deg), frame='icrs')
+crd_cont = coordinates.SkyCoord('19:23:43.994 +14:30:34.02', unit=(u.hour, u.deg), frame='icrs')
+pix_21 = wcs_sio54.wcs_world2pix(crd_21.ra.deg, crd_21.dec.deg, 0)
+pix_54 = wcs_sio54.wcs_world2pix(crd_54.ra.deg, crd_54.dec.deg, 0)
+pix_cont = wcs_sio54.wcs_world2pix(crd_cont.ra.deg, crd_cont.dec.deg, 0)
+ell21 = beam_sio21.ellipse_to_plot(pix_21[0], pix_21[1], pixscale)
+ell21.set_facecolor('none')
+ell21.set_edgecolor('w')
+ell54 = beam_sio54.ellipse_to_plot(pix_54[0], pix_54[1], pixscale)
+ell54.set_facecolor('blue')
+ell54.set_edgecolor('blue')
+ellcont = beam_cont.ellipse_to_plot(pix_cont[0], pix_cont[1], pixscale)
+ellcont.set_facecolor('green')
+ellcont.set_edgecolor('green')
+
+ax.add_artist(ell21)
+ax.add_artist(ell54)
+ax.add_artist(ellcont)
 
 
 ax.axis((234.0200833580487, 476.95387462618044, 268.73084003615594, 511.66463130428764))
