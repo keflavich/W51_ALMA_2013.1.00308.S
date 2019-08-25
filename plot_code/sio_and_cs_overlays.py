@@ -158,5 +158,66 @@ ax.coords[0].set_ticklabel(size=16)
 ax.coords[1].set_ticklabel(size=16)
 ax.set_xlabel("RA (ICRS)", fontsize=18)
 ax.set_ylabel("Dec (ICRS)", fontsize=18)
+
+
+
+
+## Add inset axes
+from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes
+from mpl_toolkits.axes_grid1.inset_locator import mark_inset
+import astropy.visualization
+
+
+xslice = slice(365, 385)
+yslice = slice(340, 365)
+xslice = slice(None)
+yslice = slice(None)
+
+axins = zoomed_inset_axes(ax, zoom=4, loc=2,
+                          bbox_to_anchor=[0.15,0.85],
+                          bbox_transform=fig.transFigure,
+                          axes_class=astropy.visualization.wcsaxes.core.WCSAxes,
+                          axes_kwargs=dict(wcs=wcs_sio54[xslice, yslice]))
+
+rgbim[0,:,:] = 0
+rgbim[2,:,:] = 0
+axins.imshow(rgbim.T.swapaxes(0,1)[xslice, yslice, :],
+             origin='lower', interpolation='none',
+            )
+
+mark_inset(parent_axes=ax, inset_axes=axins,
+           loc1=1, loc2=3, fc="none", ec="0.5",
+           lw=0.5)
+axins.set_xticklabels([])
+axins.set_yticklabels([])
+
+lon = axins.coords['ra']
+lat = axins.coords['dec']
+lon.set_ticklabel_visible(False)
+lat.set_ticklabel_visible(False)
+lon.set_ticks_visible(False)
+lat.set_ticks_visible(False)
+
+axins.contour(cs10max.value,
+              transform=axins.get_transform(ww_cs10_corr),
+              levels=[2000,4000,6000],
+              colors=[(0,0,0,0.9)]*10,
+              linewidths=[0.5]*10)
+axins.contour(cs21max.value,
+              transform=axins.get_transform(cs21max.wcs),
+              levels=[2000, 4000, 6000],
+              colors=[(1,1,1,0.9)]*10,
+              linewidths=[0.5]*10)
+
+axins.axis((338.0, 360.0, 364.0, 386.0,))
+#axins.axis((0,19,0,19))
+
+ellcont = beam_cont.ellipse_to_plot(342, 367, pixscale)
+ellcont.set_facecolor('green')
+ellcont.set_edgecolor('green')
+
+axins.add_artist(ellcont)
+
+
 fig.savefig(paths.fpath('W51e2e_sio_outflow_with_CS_contours.pdf'), bbox_inches='tight')
 fig.savefig(paths.fpath('W51e2e_sio_outflow_with_CS_contours.png'), bbox_inches='tight')
