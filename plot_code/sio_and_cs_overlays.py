@@ -221,3 +221,47 @@ axins.add_artist(ellcont)
 
 fig.savefig(paths.fpath('W51e2e_sio_outflow_with_CS_contours.pdf'), bbox_inches='tight')
 fig.savefig(paths.fpath('W51e2e_sio_outflow_with_CS_contours.png'), bbox_inches='tight')
+
+
+
+
+import regions
+ch3oh1 = regions.read_ds9(paths.rpath('etoka_ch3oh_merlin_maserspots.reg'))
+ch3oh2 = regions.read_ds9(paths.rpath('ch3oh_Cband_VLA_masers.reg'))
+h2o = regions.read_ds9('/Users/adam/work/w51/masers/h2o-masers-e2e.reg')
+oh = regions.read_ds9('/Users/adam/work/w51/masers/e2_oh_masers.reg')
+
+
+h2opix = [xx.to_pixel(wcs_sio54) for xx in h2o]
+ohpix = [xx.to_pixel(wcs_sio54) for xx in oh]
+
+# no hits for hh in h2opix:
+oh_artists = []
+for hh in ohpix:
+    artist = hh.as_artist(color='w')
+    artist.set_facecolor('none')
+    artist.set_edgecolor('w')
+    ax.add_artist(artist)
+    oh_artists.append(artist)
+fig.savefig(paths.fpath('W51e2e_sio_outflow_with_CS_contours_and_OH.png'), bbox_inches='tight')
+
+for artist in oh_artists:
+    artist.set_visible(False)
+
+ch3ohpix = [xx.to_pixel(wcs_sio54) for xx in ch3oh1+ch3oh2]
+
+# no hits for hh in h2opix:
+ch3oh_artists = []
+for hh in ch3ohpix:
+    artist = hh.as_artist(color='w')
+    try:
+        artist.set_facecolor('none')
+        artist.set_edgecolor('w')
+    except:
+        pass
+    ax.add_artist(artist)
+    ch3oh_artists.append(artist)
+fig.savefig(paths.fpath('W51e2e_sio_outflow_with_CS_contours_and_ch3oh.png'), bbox_inches='tight')
+
+for artist in ch3oh_artists:
+    artist.set_visible(False)
