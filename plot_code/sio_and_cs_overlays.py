@@ -185,9 +185,8 @@ axins.imshow(rgbim.T.swapaxes(0,1)[xslice, yslice, :],
              origin='lower', interpolation='none',
             )
 
-mark_inset(parent_axes=ax, inset_axes=axins,
-           loc1=1, loc2=3, fc="none", ec="0.5",
-           lw=0.5)
+axins_marker = mark_inset(parent_axes=ax, inset_axes=axins, loc1=1, loc2=3,
+                          fc="none", ec="0.5", lw=0.5)
 axins.set_xticklabels([])
 axins.set_yticklabels([])
 
@@ -223,19 +222,21 @@ fig.savefig(paths.fpath('W51e2e_sio_outflow_with_CS_contours.pdf'), bbox_inches=
 fig.savefig(paths.fpath('W51e2e_sio_outflow_with_CS_contours.png'), bbox_inches='tight')
 
 
+axins.set_visible(False)
+for entry in axins_marker:
+    entry.set_visible(False)
 
 
 import regions
-ch3oh1 = regions.read_ds9(paths.rpath('etoka_ch3oh_merlin_maserspots.reg'))
+ch3oh1 = regions.read_ds9(paths.rpath('etoka_ch3oh_merlin_maserspots_uniform.reg'))
 ch3oh2 = regions.read_ds9(paths.rpath('ch3oh_Cband_VLA_masers.reg'))
-h2o = regions.read_ds9('/Users/adam/work/w51/masers/h2o-masers-e2e.reg')
-oh = regions.read_ds9('/Users/adam/work/w51/masers/e2_oh_masers.reg')
+h2o = regions.read_ds9('/Users/adam/work/w51/masers/e2e_h2o_masers_circles.reg')
+oh = regions.read_ds9('/Users/adam/work/w51/masers/e2_oh_masers_uniform.reg')
 
 
 h2opix = [xx.to_pixel(wcs_sio54) for xx in h2o]
 ohpix = [xx.to_pixel(wcs_sio54) for xx in oh]
 
-# no hits for hh in h2opix:
 oh_artists = []
 for hh in ohpix:
     artist = hh.as_artist(color='w')
@@ -248,11 +249,8 @@ fig.savefig(paths.fpath('W51e2e_sio_outflow_with_CS_contours_and_OH.png'), bbox_
 for artist in oh_artists:
     artist.set_visible(False)
 
-ch3ohpix = [xx.to_pixel(wcs_sio54) for xx in ch3oh1+ch3oh2]
-
-# no hits for hh in h2opix:
-ch3oh_artists = []
-for hh in ch3ohpix:
+h2o_artists = []
+for hh in h2opix:
     artist = hh.as_artist(color='w')
     try:
         artist.set_facecolor('none')
@@ -260,7 +258,27 @@ for hh in ch3ohpix:
     except:
         pass
     ax.add_artist(artist)
-    ch3oh_artists.append(artist)
+    h2o_artists.append(artist)
+fig.savefig(paths.fpath('W51e2e_sio_outflow_with_CS_contours_and_H2O.png'), bbox_inches='tight')
+
+for artist in h2o_artists:
+    artist.set_visible(False)
+
+
+ch3ohpix1 = [xx.to_pixel(wcs_sio54) for xx in ch3oh1]
+ch3ohpix2 = [xx.to_pixel(wcs_sio54) for xx in ch3oh2]
+
+ch3oh_artists = []
+for hhl,color in ((ch3ohpix1, 'w'), (ch3ohpix2, 'y')):
+    for hh in hhl:
+        artist = hh.as_artist(color=color)
+        try:
+            artist.set_facecolor('none')
+            artist.set_edgecolor(color)
+        except:
+            pass
+        ax.add_artist(artist)
+        ch3oh_artists.append(artist)
 fig.savefig(paths.fpath('W51e2e_sio_outflow_with_CS_contours_and_ch3oh.png'), bbox_inches='tight')
 
 for artist in ch3oh_artists:
