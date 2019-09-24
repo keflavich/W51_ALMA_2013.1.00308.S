@@ -245,6 +245,7 @@ for hh in ohpix:
     ax.add_artist(artist)
     oh_artists.append(artist)
 fig.savefig(paths.fpath('W51e2e_sio_outflow_with_CS_contours_and_OH.png'), bbox_inches='tight')
+fig.savefig(paths.fpath('W51e2e_sio_outflow_with_CS_contours_and_OH.pdf'), bbox_inches='tight')
 
 for artist in oh_artists:
     artist.set_visible(False)
@@ -260,6 +261,7 @@ for hh in h2opix:
     ax.add_artist(artist)
     h2o_artists.append(artist)
 fig.savefig(paths.fpath('W51e2e_sio_outflow_with_CS_contours_and_H2O.png'), bbox_inches='tight')
+fig.savefig(paths.fpath('W51e2e_sio_outflow_with_CS_contours_and_H2O.pdf'), bbox_inches='tight')
 
 for artist in h2o_artists:
     artist.set_visible(False)
@@ -280,6 +282,7 @@ for hhl,color in ((ch3ohpix1, 'w'), (ch3ohpix2, 'y')):
         ax.add_artist(artist)
         ch3oh_artists.append(artist)
 fig.savefig(paths.fpath('W51e2e_sio_outflow_with_CS_contours_and_ch3oh.png'), bbox_inches='tight')
+fig.savefig(paths.fpath('W51e2e_sio_outflow_with_CS_contours_and_ch3oh.pdf'), bbox_inches='tight')
 
 for artist in ch3oh_artists:
     artist.set_visible(False)
