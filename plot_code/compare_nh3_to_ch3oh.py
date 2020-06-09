@@ -2,6 +2,7 @@ import numpy as np
 from astropy import constants, units as u, table, stats, coordinates, wcs, log, coordinates as coord, convolution, modeling, time; from astropy.io import fits, ascii
 fh = fits.open('/Users/adam/work/students/JoshMachado2019/W51/data/par_maps.fits')
 import pylab as pl
+import matplotlib
 pl.rcParams['font.size'] = 16
 
 ww = wcs.WCS(fh[0].header)
@@ -28,15 +29,28 @@ okc = np.isfinite(ch3oht[0].data) & (ch3oht[0].data > 5)
 pl.clf()
 
 ok = np.isfinite(tem) & (rr<30*u.arcsec) & (tem > 5)
-pl.plot(rr[ok] * 5400/206265*u.pc/u.arcsec, tem[ok], '.', label='NH$_3$')
+pl.plot(rr[ok] * 5400/206265*u.pc/u.arcsec, tem[ok], '.', label='NH$_3$',
+        alpha=0.1)
 
-pl.plot(rrc[okc] * 5400/206265*u.pc/u.arcsec, ch3oht[0].data[okc], '.', label='CH$_3$OH')
+pl.plot(rrc[okc] * 5400/206265*u.pc/u.arcsec, ch3oht[0].data[okc], '.',
+        label='CH$_3$OH', alpha=0.1)
 pl.ylim(1, 600)
 pl.xlim(0, 0.7)
 
-xax = np.linspace(0.02, 1)
+xax = np.linspace(0.025, 1)
 pl.plot(xax, 500/(xax/xax[0]), label='1/r', color='k', linestyle='--')
 #pl.plot(xax, 500/(xax/xax[0])**2, label='1/r$^2$')
 pl.xlabel("Radius (pc)")
 pl.ylabel("Temperature (K)")
 pl.legend(loc='best')
+pl.savefig("temperature_vs_r_NH3_and_CH3OH.png", bbox_inches='tight')
+pl.savefig("temperature_vs_r_NH3_and_CH3OH.pdf", bbox_inches='tight')
+
+pl.xlim(0.008, 0.7)
+pl.ylim(10, 600)
+pl.loglog()
+yax = pl.gca().get_yaxis()
+yax.set_ticks([10,20,30,50,100,300])
+yax.set_major_formatter(matplotlib.ticker.ScalarFormatter())
+pl.savefig("temperature_vs_r_NH3_and_CH3OH_log.png", bbox_inches='tight')
+pl.savefig("temperature_vs_r_NH3_and_CH3OH_log.pdf", bbox_inches='tight')
