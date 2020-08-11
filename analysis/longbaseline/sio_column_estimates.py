@@ -184,11 +184,11 @@ try:
                                   Q_rot=partfunc(tem=tex),
                                   tex=tex)
 
-            print("nsio = {0:0.3g}, log={1:0.3g}".format(nsio, np.log10(nsio.value)))
+            print("north nsio = {0:0.3g}, log={1:0.3g}".format(nsio, np.log10(nsio.value)))
 
             cosmic_si_abundance = 650 / 739000
 
-            print("north nh2, assuming all Si in SiO: {0:0.3g}".format(nsio/cosmic_si_abundance))
+            print(f"north nh2, assuming all Si in SiO (X={cosmic_si_abundance:0.3g}): {nsio/cosmic_si_abundance:0.3g}")
 
             # Leurini+ 2013 suggest X_sio ~ 1-5x10^-8, upper limit 2e-7
             xsio = 1e-7
@@ -207,7 +207,7 @@ try:
 
             timescale = distance / peak_velocity
 
-            print("north Mass rate = {0:0.3g} to {1:0.3g}"
+            print("north Mass rate = {0:0.3g} (cosmic) to {1:0.3g} (X=1e-7)"
                   .format((nsio/cosmic_si_abundance*beam_area*u.Da/0.739).to(u.M_sun)/timescale.to(u.yr),
                           (nsio/xsio*beam_area*2.8*u.Da).to(u.M_sun)/timescale.to(u.yr)))
 
@@ -237,6 +237,7 @@ try:
 
                 sm_sio_cube.write(north_ds)
 
+            sm_sio_cube = sm_sio_cube.to(u.K, sm_sio_cube.beam.jtok_equiv(ref_freq))
 
             celhdr = sm_sio_cube.wcs.celestial.to_header()
             celhdr['NAXIS1'] = sm_sio_cube.shape[2]
@@ -244,12 +245,14 @@ try:
             bluemask = pyregion.open(paths.rpath('sio_blue_boxmask_lb_north.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube[0,:,:].hdu)
             redmask = pyregion.open(paths.rpath('sio_red_boxmask_lb_north.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube[0,:,:].hdu)
 
-            sio_m0_blue_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment0() / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
-            sio_m0_red_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0() / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
+            sio_m0_blue_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment0()
+            sio_m0_red_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0()
             sio_m1_blue_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
             sio_m1_red_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
-            sio_peak_blue_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).max(axis=0) / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
-            sio_peak_red_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).max(axis=0) / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
+            sio_peak_blue_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).max(axis=0)
+            sio_peak_red_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).max(axis=0)
+
+            print(f"north max integrated intensity: blue={np.nanmax(sio_m0_blue_north):0.3g}, red={np.nanmax(sio_m0_red_north):0.3g}")
 
             pixscale = (wcs.utils.proj_plane_pixel_scales(sm_sio_cube.wcs)[0]*u.deg * dw51).to(u.pc, u.dimensionless_angles())
 
@@ -261,8 +264,8 @@ try:
                                           tex=tex) * 2.8*u.Da * pixscale**2
             dv = np.mean(np.diff(sm_sio_cube.spectral_axis))
 
-            mass_sm_sio_cube = ((sm_sio_cube / u.Jy * sm_sio_cube.beam.jtok(ref_freq) *
-                                 kkms_to_mass * dv) / (u.K*u.km/u.s)).to(u.M_sun)
+            mass_sm_sio_cube = ((sm_sio_cube * kkms_to_mass * dv) /
+                                (u.K*u.km/u.s)).to(u.M_sun)
             velcenter = 60*u.km/u.s
             velaxis = mass_sm_sio_cube.spectral_axis - velcenter
             sio_momentum_blue_north = ((mass_sm_sio_cube * velaxis[:,None,None])
@@ -419,9 +422,9 @@ try:
             pl.figure(7)
             pl.clf()
             pl.title('north')
-            pl.imshow(mxnorth, cmap='gray', interpolation='none', origin='lower')
-            pl.contour(sio_m0_blue_north, colors=['b']*10)
-            pl.contour(sio_m0_red_north, colors=['r']*10)
+            pl.imshow(mxnorth.value, cmap='gray', interpolation='none', origin='lower')
+            pl.contour(sio_m0_blue_north.value, colors=['b']*10)
+            pl.contour(sio_m0_red_north.value, colors=['r']*10)
             pl.plot([bxmax], [bymax], 'bx')
             pl.plot([rxmax], [rymax], 'rx')
             pl.plot([nc_x], [nc_y], 'wo')
@@ -456,6 +459,7 @@ try:
 
                 sm_sio_cube_e2.write(e2_ds)
 
+            sm_sio_cube_e2 = sm_sio_cube_e2.to(u.K, sm_sio_cube_e2.beam.jtok_equiv(ref_freq))
 
             celhdr = sm_sio_cube_e2.wcs.celestial.to_header()
             celhdr['NAXIS1'] = sm_sio_cube_e2.shape[2]
@@ -463,12 +467,16 @@ try:
             bluemask = pyregion.open(paths.rpath('sio_blue_boxmask_lb_e2.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube_e2[0,:,:].hdu)
             redmask = pyregion.open(paths.rpath('sio_red_boxmask_lb_e2.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube_e2[0,:,:].hdu)
 
-            sio_m0_blue_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment0() / u.Jy * sm_sio_cube_e2.beam.jtok(ref_freq)
-            sio_m0_red_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0() / u.Jy * sm_sio_cube_e2.beam.jtok(ref_freq)
-            sio_m1_blue_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
-            sio_m1_red_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
-            sio_peak_blue_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).max(axis=0) / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
-            sio_peak_red_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).max(axis=0) / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
+            thrsh = (sm_sio_cube_e2.beam.jtok(ref_freq) / u.Jy * 3*u.mJy).to(u.K)
+
+            sio_m0_blue_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > thrsh).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment0()
+            sio_m0_red_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > thrsh).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0()
+            sio_m1_blue_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > thrsh).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
+            sio_m1_red_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > thrsh).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
+            sio_peak_blue_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > thrsh).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).max(axis=0)
+            sio_peak_red_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > thrsh).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).max(axis=0)
+
+            print(f"e2 max integrated intensity: blue={np.nanmax(sio_m0_blue_e2):0.3g}, red={np.nanmax(sio_m0_red_e2):0.3g}")
 
             # DEBUG - trying to understand where the various peaks are
             # pl.contour(sio_peak_red_e2, levels=[5,10,25,50,100,150,200,250,300,350], colors=['r']*20)
@@ -503,27 +511,31 @@ try:
             age = (dmax / max_velocity).to(u.yr) / np.tan(inclination)
 
             # just in case pixscale changed...
-            kkms_to_mass = ntot_of_nupper(nupper_of_kkms(1*u.K*u.km/u.s, ref_freq,
-                                                         10**aij.mean(),
-                                                         degeneracies=1),
+            kkms_to_column = ntot_of_nupper(nupper_of_kkms(1*u.K*u.km/u.s,
+                                                           ref_freq,
+                                                           10**aij.mean(),
+                                                           degeneracies=1),
                                           eupper=tbl[-1]['EU_K']*u.K*constants.k_B,
                                           Q_rot=partfunc(tem=tex),
-                                          tex=tex) * 2.8*u.Da * pixscale**2
+                                          tex=tex)
+            kkms_to_mass = kkms_to_column * 2.8*u.Da * pixscale**2
             dv = np.mean(np.diff(sm_sio_cube_e2.spectral_axis))
 
-            mass_sm_sio_cube_e2 = ((sm_sio_cube_e2 / u.Jy *
-                                    sm_sio_cube_e2.beam.jtok(ref_freq) * kkms_to_mass *
+
+            mass_sm_sio_cube_e2 = ((sm_sio_cube_e2 * kkms_to_mass *
                                     dv) / (u.K*u.km/u.s)).to(u.M_sun)
-            print(f"e2 mass: {mass_sm_sio_cube_e2.sum()}")
+            e2_outflow_total_mass = mass_sm_sio_cube_e2.sum()/xsio
+            print(f"e2 mass for xsio={xsio}: {e2_outflow_total_mass}")
+            print(f"e2 peak column: peak kkms={np.nanmax(sio_m0_blue_e2)} -> column={np.nanmax(sio_m0_blue_e2)*kkms_to_column/(u.K*u.km/u.s)}")
             velcenter = 60*u.km/u.s
             velaxis = mass_sm_sio_cube_e2.spectral_axis - velcenter
             sio_momentum_blue_e2 = ((mass_sm_sio_cube_e2 * velaxis[:,None,None])
-                                    .with_mask(sm_sio_cube_e2 > 2*u.mJy)
+                                    .with_mask(sm_sio_cube_e2 > thrsh)
                                     .with_mask(bluemask)
                                     .spectral_slab(-140*u.km/u.s, 60*u.km/u.s)
                                     .sum(axis=0))
             sio_momentum_red_e2 = ((mass_sm_sio_cube_e2 * velaxis[:,None,None])
-                                   .with_mask(sm_sio_cube_e2 > 2*u.mJy)
+                                   .with_mask(sm_sio_cube_e2 > thrsh)
                                    .with_mask(redmask)
                                    .spectral_slab(60*u.km/u.s, 260*u.km/u.s)
                                    .sum(axis=0))
@@ -533,9 +545,11 @@ try:
                   .format(np.nansum(sio_momentum_blue_e2)/xsio/np.cos(inclination),
                           np.nansum(sio_momentum_red_e2)/xsio/np.cos(inclination)))
             windspeed = 500*u.km/u.s
-            print("e2 momentum -> mass loss: blue={0:0.3g}, red={1:0.3g}"
+            print("e2 momentum -> mass loss: blue={0:0.3g}, red={1:0.3g}  [windspeed={windspeed:0.3g}, age={age:0.3g}]"
                   .format(np.nansum(sio_momentum_blue_e2)/xsio/age/windspeed/np.cos(inclination),
-                          np.nansum(sio_momentum_red_e2)/xsio/age/windspeed/np.cos(inclination)))
+                          np.nansum(sio_momentum_red_e2)/xsio/age/windspeed/np.cos(inclination),
+                          windspeed=windspeed, age=age
+                         ))
 
             # this is nonsense velmom1_e2 = np.nansum(velaxis * profile)/np.nansum(profile[np.isfinite(velaxis)])
             # this is nonsense print("e2 Average Velocity (moment 1): {0:0.3g}".format(velmom1_e2))
@@ -583,7 +597,7 @@ try:
                                           tbl[-1]['EU_K']*u.K*constants.k_B,
                                           Q_rot=partfunc(tem=tex),
                                           tex=250*u.K)
-            print(f"e2 integrated intensity = {profile.sum()}")
+            print(f"e2 integrated intensity = {np.nanmax(profile)}")
 
             m_sio_profile = (nsio_profile * nr * beam_area / xsio * 2.8*u.Da).to(u.M_sun) / ppbeam
 
@@ -639,9 +653,9 @@ try:
             pl.figure(5)
             pl.clf()
             pl.title('e2')
-            pl.imshow(mxe2, cmap='gray', interpolation='none', origin='lower')
-            pl.contour(sio_m0_blue_e2, colors=['b']*10)
-            pl.contour(sio_m0_red_e2, colors=['r']*10)
+            pl.imshow(mxe2.value, cmap='gray', interpolation='none', origin='lower')
+            pl.contour(sio_m0_blue_e2.value, colors=['b']*10)
+            pl.contour(sio_m0_red_e2.value, colors=['r']*10)
             pl.plot([bxmax], [bymax], 'bx')
             pl.plot([rxmax], [rymax], 'rx')
             pl.plot([nc_x], [nc_y], 'wo')
@@ -678,7 +692,7 @@ try:
                 sm_sio_cube_e8.write(e8_ds)
 
 
-
+            sm_sio_cube_e8 = sm_sio_cube_e8.to(u.K, sm_sio_cube_e8.beam.jtok_equiv(ref_freq))
 
             celhdr = sm_sio_cube_e8.wcs.celestial.to_header()
             celhdr['NAXIS1'] = sm_sio_cube_e8.shape[2]
@@ -686,13 +700,15 @@ try:
             bluemask = pyregion.open(paths.rpath('sio_blue_boxmask_lb_e8.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube_e8[0,:,:].hdu)
             redmask = pyregion.open(paths.rpath('sio_red_boxmask_lb_e8.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube_e8[0,:,:].hdu)
 
-            sio_m0_blue_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment0() / u.Jy * sm_sio_cube_e8.beam.jtok(ref_freq)
-            sio_m0_red_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0() / u.Jy * sm_sio_cube_e8.beam.jtok(ref_freq)
-            sio_m1_blue_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
-            sio_m1_red_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
-            sio_peak_blue_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).max(axis=0) / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
-            sio_peak_red_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).max(axis=0) / u.Jy * sm_sio_cube.beam.jtok(ref_freq)
+            thrsh = (sm_sio_cube_e8.beam.jtok(ref_freq) / u.Jy * 3*u.mJy).to(u.K)
+            sio_m0_blue_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > thrsh).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment0()
+            sio_m0_red_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > thrsh).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0()
+            sio_m1_blue_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > thrsh).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
+            sio_m1_red_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > thrsh).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
+            sio_peak_blue_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > thrsh).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).max(axis=0)
+            sio_peak_red_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > thrsh).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).max(axis=0)
 
+            print(f"e8 max integrated intensity: blue={np.nanmax(sio_m0_blue_e8):0.3g}, red={np.nanmax(sio_m0_red_e8):0.3g}")
 
             e8_center = coordinates.SkyCoord('19:23:43.9053', '14:30:28.2385',
                                              unit=(u.hour, u.deg), frame='icrs')
@@ -741,10 +757,9 @@ try:
                                           tex=tex) * 2.8*u.Da * pixscale**2
             dv = np.mean(np.diff(sm_sio_cube_e8.spectral_axis))
 
-            mass_sm_sio_cube_e8 = ((sm_sio_cube_e8 / u.Jy *
-                                    sm_sio_cube_e8.beam.jtok(ref_freq) * kkms_to_mass *
+            mass_sm_sio_cube_e8 = ((sm_sio_cube_e8 * kkms_to_mass *
                                     dv) / (u.K*u.km/u.s)).to(u.M_sun)
-            print(f"e8 mass: {mass_sm_sio_cube_e8.sum()}")
+            print(f"e8 mass (xsio={xsio}): {mass_sm_sio_cube_e8.sum()/xsio}")
             velcenter = 60*u.km/u.s
             velaxis = mass_sm_sio_cube_e8.spectral_axis - velcenter
             sio_momentum_blue_e8 = ((mass_sm_sio_cube_e8 * velaxis[:,None,None])
@@ -791,9 +806,9 @@ try:
             pl.figure(6)
             pl.clf()
             pl.title('e8')
-            pl.imshow(mxe8, cmap='gray', interpolation='none', origin='lower')
-            pl.contour(sio_m0_blue_e8, colors=['b']*10)
-            pl.contour(sio_m0_red_e8, colors=['r']*10)
+            pl.imshow(mxe8.value, cmap='gray', interpolation='none', origin='lower')
+            pl.contour(sio_m0_blue_e8.value, colors=['b']*10)
+            pl.contour(sio_m0_red_e8.value, colors=['r']*10)
             pl.plot([bxmax], [bymax], 'bx')
             pl.plot([rxmax], [rymax], 'rx')
             pl.plot([nc_x], [nc_y], 'wo')
