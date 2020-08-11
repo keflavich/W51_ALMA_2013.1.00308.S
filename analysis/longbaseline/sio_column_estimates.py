@@ -43,13 +43,15 @@ try:
         warnings.filterwarnings('ignore', message='This function (.*) requires loading the entire cube', append=True)
         warnings.filterwarnings('ignore', message='All-NaN slice encountered')
         warnings.filterwarnings('ignore', message='invalid value encountered in true_divide')
+        fmin,fmax = 217*u.GHz, 218*u.GHz
 
-        tbl = Splatalogue.query_lines(210*u.GHz, 235*u.GHz, chemical_name='SiO',
+        tbl = Splatalogue.query_lines(fmin, fmax, chemical_name='SiO',
                                       energy_max=1840, energy_type='eu_k')
         tbl = utils.clean_column_headings(tbl)
+        tbl = tbl[tbl['Species'] == 'SiOv=0']
         freqs = np.unique(tbl['FreqGHz'])
         vdiff = (np.array((freqs-freqs[0])/freqs[0])*constants.c).to(u.km/u.s)
-        slaim = Splatalogue.query_lines(210*u.GHz, 235*u.GHz, chemical_name='SiO',
+        slaim = Splatalogue.query_lines(fmin, fmax, chemical_name=' SiO ',
                                         energy_max=1840, energy_type='eu_k',
                                         line_lists=['SLAIM'],
                                         noHFS=True, # there seems to be a problem where HFS
@@ -63,7 +65,8 @@ try:
         ref_freq = 217.10498*u.GHz
         vdiff = (np.array(-(freqs-ref_freq)/ref_freq)*constants.c).to(u.km/u.s).value
 
-        freqs, aij, deg, EU, partfunc = lte_molecule.get_molecular_parameters(molecule_name='SiO', fmin=210*u.GHz, fmax=230*u.GHz)
+        freqs, aij, deg, EU, partfunc = lte_molecule.get_molecular_parameters(molecule_name='SiO', fmin=fmin,
+                                              fmax=fmax)
 
         # nl = nodes.Nodelist()
         # nl.findnode('cdms')
@@ -177,6 +180,7 @@ try:
 
             # peak T_B ~ 250 K ~ 13 mJy/beam
             tex = 250*u.K
+            # this value should come from the peak integrated intensity below
             integrated_intensity = 14e3 * u.K * u.km/u.s
             nsio = ntot_of_nupper(nupper_of_kkms(integrated_intensity, ref_freq,
                                                  10**aij.mean(), 1),
@@ -195,11 +199,6 @@ try:
 
             print("north nh2, X(SiO) = {1:0.3g}: {0:0.3g}".format(nsio/xsio, xsio))
 
-            beam_area = 1e31*u.cm**2
-
-            print("north Mass assuming 1 beam = {0:0.3g} to {1:0.3g}"
-                  .format((nsio/cosmic_si_abundance*beam_area*u.Da/0.739).to(u.M_sun),
-                          (nsio/xsio*beam_area*2.8*u.Da).to(u.M_sun)))
 
             peak_velocity = 115*u.km/u.s
             # assume ~2 beams...
@@ -207,9 +206,6 @@ try:
 
             timescale = distance / peak_velocity
 
-            print("north Mass rate = {0:0.3g} (cosmic) to {1:0.3g} (X=1e-7)"
-                  .format((nsio/cosmic_si_abundance*beam_area*u.Da/0.739).to(u.M_sun)/timescale.to(u.yr),
-                          (nsio/xsio*beam_area*2.8*u.Da).to(u.M_sun)/timescale.to(u.yr)))
 
             north_ds = paths.dpath('longbaseline/W51north_siocube_downsampled.fits')
             if os.path.exists(north_ds):
@@ -239,18 +235,32 @@ try:
 
             sm_sio_cube = sm_sio_cube.to(u.K, sm_sio_cube.beam.jtok_equiv(ref_freq))
 
+            beam_area = (sm_sio_cube.beam.sr * distance**2).to(u.cm**2, u.dimensionless_angles())
+            print(f"Beam area = {beam_area:0.3g}")
+
+            print("north Mass assuming 1 beam = {0:0.3g} to {1:0.3g}"
+                  .format((nsio/cosmic_si_abundance*beam_area*u.Da/0.739).to(u.M_sun),
+                          (nsio/xsio*beam_area*2.8*u.Da).to(u.M_sun)))
+
+            print("north Mass rate = {0:0.3g} (cosmic) to {1:0.3g} (X=1e-7)"
+                  .format((nsio/cosmic_si_abundance*beam_area*u.Da/0.739).to(u.M_sun)/timescale.to(u.yr),
+                          (nsio/xsio*beam_area*2.8*u.Da).to(u.M_sun)/timescale.to(u.yr)))
+
             celhdr = sm_sio_cube.wcs.celestial.to_header()
             celhdr['NAXIS1'] = sm_sio_cube.shape[2]
             celhdr['NAXIS2'] = sm_sio_cube.shape[1]
             bluemask = pyregion.open(paths.rpath('sio_blue_boxmask_lb_north.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube[0,:,:].hdu)
             redmask = pyregion.open(paths.rpath('sio_red_boxmask_lb_north.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube[0,:,:].hdu)
 
-            sio_m0_blue_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment0()
-            sio_m0_red_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0()
-            sio_m1_blue_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
-            sio_m1_red_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
-            sio_peak_blue_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).max(axis=0)
-            sio_peak_red_north = sm_sio_cube.with_mask(sm_sio_cube > 3*u.mJy).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).max(axis=0)
+            # noise is about 0.6 mJy, so 3 mJy is 5-sigma
+            thrsh = (sm_sio_cube.beam.jtok(ref_freq) / u.Jy * 3*u.mJy).to(u.K)
+
+            sio_m0_blue_north = sm_sio_cube.with_mask(sm_sio_cube > thrsh).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment0()
+            sio_m0_red_north = sm_sio_cube.with_mask(sm_sio_cube > thrsh).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0()
+            sio_m1_blue_north = sm_sio_cube.with_mask(sm_sio_cube > thrsh).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
+            sio_m1_red_north = sm_sio_cube.with_mask(sm_sio_cube > thrsh).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
+            sio_peak_blue_north = sm_sio_cube.with_mask(sm_sio_cube > thrsh).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).max(axis=0)
+            sio_peak_red_north = sm_sio_cube.with_mask(sm_sio_cube > thrsh).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).max(axis=0)
 
             print(f"north max integrated intensity: blue={np.nanmax(sio_m0_blue_north):0.3g}, red={np.nanmax(sio_m0_red_north):0.3g}")
 
@@ -269,12 +279,12 @@ try:
             velcenter = 60*u.km/u.s
             velaxis = mass_sm_sio_cube.spectral_axis - velcenter
             sio_momentum_blue_north = ((mass_sm_sio_cube * velaxis[:,None,None])
-                                       .with_mask(sm_sio_cube > 2*u.mJy)
+                                       .with_mask(sm_sio_cube > thrsh)
                                        .with_mask(bluemask)
                                        .spectral_slab(-140*u.km/u.s, 60*u.km/u.s)
                                        .sum(axis=0))
             sio_momentum_red_north = ((mass_sm_sio_cube * velaxis[:,None,None])
-                                      .with_mask(sm_sio_cube > 2*u.mJy)
+                                      .with_mask(sm_sio_cube > thrsh)
                                       .with_mask(redmask)
                                       .spectral_slab(60*u.km/u.s, 260*u.km/u.s)
                                       .sum(axis=0))
@@ -510,17 +520,19 @@ try:
             dmax = (0.474*u.arcsec*dw51).to(u.pc, u.dimensionless_angles())
             age = (dmax / max_velocity).to(u.yr) / np.tan(inclination)
 
+
+            kkms_to_nupper = nupper_of_kkms(1*u.K*u.km/u.s, ref_freq,
+                                            10**aij.mean(), degeneracies=1)
+            print(f"Conversion from integrated intensity to N_upper is 1 K km/s = {kkms_to_nupper:0.3g}")
+
             # just in case pixscale changed...
-            kkms_to_column = ntot_of_nupper(nupper_of_kkms(1*u.K*u.km/u.s,
-                                                           ref_freq,
-                                                           10**aij.mean(),
-                                                           degeneracies=1),
-                                          eupper=tbl[-1]['EU_K']*u.K*constants.k_B,
-                                          Q_rot=partfunc(tem=tex),
-                                          tex=tex)
+            kkms_to_column = ntot_of_nupper(kkms_to_nupper,
+                                            eupper=tbl[-1]['EU_K']*u.K*constants.k_B,
+                                            Q_rot=partfunc(tem=tex), tex=tex)
             kkms_to_mass = kkms_to_column * 2.8*u.Da * pixscale**2
             dv = np.mean(np.diff(sm_sio_cube_e2.spectral_axis))
 
+            print(f"Conversion from N_upper to N_tot for 1 K km/s at tex={tex} K = {kkms_to_column:0.3g}")
 
             mass_sm_sio_cube_e2 = ((sm_sio_cube_e2 * kkms_to_mass *
                                     dv) / (u.K*u.km/u.s)).to(u.M_sun)
@@ -763,12 +775,12 @@ try:
             velcenter = 60*u.km/u.s
             velaxis = mass_sm_sio_cube_e8.spectral_axis - velcenter
             sio_momentum_blue_e8 = ((mass_sm_sio_cube_e8 * velaxis[:,None,None])
-                                    .with_mask(sm_sio_cube_e8 > 2*u.mJy)
+                                    .with_mask(sm_sio_cube_e8 > thrsh)
                                     .with_mask(bluemask)
                                     .spectral_slab(-140*u.km/u.s, 60*u.km/u.s)
                                     .sum(axis=0))
             sio_momentum_red_e8 = ((mass_sm_sio_cube_e8 * velaxis[:,None,None])
-                                   .with_mask(sm_sio_cube_e8 > 2*u.mJy)
+                                   .with_mask(sm_sio_cube_e8 > thrsh)
                                    .with_mask(redmask)
                                    .spectral_slab(60*u.km/u.s, 260*u.km/u.s)
                                    .sum(axis=0))
