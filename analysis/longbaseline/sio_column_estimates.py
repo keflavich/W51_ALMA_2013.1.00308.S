@@ -235,7 +235,7 @@ try:
 
             sm_sio_cube = sm_sio_cube.to(u.K, sm_sio_cube.beam.jtok_equiv(ref_freq))
 
-            beam_area = (sm_sio_cube.beam.sr * distance**2).to(u.cm**2, u.dimensionless_angles())
+            beam_area = (sm_sio_cube.beam.sr * dw51**2).to(u.cm**2, u.dimensionless_angles())
             print(f"Beam area = {beam_area:0.3g}")
 
             print("north Mass assuming 1 beam = {0:0.3g} to {1:0.3g}"
