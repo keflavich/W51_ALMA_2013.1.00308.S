@@ -380,7 +380,7 @@ try:
                                           tex=tex)
 
             m_sio_profile = (nsio_profile * nr * beam_area / xsio * 2.8*u.Da).to(u.M_sun) / ppbeam
-            print(f"Total mass = {m_sio_profile.sum().to(u.M_sun)}")
+            print(f"north Total mass = {np.nansum(m_sio_profile).to(u.M_sun)}")
 
             massloss_rate = m_sio_profile / age
 
