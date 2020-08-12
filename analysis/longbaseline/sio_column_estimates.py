@@ -160,19 +160,6 @@ try:
 
 
 
-        def nupper_of_kkms(kkms, freq, Aul, degeneracies):
-            """ Derived directly from pyspeckit eqns..."""
-            freq = u.Quantity(freq, u.GHz)
-            Aul = u.Quantity(Aul, u.Hz)
-            kkms = u.Quantity(kkms, u.K*u.km/u.s)
-            #nline = 1.95e3 * freq**2 / Aul * kkms
-            nline = 8 * np.pi * freq * constants.k_B / constants.h / Aul / constants.c**2
-            # term2 = np.exp(-constants.h*freq/(constants.k_B*Tex)) -1
-            # term2 -> kt / hnu
-            # kelvin-hertz
-            Khz = (kkms * (freq/constants.c)).to(u.K * u.MHz)
-            return (nline * Khz / degeneracies).to(u.cm**-2)
-
 
         if __name__ == "__main__":
 
@@ -183,8 +170,9 @@ try:
             # this value should come from the peak integrated intensity below
             integrated_intensity = 14e3 * u.K * u.km/u.s
             nsio = ntot_of_nupper(nupper_of_kkms(integrated_intensity, ref_freq,
-                                                 10**aij.mean(), 1),
+                                                 10**aij.mean()),
                                   tbl[-1]['EU_K']*u.K*constants.k_B,
+                                  degeneracy=deg,
                                   Q_rot=partfunc(tem=tex),
                                   tex=tex)
 
@@ -267,9 +255,9 @@ try:
             pixscale = (wcs.utils.proj_plane_pixel_scales(sm_sio_cube.wcs)[0]*u.deg * dw51).to(u.pc, u.dimensionless_angles())
 
             kkms_to_mass = ntot_of_nupper(nupper_of_kkms(1*u.K*u.km/u.s, ref_freq,
-                                                         10**aij.mean(),
-                                                         degeneracies=1),
+                                                         10**aij.mean()),
                                           eupper=tbl[-1]['EU_K']*u.K*constants.k_B,
+                                          degeneracy=deg,
                                           Q_rot=partfunc(tem=tex),
                                           tex=tex) * 2.8*u.Da * pixscale**2
             dv = np.mean(np.diff(sm_sio_cube.spectral_axis))
@@ -374,8 +362,9 @@ try:
             # this is nonsense print("north Average Velocity (moment 1): {0:0.3g}".format(velmom1_north))
 
             nsio_profile = ntot_of_nupper(nupper_of_kkms(u.Quantity(profile, u.K*u.km/u.s),
-                                                         ref_freq, 10**aij.mean(), 1),
+                                                         ref_freq, 10**aij.mean()),
                                           tbl[-1]['EU_K']*u.K*constants.k_B,
+                                          degeneracy=deg,
                                           Q_rot=partfunc(tem=tex),
                                           tex=tex)
 
@@ -522,12 +511,13 @@ try:
 
 
             kkms_to_nupper = nupper_of_kkms(1*u.K*u.km/u.s, ref_freq,
-                                            10**aij.mean(), degeneracies=1)
+                                            10**aij.mean())
             print(f"Conversion from integrated intensity to N_upper is 1 K km/s = {kkms_to_nupper:0.3g}")
 
             # just in case pixscale changed...
             kkms_to_column = ntot_of_nupper(kkms_to_nupper,
                                             eupper=tbl[-1]['EU_K']*u.K*constants.k_B,
+                                            degeneracy=deg,
                                             Q_rot=partfunc(tem=tex), tex=tex)
             kkms_to_mass = kkms_to_column * 2.8*u.Da * pixscale**2
             dv = np.mean(np.diff(sm_sio_cube_e2.spectral_axis))
@@ -605,8 +595,9 @@ try:
             # The total N(SiO) is approximately linear with temperature in this regime
             # (Q~T), so the errors resulting from this estimate are small
             nsio_profile = ntot_of_nupper(nupper_of_kkms(u.Quantity(profile,u.K*u.km/u.s),
-                                                         ref_freq, 10**aij.mean(), 1),
+                                                         ref_freq, 10**aij.mean()),
                                           tbl[-1]['EU_K']*u.K*constants.k_B,
+                                          degeneracy=deg,
                                           Q_rot=partfunc(tem=tex),
                                           tex=250*u.K)
             print(f"e2 integrated intensity = {np.nanmax(profile)}")
@@ -762,9 +753,9 @@ try:
 
             # just in case pixscale changed...
             kkms_to_mass = ntot_of_nupper(nupper_of_kkms(1*u.K*u.km/u.s, ref_freq,
-                                                         10**aij.mean(),
-                                                         degeneracies=1),
+                                                         10**aij.mean()),
                                           eupper=tbl[-1]['EU_K']*u.K*constants.k_B,
+                                          degeneracy=deg,
                                           Q_rot=partfunc(tem=tex),
                                           tex=tex) * 2.8*u.Da * pixscale**2
             dv = np.mean(np.diff(sm_sio_cube_e8.spectral_axis))
@@ -850,8 +841,9 @@ try:
             # The total N(SiO) is approximately linear with temperature in this regime
             # (Q~T), so the errors resulting from this estimate are small
             nsio_profile = ntot_of_nupper(nupper_of_kkms(u.Quantity(profile,u.K*u.km/u.s),
-                                                         ref_freq, 10**aij.mean(), 1),
+                                                         ref_freq, 10**aij.mean()),
                                           tbl[-1]['EU_K']*u.K*constants.k_B,
+                                          degeneracy=deg,
                                           Q_rot=partfunc(tem=tex),
                                           tex=tex)
 
