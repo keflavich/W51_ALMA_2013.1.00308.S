@@ -285,6 +285,8 @@ try:
                                 (u.K*u.km/u.s)).to(u.M_sun)
             print(f"kkms_to_mass = {kkms_to_mass.to(u.M_sun) / (u.K*u.km/u.s)}")
             print(f"north Total SiO mass: {mass_sm_sio_cube.sum()}, h2 for xsio={xsio} -> {mass_sm_sio_cube.sum()/xsio}")
+            totalnorthmass_masked = mass_sm_sio_cube.with_mask(sm_sio_cube > thrsh).sum()
+            print(f"north Total SiO mass: {totalnorthmass_masked}, h2 for xsio={xsio} -> {totalnorthmass_masked/xsio}")
             velcenter = 60*u.km/u.s
             velaxis = mass_sm_sio_cube.spectral_axis - velcenter
             sio_momentum_blue_north = ((mass_sm_sio_cube * velaxis[:,None,None])
@@ -540,6 +542,7 @@ try:
                                             eupper=tbl[-1]['EU_K']*u.K*constants.k_B,
                                             degeneracy=deg,
                                             Q_rot=partfunc(tem=tex), tex=tex)
+            # note that this isn't a real mass of anything; M_sio would use 44 Da....
             kkms_to_mass = kkms_to_column * 2.8*u.Da * pixscale**2
             print(f"kkms_to_mass = {kkms_to_mass.to(u.M_sun) / (u.K*u.km/u.s)}")
             dv = np.mean(np.diff(sm_sio_cube_e2.spectral_axis))
