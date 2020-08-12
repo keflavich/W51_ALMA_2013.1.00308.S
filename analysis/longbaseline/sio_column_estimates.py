@@ -60,13 +60,15 @@ try:
         slaim = utils.clean_column_headings(slaim)
         freqs = np.array(slaim['FreqGHz'])*u.GHz
         aij = slaim['log10_Aij']
-        deg = slaim['Upper State Degeneracy']
+        deg = slaim['Upper State Degeneracy'][0]
         EU = (np.array(slaim['EU_K'])*u.K*constants.k_B).to(u.erg).value
         ref_freq = 217.10498*u.GHz
         vdiff = (np.array(-(freqs-ref_freq)/ref_freq)*constants.c).to(u.km/u.s).value
 
         freqs, aij, deg, EU, partfunc = lte_molecule.get_molecular_parameters(molecule_name='SiO', fmin=fmin,
                                               fmax=fmax)
+        deg = deg.item()
+
 
         # nl = nodes.Nodelist()
         # nl.findnode('cdms')
@@ -162,6 +164,23 @@ try:
 
 
         if __name__ == "__main__":
+
+
+            # SANITY CHECK: Comparison to eqn 3 of 
+            # https://ui.adsabs.harvard.edu/abs/2019ApJ...878...29L/abstract
+            tex = 250*u.K
+            freq = freqs.item()
+            ourvalue = ntot_of_nupper(nupper_of_kkms(1*u.K*u.km/u.s, ref_freq,
+                                                     10**aij.item()), tex=tex,
+                                      degeneracy=11, Q_rot=partfunc(tex),
+                                      eupper=EU.item()*u.erg)
+            theirvalue = (1.6e11 * u.cm**-2 *
+                          (tex+0.35*u.K)*np.exp(31.26*u.K/tex) /
+                          (np.exp(10.4*u.K/tex)-1) / (lte_molecule.Jnu(freq,
+                                                                       tex) -
+                                                      lte_molecule.Jnu(freq,
+                                                                       2.73*u.K))).decompose()
+            print(f"Sanity check: this should be ~1 = {(ourvalue/theirvalue).decompose()}")
 
             # try estimating some SiO column densities
 
