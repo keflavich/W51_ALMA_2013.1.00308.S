@@ -256,18 +256,20 @@ try:
             celhdr = sm_sio_cube.wcs.celestial.to_header()
             celhdr['NAXIS1'] = sm_sio_cube.shape[2]
             celhdr['NAXIS2'] = sm_sio_cube.shape[1]
-            bluemask = pyregion.open(paths.rpath('sio_blue_boxmask_lb_north.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube[0,:,:].hdu)
-            redmask = pyregion.open(paths.rpath('sio_red_boxmask_lb_north.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube[0,:,:].hdu)
+            bluemask_north = pyregion.open(paths.rpath('sio_blue_boxmask_lb_north.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube[0,:,:].hdu)
+            redmask_north = pyregion.open(paths.rpath('sio_red_boxmask_lb_north.reg')).as_imagecoord(celhdr).get_mask(sm_sio_cube[0,:,:].hdu)
+            assert bluemask_north.any()
+            assert redmask_north.any()
 
             # noise is about 0.6 mJy, so 3 mJy is 5-sigma
             thrsh = (sm_sio_cube.beam.jtok(ref_freq) / u.Jy * 3*u.mJy).to(u.K)
 
-            sio_m0_blue_north = sm_sio_cube.with_mask(sm_sio_cube > thrsh).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment0()
-            sio_m0_red_north = sm_sio_cube.with_mask(sm_sio_cube > thrsh).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0()
-            sio_m1_blue_north = sm_sio_cube.with_mask(sm_sio_cube > thrsh).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
-            sio_m1_red_north = sm_sio_cube.with_mask(sm_sio_cube > thrsh).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
-            sio_peak_blue_north = sm_sio_cube.with_mask(sm_sio_cube > thrsh).with_mask(bluemask).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).max(axis=0)
-            sio_peak_red_north = sm_sio_cube.with_mask(sm_sio_cube > thrsh).with_mask(redmask).spectral_slab(60*u.km/u.s, 260*u.km/u.s).max(axis=0)
+            sio_m0_blue_north = sm_sio_cube.with_mask(sm_sio_cube > thrsh).with_mask(bluemask_north).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment0()
+            sio_m0_red_north = sm_sio_cube.with_mask(sm_sio_cube > thrsh).with_mask(redmask_north).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment0()
+            sio_m1_blue_north = sm_sio_cube.with_mask(sm_sio_cube > thrsh).with_mask(bluemask_north).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).moment1()
+            sio_m1_red_north = sm_sio_cube.with_mask(sm_sio_cube > thrsh).with_mask(redmask_north).spectral_slab(60*u.km/u.s, 260*u.km/u.s).moment1()
+            sio_peak_blue_north = sm_sio_cube.with_mask(sm_sio_cube > thrsh).with_mask(bluemask_north).spectral_slab(-140*u.km/u.s, 60*u.km/u.s).max(axis=0)
+            sio_peak_red_north = sm_sio_cube.with_mask(sm_sio_cube > thrsh).with_mask(redmask_north).spectral_slab(60*u.km/u.s, 260*u.km/u.s).max(axis=0)
 
             print(f"north max integrated intensity: blue={np.nanmax(sio_m0_blue_north):0.3g}, red={np.nanmax(sio_m0_red_north):0.3g}")
 
@@ -284,14 +286,20 @@ try:
             mass_sm_sio_cube = ((sm_sio_cube * kkms_to_mass * dv) /
                                 (u.K*u.km/u.s)).to(u.M_sun)
             print(f"kkms_to_mass = {kkms_to_mass.to(u.M_sun) / (u.K*u.km/u.s)}")
-            print(f"north Total SiO mass: {mass_sm_sio_cube.sum()}, h2 for xsio={xsio} -> {mass_sm_sio_cube.sum()/xsio}")
+            print(f"north Total SiO mass (no mask): {mass_sm_sio_cube.sum()}, h2 for xsio={xsio} -> {mass_sm_sio_cube.sum()/xsio}")
             totalnorthmass_masked = mass_sm_sio_cube.with_mask(sm_sio_cube > thrsh).sum()
-            print(f"north Total SiO mass: {totalnorthmass_masked}, h2 for xsio={xsio} -> {totalnorthmass_masked/xsio}")
+            print(f"north Total SiO mass (all SiO; no outflow mask): {totalnorthmass_masked}, h2 for xsio={xsio} -> {totalnorthmass_masked/xsio}")
+            totalnorthmass_masked_blue = mass_sm_sio_cube.with_mask(sm_sio_cube > thrsh).with_mask(bluemask_north).sum()
+            totalnorthmass_masked_red = mass_sm_sio_cube.with_mask(sm_sio_cube > thrsh).with_mask(redmask_north).sum()
+            print(f"north Total SiO mass (blue lobe): {totalnorthmass_masked_blue}, h2 for xsio={xsio} -> {totalnorthmass_masked_blue/xsio}")
+            print(f"north Total SiO mass (red lobe): {totalnorthmass_masked_red}, h2 for xsio={xsio} -> {totalnorthmass_masked_red/xsio}")
+            print(f"north Total SiO mass (blue+red): {totalnorthmass_masked_blue+totalnorthmass_masked_red}, h2 for xsio={xsio} -> {(totalnorthmass_masked_red+totalnorthmass_masked_blue)/xsio}")
+
             velcenter = 60*u.km/u.s
             velaxis = mass_sm_sio_cube.spectral_axis - velcenter
             sio_momentum_blue_north = ((mass_sm_sio_cube * velaxis[:,None,None])
                                        .with_mask(sm_sio_cube > thrsh)
-                                       .with_mask(bluemask)
+                                       .with_mask(bluemask_north)
                                        .spectral_slab(-140*u.km/u.s, 60*u.km/u.s)
                                        .sum(axis=0))
             sio_momentum_red_north = ((mass_sm_sio_cube * velaxis[:,None,None])
