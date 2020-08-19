@@ -35,7 +35,7 @@ quantity_support()
 # from vamdclib import specmodel
 
 def distr(data, pctiles=[1,25,50,75,99]):
-    return [f"{np.nanpercentile(data, p):0.1g}" for p in pctiles]
+    return [f"{np.nanpercentile(data, p):0.1f}" for p in pctiles]
 
 try:
     with open('sio_column_estimate_results.txt', 'w') as outfile:
@@ -275,7 +275,7 @@ try:
             sio_peak_red_north = sm_sio_cube.with_mask(sm_sio_cube > thrsh).with_mask(redmask_north).spectral_slab(60*u.km/u.s, 260*u.km/u.s).max(axis=0)
 
             print(f"north max integrated intensity: blue={np.nanmax(sio_m0_blue_north):0.3g}, red={np.nanmax(sio_m0_red_north):0.3g}")
-            print(f"north max intensity (blue): {sio_peak_blue_north.max():0.1f}, pctiles: {distr(sio_peak_blue_north)}")
+            print(f"north max intensity (blue): {np.nanmax(sio_peak_blue_north):0.1f}, pctiles: {distr(sio_peak_blue_north)}")
 
             pixscale = ((wcs.utils.proj_plane_pixel_scales(sm_sio_cube.wcs)[0]*u.deg * dw51).to(u.pc, u.dimensionless_angles()))
             pixscale_au = pixscale.to(u.au)
@@ -514,7 +514,7 @@ try:
             sio_peak_red_e2 = sm_sio_cube_e2.with_mask(sm_sio_cube_e2 > thrsh).with_mask(redmask_e2).spectral_slab(60*u.km/u.s, 260*u.km/u.s).max(axis=0)
 
             print(f"e2 max integrated intensity: blue={np.nanmax(sio_m0_blue_e2):0.3g}, red={np.nanmax(sio_m0_red_e2):0.3g}")
-            print(f"e2 max intensity (blue): {sio_peak_blue_e2.max():0.1f}, pctiles: {distr(sio_peak_blue_e2.value)}")
+            print(f"e2 max intensity (blue): {np.nanmax(sio_peak_blue_e2):0.1f}, pctiles: {distr(sio_peak_blue_e2.value)}")
             print(f"e2 area (blue): {np.isfinite(sio_m0_blue_e2).sum()}, {np.isfinite(sio_m0_blue_e2).sum()*pixscale_au**2}")
 
             # DEBUG - trying to understand where the various peaks are
@@ -760,7 +760,7 @@ try:
             sio_peak_red_e8 = sm_sio_cube_e8.with_mask(sm_sio_cube_e8 > thrsh).with_mask(redmask_e8).spectral_slab(60*u.km/u.s, 260*u.km/u.s).max(axis=0)
 
             print(f"e8 max integrated intensity: blue={np.nanmax(sio_m0_blue_e8):0.3g}, red={np.nanmax(sio_m0_red_e8):0.3g}")
-            print(f"e8 max intensity (blue): {sio_peak_blue_e8.max():0.1f}, pctiles: {distr(sio_peak_blue_e8.value)}")
+            print(f"e8 max intensity (blue): {np.nanmax(sio_peak_blue_e8):0.1f}, pctiles: {distr(sio_peak_blue_e8.value)}")
             print(f"e8 area (blue): {np.isfinite(sio_m0_blue_e8).sum()}, {np.isfinite(sio_m0_blue_e8).sum()*pixscale_au**2}")
 
             e8_center = coordinates.SkyCoord('19:23:43.9053', '14:30:28.2385',
