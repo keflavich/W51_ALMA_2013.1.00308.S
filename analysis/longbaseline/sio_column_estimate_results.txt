@@ -6,6 +6,8 @@ Beam area = 1.08e+31 cm2
 north Mass assuming 1 beam = 8.46e-07 solMass to 0.0154 solMass
 north Mass rate = 5.43e-08 solMass / yr (cosmic) to 0.000988 solMass / yr (X=1e-7)
 north max integrated intensity: blue=1.39e+04 K km / s, red=6.83e+03 K km / s
+north max intensity (blue): nan K, pctiles: ['5e+01 K', '9e+01 K', '2e+02 K', '2e+02 K', '2e+02 K']
+north area (blue): 1798, 1310741.9999796709 AU2
 kkms_to_mass = 1.6554890059055776e-15 s solMass / (K km)
 north Total SiO mass (no mask): 3.2974195818269436e-08 solMass, h2 for xsio=1e-07 -> 0.32974195818269436 solMass
 north Total SiO mass (all SiO; no outflow mask): 4.273105247420972e-08 solMass, h2 for xsio=1e-07 -> 0.4273105247420972 solMass
@@ -29,6 +31,8 @@ Another estimate that is probably not useful, since it assumes that a single blo
   north accr. rate (single blob at age 76.8 yr) = 0.000694 solMass / yr
 
 e2 max integrated intensity: blue=1.34e+04 K km / s, red=3.49e+03 K km / s
+e2 max intensity (blue): nan K, pctiles: ['5e+01', '8e+01', '1e+02', '2e+02', '2e+02']
+e2 area (blue): 4287, 3125222.999951529 AU2
 Conversion from integrated intensity to N_upper is 1 K km/s = 1.77e+11 1 / cm2
 kkms_to_mass = 1.6554890059055776e-15 s solMass / (K km)
 Conversion from N_upper to N_tot for 1 K km/s at tex=250.0 K K = 4.34e+12 1 / cm2
@@ -52,6 +56,8 @@ Another estimate that is probably not useful, since it assumes that a single blo
   e2 accr. rate from this single blob at age 116 yr = 2.11e-05 solMass / yr
 
 e8 max integrated intensity: blue=9.42e+03 K km / s, red=4.52e+03 K km / s
+e8 max intensity (blue): nan K, pctiles: ['5e+01', '7e+01', '9e+01', '1e+02', '2e+02']
+e8 area (blue): 2587, 1885922.9999707502 AU2
 kkms_to_mass = 1.6554890059055776e-15 s solMass / (K km)
 e8 mass (xsio=1e-07): 0.35894533567670805 solMass
 e8 Total SiO mass (blue lobe): 1.0758721025183604e-08 solMass, h2 for xsio=1e-07 -> 0.10758721025183604 solMass
