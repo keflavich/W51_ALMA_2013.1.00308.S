@@ -36,7 +36,7 @@ beam_lores = radio_beam.Beam.from_fits_header(lores_contfile[0].header)
 #ln selfcal_allspw_selfcal_4ampphase_mfs_tclean_deeper_5mJy.image.pbcor.fits W51_te_continuum_best.fits
 #ln selfcal_allspw_selfcal_4ampphase_mfs_tclean_deeper_5mJy.residual.fits W51_te_continuum_best_residual.fits
 #contfile_e2e8 = fits.open(paths.dpath('longbaseline/W51e2cax.cont.image.pbcor.fits'))
-contfile_e2e8 = fits.open(paths.dpath('longbaseline/W51e2_cont_briggsSC_tclean.image.fits'))
+contfile_e2e8 = fits.open(paths.dpath('longbaseline/W51e2_cont_briggsSC_tclean.image.fits.gz'))
 datae2e8 = u.Quantity(contfile_e2e8[0].data.squeeze(), unit=contfile_e2e8[0].header['BUNIT'])
 
 beam_e2e8 = radio_beam.Beam.from_fits_header(contfile_e2e8[0].header)
@@ -72,7 +72,7 @@ e8pix = e8.to_pixel(wcs_e2e8)
 e8mask = e8pix.to_mask()
 
 north = regions.CircleSkyRegion(coordinates.SkyCoord('19:23:40.054 +14:31:05.513', frame='icrs', unit=(u.hour, u.deg)),
-                                radius=0.412*u.arcsec)
+                                radius=0.432*u.arcsec)
 northpix = north.to_pixel(wcs_north)
 northmask = northpix.to_mask()
 
@@ -129,10 +129,10 @@ print()
 # compute integrated intensities
 pixarea_north = wcs.utils.proj_plane_pixel_area(wcs.WCS(contfile_north[0].header)) * u.deg**2
 pixarea_e2e8 = wcs.utils.proj_plane_pixel_area(wcs.WCS(contfile_e2e8[0].header)) * u.deg**2
-ppbeam_north = (beam_north / pixarea_north).decompose().value
-ppbeam_e2e8 = (beam_e2e8 / pixarea_e2e8).decompose().value
+ppbeam_north = (beam_north.sr / pixarea_north).decompose().value
+ppbeam_e2e8 = (beam_e2e8.sr / pixarea_e2e8).decompose().value
 pixarea_lores = wcs.utils.proj_plane_pixel_area(wcs.WCS(lores_contfile[0].header)) * u.deg**2
-ppbeam_lores = (beam_lores / pixarea_lores).decompose().value
+ppbeam_lores = (beam_lores.sr / pixarea_lores).decompose().value
 
 integ_e2 = (cutout_e2[cutout_e2 > 3*u.mJy/u.beam]).sum() * u.beam / ppbeam_e2e8
 integ_e8 = (cutout_e8[cutout_e8 > 3*u.mJy/u.beam]).sum() * u.beam / ppbeam_e2e8
@@ -218,6 +218,7 @@ norm = astropy.visualization.ImageNormalize(data, stretch=astropy.visualization.
 im = ax.imshow(data, origin='lower', interpolation='none', cmap='gray', norm=norm)
 ax.contour(struct.get_mask(), levels=[0.5], colors=['orange'], origin='lower')
 ax.contour(trunk.get_mask(), levels=[0.5], colors=['red'], origin='lower')
+ax.tick_params(direction='in')
 ax.set_xlabel("Right Ascension")
 ax.set_ylabel("Declination")
 cb = fig1.colorbar(mappable=im)
@@ -282,6 +283,7 @@ norm = astropy.visualization.ImageNormalize(data, stretch=astropy.visualization.
 im = ax.imshow(data, origin='lower', interpolation='none', cmap='gray', norm=norm)
 ax.contour(struct.get_mask(), levels=[0.5], colors=['orange'], origin='lower')
 ax.contour(trunk.get_mask(), levels=[0.5], colors=['red'], origin='lower')
+ax.tick_params(direction='in')
 ax.set_xlabel("Right Ascension")
 ax.set_ylabel("Declination")
 cb = fig1.colorbar(mappable=im)
@@ -353,6 +355,7 @@ im = ax.imshow(data, origin='lower', interpolation='none', cmap='gray', norm=nor
 #ax.contour(trunk.get_mask(), levels=[0.5], colors=['red'], origin='lower')
 ax.contour(struct.get_mask(), levels=[0.5], colors=['red'], origin='lower')
 ax.contour(peanutmask, levels=[0.5], colors=['orange'], origin='lower')
+ax.tick_params(direction='in')
 ax.set_xlabel("Right Ascension")
 ax.set_ylabel("Declination")
 cb = fig1.colorbar(mappable=im)
