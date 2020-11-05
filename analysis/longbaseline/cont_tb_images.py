@@ -14,7 +14,7 @@ import pylab as pl
 regions = pyregion.open(paths.rpath('cores_longbaseline_spectralextractionregions.reg'))
 
 fh = fits.open(paths.dpath("w51_te_continuum_best.fits"))
-contfile_e2e8 = fits.open(paths.dpath('longbaseline/W51e2_cont_briggsSC_tclean.image.fits'))
+contfile_e2e8 = fits.open(paths.dpath('longbaseline/W51e2_cont_briggsSC_tclean.image.fits.gz'))
 data = contfile_e2e8[0].data.squeeze()
 
 fig1 = pl.figure(1)
@@ -39,6 +39,7 @@ ax.imshow(data, cmap=cm, origin='lower', interpolation='none',
 
 ax.set_xlabel('Right Ascension')
 ax.set_ylabel('Declination')
+ax.tick_params(direction='in')
 
 #ax.axis([626, 2513, 588, 2385])
 fig1.savefig(paths.fpath("longbaseline/e2e8_continuum.png"), bbox_inches='tight')
@@ -57,6 +58,7 @@ scat.set_visible(False)
 
 sb_beam = radio_beam.Beam.from_fits_header(fh[0].header)
 sb_data_K = (fh[0].data * u.Unit(fh[0].header['BUNIT']) * u.beam).to(u.K, sb_beam.jtok_equiv(continuum_frequency))
+sb_data_K = sb_data_K.value
 sb_cont = ax.contour(sb_data_K, colors=['r']*10,
                      levels=[25,50,75,100,125,150,175,200],
                      transform=ax.get_transform(wcs.WCS(fh[0].header)))
@@ -68,6 +70,7 @@ for coll in sb_cont.collections:
     coll.set_visible(False)
 beam = radio_beam.Beam.from_fits_header(contfile_e2e8[0].header)
 data_K = (data * u.Unit(contfile_e2e8[0].header['BUNIT']) * u.beam).to(u.K, beam.jtok_equiv(continuum_frequency))
+data_K = data_K.value
 
 im = ax.imshow(data_K, cmap=cm, origin='lower', interpolation='none', vmin=0,
                vmax=400)
