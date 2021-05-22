@@ -17,6 +17,7 @@ export LOGFILENAME="casa_log_w51lbcont_${FIELD_ID}_${BAND_TO_IMAGE}_12M_$(date +
 export EXCLUDE_7M=True
 
 WORK_DIR='/orange/adamginsburg/w51/2017.1.00293.S/uvdata'
+WORK_DIR='/orange/adamginsburg/w51/2017.1.00293.S/may2021_imaging'
 
 export CASA=/orange/adamginsburg/casa/casa-release-5.6.0-60.el7/bin/casa
 export CASA=/orange/adamginsburg/casa/casa-release-5.7.0-134.el7/bin/casa
