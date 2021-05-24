@@ -2,7 +2,7 @@
 #SBATCH --mail-type=NONE          # Mail events (NONE, BEGIN, END, FAIL, ALL)
 #SBATCH --mail-user=adamginsburg@ufl.edu     # Where to send mail	
 #SBATCH --ntasks=16
-#SBATCH --mem=128gb # Job memory request PER NODE
+#SBATCH --mem=96gb # Job memory request PER NODE
 #SBATCH --nodes=1 # exactly 1 node
 #SBATCH --time=96:00:00               # Time limit hrs:min:sec
 #SBATCH --qos=adamginsburg-b
@@ -14,7 +14,6 @@
 export FIELD_ID="W51"
 export BAND_TO_IMAGE=B6
 export LOGFILENAME="casa_log_w51lbcont_${FIELD_ID}_${BAND_TO_IMAGE}_12M_$(date +%Y-%m-%d_%H_%M_%S).log"
-export EXCLUDE_7M=True
 
 WORK_DIR='/orange/adamginsburg/w51/w51-alma-longbaseline'
 
@@ -26,7 +25,7 @@ module load git
 which python
 which git
 
-git --version`
+git --version
 echo $?
 
 # not useing almaimf pipeline for this
