@@ -1,4 +1,10 @@
-visname='w51e2_w51n_cax_new.ms'
+invisname='w51e2_w51n_cax_new.ms'
+visname='w51e2_w51n_cax_selfcal.ms'
+if not os.path.exists(visname):
+    import shutil
+    shutil.copytree(invisname, visname)
+    # no corrected col exsits
+    #split(vis=invisname, outputvis=visname, datacolumn='corrected')
 # Fields are:  0 -> w51e2  1 -> w51n
 
 # spw maps due to 3 EB now - nov 2016 - was june but lost files
@@ -17,7 +23,7 @@ spwcont2='0:815~820;880~890;900~910;1465~1500;1640~1650,1:18~24;395~415,2:100~10
 cell='0.005arcsec'
 imagesize=5120
 imagesize=12000
-thre='0.5mJy'## measured noise ~0.13mJy
+thre='0.3mJy'## measured noise ~0.13mJy
 
 tclean(vis=visname,
        spw = spwcont1,
@@ -35,10 +41,9 @@ tclean(vis=visname,
        deconvolver='mtmfs',
        nterms=2,
        mask='w51e_b6_longbaseline_cleanregions.crtf',
-       #uvrange='>300m',
-       #mask=['box[[2000pix,2200pix],[2954pix,3102pix]]',
-       #      'box[[2421pix,933pix],[3099pix,1590pix]]'],
-       )  ## 2 boxes as a list
+       pblimit=0.01,
+       savemodel='modelcolumn',
+      )
 
 
 tclean(vis=visname,
@@ -53,25 +58,26 @@ tclean(vis=visname,
        threshold=thre,
        weighting='briggs',
        robust=0,
-       #robust=0.5,
        specmode='mfs',
        deconvolver='mtmfs',
        nterms=2,
        mask='w51n_b6_longbaseline_cleanregions.crtf',
-       #uvrange='>300m',
-       #mask = 'box[[2191pix,2254pix],[3947pix,3154pix]]'
+       pblimit=0.01,
+       savemodel='modelcolumn',
        )
 
+gaincal(vis=visname, caltable='w51_b6_selfcal_phase1_T.cal', calmode="p",
+        gaintype="T", solint="inf", solnorm=True)
 
 thesteps=(0,1,2,3)
-mystep = 1  ## briggs r=0.5
+mystep = 1
 if(mystep in thesteps):
 
     cell='0.005arcsec'
     imagesize=5120
     imagesize=12000
     thre='0.5mJy'## measured noise ~0.13mjy
-    weighting_scheme = 'briggs'
+    weighting_scheme = 'natural'
     os.system('rm -rf '+souname1+weighting_scheme+'*')
     os.system('rm -rf '+souname2+weighting_scheme+'*')
 
@@ -86,11 +92,11 @@ if(mystep in thesteps):
       interactive=False,
       threshold=thre,
       weighting=weighting_scheme,
-      robust=0.5,
-           specmode='mfs',
-           deconvolver='mtmfs',
-           nterms=2,
+       specmode='mfs',
+       deconvolver='mtmfs',
+       nterms=2,
        mask='w51e_b6_longbaseline_cleanregions.crtf',
+       pblimit=0.01,
       #uvrange='>300m',
      # mask= ['box[[2000pix,2200pix],[2954pix,3102pix]]','box[[2421pix,933pix],[3099pix,1590pix]]'])  ## 2 boxes as a list
     )
@@ -107,11 +113,11 @@ if(mystep in thesteps):
       interactive=False,
       threshold=thre,
       weighting=weighting_scheme,
-      robust=0.5,
-           specmode='mfs',
-           deconvolver='mtmfs',
-           nterms=2,
+       specmode='mfs',
+       deconvolver='mtmfs',
+       nterms=2,
        mask='w51n_b6_longbaseline_cleanregions.crtf',
+       pblimit=0.01,
       #uvrange='>300m',
       #mask = 'box[[2191pix,2254pix],[3947pix,3154pix]]')
       )
@@ -143,6 +149,7 @@ if(mystep in thesteps):
            specmode='mfs',
            deconvolver='mtmfs',
            nterms=2,
+       pblimit=0.01,
       #uvrange='>300m',
       #mask='w51e2cax.cont_super.mask'  ## 2 boxes as a list
           )
@@ -163,6 +170,7 @@ if(mystep in thesteps):
            deconvolver='mtmfs',
            nterms=2,
        mask='w51n_b6_longbaseline_cleanregions.crtf',
+       pblimit=0.01,
   #    robust=0.5,
       #uvrange='>300m',
       #mask = 'w51ncax.cont_super100.mask'
@@ -192,6 +200,7 @@ if(mystep in thesteps):
            specmode='mfs',
            deconvolver='mtmfs',
            nterms=2,
+       pblimit=0.01,
       #uvrange='>300m',
       #mask= 'w51e2cax.cont_super.mask'
           )  ## 2 boxes as a list
@@ -213,6 +222,7 @@ if(mystep in thesteps):
            deconvolver='mtmfs',
            nterms=2,
        mask='w51n_b6_longbaseline_cleanregions.crtf',
+       pblimit=0.01,
       #mask = 'w51ncax.cont_super100.mask'
           )
 
