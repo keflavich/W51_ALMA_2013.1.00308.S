@@ -63,6 +63,9 @@ if not os.path.exists(contimagename+'.image.tt0.pbcor'):
 if not os.path.exists('calibrated_final_cont_selfcal.ms'):
     shutil.copytree('calibrated_final_cont.ms', 'calibrated_final_cont_selfcal.ms')
 
+split("calibrated_final_cont.ms", "calibrated_final_cont_north_selfcal.ms", field='w51n')
+split("calibrated_final_cont.ms", "calibrated_final_cont_e2_selfcal.ms", field='w51e2')
+
 # Set the ms and continuum image name.
 contvis = 'calibrated_final_cont_selfcal.ms'
 
@@ -80,11 +83,13 @@ if not os.path.exists(contimagename+'.image.tt0.pbcor'):
            deconvolver='mtmfs', nterms=2, imsize = 20000, cell= '0.005arcsec',
            weighting = 'briggs', robust = 0.0, niter = 200000, threshold=threshold,
            interactive = False, gridder = 'standard', pbcor = True,
+           scales=[0,6,18],
            savemodel='none', mask='cleanmask_north.crtf')
     tclean(vis=contvis, imagename=contimagename, field='w51n', specmode='mfs',
            deconvolver='mtmfs', nterms=2, imsize = 20000, cell= '0.005arcsec',
            weighting = 'briggs', robust = 0.0, niter = 1, threshold=threshold,
            interactive = False, gridder = 'standard', pbcor = True,
+           scales=[0,6,18],
            savemodel='modelcolumn', mask='cleanmask_north.crtf')
 
     gaincal(vis=contvis, field='w51n', caltable='w51north_b3_selfcal_phase1_T.cal', calmode="p",
@@ -102,11 +107,13 @@ if not os.path.exists(contimagename+'.image.tt0.pbcor'):
     tclean(vis=contvis, imagename=contimagename, field='w51e2', specmode='mfs',
            deconvolver='mtmfs', nterms=2, imsize = 20000, cell= '0.005arcsec',
            weighting = 'briggs', robust = 0.0, niter = 200000, threshold=threshold, interactive = False, gridder = 'standard', pbcor = True,
+           scales=[0,6,18],
            savemodel='none', mask='cleanmask_e2.crtf')
     tclean(vis=contvis, imagename=contimagename, field='w51e2', specmode='mfs',
            deconvolver='mtmfs', nterms=2, imsize = 20000, cell= '0.005arcsec',
            weighting = 'briggs', robust = 0.0, niter = 1, threshold=threshold,
            interactive = False, gridder = 'standard', pbcor = True,
+           scales=[0,6,18],
            savemodel='modelcolumn', mask='cleanmask_e2.crtf')
 
     gaincal(vis=contvis, field='w51e2', caltable='w51e2_b3_selfcal_phase1_T.cal', calmode="p",
@@ -135,11 +142,13 @@ if not os.path.exists(contimagename+'.image.tt0.pbcor'):
            deconvolver='mtmfs', nterms=2, imsize = 20000, cell= '0.005arcsec',
            weighting = 'briggs', robust = 0.0, niter = 200000,
            threshold=threshold, interactive = False, gridder = 'standard',
+           scales=[0,6,18],
            pbcor = True, savemodel='none', mask='cleanmask_north.crtf')
     tclean(vis=contvis, imagename=contimagename, field='w51n', specmode='mfs',
            deconvolver='mtmfs', nterms=2, imsize = 20000, cell= '0.005arcsec',
            weighting = 'briggs', robust = 0.0, niter = 1, threshold=threshold,
            interactive = False, gridder = 'standard', pbcor = True,
+           scales=[0,6,18],
            savemodel='modelcolumn', mask='cleanmask_north.crtf')
 
     gaincal(vis=contvis, field='w51n', caltable='w51north_b3_selfcal_phase2_T.cal',
@@ -159,11 +168,13 @@ if not os.path.exists(contimagename+'.image.tt0.pbcor'):
            deconvolver='mtmfs', nterms=2, imsize = 20000, cell= '0.005arcsec',
            weighting = 'briggs', robust = 0.0, niter = 200000,
            threshold=threshold, interactive = False, gridder = 'standard',
+           scales=[0,6,18],
            pbcor = True, savemodel='none', mask='cleanmask_e2.crtf')
     tclean(vis=contvis, imagename=contimagename, field='w51e2', specmode='mfs',
            deconvolver='mtmfs', nterms=2, imsize = 20000, cell= '0.005arcsec',
            weighting = 'briggs', robust = 0.0, niter = 1, threshold=threshold,
            interactive = False, gridder = 'standard', pbcor = True,
+           scales=[0,6,18],
            savemodel='modelcolumn', mask='cleanmask_e2.crtf')
 
 
