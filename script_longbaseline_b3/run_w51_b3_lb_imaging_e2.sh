@@ -13,7 +13,7 @@
 
 export FIELD_ID="W51"
 export BAND_TO_IMAGE=B3
-export LOGFILENAME="casa_log_w51lbcont_${FIELD_ID}_${BAND_TO_IMAGE}_12M_$(date +%Y-%m-%d_%H_%M_%S).log"
+export LOGFILENAME="casa_log_w51e2lbcont_${FIELD_ID}_${BAND_TO_IMAGE}_12M_$(date +%Y-%m-%d_%H_%M_%S).log"
 
 WORK_DIR='/orange/adamginsburg/w51/2017.1.00293.S/uvdata'
 WORK_DIR='/orange/adamginsburg/w51/2017.1.00293.S/may2021_imaging'
@@ -40,7 +40,7 @@ imaging_script=/orange/adamginsburg/w51/W51_ALMA_2013.1.00308.S/script_longbasel
 cd ${WORK_DIR}
 echo ${WORK_DIR}
 
-pycode="field='w51e2'; cleanmask='cleanmask_e2'"
+pycode="field='w51e2'; cleanmask='cleanmask_e2.crtf'"
 
 #xvfb-run -d ${CASA} --nogui --nologger --logfile=split_${LOGFILENAME} -c "execfile('$ALMAIMF_ROOTDIR/split_windows.py')"
 echo "Logfilename is ${LOGFILENAME}"
