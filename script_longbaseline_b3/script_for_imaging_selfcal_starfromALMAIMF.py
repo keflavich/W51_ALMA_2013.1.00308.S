@@ -8,7 +8,7 @@ print("startmodel: ", startmodel)
 
 
 # Set the ms and continuum image name.
-contvis = 'calibrated_final_cont_'+field+'selfcal.ms'
+contvis = 'calibrated_final_cont_'+field+'selfcal_startmod.ms'
 if not os.path.exists(contvis):
     split(vis="calibrated_final_cont.ms", 
           outputvis=contvis,
