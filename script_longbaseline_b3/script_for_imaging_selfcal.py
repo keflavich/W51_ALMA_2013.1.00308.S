@@ -92,6 +92,9 @@ applycal(vis=contvis,
 
 for selfcaliter in selfcalpars:
 
+    if selfcaliter == 0:
+        continue
+
     impars = selfcalpars[selfcaliter]['imaging']
     calpars = selfcalpars[selfcaliter]['calibration']
                
@@ -128,6 +131,9 @@ for selfcaliter in selfcalpars:
 
 
     cals += [caltable]
+
+    # double-check that there are no repeated entries
+    assert len(cals) = len(set(cals))
 
     applycal(vis=contvis,
              gaintable=cals,
