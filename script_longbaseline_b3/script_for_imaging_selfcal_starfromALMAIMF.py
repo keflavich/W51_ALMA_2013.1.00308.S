@@ -100,7 +100,7 @@ if not os.path.exists(contimagename+'.image.tt0.pbcor'):
            **impars
           )
 
-caltable = field+'_b3_selfcal_phase{selfcaliter}_T.cal'.format(selfcaliter=selfcaliter)
+caltable = field+'_b3_startmodselfcal_phase{selfcaliter}_T.cal'.format(selfcaliter=selfcaliter)
 if not os.path.exists(caltable):
     impars['niter'] = 1
     tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
@@ -144,7 +144,7 @@ for selfcaliter in selfcalpars:
                **impars
               )
 
-    caltable = field+'_b3_selfcal_phase{selfcaliter}_T.cal'.format(selfcaliter=selfcaliter)
+    caltable = field+'_b3_startmodselfcal_phase{selfcaliter}_T.cal'.format(selfcaliter=selfcaliter)
     if not os.path.exists(caltable):
         impars['niter'] = 1
         tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
