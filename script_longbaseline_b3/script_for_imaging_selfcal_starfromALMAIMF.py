@@ -70,7 +70,7 @@ if not os.path.exists(contimagename+'.image.tt0.pbcor'):
 
     tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
            deconvolver='mtmfs',
-           interactive = False, gridder = 'standard', pbcor = True,
+           interactive=False, gridder='standard', pbcor=True,
            savemodel='none', mask=cleanmask,
            **impars
           )
@@ -82,7 +82,7 @@ startmodel = [sm+".regrid" for sm in startmodel]
 
 
 impars = selfcalpars[selfcaliter]['imaging']
-preselfcal_imagename = contimagename = field+'.spw0thru19.{imsize}.robust{robust}.thr{threshold}.mfs.I'.format(
+preselfcal_imagename = contimagename = field+'.spw0thru19.{imsize}.robust{robust}.thr{threshold}.mfs.I.startmod'.format(
     **impars)
 
 if not os.path.exists(contimagename+'.image.tt0.pbcor'):
@@ -100,7 +100,7 @@ if not os.path.exists(contimagename+'.image.tt0.pbcor'):
            **impars
           )
 
-caltable = field+'_b3_startmodselfcal_phase{selfcaliter}_T.cal'.format(selfcaliter=selfcaliter)
+caltable = field+'_b3_startmodselfcal_phase{selfcaliter}_T.startmod.cal'.format(selfcaliter=selfcaliter)
 if not os.path.exists(caltable):
     impars['niter'] = 1
     tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
@@ -125,7 +125,7 @@ for selfcaliter in selfcalpars:
     impars = selfcalpars[selfcaliter]['imaging']
     calpars = selfcalpars[selfcaliter]['calibration']
                
-    prevcal_imagename = contimagename = field+'.spw0thru19.{imsize}.robust{robust}.thr{threshold}.mfs.I.selfcal{selfcaliter}'.format(
+    prevcal_imagename = contimagename = field+'.spw0thru19.{imsize}.robust{robust}.thr{threshold}.mfs.I.startmod.selfcal{selfcaliter}'.format(
         selfcaliter=selfcaliter,
         **impars)
 
@@ -144,7 +144,7 @@ for selfcaliter in selfcalpars:
                **impars
               )
 
-    caltable = field+'_b3_startmodselfcal_phase{selfcaliter}_T.cal'.format(selfcaliter=selfcaliter)
+    caltable = field+'_b3_startmodselfcal_phase{selfcaliter}_T.startmod.cal'.format(selfcaliter=selfcaliter)
     if not os.path.exists(caltable):
         impars['niter'] = 1
         tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
