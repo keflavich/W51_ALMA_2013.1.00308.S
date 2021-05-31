@@ -4,6 +4,7 @@ contvis = 'calibrated_final_cont.ms'
 
 print("field", field)
 print("cleanmask", cleanmask)
+print("startmodel: ", startmodel)
 
 
 # Set the ms and continuum image name.
@@ -20,7 +21,8 @@ if not os.path.exists(contvis):
 # 4.254570588670446
 selfcalpars = {0: {'imaging': {'threshold': '0.1mJy', 'nterms': 2, 'robust': 0, 'weighting':'briggs',
                             'cell':'0.007arcsec', 'imsize':14500, 'scales':[0,6,18], 'niter':200000},
-                   'calibration': {'calmode': 'p', 'gaintype': 'T', 'solint': 'inf', 'solnorm': True},},
+                'calibration': {'calmode': 'p', 'gaintype': 'T', 'solint': 'inf', 'solnorm': True},},
+
                1: {'imaging': {'threshold': '0.075mJy', 'nterms': 2, 'robust': 0,
                                'weighting':'briggs', 'cell':'0.007arcsec',
                                'imsize':14500, 'scales':[0,6,18],
@@ -53,6 +55,33 @@ selfcalpars = {0: {'imaging': {'threshold': '0.1mJy', 'nterms': 2, 'robust': 0, 
 selfcaliter=0
 impars = selfcalpars[selfcaliter]['imaging']
 calpars = selfcalpars[selfcaliter]['calibration']
+
+dirtyimage = field+'.spw0thru19.{imsize}.robust{robust}.thr{threshold}.mfs.I.dirty'.format(**impars)
+
+if not os.path.exists(contimagename+'.image.tt0.pbcor'):
+    for ext in ['.image','.mask','.model','.image.pbcor','.psf','.residual','.pb','.sumwt']:
+        if os.path.exists(contimagename+ext):
+            rmtables(contimagename+ext)
+
+    assert os.path.exists(cleanmask)
+
+    impars = impars.copy()
+    impars['niter'] = 0
+
+    tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
+           deconvolver='mtmfs',
+           interactive = False, gridder = 'standard', pbcor = True,
+           savemodel='none', mask=cleanmask,
+           **impars
+          )
+
+for sm in startmodel:
+    imregrid(imagename=sm, template=dirtyimage+".image.tt0", output=sm+".regrid")
+
+startmodel = [sm+".regrid" for sm in startmodel]
+
+
+impars = selfcalpars[selfcaliter]['imaging']
 preselfcal_imagename = contimagename = field+'.spw0thru19.{imsize}.robust{robust}.thr{threshold}.mfs.I'.format(
     **impars)
 
@@ -67,6 +96,7 @@ if not os.path.exists(contimagename+'.image.tt0.pbcor'):
            deconvolver='mtmfs',
            interactive = False, gridder = 'standard', pbcor = True,
            savemodel='none', mask=cleanmask,
+           startmodel=startmodel,
            **impars
           )
 
