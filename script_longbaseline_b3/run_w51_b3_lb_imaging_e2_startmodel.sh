@@ -7,8 +7,8 @@
 #SBATCH --time=96:00:00               # Time limit hrs:min:sec
 #SBATCH --qos=adamginsburg-b
 #SBATCH --account=adamginsburg
-#SBATCH --output=w51_2017_b3_lb_e2_%j.log
-#SBATCH --job-name=w51_2017_b3_lb_e2
+#SBATCH --output=w51_2017_b3_lb_e2_sm_%j.log
+#SBATCH --job-name=w51_2017_b3_lb_e2_sm
 #SBATCH --export=ALL
 
 export FIELD_ID="W51"
