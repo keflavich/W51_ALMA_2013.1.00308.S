@@ -163,7 +163,7 @@ for selfcaliter in selfcalpars:
     cals += [caltable]
 
     # double-check that there are no repeated entries
-    assert len(cals) = len(set(cals))
+    assert len(cals) == len(set(cals))
 
     applycal(vis=contvis,
              gaintable=cals,

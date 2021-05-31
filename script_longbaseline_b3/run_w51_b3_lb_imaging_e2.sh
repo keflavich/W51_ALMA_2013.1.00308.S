@@ -40,7 +40,7 @@ imaging_script=/orange/adamginsburg/w51/W51_ALMA_2013.1.00308.S/script_longbasel
 cd ${WORK_DIR}
 echo ${WORK_DIR}
 
-pycode="field='w51e2'; cleanmask='cleanmask_e2.crtf';"
+pycode="field='w51e2'; cleanmask='cleanmask_e2.crtf'"
 
 #xvfb-run -d ${CASA} --nogui --nologger --logfile=split_${LOGFILENAME} -c "execfile('$ALMAIMF_ROOTDIR/split_windows.py')"
 echo "Logfilename is ${LOGFILENAME}"
