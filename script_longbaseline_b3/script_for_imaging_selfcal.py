@@ -15,8 +15,47 @@ if not os.path.exists(contvis):
           datacolumn='data')
 
 
-preselfcal_imagename = contimagename = field+'.spw0thru19.20000.robust0.0.thr0.1mJy.mfs.I'
-threshold='0.1mJy' # noise ~0.015 mJy
+# beamsize: Beam : 0.0669461 arcsec, 0.0421181 arcsec, -44.3619 deg
+# >>> 0.0421181 / 0.007 / 2**0.5
+# 4.254570588670446
+selfcalpars = {0:
+               {'imaging': {'threshold': '0.1mJy', 'nterms': 2, 'robust': 0, 'weighting':'briggs',
+                            'cell':'0.007arcsec', 'imsize':14500, 'scales':[0,6,18], 'niter':200000},
+                'calibration': {'calmode': 'p', 'gaintype': 'T', 'solint': 'inf', 'solnorm': True},}
+               1: {'imaging': {'threshold': '0.075mJy', 'nterms': 2, 'robust': 0,
+                               'weighting':'briggs', 'cell':'0.007arcsec',
+                               'imsize':14500, 'scales':[0,6,18],
+                               'niter':200000},
+                   'calibration': {'calmode': 'p', 'gaintype': 'T', 'solint': 'inf', 'solnorm': True},}
+               2: {'imaging': {'threshold': '0.075mJy', 'nterms': 2, 'robust': 0,
+                               'weighting':'briggs', 'cell':'0.007arcsec',
+                               'imsize':14500, 'scales':[0,6,18],
+                               'niter':200000},
+                   'calibration': {'calmode': 'p', 'gaintype': 'T', 'solint': 'inf', 'solnorm': True},}
+               3: {'imaging': {'threshold': '0.075mJy', 'nterms': 2, 'robust': 0,
+                               'weighting':'briggs', 'cell':'0.007arcsec',
+                               'imsize':14500, 'scales':[0,6,18],
+                               'niter':200000},
+                   'calibration': {'calmode': 'p', 'gaintype': 'G', 'solint': 'inf', 'solnorm': True},}
+               4: {'imaging': {'threshold': '0.075mJy', 'nterms': 2, 'robust': 0,
+                               'weighting':'briggs', 'cell':'0.007arcsec',
+                               'imsize':14500, 'scales':[0,6,18],
+                               'niter':200000},
+                   'calibration': {'calmode': 'p', 'gaintype': 'T',
+                                   'solint': 'int', 'solnorm': True},}
+               5: {'imaging': {'threshold': '0.075mJy', 'nterms': 3, 'robust': 0,
+                               'weighting':'briggs', 'cell':'0.007arcsec',
+                               'imsize':14500, 'scales':[0,6,18],
+                               'niter':200000},
+                   'calibration': {'calmode': 'p', 'gaintype': 'T',
+                                   'solint': 'int', 'solnorm': True},}
+              }
+
+selfcaliter=0
+impars = selfcalpars[selfcaliter]['imaging']
+calpars = selfcalpars[selfcaliter]['calibration']
+preselfcal_imagename = contimagename = field+'.spw0thru19.{imsize}.robust{robust}.thr{threshold}.mfs.I'.format(
+    **impars)
 
 if not os.path.exists(contimagename+'.image.tt0.pbcor'):
     for ext in ['.image','.mask','.model','.image.pbcor','.psf','.residual','.pb','.sumwt']:
@@ -26,23 +65,20 @@ if not os.path.exists(contimagename+'.image.tt0.pbcor'):
     assert os.path.exists(cleanmask)
 
     tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
-           deconvolver='mtmfs', nterms=2, imsize = 20000, cell= '0.005arcsec',
-           weighting = 'briggs', robust = 0.0, niter = 200000, threshold=threshold,
+           deconvolver='mtmfs',
            interactive = False, gridder = 'standard', pbcor = True,
-           scales=[0,6,18],
-           savemodel='none', mask=cleanmask)
+           savemodel='none', mask=cleanmask,
+           **impars
+          )
 
-caltable = field+'_b3_selfcal_phase1_T.cal'
+caltable = field+'_b3_selfcal_phase{selfcaliter}_T.cal'.format(selfcaliter=selfcaliter)
 if not os.path.exists(caltable):
+    impars['niter'] = 1
     tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
-           deconvolver='mtmfs', nterms=2, imsize = 20000, cell= '0.005arcsec',
-           weighting = 'briggs', robust = 0.0, niter = 1, threshold=threshold,
-           interactive = False, gridder = 'standard', pbcor = True,
-           scales=[0,6,18],
-           savemodel='modelcolumn')
+           deconvolver='mtmfs', interactive=False, gridder='standard',
+           pbcor=True, savemodel='modelcolumn', **impars)
 
-    gaincal(vis=contvis, field=field, caltable=caltable, calmode="p",
-            gaintype="T", solint="inf", solnorm=True)
+    gaincal(vis=contvis, field=field, caltable=caltable, **calpars)
 
 cals = [caltable]
 
@@ -55,181 +91,51 @@ applycal(vis=contvis,
 
 
 
-# first iteration of self-calibrated imaging
+for selfcaliter in selfcalpars:
 
-prevcal_imagename = contimagename = field+'.spw0thru19.20000.robust0.0.thr0.075mJy.mfs.I.selfcal1'
-threshold = '0.075mJy'
+    impars = selfcalpars[selfcaliter]['imaging']
+    calpars = selfcalpars[selfcaliter]['calibration']
+               
+    prevcal_imagename = contimagename = field+'.spw0thru19.{imsize}.robust{robust}.thr{threshold}.mfs.I.selfcal{selfcaliter}'.format(
+        selfcaliter=selfcaliter,
+        **impars)
 
-if not os.path.exists(contimagename+'.image.tt0.pbcor'):
-    for ext in ['.image','.mask','.model','.image.pbcor','.psf','.residual','.pb','.sumwt']:
-        if os.path.exists(contimagename+ext):
-            rmtables(contimagename+ext)
+    if not os.path.exists(contimagename+'.image.tt0.pbcor'):
+        for ext in ['.image','.mask','.model','.image.pbcor','.psf','.residual','.pb','.sumwt']:
+            if os.path.exists(contimagename+ext):
+                rmtables(contimagename+ext)
 
-    assert os.path.exists(cleanmask)
+        assert os.path.exists(cleanmask)
 
-    tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
-           startmodel=[preselfcal_imagename + ".model.tt0",
-                       preselfcal_imagename + ".model.tt1"],
-           deconvolver='mtmfs', nterms=2, imsize = 20000, cell= '0.005arcsec',
-           weighting = 'briggs', robust = 0.0, niter = 200000,
-           threshold=threshold, interactive = False, gridder = 'standard',
-           scales=[0,6,18],
-           pbcor = True, savemodel='none', mask=cleanmask)
+        tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
+               startmodel=[preselfcal_imagename + ".model.tt0",
+                           preselfcal_imagename + ".model.tt1"],
+               deconvolver='mtmfs', interactive=False, gridder='standard',
+               pbcor=True, savemodel='none', mask=cleanmask,
+               **impars
+              )
 
-caltable = field+'_b3_selfcal_phase2_T.cal'
-if not os.path.exists(caltable):
-    tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
-           deconvolver='mtmfs', nterms=2, imsize = 20000, cell= '0.005arcsec',
-           weighting = 'briggs', robust = 0.0, niter = 1, threshold=threshold,
-           interactive = False, gridder = 'standard', pbcor = True,
-           scales=[0,6,18],
-           savemodel='modelcolumn')
+    caltable = field+'_b3_selfcal_phase{selfcaliter}_T.cal'.format(selfcaliter=selfcaliter)
+    if not os.path.exists(caltable):
+        impars['niter'] = 1
+        tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
+               startmodel=[preselfcal_imagename + ".model.tt0",
+                           preselfcal_imagename + ".model.tt1"],
+               deconvolver='mtmfs', interactive=False, gridder='standard',
+               pbcor=True, savemodel='modelcolumn', mask=cleanmask,
+               **impars
+              )
 
-    gaincal(vis=contvis, field=field, caltable=caltable,
-            gaintable=cals, calmode="p",
-            gaintype="T", solint="inf", solnorm=True)
-
-
-cals += [caltable]
-
-
-applycal(vis=contvis,
-         gaintable=cals,
-         gainfield=[field]*len(cals),
-         interp="linear",
-         applymode='calonly',
-         calwt=False)
+        gaincal(vis=contvis, field=field, caltable=caltable,
+                gaintable=cals, **calpars)
 
 
-prevcal_imagename = contimagename = field+'.spw0thru19.20000.robust0.0.thr0.075mJy.mfs.I.selfcal2'
-threshold = '0.075mJy'
+    cals += [caltable]
 
-if not os.path.exists(contimagename+'.image.tt0.pbcor'):
-    for ext in ['.image','.mask','.model','.image.pbcor','.psf','.residual','.pb','.sumwt']:
-        if os.path.exists(contimagename+ext):
-            rmtables(contimagename+ext)
-
-    assert os.path.exists(cleanmask)
-
-    tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
-           startmodel=[prevcal_imagename + ".model.tt0",
-                       prevcal_imagename + ".model.tt1"],
-           deconvolver='mtmfs', nterms=2, imsize = 20000, cell= '0.005arcsec',
-           weighting = 'briggs', robust = 0.0, niter = 200000,
-           threshold=threshold, interactive = False, gridder = 'standard',
-           scales=[0,6,18],
-           pbcor = True, savemodel='none', mask=cleanmask)
-
-caltable = field+'_b3_selfcal_phase3_T.cal'
-if not os.path.exists(caltable):
-    tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
-           deconvolver='mtmfs', nterms=2, imsize = 20000, cell= '0.005arcsec',
-           weighting = 'briggs', robust = 0.0, niter = 1, threshold=threshold,
-           interactive = False, gridder = 'standard', pbcor = True,
-           scales=[0,6,18],
-           savemodel='modelcolumn')
-
-    gaincal(vis=contvis, field=field, caltable=caltable,
-            gaintable=cals, calmode="p",
-            gaintype="T", solint="inf", solnorm=True)
-
-
-cals += [caltable]
-
-
-
-
-applycal(vis=contvis,
-         gaintable=cals,
-         gainfield=[field]*len(cals),
-         interp="linear",
-         applymode='calonly',
-         calwt=False)
-
-
-prevcal_imagename = contimagename = field+'.spw0thru19.20000.robust0.0.thr0.075mJy.mfs.I.selfcal3'
-threshold = '0.075mJy'
-
-if not os.path.exists(contimagename+'.image.tt0.pbcor'):
-    for ext in ['.image','.mask','.model','.image.pbcor','.psf','.residual','.pb','.sumwt']:
-        if os.path.exists(contimagename+ext):
-            rmtables(contimagename+ext)
-
-    assert os.path.exists(cleanmask)
-
-    tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
-           startmodel=[prevcal_imagename + ".model.tt0",
-                       prevcal_imagename + ".model.tt1"],
-           deconvolver='mtmfs', nterms=2, imsize = 20000, cell= '0.005arcsec',
-           weighting = 'briggs', robust = 0.0, niter = 200000,
-           threshold=threshold, interactive = False, gridder = 'standard',
-           scales=[0,6,18],
-           pbcor = True, savemodel='none', mask=cleanmask)
-
-caltable = field+'_b3_selfcal_phase4_T_int.cal'
-if not os.path.exists(caltable):
-    tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
-           deconvolver='mtmfs', nterms=2, imsize = 20000, cell= '0.005arcsec',
-           weighting = 'briggs', robust = 0.0, niter = 1, threshold=threshold,
-           interactive = False, gridder = 'standard', pbcor = True,
-           scales=[0,6,18],
-           savemodel='modelcolumn')
-
-    gaincal(vis=contvis, field=field, caltable=caltable,
-            gaintable=cals, calmode="p",
-            gaintype="T", solint="int", solnorm=True)
-
-
-cals += [caltable]
-
-
-
-
-
-
-applycal(vis=contvis,
-         gaintable=cals,
-         gainfield=[field]*len(cals),
-         interp="linear",
-         applymode='calonly',
-         calwt=False)
-
-
-prevcal_imagename = contimagename = field+'.spw0thru19.20000.robust0.0.thr0.075mJy.mfs.I.3term.selfcal4'
-threshold = '0.075mJy'
-
-if not os.path.exists(contimagename+'.image.tt0.pbcor'):
-    for ext in ['.image','.mask','.model','.image.pbcor','.psf','.residual','.pb','.sumwt']:
-        if os.path.exists(contimagename+ext):
-            rmtables(contimagename+ext)
-
-    assert os.path.exists(cleanmask)
-
-    tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
-           startmodel=[prevcal_imagename + ".model.tt0",
-                       prevcal_imagename + ".model.tt1"],
-           deconvolver='mtmfs', nterms=3, imsize = 20000, cell= '0.005arcsec',
-           weighting = 'briggs', robust = 0.0, niter = 200000,
-           threshold=threshold, interactive = False, gridder = 'standard',
-           scales=[0,6,18],
-           pbcor = True, savemodel='none', mask=cleanmask)
-
-caltable = field+'_b3_selfcal_phase5_T_int.cal'
-if not os.path.exists(caltable):
-    tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
-           deconvolver='mtmfs', nterms=3, imsize = 20000, cell= '0.005arcsec',
-           weighting = 'briggs', robust = 0.0, niter = 1, threshold=threshold,
-           interactive = False, gridder = 'standard', pbcor = True,
-           scales=[0,6,18],
-           savemodel='modelcolumn')
-
-    gaincal(vis=contvis, field=field, caltable=caltable,
-            gaintable=cals, calmode="p",
-            gaintype="T", solint="int", solnorm=True)
-
-
-cals += [caltable]
-
-
-
+    applycal(vis=contvis,
+             gaintable=cals,
+             gainfield=[field]*len(cals),
+             interp="linear",
+             applymode='calonly',
+             calwt=False)
 
