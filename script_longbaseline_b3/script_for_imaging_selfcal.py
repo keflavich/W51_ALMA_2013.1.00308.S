@@ -1,4 +1,24 @@
 import os
+
+
+
+def test_tclean_success():
+    # An EXTREMELY HACKY way to test whether tclean succeeded on the previous iteration
+    with open(casalog.logfile(), "r") as fh:
+        lines = fh.readlines()
+
+    for line in lines[-5:]:
+        if 'SEVERE  tclean::::      An error occurred running task tclean.' in line:
+            raise ValueError("tclean failed.  See log for detailed error report.\n{0}".format(line))
+        if 'SEVERE' in line:
+            raise ValueError("SEVERE error message encountered: {0}".format(line))
+
+
+
+
+
+
+
 # Set the ms and continuum image name.
 contvis = 'calibrated_final_cont.ms'
 
@@ -9,7 +29,7 @@ print("cleanmask", cleanmask)
 # Set the ms and continuum image name.
 contvis = 'calibrated_final_cont_'+field+'selfcal.ms'
 if not os.path.exists(contvis):
-    split(vis="calibrated_final_cont.ms", 
+    split(vis="calibrated_final_cont.ms",
           outputvis=contvis,
           field=field,
           datacolumn='data')
@@ -69,6 +89,7 @@ if not os.path.exists(contimagename+'.image.tt0.pbcor'):
            savemodel='none', mask=cleanmask,
            **impars
           )
+    test_tclean_success()
 
 caltable = field+'_b3_selfcal_phase{selfcaliter}_T.cal'.format(selfcaliter=selfcaliter)
 if not os.path.exists(caltable):
@@ -76,6 +97,7 @@ if not os.path.exists(caltable):
     tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
            deconvolver='mtmfs', interactive=False, gridder='standard',
            pbcor=True, savemodel='modelcolumn', **impars)
+    test_tclean_success()
 
     gaincal(vis=contvis, field=field, caltable=caltable, **calpars)
 
@@ -97,7 +119,7 @@ for selfcaliter in selfcalpars:
 
     impars = selfcalpars[selfcaliter]['imaging']
     calpars = selfcalpars[selfcaliter]['calibration']
-               
+
     prevcal_imagename = contimagename = field+'.spw0thru19.{imsize}.robust{robust}.thr{threshold}.mfs.I.selfcal{selfcaliter}'.format(
         selfcaliter=selfcaliter,
         **impars)
@@ -116,6 +138,7 @@ for selfcaliter in selfcalpars:
                pbcor=True, savemodel='none', mask=cleanmask,
                **impars
               )
+        test_tclean_success()
 
     caltable = field+'_b3_selfcal_phase{selfcaliter}_T.cal'.format(selfcaliter=selfcaliter)
     if not os.path.exists(caltable):
@@ -125,6 +148,7 @@ for selfcaliter in selfcalpars:
                pbcor=True, savemodel='modelcolumn', mask=cleanmask,
                **impars
               )
+        test_tclean_success()
 
         gaincal(vis=contvis, field=field, caltable=caltable,
                 gaintable=cals, **calpars)

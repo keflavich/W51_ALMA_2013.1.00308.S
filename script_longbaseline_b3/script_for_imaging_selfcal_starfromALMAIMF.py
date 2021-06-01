@@ -10,7 +10,7 @@ print("startmodel: ", startmodel)
 # Set the ms and continuum image name.
 contvis = 'calibrated_final_cont_'+field+'selfcal_startmod.ms'
 if not os.path.exists(contvis):
-    split(vis="calibrated_final_cont.ms", 
+    split(vis="calibrated_final_cont.ms",
           outputvis=contvis,
           field=field,
           datacolumn='data')
@@ -56,7 +56,7 @@ selfcaliter=0
 impars = selfcalpars[selfcaliter]['imaging']
 calpars = selfcalpars[selfcaliter]['calibration']
 
-dirtyimage = field+'.spw0thru19.{imsize}.robust{robust}.thr{threshold}.mfs.I.dirty'.format(**impars)
+contimagename = dirtyimage = field+'.spw0thru19.{imsize}.robust{robust}.thr{threshold}.startmod.mfs.I.dirty'.format(**impars)
 
 if not os.path.exists(contimagename+'.image.tt0.pbcor'):
     for ext in ['.image','.mask','.model','.image.pbcor','.psf','.residual','.pb','.sumwt']:
@@ -82,7 +82,7 @@ startmodel = [sm+".regrid" for sm in startmodel]
 
 
 impars = selfcalpars[selfcaliter]['imaging']
-preselfcal_imagename = contimagename = field+'.spw0thru19.{imsize}.robust{robust}.thr{threshold}.mfs.I.startmod'.format(
+preselfcal_imagename = contimagename = field+'.spw0thru19.{imsize}.robust{robust}.thr{threshold}.startmod.mfs.I.startmod'.format(
     **impars)
 
 if not os.path.exists(contimagename+'.image.tt0.pbcor'):
@@ -127,7 +127,7 @@ for selfcaliter in selfcalpars:
 
     impars = selfcalpars[selfcaliter]['imaging']
     calpars = selfcalpars[selfcaliter]['calibration']
-               
+
     prevcal_imagename = contimagename = field+'.spw0thru19.{imsize}.robust{robust}.thr{threshold}.mfs.I.startmod.selfcal{selfcaliter}'.format(
         selfcaliter=selfcaliter,
         **impars)
