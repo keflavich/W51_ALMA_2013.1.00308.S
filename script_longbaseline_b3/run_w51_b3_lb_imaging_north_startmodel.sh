@@ -35,7 +35,7 @@ echo $?
 #python getversion.py
 #export PYTHONPATH=$ALMAIMF_ROOTDIR
 
-imaging_script=/orange/adamginsburg/w51/W51_ALMA_2013.1.00308.S/script_longbaseline_b3/script_for_imaging_selfcal.py
+imaging_script=/orange/adamginsburg/w51/W51_ALMA_2013.1.00308.S/script_longbaseline_b3/script_for_imaging_selfcal_starfromALMAIMF.py
 
 cd ${WORK_DIR}
 echo ${WORK_DIR}
