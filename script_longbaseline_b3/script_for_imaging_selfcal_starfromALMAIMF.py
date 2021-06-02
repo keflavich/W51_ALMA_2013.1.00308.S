@@ -12,6 +12,17 @@ def test_tclean_success():
         if 'SEVERE' in line:
             raise ValueError("SEVERE error message encountered: {0}".format(line))
 
+def check_model_is_populated(msfile):
+    casalog.post("Checking for populated model column in "+msfile)
+    ms.open(msfile)
+    modelphase = ms.getdata(items=['model_phase'])
+    if 'model_phase' not in modelphase:
+        raise ValueError("model_phase not acquired")
+    if modelphase['model_phase'].shape == (0,):
+        raise ValueError("Model phase column was not populated")
+    if np.all(modelphase['model_phase'] == 0):
+        raise ValueError("Phase is zero.")
+    ms.close()
 
 
 # Set the ms and continuum image name.
@@ -120,11 +131,13 @@ if not os.path.exists(contimagename+'.image.tt0.pbcor'):
 
 caltable = field+'_b3_startmodselfcal_phase{selfcaliter}_T.startmod.cal'.format(selfcaliter=selfcaliter)
 if not os.path.exists(caltable):
-    impars['niter'] = 1
+    impars['niter'] = 0
     tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
            deconvolver='mtmfs', interactive=False, gridder='standard',
+           calcres=False, calcpsf=False,
            pbcor=True, savemodel='modelcolumn', **impars)
     test_tclean_success()
+    check_model_is_populated(contvis)
 
     gaincal(vis=contvis, field=field, caltable=caltable, **calpars)
 
@@ -159,24 +172,42 @@ for selfcaliter in selfcalpars:
 
         assert os.path.exists(cleanmask)
 
+        # do a shallow clean so we can inspect the results
+        niter = impars.pop('niter')
         tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
                startmodel=[preselfcal_imagename + ".model.tt0",
                            preselfcal_imagename + ".model.tt1"],
+               niter=10,
                deconvolver='mtmfs', interactive=False, gridder='standard',
                pbcor=True, savemodel='none', mask=cleanmask,
                **impars
               )
         test_tclean_success()
 
-    caltable = field+'_b3_startmodselfcal_phase{selfcaliter}_T.startmod.cal'.format(selfcaliter=selfcaliter)
-    if not os.path.exists(caltable):
-        impars['niter'] = 1
         tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
+               # don't need to re-specify startmodel
+               #startmodel=[preselfcal_imagename + ".model.tt0",
+               #            preselfcal_imagename + ".model.tt1"],
+               niter=niter,
                deconvolver='mtmfs', interactive=False, gridder='standard',
-               pbcor=True, savemodel='modelcolumn',
+               pbcor=True, savemodel='none',
+               calcpsf=False, calcres=True, # don't need to recalc PSF
+               # mask=cleanmask, # already created
                **impars
               )
         test_tclean_success()
+
+    caltable = field+'_b3_startmodselfcal_phase{selfcaliter}_T.startmod.cal'.format(selfcaliter=selfcaliter)
+    if not os.path.exists(caltable):
+        impars['niter'] = 0
+        tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
+               deconvolver='mtmfs', interactive=False, gridder='standard',
+               pbcor=True, savemodel='modelcolumn',
+               calcres=False, calcpsf=False,
+               **impars
+              )
+        test_tclean_success()
+        check_model_is_populated(contvis)
 
         gaincal(vis=contvis, field=field, caltable=caltable,
                 gaintable=cals, **calpars)

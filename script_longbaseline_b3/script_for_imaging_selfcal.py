@@ -13,6 +13,17 @@ def test_tclean_success():
         if 'SEVERE' in line:
             raise ValueError("SEVERE error message encountered: {0}".format(line))
 
+def check_model_is_populated(msfile):
+    casalog.post("Checking for populated model column in "+msfile)
+    ms.open(msfile)
+    modelphase = ms.getdata(items=['model_phase'])
+    if 'model_phase' not in modelphase:
+        raise ValueError("model_phase not acquired")
+    if modelphase['model_phase'].shape == (0,):
+        raise ValueError("Model phase column was not populated")
+    if np.all(modelphase['model_phase'] == 0):
+        raise ValueError("Phase is zero.")
+    ms.close()
 
 
 
@@ -77,27 +88,43 @@ preselfcal_imagename = contimagename = field+'.spw0thru19.{imsize}.robust{robust
     **impars)
 
 if not os.path.exists(contimagename+'.image.tt0.pbcor'):
-    for ext in ['.image','.mask','.model','.image.pbcor','.psf','.residual','.pb','.sumwt']:
-        if os.path.exists(contimagename+ext):
-            rmtables(contimagename+ext)
+    for ext in ['.image','.mask','.model','.image.pbcor','.psf','.residual','.pb','.sumwt',]:
+        for extext in ('','.tt0','.tt1','.tt2'):
+            if os.path.exists(contimagename+ext+extext):
+                rmtables(contimagename+ext+extext)
 
     assert os.path.exists(cleanmask)
+
+    niter = impars.pop('niter')
 
     tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
            deconvolver='mtmfs',
            interactive = False, gridder = 'standard', pbcor = True,
            savemodel='none', mask=cleanmask,
+           niter=10,
+           **impars
+          )
+    test_tclean_success()
+
+    tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
+           deconvolver='mtmfs',
+           interactive = False, gridder = 'standard', pbcor = True,
+           savemodel='none',
+           # mask=cleanmask, # mask is already made
+           niter=niter,
            **impars
           )
     test_tclean_success()
 
 caltable = field+'_b3_selfcal_phase{selfcaliter}_T.cal'.format(selfcaliter=selfcaliter)
 if not os.path.exists(caltable):
-    impars['niter'] = 1
+    impars['niter'] = 0
     tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
            deconvolver='mtmfs', interactive=False, gridder='standard',
+           calcres=False, calcpsf=False,
            pbcor=True, savemodel='modelcolumn', **impars)
     test_tclean_success()
+    check_model_is_populated(contvis)
 
     gaincal(vis=contvis, field=field, caltable=caltable, **calpars)
 
@@ -143,13 +170,15 @@ for selfcaliter in selfcalpars:
 
     caltable = field+'_b3_selfcal_phase{selfcaliter}_T.cal'.format(selfcaliter=selfcaliter)
     if not os.path.exists(caltable):
-        impars['niter'] = 1
+        impars['niter'] = 0
         tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
                deconvolver='mtmfs', interactive=False, gridder='standard',
                pbcor=True, savemodel='modelcolumn',
+               calcres=False, calcpsf=False,
                **impars
               )
         test_tclean_success()
+        check_model_is_populated(contvis)
 
         gaincal(vis=contvis, field=field, caltable=caltable,
                 gaintable=cals, **calpars)
