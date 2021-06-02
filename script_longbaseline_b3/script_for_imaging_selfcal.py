@@ -44,6 +44,8 @@ if not os.path.exists(contvis):
           outputvis=contvis,
           field=field,
           datacolumn='data')
+else:
+    clearcal(contvis)
 
 
 # beamsize: Beam : 0.0669461 arcsec, 0.0421181 arcsec, -44.3619 deg
