@@ -74,9 +74,10 @@ calpars = selfcalpars[selfcaliter]['calibration']
 contimagename = dirtyimage = field+'.spw0thru19.{imsize}.robust{robust}.thr{threshold}.startmod.mfs.I.dirty'.format(**impars)
 
 if not os.path.exists(contimagename+'.image.tt0.pbcor'):
-    for ext in ['.image','.mask','.model','.image.pbcor','.psf','.residual','.pb','.sumwt']:
-        if os.path.exists(contimagename+ext):
-            rmtables(contimagename+ext)
+    for ext in ['.image','.mask','.model','.image.pbcor','.psf','.residual','.pb','.sumwt',]:
+        for extext in ('','.tt0','.tt1','.tt2'):
+            if os.path.exists(contimagename+ext+extext):
+                rmtables(contimagename+ext+extext)
 
     assert os.path.exists(cleanmask)
 
@@ -152,8 +153,9 @@ for selfcaliter in selfcalpars:
 
     if not os.path.exists(contimagename+'.image.tt0.pbcor'):
         for ext in ['.image','.mask','.model','.image.pbcor','.psf','.residual','.pb','.sumwt']:
-            if os.path.exists(contimagename+ext):
-                rmtables(contimagename+ext)
+            for extext in ('','.tt0','.tt1','.tt2'):
+                if os.path.exists(contimagename+ext+extext):
+                    rmtables(contimagename+ext+extext)
 
         assert os.path.exists(cleanmask)
 
@@ -171,7 +173,7 @@ for selfcaliter in selfcalpars:
         impars['niter'] = 1
         tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
                deconvolver='mtmfs', interactive=False, gridder='standard',
-               pbcor=True, savemodel='modelcolumn', mask=cleanmask,
+               pbcor=True, savemodel='modelcolumn',
                **impars
               )
         test_tclean_success()
