@@ -52,38 +52,47 @@ else:
 # >>> 0.0421181 / 0.007 / 2**0.5
 # 4.254570588670446
 selfcalpars = {0: {'imaging': {'threshold': '0.1mJy', 'nterms': 2, 'robust': 0, 'weighting':'briggs',
+                               'mask': cleanmask,
                             'cell':'0.007arcsec', 'imsize':14500, 'scales':[0,6,18], 'niter':200000},
                    'calibration': {'calmode': 'p', 'gaintype': 'T', 'solint': 'inf', 'solnorm': True},},
                1: {'imaging': {'threshold': '0.075mJy', 'nterms': 2, 'robust': 0,
                                'weighting':'briggs', 'cell':'0.007arcsec',
                                'imsize':14500, 'scales':[0,6,18],
+                               'mask': cleanmask,
                                'niter':200000},
                    'calibration': {'calmode': 'p', 'gaintype': 'T', 'solint': 'inf', 'solnorm': True},},
                2: {'imaging': {'threshold': '0.075mJy', 'nterms': 2, 'robust': 0,
                                'weighting':'briggs', 'cell':'0.007arcsec',
                                'imsize':14500, 'scales':[0,6,18],
+                               'mask': cleanmask,
                                'niter':200000},
                    'calibration': {'calmode': 'p', 'gaintype': 'T', 'solint': 'inf', 'solnorm': True},},
                3: {'imaging': {'threshold': '0.075mJy', 'nterms': 2, 'robust': 0,
                                'weighting':'briggs', 'cell':'0.007arcsec',
                                'imsize':14500, 'scales':[0,6,18],
+                               'mask': cleanmask,
                                'niter':200000},
                    'calibration': {'calmode': 'p', 'gaintype': 'G', 'solint': 'inf', 'solnorm': True},},
                4: {'imaging': {'threshold': '0.075mJy', 'nterms': 2, 'robust': 0,
                                'weighting':'briggs', 'cell':'0.007arcsec',
                                'imsize':14500, 'scales':[0,6,18],
+                               'mask': cleanmask,
                                'niter':200000},
                    'calibration': {'calmode': 'p', 'gaintype': 'T',
                                    'solint': 'int', 'solnorm': True},},
                5: {'imaging': {'threshold': '0.075mJy', 'nterms': 2, 'robust': 0,
                                'weighting':'briggs', 'cell':'0.007arcsec',
                                'imsize':14500, 'scales':[0,6,18],
+                               'mask': cleanmask,
                                'niter':200000},
                    'calibration': {'calmode': 'p', 'gaintype': 'T',
                                    'solint': 'int', 'solnorm': True},},
-               6: {'imaging': {'threshold': '0.075mJy', 'nterms': 3, 'robust': 0,
+               6: {'imaging': {'threshold': '0.075mJy', 'nterms': 2, 'robust': 0,
                                'weighting':'briggs', 'cell':'0.007arcsec',
                                'imsize':14500, 'scales':[0,6,18],
+                               'mask': '',
+                               'usemask': 'pb',
+                               'pbmask': 0.1,
                                'niter':200000},
                    'calibration': {'calmode': 'p', 'gaintype': 'T',
                                    'solint': 'int', 'solnorm': True},}
@@ -108,11 +117,14 @@ if not os.path.exists(contimagename+'.image.tt0.pbcor'):
     tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
            deconvolver='mtmfs',
            interactive = False, gridder = 'standard', pbcor = True,
-           savemodel='none', mask=cleanmask,
+           savemodel='none',
            niter=10,
            **impars
           )
     test_tclean_success()
+
+    if 'mask' in impars:
+        impars.pop('mask')
 
     tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
            deconvolver='mtmfs',
@@ -171,7 +183,7 @@ for selfcaliter in selfcalpars:
                startmodel=[preselfcal_imagename + ".model.tt0",
                            preselfcal_imagename + ".model.tt1"],
                deconvolver='mtmfs', interactive=False, gridder='standard',
-               pbcor=True, savemodel='none', mask=cleanmask,
+               pbcor=True, savemodel='none',
                **impars
               )
         test_tclean_success()
@@ -179,6 +191,10 @@ for selfcaliter in selfcalpars:
     caltable = field+'_b3_selfcal_phase{selfcaliter}_T.cal'.format(selfcaliter=selfcaliter)
     if not os.path.exists(caltable):
         impars['niter'] = 0
+
+        if 'mask' in impars:
+            impars.pop('mask')
+
         tclean(vis=contvis, imagename=contimagename, field=field, specmode='mfs',
                deconvolver='mtmfs', interactive=False, gridder='standard',
                pbcor=True, savemodel='modelcolumn',
