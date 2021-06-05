@@ -96,6 +96,30 @@ selfcalpars = {0: {'imaging': {'threshold': '0.1mJy', 'nterms': 2, 'robust': 0, 
                                'niter':200000},
                    'calibration': {'calmode': 'p', 'gaintype': 'T',
                                    'solint': 'int', 'solnorm': True},}
+               7: {'imaging': {'threshold': '0.075mJy', 'nterms': 2, 'robust': 0,
+                               'weighting':'briggs', 'cell':'0.007arcsec',
+                               'imsize':14500, 'scales':[0,6,18],
+                               'usemask': 'pb',
+                               'pbmask': 0.1,
+                               'niter':200000},
+                   'calibration': {'calmode': 'p', 'gaintype': 'T',
+                                   'solint': 'int', 'solnorm': True},}
+               8: {'imaging': {'threshold': '0.075mJy', 'nterms': 3, 'robust': 0,
+                               'weighting':'briggs', 'cell':'0.007arcsec',
+                               'imsize':14500, 'scales':[0,6,18],
+                               'usemask': 'pb',
+                               'pbmask': 0.1,
+                               'niter':200000},
+                   'calibration': {'calmode': 'p', 'gaintype': 'T',
+                                   'solint': 'int', 'solnorm': True},}
+               9: {'imaging': {'threshold': '0.075mJy', 'nterms': 3, 'robust': 0,
+                               'weighting':'briggs', 'cell':'0.007arcsec',
+                               'imsize':14500, 'scales':[0,6,18],
+                               'usemask': 'pb',
+                               'pbmask': 0.1,
+                               'niter':200000},
+                   'calibration': {'calmode': 'p', 'gaintype': 'T',
+                                   'solint': 'int', 'solnorm': True},}
               }
 
 selfcaliter=0
