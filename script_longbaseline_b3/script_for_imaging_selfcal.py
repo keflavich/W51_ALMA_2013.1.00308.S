@@ -1,7 +1,6 @@
 import os
 
 
-
 def test_tclean_success():
     # An EXTREMELY HACKY way to test whether tclean succeeded on the previous iteration
     with open(casalog.logfile(), "r") as fh:
@@ -24,8 +23,6 @@ def check_model_is_populated(msfile):
     if np.all(modelphase['model_phase'] == 0):
         raise ValueError("Phase is zero.")
     ms.close()
-
-
 
 
 
@@ -54,11 +51,11 @@ else:
 selfcalpars = {0: {'imaging': {'threshold': '0.1mJy', 'nterms': 2, 'robust': 0, 'weighting':'briggs',
                                'mask': cleanmask,
                             'cell':'0.007arcsec', 'imsize':14500, 'scales':[0,6,18], 'niter':200000},
-                   'calibration': {'calmode': 'p', 'gaintype': 'T', 'solint': 'inf', 'solnorm': True},},
+                'calibration': {'calmode': 'p', 'gaintype': 'T', 'solint': 'inf', 'solnorm': True},},
                1: {'imaging': {'threshold': '0.075mJy', 'nterms': 2, 'robust': 0,
                                'weighting':'briggs', 'cell':'0.007arcsec',
-                               'imsize':14500, 'scales':[0,6,18],
                                'mask': cleanmask,
+                               'imsize':14500, 'scales':[0,6,18],
                                'niter':200000},
                    'calibration': {'calmode': 'p', 'gaintype': 'T', 'solint': 'inf', 'solnorm': True},},
                2: {'imaging': {'threshold': '0.075mJy', 'nterms': 2, 'robust': 0,
@@ -72,7 +69,8 @@ selfcalpars = {0: {'imaging': {'threshold': '0.1mJy', 'nterms': 2, 'robust': 0, 
                                'imsize':14500, 'scales':[0,6,18],
                                'mask': cleanmask,
                                'niter':200000},
-                   'calibration': {'calmode': 'p', 'gaintype': 'G', 'solint': 'inf', 'solnorm': True},},
+                   'calibration': {'calmode': 'p', 'gaintype': 'T',
+                                   'solint': 'int', 'solnorm': True},},
                4: {'imaging': {'threshold': '0.075mJy', 'nterms': 2, 'robust': 0,
                                'weighting':'briggs', 'cell':'0.007arcsec',
                                'imsize':14500, 'scales':[0,6,18],
@@ -83,36 +81,20 @@ selfcalpars = {0: {'imaging': {'threshold': '0.1mJy', 'nterms': 2, 'robust': 0, 
                5: {'imaging': {'threshold': '0.075mJy', 'nterms': 2, 'robust': 0,
                                'weighting':'briggs', 'cell':'0.007arcsec',
                                'imsize':14500, 'scales':[0,6,18],
-                               'mask': cleanmask,
+                               'usemask': 'pb',
+                               'pbmask': 0.1,
                                'niter':200000},
                    'calibration': {'calmode': 'p', 'gaintype': 'T',
                                    'solint': 'int', 'solnorm': True},},
                6: {'imaging': {'threshold': '0.075mJy', 'nterms': 2, 'robust': 0,
                                'weighting':'briggs', 'cell':'0.007arcsec',
                                'imsize':14500, 'scales':[0,6,18],
-                               'mask': '',
                                'usemask': 'pb',
                                'pbmask': 0.1,
                                'niter':200000},
                    'calibration': {'calmode': 'p', 'gaintype': 'T',
                                    'solint': 'int', 'solnorm': True},},
-               7: {'imaging': {'threshold': '0.075mJy', 'nterms': 2, 'robust': 0,
-                               'weighting':'briggs', 'cell':'0.007arcsec',
-                               'imsize':14500, 'scales':[0,6,18],
-                               'usemask': 'pb',
-                               'pbmask': 0.1,
-                               'niter':200000},
-                   'calibration': {'calmode': 'p', 'gaintype': 'T',
-                                   'solint': 'int', 'solnorm': True},},
-               8: {'imaging': {'threshold': '0.075mJy', 'nterms': 2, 'robust': -2,
-                               'weighting':'briggs', 'cell':'0.007arcsec',
-                               'imsize':14500, 'scales':[0,6,18],
-                               'usemask': 'pb',
-                               'pbmask': 0.1,
-                               'niter':100000},
-                   'calibration': {'calmode': 'p', 'gaintype': 'T',
-                                   'solint': 'int', 'solnorm': True},},
-               9: {'imaging': {'threshold': '0.075mJy', 'nterms': 2, 'robust': -2,
+               7: {'imaging': {'threshold': '0.05mJy', 'nterms': 2, 'robust': 0,
                                'weighting':'briggs', 'cell':'0.007arcsec',
                                'imsize':14500, 'scales':[0,6,18],
                                'usemask': 'pb',
