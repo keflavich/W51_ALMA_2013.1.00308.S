@@ -18,22 +18,35 @@ log.setLevel('DEBUG')
 
 vrange_dict = {'LacyJet':
                {'SO65-54': {'blue': [30,50],
-                            'red': [70,95],},
+                            'red': [70,95],
+                            },
                 '12CO2-1': {'blue': [30,50],
-                            'red': [70,95],},
+                            'red': [70,95],
+                            },
                },
               }
 cutout_dict = {'LacyJet': 'north'}
+
+rf_dict = {'SO65-54': 219.94944*u.GHz,
+           '12CO2-1': 230.530*u.GHz}
+
+fn_dict = {'SO65-54': paths.dpath('12m/w51_SO_65-54_contsub.fits'),
+           '12CO2-1': '/orange/adamginsburg/w51/2013.1.00308.S/dataverse/W51_12CO_merge.fits'}
 
 for objname in vrange_dict:
     for species in vrange_dict[objname]:
         for shift in vrange_dict[objname][species]:
 
-            fn = paths.dpath('12m/cutouts/W51_b6_12M.{0}.image.pbcor_{1}cutout.fits'
-                             .format(species, cutout_dict[objname]))
-            cube = SpectralCube.read(fn).with_spectral_unit(u.km/u.s,
-                                                            velocity_convention='radio')
+            #fn = paths.dpath('12m/cutouts/W51_b6_12M.{0}.image.pbcor_{1}cutout.fits'
+            #                 .format(species, cutout_dict[objname]))
+            fn = fn_dict[species]
+            #fn = paths.dpath('12m/w51_SO_65-54_contsub.fits')
+            cube = SpectralCube.read(fn, use_dask=True).with_spectral_unit(u.km/u.s,
+                                                            velocity_convention='radio',
+                                                            rest_value=rf_dict[species]
+                                                            )
             cube.beam_threshold = 1.0
+            cube.allow_huge_operations = True
 
             med = cube.percentile(25, axis=0)
             medsub = cube-med

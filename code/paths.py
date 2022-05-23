@@ -5,6 +5,8 @@ if socket.gethostname() == 'cleese':
     root = '/scratch/aginsbur/w51/alma/'
 elif socket.gethostname() == 'orion':
     root = '/diskb//aginsbur/w51/merge/'
+elif 'ufhpc' in socket.gethostname():
+    root = '/orange/adamginsburg/w51/2013.1.00308.S/'
 else:
     root = os.path.expanduser('~/work/w51/alma/')
 
