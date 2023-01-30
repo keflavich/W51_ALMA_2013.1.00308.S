@@ -107,6 +107,11 @@ selfcaliter=0
 impars = selfcalpars[selfcaliter]['imaging']
 calpars = selfcalpars[selfcaliter]['calibration']
 
+"""
+We want to regrid the ALMA-IMF data to the target image size for the long-baseline data
+
+In order to do this, we need a template image, so we make a dirty image _without_ any startmodel (even though the filename says startmod)
+"""
 contimagename = dirtyimage = field+'.spw0thru19.{imsize}.robust{robust}.thr{threshold}.startmod.mfs.I.dirty'.format(**impars)
 
 if not os.path.exists(contimagename+'.image.tt0.pbcor'):
@@ -128,9 +133,11 @@ if not os.path.exists(contimagename+'.image.tt0.pbcor'):
           )
     test_tclean_success()
 
+# Regrid the ALMA-IMF model to the template from the dirty image we just made.  This is now our low-resolution startmodel
 for sm in startmodel:
     imregrid(imagename=sm, template=dirtyimage+".image.tt0", output=sm+".regrid")
 
+# startmodel is a list of model images that should probably include tt0 and tt1
 startmodel = [sm+".regrid" for sm in startmodel]
 
 
