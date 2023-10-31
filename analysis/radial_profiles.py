@@ -1,5 +1,6 @@
 import matplotlib
 matplotlib.use('Qt5Agg')
+import os
 import pylab as pl
 assert matplotlib.get_backend() == 'Qt5Agg'
 import numpy as np
@@ -73,7 +74,10 @@ def make_rprof(regions, ploteach=False):
                       for name in names}
 
         for fn in ffiles:
-            fh = fits.open(paths.dpath("12m/continuum/"+fn))
+            if os.path.exists(paths.dpath("12m/continuum/"+fn+".gz")):
+                fh = fits.open(paths.dpath("12m/continuum/"+fn+".gz"))
+            else:
+                fh = fits.open(paths.dpath("12m/continuum/"+fn))
             mywcs = wcs.WCS(fh[0].header)
 
             if 'BMAJ' not in fh[0].header:
@@ -88,7 +92,7 @@ def make_rprof(regions, ploteach=False):
             pixscale = (mywcs.pixel_scale_matrix.diagonal()**2).sum()**0.5
             ppbeam = (beam.sr/(pixscale**2*u.deg**2)).decompose().value / u.beam
             #print("fn  {0} ppbeam={1:0.2f}".format(fn, ppbeam))
-            
+
             for jj,(name,position) in enumerate(zip(names, center_positions)):
                 cutout = Cutout2D(fh[0].data, position, size, wcs=mywcs)
 
@@ -384,7 +388,7 @@ def make_rprof(regions, ploteach=False):
         rr_as = (rr*bigpixscale).to(u.arcsec)
         theta = np.arctan2(yyc,xxc)*u.rad
 
-        dust_column = dust_emissivity.dust.colofsnu(225*u.GHz, dust_brightness*u.Jy/contbm,
+        dust_column = dust_emissivity.dust.colofsnu(nu=225*u.GHz, snu_per_beam=dust_brightness*u.Jy/contbm.sr,
                                                     #beamomega=contbm,
                                                     temperature=ch3ohT*u.K)
         ch3oh_abundance = ch3ohN / dust_column.value
@@ -395,6 +399,9 @@ def make_rprof(regions, ploteach=False):
         # exclude high-abundance, low-column regions: likely to be div-by-zero zones
         mask = mask & (~((ch3ohN < 1e18) & (ch3oh_abundance > 5e-6)))
         mask = mask & (~((dust_brightness<1e-2) & (ch3ohT > 500) & (ch3oh_abundance > 1e-6)))
+
+        fits.PrimaryHDU(data=dust_column.to(u.cm**-2).value,
+                        header=ch3ohN_hdul[0].header).writeto(f'dust_column_density_with_ch3oh_tem_{source}.fits', overwrite=True)
 
         #mask = mask & (~((ch3ohT > 250) &
         #                 (ch3ohN < 1e18) &
