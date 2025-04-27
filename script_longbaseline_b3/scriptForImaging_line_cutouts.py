@@ -10,7 +10,7 @@ from source_ids import sources_fmtd, source_field_mapping
 def makefits(myimagebase, cleanup=True):
     impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
     exportfits(imagename=myimagebase+'.image.pbcor', fitsimage=myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True) # export the corrected image
-    exportfits(imagename=myimagebase+'.pb', fitsimage=myimagebase+'.pb.fits', dropdeg=True, overwrite=True) # export the PB image
+    # exportfits(imagename=myimagebase+'.pb', fitsimage=myimagebase+'.pb.fits', dropdeg=True, overwrite=True) # export the PB image
     exportfits(imagename=myimagebase+'.model', fitsimage=myimagebase+'.model.fits', dropdeg=True, overwrite=True) # export the PB image
     exportfits(imagename=myimagebase+'.residual', fitsimage=myimagebase+'.residual.fits', dropdeg=True, overwrite=True) # export the PB image
 
@@ -31,11 +31,11 @@ for sourcename, coordinate in sources_fmtd.items():
 
     for spw,spws in enumerate([(0,4,8,12,16), (1,5,9,13,17), (2,6,10,14,18), (3,7,11,15,19)]):
 
-        for suffix, niter in (('clarkclean10000', 10000), ):
+        for suffix, niter in (('clarkclean1e5', int(1e5)), ):
 
             for robust in (0.5, ):
 
-                imagename = 'W51{3}_only.B3.robust{2}.spw{0}.{1}'.format(spw, suffix, robust, sourcename)
+                imagename = 'W51{3}_only.B3.robust{2}.spw{0}.{1}.1024'.format(spw, suffix, robust, sourcename)
 
 
                 if os.path.exists("{0}.image.pbcor.fits".format(imagename)):
@@ -45,6 +45,12 @@ for sourcename, coordinate in sources_fmtd.items():
                     else:
                         print("Redoing {0} because it's in fk5.".format(imagename))
 
+                # notes from 2025-04-26:
+                # 128 -> 1024
+                # 1e4 -> 1e5 iter
+                # 0.008 -> 0.01 cell size [minor axis was sampled by 4 diagonal pixels before]
+                # cyclefactor not forced to skip major cycles
+                # threshold 15 -> 2.5mJy (roughly 5-sigma)
                 print("Imaging {0} at {1}".format(imagename, datetime.datetime.now()))
                 tclean(vis=mslist,
                        imagename=imagename,
@@ -53,12 +59,12 @@ for sourcename, coordinate in sources_fmtd.items():
                        field=source_field_mapping[sourcename],
                        specmode='cube',
                        outframe='LSRK',
-                       threshold='15mJy',
-                       imsize=[128, 128],
-                       cell=['0.008arcsec'],
+                       threshold='2.5mJy',
+                       imsize=[1024, 1024],
+                       cell=['0.01arcsec'],
                        niter=niter,
                        cycleniter=-1, # -1 is default
-                       cyclefactor=0.0001, # set very small: try to prevent major cycles
+                       #cyclefactor=0.0001, # set very small: try to prevent major cycles
                        phasecenter=coordinate,
                        deconvolver='clark',
                        gridder='standard',
@@ -67,8 +73,18 @@ for sourcename, coordinate in sources_fmtd.items():
                        pbcor=True,
                        pblimit=0.2,
                        savemodel='none',
-                       chanchunks=1,
+                       #chanchunks=1,
                        #parallel=True,
                        interactive=False)
                 makefits(imagename)
 
+
+"""
+Work log 2025-04-26
+
+cd /red/adamginsburg/w51
+rsync -ravpu --partial --progress /orange/adamginsburg/w51/2017.1.00293.S/calibrated_final.ms.tar .
+tar -xvf calibrated_final.ms.tar
+
+
+"""
