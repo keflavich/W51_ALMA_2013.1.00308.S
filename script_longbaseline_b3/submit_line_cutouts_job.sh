@@ -1,7 +1,9 @@
 #!/bin/bash
 
+SCRIPT_ROOT='/orange/adamginsburg/w51'
+
 # Set working directory
-WORK_DIR='/orange/adamginsburg/w51'
+WORK_DIR='/red/adamginsburg/w51'
 cd ${WORK_DIR}
 
 # Create logs directory if it doesn't exist
@@ -14,7 +16,7 @@ echo "Creating parameter file: ${PARAM_FILE}"
 > ${PARAM_FILE}  # Clear/create the file
 
 # Get all source names from source_ids.py
-SOURCES=$(python3 -c "import sys; sys.path.append('$WORK_DIR/W51_ALMA_2013.1.00308.S/script_longbaseline_b3'); from source_ids import sources_fmtd; print(' '.join(sources_fmtd.keys()))")
+SOURCES=$(python3 -c "import sys; sys.path.append('$SCRIPT_ROOT/W51_ALMA_2013.1.00308.S/script_longbaseline_b3'); from source_ids import sources_fmtd; print(' '.join(sources_fmtd.keys()))")
 
 # The parameters we will iterate over
 SUFFIX="clarkclean1e5"
@@ -37,7 +39,7 @@ echo "Total number of jobs: $((TOTAL_JOBS+1))"
 echo "Array range: 0-${TOTAL_JOBS}"
 
 # Submit the job array with the calculated range
-JOB_SCRIPT="${WORK_DIR}/W51_ALMA_2013.1.00308.S/script_longbaseline_b3/run_line_cutouts_array.sh"
+JOB_SCRIPT="${SCRIPT_ROOT}/W51_ALMA_2013.1.00308.S/script_longbaseline_b3/run_line_cutouts_array.sh"
 echo "Submitting job array using script: ${JOB_SCRIPT}"
 sbatch --array=0-${TOTAL_JOBS} ${JOB_SCRIPT}
 

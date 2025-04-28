@@ -1,4 +1,16 @@
 from astropy.io import fits
+import numpy as np
+import os
+import glob
+import datetime
+import sys
+sys.path.append('.')
+sys.path.append('/orange/adamginsburg/w51/W51_ALMA_2013.1.00308.S/script_longbaseline_b3')
+from source_ids import sources_fmtd, source_field_mapping
+
+if 'workdir' not in locals():
+    workdir = os.getenv('WORK_DIR', '/red/adamginsburg/w51/')
+os.chdir(workdir)
 
 def makefits(myimagebase, cleanup=True):
     impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
@@ -14,27 +26,45 @@ def makefits(myimagebase, cleanup=True):
 
 # These variables can be set from the command line when calling the script
 # e.g., casa -c "sourcename='w51n'; spw=0; robust=0.5; suffix='clarkclean1e5'; niter=100000; execfile('scriptForImaging_line_cutouts_single.py')"
-if 'sourcename' not in locals():
+# or through environment variables: SOURCENAME, SPW, ROBUST, SUFFIX, NITER
+
+# Check for environment variables first, then local variables
+sourcename = os.getenv('SOURCENAME', None)
+if sourcename is None and 'sourcename' in locals():
+    sourcename = locals()['sourcename']
+if sourcename is None:
     print("sourcename not defined, defaulting to 'w51n'")
     sourcename = 'w51n'
 
-if 'spw' not in locals():
+spw = os.getenv('SPW', None)
+if spw is None and 'spw' in locals():
+    spw = locals()['spw']
+if spw is None:
     print("spw not defined, defaulting to 0")
     spw = 0
 else:
     spw = int(spw)
 
-if 'robust' not in locals():
+robust = os.getenv('ROBUST', None)
+if robust is None and 'robust' in locals():
+    robust = locals()['robust']
+if robust is None:
     print("robust not defined, defaulting to 0.5")
     robust = 0.5
 else:
     robust = float(robust)
 
-if 'suffix' not in locals():
+suffix = os.getenv('SUFFIX', None)
+if suffix is None and 'suffix' in locals():
+    suffix = locals()['suffix']
+if suffix is None:
     print("suffix not defined, defaulting to 'clarkclean1e5'")
     suffix = 'clarkclean1e5'
 
-if 'niter' not in locals():
+niter = os.getenv('NITER', None)
+if niter is None and 'niter' in locals():
+    niter = locals()['niter']
+if niter is None:
     print("niter not defined, defaulting to 100000")
     niter = int(1e5)
 else:
@@ -99,4 +129,8 @@ tclean(vis=mslist,
        #chanchunks=1,
        #parallel=True,
        interactive=False)
-makefits(imagename)
+if os.path.exists(f"{imagename}.image"):
+    makefits(imagename)
+else:
+    print(f"tclean failed for {imagename}")
+    sys.exit(1)
