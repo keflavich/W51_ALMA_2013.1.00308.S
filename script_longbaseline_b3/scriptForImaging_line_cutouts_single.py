@@ -90,7 +90,7 @@ for ms in mslist:
     if not os.path.exists(listobs_file):
         listobs(ms, listfile=listobs_file, overwrite=True)
 
-imagename = f'W51{sourcename}_only.B3.robust{robust}.spw{spw}.{suffix}.1024'
+imagename = f'W51{sourcename}_only.B3.robust{robust}.spw{spw}.{suffix}.1536.bigpix'
 
 # Check if file already exists and has the correct coordinate system
 if os.path.exists("{0}.image.pbcor.fits".format(imagename)):
@@ -113,8 +113,8 @@ tclean(vis=mslist,
        specmode='cube',
        outframe='LSRK',
        threshold='2.5mJy',
-       imsize=[1024, 1024],
-       cell=['0.01arcsec'],
+       imsize=[1536, 1536],
+       cell=['0.02arcsec'],
        niter=niter,
        cycleniter=-1, # -1 is default
        #cyclefactor=0.0001, # set very small: try to prevent major cycles

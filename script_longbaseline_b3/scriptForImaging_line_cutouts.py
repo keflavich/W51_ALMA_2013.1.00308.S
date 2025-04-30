@@ -35,7 +35,7 @@ for sourcename, coordinate in sources_fmtd.items():
 
             for robust in (0.5, ):
 
-                imagename = 'W51{3}_only.B3.robust{2}.spw{0}.{1}.1024'.format(spw, suffix, robust, sourcename)
+                imagename = 'W51{3}_only.B3.robust{2}.spw{0}.{1}.1536.bigpix'.format(spw, suffix, robust, sourcename)
 
 
                 if os.path.exists("{0}.image.pbcor.fits".format(imagename)):
@@ -46,7 +46,7 @@ for sourcename, coordinate in sources_fmtd.items():
                         print("Redoing {0} because it's in fk5.".format(imagename))
 
                 # notes from 2025-04-26:
-                # 128 -> 1024
+                # 128 -> 1536
                 # 1e4 -> 1e5 iter
                 # 0.008 -> 0.01 cell size [minor axis was sampled by 4 diagonal pixels before]
                 # cyclefactor not forced to skip major cycles
@@ -60,8 +60,8 @@ for sourcename, coordinate in sources_fmtd.items():
                        specmode='cube',
                        outframe='LSRK',
                        threshold='2.5mJy',
-                       imsize=[1024, 1024],
-                       cell=['0.01arcsec'],
+                       imsize=[1536, 1536],
+                       cell=['0.02arcsec'],
                        niter=niter,
                        cycleniter=-1, # -1 is default
                        #cyclefactor=0.0001, # set very small: try to prevent major cycles
