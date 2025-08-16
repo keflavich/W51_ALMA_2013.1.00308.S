@@ -17,6 +17,7 @@ sources = {#'w51e2e': (290.9331907, 14.50958333),
            'w51sw': (290.9107375, 14.51161111),
            'w51e_n': (290.93291768, 14.51648581),
            'w51main': (290.92400257, 14.50718514),
+           'w51noutflow': ('19:23:39.7352296972', '14:31:18.4960179735'),
           }
 
 source_field_mapping = {'w51e2e': 'w51e2',
@@ -32,12 +33,13 @@ source_field_mapping = {'w51e2e': 'w51e2',
                         'w51sw': 'w51n',
                         'w51e_n': 'w51e2',
                         'w51main': 'w51e2',
+                        'w51noutflow': 'w51n',
                        }
 
-def casafmt(crd):
-    center = coordinates.SkyCoord(*crd, frame='icrs', unit=(u.deg, u.deg))
+def casafmt(crd, unit=(u.deg, u.deg)):
+    center = coordinates.SkyCoord(*crd, frame='icrs', unit=unit)
 
     return 'ICRS {} {}'.format(center.ra.to_string(unit=u.hour),
                                center.dec.to_string())
 
-sources_fmtd = {key: casafmt(val) for key, val in sources.items()}
+sources_fmtd = {key: casafmt(val, unit=units.get(key, (u.deg, u.deg))) for key, val in sources.items()}
