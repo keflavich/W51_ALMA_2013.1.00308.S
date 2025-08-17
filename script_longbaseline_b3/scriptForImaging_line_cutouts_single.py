@@ -12,6 +12,9 @@ if 'workdir' not in locals():
     workdir = os.getenv('WORK_DIR', '/red/adamginsburg/w51/')
 os.chdir(workdir)
 
+if 'savedir' not in locals():
+    savedir = os.getenv('SAVEDIR', '/orange/adamginsburg/w51/2017.1.00293.S/line_cubes/')
+
 def makefits(myimagebase, cleanup=True):
     impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
     exportfits(imagename=myimagebase+'.image.pbcor', fitsimage=myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True) # export the corrected image
@@ -104,6 +107,10 @@ if any([os.path.exists(f"{imagename}.{suffix}") for suffix in ('image', 'model',
     print("Skipping {0} because imaging appears to be ongoing".format(imagename))
     sys.exit(0)
 
+if any([os.path.exists(os.path.join(savedir, f"{imagename}.{suffix}")) for suffix in ('image', 'model', 'residual', 'psf', 'pb', 'sumwt', 'weight')]):
+    print("Skipping {0} because imaging appears to be completed".format(imagename))
+    sys.exit(0)
+
 print("Imaging {0} at {1}".format(imagename, datetime.datetime.now()))
 tclean(vis=mslist,
        imagename=imagename,
@@ -134,3 +141,11 @@ if os.path.exists(f"{imagename}.image"):
 else:
     print(f"tclean failed for {imagename}")
     sys.exit(1)
+
+for suffix in ('image', 'model', 'residual', 'psf', 'pb', 'sumwt', 'weight'):
+    if os.path.exists(f"{imagename}.{suffix}"):
+        print(f"Moving {imagename}.{suffix} to {savedir}")
+        shutil.move(f"{imagename}.{suffix}", os.path.join(savedir, f"{imagename}.{suffix}"))
+    if os.path.exists(f"{imagename}.{suffix}.fits"):
+        print(f"Moving {imagename}.{suffix}.fits to {savedir}")
+        shutil.move(f"{imagename}.{suffix}.fits", os.path.join(savedir, f"{imagename}.{suffix}.fits"))

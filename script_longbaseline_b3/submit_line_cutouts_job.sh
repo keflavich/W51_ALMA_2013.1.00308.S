@@ -3,12 +3,14 @@
 SCRIPT_ROOT='/orange/adamginsburg/w51'
 
 # Set working directory
-WORK_DIR='/red/adamginsburg/w51'
+WORK_DIR='/red/adamginsburg/w51_imaging'
 cd ${WORK_DIR}
 
 # Create logs directory if it doesn't exist
-LOGDIR="/red/adamginsburg/w51/logs"
+LOGDIR="/red/adamginsburg/w51_imaging/logs"
 mkdir -p ${LOGDIR}
+
+export SAVEDIR='/orange/adamginsburg/w51/2017.1.00293.S/line_cubes/'
 
 # Create a parameter file
 PARAM_FILE="${LOGDIR}/line_cutout_params.txt"
@@ -24,12 +26,19 @@ NITER=100000
 ROBUST=0.5
 SPW_INDICES="0 1 2 3"
 
+
 # Create all combinations of parameters
 INDEX=0
 for SRC in $SOURCES; do
     for SPW in $SPW_INDICES; do
-        echo "$INDEX $SRC $SPW $ROBUST $SUFFIX $NITER" >> ${PARAM_FILE}
-        INDEX=$((INDEX+1))
+        IMAGENAME="W51${SRC}_only.B3.robust${ROBUST}.spw${SPW}.${SUFFIX}.1536.bigpix.image.pbcor.fits"
+        if [ -e $IMAGENAME ] || [ -e $SAVEDIR/$IMAGENAME ]; then
+            echo "Image ${IMAGENAME} already exists, skipping"
+        else
+            # DEBUG  echo "$INDEX $SRC $SPW $ROBUST $SUFFIX $NITER because $IMAGENAME or $SAVEDIR/$IMAGENAME does not exist"
+            echo "$INDEX $SRC $SPW $ROBUST $SUFFIX $NITER" >> ${PARAM_FILE}
+            INDEX=$((INDEX+1))
+        fi
     done
 done
 

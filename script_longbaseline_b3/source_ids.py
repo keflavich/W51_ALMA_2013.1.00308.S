@@ -17,7 +17,7 @@ sources = {#'w51e2e': (290.9331907, 14.50958333),
            'w51sw': (290.9107375, 14.51161111),
            'w51e_n': (290.93291768, 14.51648581),
            'w51main': (290.92400257, 14.50718514),
-           'w51noutflow': ('19:23:39.7352296972', '14:31:18.4960179735'),
+           'w51noutflow': (290.91556346, 14.52180445),
           }
 
 source_field_mapping = {'w51e2e': 'w51e2',
@@ -42,4 +42,4 @@ def casafmt(crd, unit=(u.deg, u.deg)):
     return 'ICRS {} {}'.format(center.ra.to_string(unit=u.hour),
                                center.dec.to_string())
 
-sources_fmtd = {key: casafmt(val, unit=units.get(key, (u.deg, u.deg))) for key, val in sources.items()}
+sources_fmtd = {key: casafmt(val) for key, val in sources.items()}

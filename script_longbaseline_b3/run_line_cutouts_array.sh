@@ -5,9 +5,9 @@
 #SBATCH --mem=256gb # Job memory request PER NODE
 #SBATCH --nodes=1 # exactly 1 node
 #SBATCH --time=96:00:00               # Time limit hrs:min:sec
-#SBATCH --qos=astronomy-dept-b
+#SBATCH --qos=astronomy-dept
 #SBATCH --account=astronomy-dept
-#SBATCH --output=/red/adamginsburg/w51/logs/w51_line_cutouts_%A_%a.log
+#SBATCH --output=/red/adamginsburg/w51_imaging/logs/w51_line_cutouts_%A_%a.log
 #SBATCH --job-name=w51_line_cutouts
 #SBATCH --export=ALL
 
@@ -15,12 +15,13 @@
 export CASA=/orange/adamginsburg/casa/casa-6.6.0-2-py3.8.el8/bin/casa
 
 # Define log directory
-export LOGDIR="/red/adamginsburg/w51/logs"
+export LOGDIR="/red/adamginsburg/w51_imaging/logs"
 
 export SCRIPT_ROOT='/orange/adamginsburg/w51'
+export SAVEDIR='/orange/adamginsburg/w51/2017.1.00293.S/line_cubes/'
 
 # Set working directory
-export WORK_DIR='/red/adamginsburg/w51'
+export WORK_DIR='/red/adamginsburg/w51_imaging'
 cd ${WORK_DIR}
 
 # Parameter file containing all job configurations
@@ -44,6 +45,17 @@ export SPW
 export ROBUST
 export SUFFIX
 export NITER
+
+# skip if image exists - we're done in this case
+IMAGENAME="W51${SOURCENAME}_only.B3.robust${ROBUST}.spw${SPW}.${SUFFIX}.1536.bigpix.image"
+if [ -e $IMAGENAME ]; then
+    echo "Image ${IMAGENAME} already exists, skipping"
+    exit 0
+fi
+if [ -e $SAVEDIR/$IMAGENAME ]; then
+    echo "Image ${IMAGENAME} already exists in ${SAVEDIR}, skipping"
+    exit 0
+fi
 
 # Create a logfile name with the job parameters
 LOGFILENAME="${LOGDIR}/casa_log_w51_line_cutout_${SOURCENAME}_spw${SPW}_robust${ROBUST}_${SLURM_ARRAY_TASK_ID}.log"
