@@ -8,7 +8,7 @@
 #SBATCH --qos=astronomy-dept-b
 #SBATCH --account=astronomy-dept
 #SBATCH --output=/red/adamginsburg/w51_imaging/logs/w51_line_cutouts_b6_%A_%a.log
-#SBATCH --job-name=w51_line_cutouts
+#SBATCH --job-name=w51_line_cutouts_b6
 #SBATCH --export=ALL
 
 # Path to CASA
